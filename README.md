@@ -20,7 +20,7 @@ In addition to the buildpacks in this repository, some buildpacks live in a dedi
 ## Classic Heroku Buildpacks
 
 If you're looking for the repositories of the classic JVM Heroku buildpacks than can be used on the Heroku platform,
-use the links below for you convenience.
+use the links below for your convenience.
 
 - [heroku/java](https://github.com/heroku/heroku-buildpack-java)
 - [heroku/gradle](https://github.com/heroku/heroku-buildpack-gradle)
