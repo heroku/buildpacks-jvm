@@ -13,7 +13,8 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - pack/install-pack
+      - pack/install-pack:
+          version: 0.16.0
       - run: pack package-buildpack test --config << parameters.package-toml >>
 
 workflows:
