@@ -1,0 +1,14 @@
+[buildpack]
+uri = "."
+
+[[dependencies]]
+uri = "https://github.com/heroku/heroku-buildpack-jvm-common/releases/download/v111/heroku-jvm-common-cnb-v111.tgz"
+
+[[dependencies]]
+uri = "https://github.com/heroku/heroku-buildpack-java/releases/download/v68/heroku-java-cnb-v68.tgz"
+
+[[dependencies]]
+uri = "https://cnb-shim.herokuapp.com/v1/heroku/gradle?version=0.3&name=Gradle"
+
+[[dependencies]]
+uri = "https://github.com/heroku/procfile-cnb/releases/download/v0.6/procfile-cnb-v0.6.tgz"
