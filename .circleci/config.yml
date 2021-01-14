@@ -40,4 +40,4 @@ workflows:
       - package-buildpack:
           matrix:
             parameters:
-              package-toml: [ "meta-buildpacks/java/package.toml" ]
+              package-toml: [ "meta-buildpacks/java/package.toml", "buildpacks/jvm/package.toml" ]
