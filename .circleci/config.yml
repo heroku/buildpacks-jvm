@@ -34,7 +34,7 @@ jobs:
 
 workflows:
   version: 2
-  package:
+  ci:
     jobs:
       - shell-linting
       - package-buildpack:
