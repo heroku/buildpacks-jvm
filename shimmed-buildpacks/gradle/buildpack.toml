@@ -14,8 +14,9 @@ id = "heroku-20"
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
 
-[metadata]
-shim_v2_tarball="https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/gradle-v34.tgz"
+[metadata.shim]
+tarball="https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/gradle-v34.tgz"
+sha256="56d9af33cc9ed33c2dd78991278b49063879d61954ed24cb7974aa7e0d43be8d"
 
 [metadata.release.docker]
 repository="public.ecr.aws/r2f9u0w4/heroku-gradle-buildpack"

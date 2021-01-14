@@ -14,8 +14,9 @@ id = "heroku-20"
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
 
-[metadata]
-shim_v2_tarball="https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/clojure-v86.tgz"
+[metadata.shim]
+tarball="https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/clojure-v86.tgz"
+sha256="c85cb7f4e10a2bc76fc9804d14842ea1021609a23d953359eed30cfd019560d1"
 
 [metadata.release.docker]
 repository="public.ecr.aws/r2f9u0w4/heroku-clojure-buildpack"

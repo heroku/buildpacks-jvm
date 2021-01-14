@@ -14,8 +14,9 @@ id = "heroku-20"
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
 
-[metadata]
-shim_v2_tarball="https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/scala-v88.tgz"
+[metadata.shim]
+tarball="https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/scala-v88.tgz"
+sha256="d11afa35769cb336aded3f985eb8efb10cb689c786fc7b3a75253ba6f4fe846e"
 
 [metadata.release.docker]
 repository="public.ecr.aws/r2f9u0w4/heroku-scala-buildpack"
