@@ -27,10 +27,10 @@ jobs:
       - checkout
       - run:
           name: "shellcheck"
-          command: "shfmt -f . | xargs shellcheck"
+          command: "shfmt -f . | grep -v ^test/ | xargs shellcheck"
       - run:
           name: "shfmt"
-          command: "shfmt -d ."
+          command: "shfmt -f . | grep -v ^test/ | xargs shfmt -d"
 
   rapier:
     parameters:
