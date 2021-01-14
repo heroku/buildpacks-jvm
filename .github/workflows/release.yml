@@ -1,28 +1,26 @@
-name: Release
+name: Release Buildpack
 on:
-  release:
-    types:
-      - published
+  workflow_dispatch:
+    inputs:
+      requested_buildpack_id:
+        description: "Buildpack ID"
+        required: true
 
 jobs:
-  register:
-    name: Package, Publish, and Register
-    runs-on:
-      - ubuntu-20.04 # ubuntu-latest currently resolves to 18.04 which does not have aws-cli 2.x yet
-    strategy:
-      matrix:
-        include:
-          - buildpack-path: "meta-buildpacks/java"
-            package: "public.ecr.aws/r2f9u0w4/heroku-java-buildpack"
+  release:
+    name: Release ${{ github.event.inputs.requested_buildpack_id }}
+    runs-on: ubuntu-20.04 # ubuntu-latest currently resolves to 18.04 which does not have aws-cli 2.x yet
     env:
-      BUILDPACK_PATH: ${{ matrix.buildpack-path }}
-      PACKAGE: ${{ matrix.package }}
+      REQUESTED_BUILDPACK_ID: ${{ github.event.inputs.requested_buildpack_id }}
     steps:
       - id: checkout
-        name: Checkout code
+        name: "Checkout code"
         uses: actions/checkout@v2
-      - if: ${{ github.event_name != 'pull_request' || ! github.event.pull_request.head.repo.fork }}
-        name: Login to Public ECR
+      - id: setup-pack
+        name: "Setup pack"
+        uses: buildpacks/github-actions/setup-pack@v4.0.0
+      - id: login
+        name: "Login to public ECR"
         uses: docker/login-action@v1
         with:
           registry: public.ecr.aws
@@ -30,28 +28,51 @@ jobs:
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         env:
           AWS_REGION: us-east-1
-      - id: setup-pack
-        name: Package Buildpack
-        uses: buildpacks/github-actions/setup-pack@v4.0.0
       - id: package
+        name: "Package buildpack and publish to container registry"
         run: |
           #!/usr/bin/env bash
           set -euo pipefail
 
-          ID="$(cat ${BUILDPACK_PATH}/buildpack.toml | yj -t | jq -r .buildpack.id)"
-          VERSION="$(cat ${BUILDPACK_PATH}/buildpack.toml | yj -t | jq -r .buildpack.version)"
-          pack package-buildpack --config ${BUILDPACK_PATH}/package.toml --publish ${PACKAGE}:${VERSION}
-          DIGEST="$(crane digest ${PACKAGE}:${VERSION})"
+          while IFS="" read -r -d "" buildpack_toml_path; do
+            buildpack_id="$(yj -t < "${buildpack_toml_path}" | jq -r .buildpack.id)"
+            buildpack_version="$(yj -t < "${buildpack_toml_path}" | jq -r .buildpack.version)"
+            buildpack_docker_repository="$(yj -t < "${buildpack_toml_path}" | jq -r .metadata.release.docker.repository)"
+            buildpack_path=$(dirname "${buildpack_toml_path}")
 
-          echo "::set-output name=id::$ID"
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=address::${PACKAGE}@${DIGEST}"
+            if [[ $buildpack_id == "${REQUESTED_BUILDPACK_ID}" ]]; then
+              image_name="${buildpack_docker_repository}:${buildpack_version}"
+
+              pack package-buildpack --config "${buildpack_path}/package.toml" --publish "${image_name}"
+
+              echo "::set-output name=id::${buildpack_id}"
+              echo "::set-output name=version::${buildpack_version}"
+              echo "::set-output name=path::${buildpack_path}"
+              echo "::set-output name=address::${buildpack_docker_repository}@$(crane digest "${image_name}")"
+              exit 0
+            fi
+          done < <(find . -name buildpack.toml -print0)
+
+          echo "Could not find requested buildpack with id ${REQUESTED_BUILDPACK_ID}!"
+          exit 1
         shell: bash
-      - id: register
-        name: Register Buildpack
+      - id: add-registry-entry
+        name: "Request Registry Entry"
         uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.0.0
         with:
           token: ${{ secrets.PUBLIC_REPO_TOKEN }}
           id: ${{ steps.package.outputs.id }}
           version: ${{ steps.package.outputs.version }}
           address: ${{ steps.package.outputs.address }}
+      - id: create_release
+        name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.package.outputs.id }}_${{ steps.package.outputs.version }}
+          release_name: ${{ steps.package.outputs.id }} ${{ steps.package.outputs.version }}
+          body: |
+            Find the changelog here: [CHANGELOG](${{ steps.package.outputs.path }}/CHANGELOG.md)
+          draft: false
+          prerelease: false
