@@ -1,0 +1,10 @@
+[*]
+insert_final_newline = true
+trim_trailing_whitespace = true
+tab_width = 4
+
+[**/bin/{detect, build}]
+indent_style = tab
+
+[*.sh]
+indent_style = tab
