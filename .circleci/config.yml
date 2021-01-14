@@ -32,6 +32,28 @@ jobs:
           name: "shfmt"
           command: "shfmt -d ."
 
+  rapier:
+    parameters:
+      spec_dir:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    resource_class: xlarge
+    environment:
+      PARALLEL_SPLIT_TEST_PROCESSES: 8
+    steps:
+      - checkout
+      - pack/install-pack:
+          version: 0.16.0
+      - run:
+          name: Install Ruby dependencies
+          command: |
+            gem install bundler
+            bundle install
+      - run:
+          name: Execute rspec << parameters.spec_dir >>
+          command: bundle exec rspec << parameters.spec_dir >>
+
 workflows:
   version: 2
   ci:
@@ -41,3 +63,7 @@ workflows:
           matrix:
             parameters:
               package-toml: [ "meta-buildpacks/java/package.toml", "buildpacks/jvm/package.toml" ]
+      - rapier:
+          matrix:
+            parameters:
+              spec_dir: [ "test/specs/java" ]
