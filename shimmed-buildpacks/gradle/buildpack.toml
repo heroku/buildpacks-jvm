@@ -1,0 +1,21 @@
+api = "0.4"
+
+[buildpack]
+id = "heroku/gradle"
+version = "0.0.34"
+name = "Gradle"
+
+[[stacks]]
+id = "heroku-18"
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "io.buildpacks.stacks.bionic"
+
+[metadata]
+shim_v2_tarball="https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/gradle-v34.tgz"
+
+[metadata.release.docker]
+repository="public.ecr.aws/r2f9u0w4/heroku-gradle-buildpack"
