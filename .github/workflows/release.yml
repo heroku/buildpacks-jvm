@@ -39,10 +39,21 @@ jobs:
             buildpack_version="$(yj -t < "${buildpack_toml_path}" | jq -r .buildpack.version)"
             buildpack_docker_repository="$(yj -t < "${buildpack_toml_path}" | jq -r .metadata.release.docker.repository)"
             buildpack_path=$(dirname "${buildpack_toml_path}")
+            buildpack_shim_v2_tarball="$(yj -t < "${buildpack_toml_path}" | jq -r .metadata.shim_v2_tarball)"
 
             if [[ $buildpack_id == "${REQUESTED_BUILDPACK_ID}" ]]; then
-              image_name="${buildpack_docker_repository}:${buildpack_version}"
+              # If the buildpack has a V2 buildpack tarball in its metadata it's supposed to be a shimmed buildpack.
+              # We download the shim and the V2 buildpack to the buildpack directory, turning it into a CNB. This transformation
+              # is transparent for the code that follows after it.
+              if [[ -n "${buildpack_shim_v2_tarball:-}" ]]; then
+                cnb_shim_tarball_curl="https://github.com/heroku/cnb-shim/releases/download/v0.3/cnb-shim-v0.3.tgz"
+                mkdir -p "${buildpack_path}/target"
 
+                curl --retry 3 --location "${cnb_shim_tarball_curl}" | tar -xzm -C "${buildpack_path}"
+                curl --retry 3 --location "${buildpack_shim_v2_tarball}" | tar -xzm -C "${buildpack_path}/target"
+              fi
+
+              image_name="${buildpack_docker_repository}:${buildpack_version}"
               pack package-buildpack --config "${buildpack_path}/package.toml" --publish "${image_name}"
 
               echo "::set-output name=id::${buildpack_id}"
