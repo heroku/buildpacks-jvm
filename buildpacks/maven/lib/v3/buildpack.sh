@@ -34,18 +34,6 @@ bp_install_or_reuse_toolbox() {
   echo "launch = false" >> "${layer_dir}.toml"
 }
 
-bp_layer_has_key?() {
-  local layerDir="${1:?}"
-  local key="${2:?}"
-  local value="${3:?}"
-  local layerMetadata="${layerDir}.toml"
-
-  if [[ "$value" == "$([[ -f "${layerMetadata}" ]] && cat "${layerMetadata}" | yj -t | jq -r "${key}")" ]]; then
-    return 0
-  fi
-  return 1
-}
-
 bp_layer_metadata_create() {
   local launch="${1:-false}"
   local cache="${2:-false}"
