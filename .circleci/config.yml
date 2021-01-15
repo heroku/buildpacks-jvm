@@ -62,8 +62,12 @@ workflows:
       - package-buildpack:
           matrix:
             parameters:
-              package-toml: [ "meta-buildpacks/java/package.toml", "buildpacks/jvm/package.toml" ]
+              package-toml:
+                - "meta-buildpacks/java/package.toml"
+                - "buildpacks/jvm/package.toml"
+                - "buildpacks/maven/package.toml"
       - rapier:
           matrix:
             parameters:
-              spec_dir: [ "test/specs/java" ]
+              spec_dir:
+                - "test/specs/java"

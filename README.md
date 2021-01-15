@@ -11,13 +11,14 @@ to build your application.
 - `heroku/java` (Java, [Readme](meta-buildpacks/java/README.md), [Changelog](meta-buildpacks/java/CHANGELOG.md))
 
 ### Platforms
-
 - `heroku/jvm` (OpenJDK, [Readme](buildpacks/jvm/README.md), [Changelog](buildpacks/jvm/CHANGELOG.md))
+
+### Build Tools
+- `heroku/maven` (Maven, [Readme](buildpacks/maven/README.md), [Changelog](buildpacks/maven/CHANGELOG.md))
 
 ## External Buildpacks
 In addition to the buildpacks in this repository, some buildpacks live in a dedicated repository.
 
-- `heroku/maven` ([GitHub](https://github.com/heroku/heroku-buildpack-java), Hybrid V2/CNB buildpack)
 - `heroku/gradle` ([GitHub](https://github.com/heroku/heroku-buildpack-gradle), V2 buildpack, [shimmed](https://github.com/heroku/cnb-shim))
 - `heroku/scala` ([GitHub](https://github.com/heroku/heroku-buildpack-scala), V2 buildpack, [shimmed](https://github.com/heroku/cnb-shim))
 - `heroku/clojure` ([GitHub](https://github.com/heroku/heroku-buildpack-clojure), V2 buildpack, [shimmed](https://github.com/heroku/cnb-shim))
