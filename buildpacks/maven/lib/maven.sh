@@ -97,16 +97,21 @@ run_mvn() {
 		cd "$home"
 	fi
 
-	local mvn_settings_opt="$(_mvn_settings_opt "${home}" "${mavenInstallDir}")"
+	local mvn_settings_opt
+	mvn_settings_opt="$(_mvn_settings_opt "${home}" "${mavenInstallDir}")"
 
-	export MAVEN_OPTS="$(_mvn_java_opts "${scope}" "${home}" "${mavenInstallDir}")"
+	export MAVEN_OPTS
+	MAVEN_OPTS="$(_mvn_java_opts "${scope}" "${home}" "${mavenInstallDir}")"
 
 	cd "$home"
-	local mvnOpts="$(_mvn_cmd_opts "${scope}")"
+	local mvnOpts
+	mvnOpts="$(_mvn_cmd_opts "${scope}")"
 	status "Executing Maven"
 	echo "$ ${mavenExe} ${mvnOpts}" | indent
 
-	local cache_status="$(get_cache_status "${mavenInstallDir}")"
+	local cache_status
+	cache_status="$(get_cache_status "${mavenInstallDir}")"
+
 	let start=$(nowms)
 	${mavenExe} -DoutputFile=target/mvn-dependency-list.log -B "${mvn_settings_opt}" "${mvnOpts}" | indent
 

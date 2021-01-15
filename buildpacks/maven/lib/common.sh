@@ -65,7 +65,8 @@ get_app_system_value() {
 	local key=${2?"No key specified"}
 
 	# escape for regex
-	local escaped_key="$(echo "$key" | sed "s/\./\\\./g")"
+	local escaped_key
+	escaped_key="$(echo "$key" | sed "s/\./\\\./g")"
 
 	[ -f "$file" ] &&
 		grep -E "^${escaped_key}[[:space:]=]+" "$file" |
