@@ -88,11 +88,11 @@ run_mvn() {
 		local mavenExe="./mvnw"
 		mcount "mvn.version.wrapper"
 	else
-		cd "$mavenInstallDir"
+		cd "$mavenInstallDir" || exit
 		install_maven "${mavenInstallDir}" "${home}"
 		PATH="${mavenInstallDir}/.maven/bin:$PATH"
 		local mavenExe="mvn"
-		cd "$home"
+		cd "$home" || exit
 	fi
 
 	local mvn_settings_opt
@@ -101,7 +101,7 @@ run_mvn() {
 	export MAVEN_OPTS
 	MAVEN_OPTS="$(_mvn_java_opts "${scope}" "${home}" "${mavenInstallDir}")"
 
-	cd "$home"
+	cd "$home" || exit
 	local mvnOpts
 	mvnOpts="$(_mvn_cmd_opts "${scope}")"
 	status "Executing Maven"
