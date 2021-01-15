@@ -107,7 +107,9 @@ run_mvn() {
 	status "Executing Maven"
 	echo "$ ${mavenExe} ${mvnOpts}" | indent
 
-	${mavenExe} -DoutputFile=target/mvn-dependency-list.log -B "${mvn_settings_opt}" "${mvnOpts}" | indent
+	# This code relies on word splitting, we cannot quote the parameters.
+	# shellcheck disable=SC2086
+	${mavenExe} -DoutputFile=target/mvn-dependency-list.log -B ${mvn_settings_opt} ${mvnOpts} | indent
 
 	if [ "${PIPESTATUS[*]}" != "0 0" ]; then
 		error "Failed to build app with Maven
