@@ -17,8 +17,8 @@ while IFS="" read -r -d "" buildpack_toml_path; do
 		cnb_shim_tarball_sha256="109cfc01953cb04e69c82eec1c45c7c800bd57d2fd0eef030c37d8fc37a1cb4d"
 		local_cnb_shim_tarball=$(mktemp)
 
-		v2_buildpack_tarball_url="$(yj -t <"${buildpack_toml_path}" | jq -r .metadata.shim.tarball)"
-		v2_buildpack_tarball_sha256="$(yj -t <"${buildpack_toml_path}" | jq -r .metadata.shim.sha256)"
+		v2_buildpack_tarball_url="$(yj -t <"${buildpack_toml_path}" | jq -r ".metadata.shim.tarball // empty")"
+		v2_buildpack_tarball_sha256="$(yj -t <"${buildpack_toml_path}" | jq -r ".metadata.shim.sha256 // empty")"
 		local_v2_buildpack_tarball=$(mktemp)
 
 		# If the buildpack has a V2 buildpack tarball in its metadata it's supposed to be a shimmed buildpack.
