@@ -89,9 +89,7 @@ run_mvn() {
 		mcount "mvn.version.wrapper"
 	else
 		cd "$mavenInstallDir"
-		let start=$(nowms)
 		install_maven "${mavenInstallDir}" "${home}"
-		mtime "mvn.${scope}.time" "${start}"
 		PATH="${mavenInstallDir}/.maven/bin:$PATH"
 		local mavenExe="mvn"
 		cd "$home"
@@ -109,10 +107,6 @@ run_mvn() {
 	status "Executing Maven"
 	echo "$ ${mavenExe} ${mvnOpts}" | indent
 
-	local cache_status
-	cache_status="$(get_cache_status "${mavenInstallDir}")"
-
-	let start=$(nowms)
 	${mavenExe} -DoutputFile=target/mvn-dependency-list.log -B "${mvn_settings_opt}" "${mvnOpts}" | indent
 
 	if [ "${PIPESTATUS[*]}" != "0 0" ]; then
@@ -120,9 +114,6 @@ run_mvn() {
 We're sorry this build is failing! If you can't find the issue in application code,
 please submit a ticket so we can help: https://help.heroku.com/"
 	fi
-
-	mtime "mvn.${scope}.time" "${start}"
-	mtime "mvn.${scope}.time.cache.${cache_status}" "${start}"
 }
 
 write_mvn_profile() {
