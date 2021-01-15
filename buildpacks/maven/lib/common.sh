@@ -66,6 +66,7 @@ get_app_system_value() {
 
 	# escape for regex
 	local escaped_key
+	# shellcheck disable=SC2001
 	escaped_key="$(echo "$key" | sed "s/\./\\\./g")"
 
 	[ -f "$file" ] &&

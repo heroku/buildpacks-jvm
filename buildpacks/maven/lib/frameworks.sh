@@ -15,6 +15,7 @@ is_wildfly_swarm() {
 
 has_postgres() {
 	local buildDir=${1:?}
+	# shellcheck disable=SC2235
 	test -f "${buildDir}/pom.xml" && (
 		test -n "$(grep "<groupId>org.postgresql" "${buildDir}/pom.xml")" ||
 			test -n "$(grep "<groupId>postgresql" "${buildDir}/pom.xml")" ||
