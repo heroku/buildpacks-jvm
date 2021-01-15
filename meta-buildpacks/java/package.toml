@@ -5,7 +5,7 @@ uri = "."
 uri = "../../buildpacks/jvm"
 
 [[dependencies]]
-uri = "https://github.com/heroku/heroku-buildpack-java/releases/download/v69/heroku-java-cnb-v69.tgz"
+uri = "../../buildpacks/maven"
 
 [[dependencies]]
 uri = "https://cnb-shim.herokuapp.com/v1/heroku/gradle?version=0.4.0&name=Gradle"

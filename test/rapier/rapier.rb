@@ -58,7 +58,7 @@ module Rapier
       else
         image = nil
         if exception_on_failure
-          raise "Pack exited with status code #{pack_status}, indicating an error and failed build!\nstderr: #{pack_stderr}"
+          raise "Pack exited with status code #{pack_status}, indicating an error and failed build!\nstdout: #{pack_stdout}\nstderr: #{pack_stderr}"
         end
       end
 
