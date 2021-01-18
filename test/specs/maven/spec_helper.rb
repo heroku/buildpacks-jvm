@@ -1,7 +1,7 @@
 require "rspec/core"
 require "rspec/retry"
 require "java-properties"
-require_relative "rapier/rapier"
+require_relative "../../rapier/rapier"
 
 def rapier
   Rapier::Runner.new("test/fixtures", default_buildpacks: ["./buildpacks/jvm", "./buildpacks/maven", "heroku/procfile"])
