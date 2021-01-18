@@ -28,30 +28,39 @@ export_env_vars+=("MAVEN_SETTINGS_URL")
 export_env_vars+=("MAVEN_CUSTOM_OPTS")
 export_env_vars+=("MAVEN_CUSTOM_GOALS")
 export_env_vars+=("MAVEN_JAVA_OPTS")
+export_env_vars+=("HEROKU_BUILDPACK_DEBUG")
 
 bputils::export_env "${platform_dir}" "${export_env_vars[@]}"
 
 ########################################################################################################################
 # Install Maven
 ########################################################################################################################
-if ! maven::should_use_wrapper_for_app "${app_dir}"; then
-	configured_version=$(maven::get_configured_version "${app_dir}" "$(maven::default_version)")
+log::cnb::header "Installing Maven"
 
-	log::cnb::status_pending "Installing Maven ${configured_version}"
+if ! maven::should_use_wrapper_for_app "${app_dir}"; then
+	if maven::app_contains_wrapper "${app_dir}"; then
+		log::cnb::warning "Unused Maven wrapper" <<-EOF
+			Your application contains Maven wrapper, but a Maven version was also specified in system.properties.
+			We will install that specified version and ignore the Maven wrapper.
+
+			We recommend that you use Maven wrapper instead of requesting a specific Maven version in system.properties.
+		EOF
+	fi
+
+	configured_version=$(maven::get_configured_version "${app_dir}" "$(maven::default_version)")
+	log::cnb::info "Selected Maven version: ${configured_version}"
 
 	maven_tarball_url=$(maven::tarball_url_for_version "${configured_version}")
 
 	if [[ -z "${maven_tarball_url}" ]]; then
-		log::cnb::error <<-EOF
-			Unsupported Maven version
-
+		log::cnb::error "Unsupported Maven version" <<-EOF
 			You have defined an unsupported Maven version in the system.properties file.
 			The default supported version is $(maven::default_version)
 		EOF
 		exit 1
 	fi
 
-	# Prepare Maven layer
+	log::cnb::debug "Preparing Maven layer"
 	maven_layer_dir="${layers_dir}/maven"
 	maven_layer_toml="${maven_layer_dir}.toml"
 	mkdir -p "${maven_layer_dir}"
@@ -66,6 +75,7 @@ if ! maven::should_use_wrapper_for_app "${app_dir}"; then
 		version = "${configured_version}"
 	EOF
 
+	log::cnb::info "Downloading and extracting Maven tarball..."
 	if ! bputils::download_and_extract_tarball "${maven_tarball_url}" "${maven_layer_dir}"; then
 		log::cnb::error <<-EOF
 			Maven download failed
@@ -85,7 +95,9 @@ if ! maven::should_use_wrapper_for_app "${app_dir}"; then
 	chmod +x "${maven_layer_dir}/bin/mvn"
 	export PATH="${PATH}:${maven_layer_dir}/bin"
 
-	log::cnb::status_done
+	log::cnb::info "Maven installation successful!"
+else
+	log::cnb::info "Maven wrapper detected, skipping installation."
 fi
 
 ########################################################################################################################
@@ -125,14 +137,22 @@ internal_maven_options+=("-Dmaven.repo.local=${maven_repository_layer_dir}/.m2/r
 ########################################################################################################################
 settings_file_path=""
 if [[ -n "${MAVEN_SETTINGS_PATH:-}" ]]; then
-	settings_file_path="${MAVEN_SETTINGS_PATH}"
+	if [[ -f "${MAVEN_SETTINGS_PATH}" ]]; then
+		settings_file_path="${MAVEN_SETTINGS_PATH}"
+	else
+		log::cnb::error "Cannot find custom settings.xml file" <<-EOF
+			You have set MAVEN_SETTINGS_PATH to "${MAVEN_SETTINGS_PATH}". We could not find that file in your app.
+			Please verify the path is correct, ensure you committed this file to your app and then try again.
+		EOF
+		exit 1
+	fi
 
 elif [[ -n "${MAVEN_SETTINGS_URL:-}" ]]; then
 	settings_file_path=$(mktemp)
 	if ! bputils::download_file "${MAVEN_SETTINGS_URL}" "${settings_file_path}"; then
-		cat <<-EOF
-			Could not download settings.xml from the URL defined in MAVEN_SETTINGS_URL:
-			${MAVEN_SETTINGS_URL}
+		log::cnb::error "Download of settings.xml failed" <<-EOF
+			You have set MAVEN_SETTINGS_URL to "${MAVEN_SETTINGS_URL}". We tried to download the file at this
+			URL, but the download failed. Please verify that the given URL is correct and try again.
 		EOF
 		exit 1
 	fi
@@ -148,19 +168,19 @@ fi
 ########################################################################################################################
 # Execute Maven
 ########################################################################################################################
-log::cnb::status "Executing Maven"
-echo "$ ${maven_executable} ${maven_options[*]} ${maven_goals[*]}"
+log::cnb::header "Executing Maven"
+log::cnb::info "$ ${maven_executable} ${maven_options[*]} ${maven_goals[*]}"
+log::cnb::debug "Internal Maven options: ${internal_maven_options[*]}"
 
 # MAVEN_OPTS control JVM options that are used by Maven itself. To maintain backwards compatibility with the v2 Heroku
 # buildpack, the amount of memory is set to 1GB for now.
 export MAVEN_OPTS="${MAVEN_JAVA_OPTS:-"-Xmx1024m"}"
+log::cnb::debug "Setting MAVEN_OPTS=${MAVEN_OPTS}"
 
 if ! ${maven_executable} "${maven_options[@]}" "${internal_maven_options[@]}" "${maven_goals[@]}"; then
-	log::cnb::error <<-EOF
-		Failed to build app with Maven
-
+	log::cnb::error "Failed to build app with Maven" <<-EOF
 		We're sorry this build is failing! If you can't find the issue in application code,
-		please submit a ticket so we can help: https://help.heroku.com/"
+		please submit a ticket so we can help: https://help.heroku.com/
 	EOF
 	exit 1
 fi
