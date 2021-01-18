@@ -109,6 +109,31 @@ internal_maven_options+=("-Duser.home=${app_dir}")
 internal_maven_options+=("-Dmaven.repo.local=${maven_repository_layer_dir}/.m2/repository")
 
 ########################################################################################################################
+# Resolve settings.xml
+########################################################################################################################
+settings_file_path=""
+if [[ -n "${MAVEN_SETTINGS_PATH:-}" ]]; then
+	settings_file_path="${MAVEN_SETTINGS_PATH}"
+
+elif [[ -n "${MAVEN_SETTINGS_URL:-}" ]]; then
+	settings_file_path=$(mktemp)
+	if ! bputils::download_file "${MAVEN_SETTINGS_URL}" "${settings_file_path}"; then
+		cat <<-EOF
+			Could not download settings.xml from the URL defined in MAVEN_SETTINGS_URL:
+			${MAVEN_SETTINGS_URL}
+		EOF
+		exit 1
+	fi
+
+elif [[ -f "${app_dir}/settings.xml" ]]; then
+	settings_file_path="${app_dir}/settings.xml"
+fi
+
+if [[ -n "${settings_file_path}" ]]; then
+	maven_options+=("-s" "${settings_file_path}")
+fi
+
+########################################################################################################################
 # Execute Maven
 ########################################################################################################################
 log::cnb::status "Executing Maven"
