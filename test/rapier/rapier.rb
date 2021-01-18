@@ -46,7 +46,7 @@ module Rapier
         end
       end
 
-      buildpack_argument = "--buildpack " + buildpacks.map { |bp| bp == :this ? "." : bp }.join(",")
+      buildpack_argument = "--buildpack " + buildpacks.join(",")
       builder_argument = "-B #{builder}"
       env_arguments = build_env.keys.map { |key| "--env #{key}=#{build_env[key]}" }.join(" ")
       pack_command = "pack build #{image_name} #{builder_argument} --path #{app_dir} #{env_arguments} #{buildpack_argument}"
