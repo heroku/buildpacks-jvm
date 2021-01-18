@@ -6,7 +6,7 @@ dependencies::has_spring_boot() {
 
 	if [[ -f "${pom_path}" ]]; then
 		grep -q "<groupId>org.springframework.boot" "${pom_path}" &&
-		grep -q "<artifactId>spring-boot" "${pom_path}"
+			grep -q "<artifactId>spring-boot" "${pom_path}"
 	fi
 }
 
@@ -25,7 +25,7 @@ dependencies::app_requires_postgres() {
 
 	if [[ -f "${pom_path}" ]]; then
 		grep -q "<groupId>org.postgresql" "${pom_path}" ||
-		grep -q "<groupId>postgresql" "${pom_path}" ||
-		grep -q "<groupId>com.impossibl.pgjdbc-ng" "${pom_path}"
+			grep -q "<groupId>postgresql" "${pom_path}" ||
+			grep -q "<groupId>com.impossibl.pgjdbc-ng" "${pom_path}"
 	fi
 }
