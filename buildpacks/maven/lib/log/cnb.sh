@@ -2,7 +2,7 @@ log::cnb::error() {
 	# Send all of our output to stderr
 	exec 1>&2
 
-	# If arguments are given, redirect them to stdin this allows the funtion to be invoked with a string argument,
+	# If arguments are given, redirect them to stdin this allows the function to be invoked with a string argument,
 	# or with stdin, e.g. via <<-EOF
 	(($#)) && exec <<<"$@"
 
@@ -15,7 +15,7 @@ log::cnb::warning() {
 	# Send all of our output to stderr
 	exec 1>&2
 
-	# If arguments are given, redirect them to stdin this allows the funtion to be invoked with a string argument,
+	# If arguments are given, redirect them to stdin this allows the function to be invoked with a string argument,
 	# or with stdin, e.g. via <<-EOF
 	(($#)) && exec <<<"$@"
 
