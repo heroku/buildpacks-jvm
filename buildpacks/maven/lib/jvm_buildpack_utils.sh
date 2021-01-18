@@ -34,3 +34,15 @@ bputils::download_file() {
 	local -r target_path="${2:?}"
 	curl --retry 3 --silent --fail --max-time 10 --location "${url}" --output "${target_path}"
 }
+
+bputils::export_env() {
+	local -r platform_dir="${1:?}"
+	local -r env_vars=("${@:2}")
+
+	for env_var in "${env_vars[@]}"; do
+		env_var_file="${platform_dir}/env/${env_var}"
+		if [[ -f "${env_var_file}" ]]; then
+			export "${env_var}=$(cat "${env_var_file}")"
+		fi
+	done
+}

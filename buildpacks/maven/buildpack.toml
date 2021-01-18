@@ -4,6 +4,7 @@ api = "0.4"
 id = "heroku/maven"
 version = "0.1.1"
 name = "Maven"
+clear-env = true
 
 [[stacks]]
 id = "heroku-18"

@@ -20,6 +20,18 @@ source "${CNB_BUILDPACK_DIR}/lib/log/cnb.sh"
 source "${CNB_BUILDPACK_DIR}/lib/jvm_buildpack_utils.sh"
 
 ########################################################################################################################
+# Export environment variables
+########################################################################################################################
+export_env_vars=()
+export_env_vars+=("MAVEN_SETTINGS_PATH")
+export_env_vars+=("MAVEN_SETTINGS_URL")
+export_env_vars+=("MAVEN_CUSTOM_OPTS")
+export_env_vars+=("MAVEN_CUSTOM_GOALS")
+export_env_vars+=("MAVEN_JAVA_OPTS")
+
+bputils::export_env "${platform_dir}" "${export_env_vars[@]}"
+
+########################################################################################################################
 # Install Maven
 ########################################################################################################################
 if ! maven::should_use_wrapper_for_app "${app_dir}"; then
