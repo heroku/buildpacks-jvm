@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC2120
 log::cnb::error() {
 	# Send all of our output to stderr
 	exec 1>&2
@@ -13,6 +14,7 @@ log::cnb::error() {
 	echo
 }
 
+# shellcheck disable=SC2120
 log::cnb::warning() {
 	# Send all of our output to stderr
 	exec 1>&2
