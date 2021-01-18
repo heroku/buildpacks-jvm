@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function maven::default_version() {
 	echo "3.6.2"
 }

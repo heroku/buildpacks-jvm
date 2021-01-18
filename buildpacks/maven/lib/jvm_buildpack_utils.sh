@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 ##
 # Reads a value from Java properties fed into STDIN. Only works for simple use-cases and does not support escape
 # sequences or multiline keys/values. It also aggressively trims keys/values which is not part of the specification.

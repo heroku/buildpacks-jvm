@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 log::cnb::error() {
 	# Send all of our output to stderr
 	exec 1>&2
