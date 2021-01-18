@@ -24,7 +24,7 @@ log::cnb::warning() {
 }
 
 log::cnb::debug() {
-	if [[ -n ${HEROKU_BUILDPACK_DEBUG} ]]; then
+	if [[ -n ${HEROKU_BUILDPACK_DEBUG:-} ]]; then
 		echo "[DEBUG] $*"
 	fi
 }
