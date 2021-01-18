@@ -1,24 +1,12 @@
 #!/usr/bin/env bash
 
-if [ -n "${CNB_STACK_ID:-}" ]; then
-	buildDir="$(pwd)"
-	name="Maven"
-else
-	buildDir="${1:?}"
-	name="Java"
-fi
+extensions=(xml atom clj groovy rb scala yaml yml)
 
-if [ -f "${buildDir}/pom.xml" ] ||
-	[ -f "${buildDir}/pom.atom" ] ||
-	[ -f "${buildDir}/pom.clj" ] ||
-	[ -f "${buildDir}/pom.groovy" ] ||
-	[ -f "${buildDir}/pom.rb" ] ||
-	[ -f "${buildDir}/pom.scala" ] ||
-	[ -f "${buildDir}/pom.yaml" ] ||
-	[ -f "${buildDir}/pom.yml" ]; then
-	echo "$name"
-	exit 0
-else
-	(echo >&2 "Could not find a pom.xml file! Please check that it exists and is committed to Git.")
-	exit 1
-fi
+for extension in "${extensions[@]}"; do
+	if [[ -f "pom.${extension}" ]]; then
+		exit 0
+	fi
+done
+
+echo >&2 "Could not find a pom.xml file! Please check that it exists and is committed to Git."
+exit 1
