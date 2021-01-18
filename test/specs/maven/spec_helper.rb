@@ -4,7 +4,7 @@ require "java-properties"
 require_relative "../../rapier/rapier"
 
 def rapier
-  Rapier::Runner.new("test/fixtures", default_buildpacks: ["./buildpacks/jvm", "./buildpacks/maven", "heroku/procfile"])
+  Rapier::Runner.new("test/fixtures", "heroku/buildpacks:18", default_buildpacks: ["./buildpacks/jvm", "./buildpacks/maven", "heroku/procfile"])
 end
 
 RSpec.configure do |config|
