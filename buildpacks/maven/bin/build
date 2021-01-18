@@ -139,13 +139,13 @@ ${maven_executable} "${maven_options[@]}" "${internal_maven_options[@]}" \
 ########################################################################################################################
 if [[ -d target ]]; then
 	while IFS="" read -r -d "" jar_file; do
-		if is_spring_boot "${app_dir}"; then
+		if dependencies::has_spring_boot "${app_dir}"; then
 			cat >>"${layers_dir}/launch.toml" <<-EOF
 				[[processes]]
 				type = "web"
 				command = "java -Dserver.port=\$PORT \$JAVA_OPTS -jar $jar_file"
 			EOF
-		elif is_wildfly_swarm "${app_dir}"; then
+		elif dependencies::has_wildfly_swarm "${app_dir}"; then
 			cat >>"${layers_dir}/launch.toml" <<-EOF
 				[[processes]]
 				type = "web"
