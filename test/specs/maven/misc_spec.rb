@@ -76,7 +76,7 @@ describe "Heroku's Maven Cloud Native Buildpack" do
             /workspace/target/test-classes/com/heroku/AppTest.class
           EOF
 
-          expect(container.exec_bash("find /workspace -type f | sort -s").stdout).to eq(expected_output)
+          expect(container.bash_exec("find /workspace -type f | sort -s").stdout).to eq(expected_output)
         end
       end
     end
