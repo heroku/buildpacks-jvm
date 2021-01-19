@@ -2,8 +2,9 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/maven"
-version = "0.1.1"
+version = "0.2.0"
 name = "Maven"
+clear-env = true
 
 [[stacks]]
 id = "heroku-18"

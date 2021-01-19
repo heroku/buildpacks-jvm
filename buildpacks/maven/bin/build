@@ -1,47 +1,212 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# fail fast
-set -e
+# shellcheck disable=SC2034
+app_dir="$(pwd)"
+# shellcheck disable=SC2034
+layers_dir="${1:?}"
+# shellcheck disable=SC2034
+platform_dir="${2:?}"
+# shellcheck disable=SC2034
+buildpack_plan="${3:?}"
 
-appDir="$(pwd)"
-bpDir="$(
-	cd "$(dirname "$0")/.."
-	pwd
-)"
-layersDir="${1:?}"
-
-# shellcheck source=SCRIPTDIR/../lib/v3/common.sh
-source "${bpDir}/lib/v3/common.sh"
-# shellcheck source=SCRIPTDIR/../lib/v3/buildpack.sh
-source "${bpDir}/lib/v3/buildpack.sh"
-# shellcheck source=SCRIPTDIR/../lib/common.sh
-source "${bpDir}/lib/common.sh"
 # shellcheck source=SCRIPTDIR/../lib/maven.sh
-source "${bpDir}/lib/maven.sh"
-# shellcheck source=SCRIPTDIR/../lib/frameworks.sh
-source "${bpDir}/lib/frameworks.sh"
+source "${CNB_BUILDPACK_DIR}/lib/maven.sh"
+# shellcheck source=SCRIPTDIR/../lib/dependencies.sh
+source "${CNB_BUILDPACK_DIR}/lib/dependencies.sh"
+# shellcheck source=SCRIPTDIR/../lib/log/cnb.sh
+source "${CNB_BUILDPACK_DIR}/lib/log/cnb.sh"
+# shellcheck source=SCRIPTDIR/../lib/jvm_buildpack_utils.sh
+source "${CNB_BUILDPACK_DIR}/lib/jvm_buildpack_utils.sh"
 
-export_env "${ENV_DIR}" "." "JAVA_OPTS|JAVA_TOOL_OPTIONS"
+########################################################################################################################
+# Export environment variables
+########################################################################################################################
+export_env_vars=()
+export_env_vars+=("MAVEN_SETTINGS_PATH")
+export_env_vars+=("MAVEN_SETTINGS_URL")
+export_env_vars+=("MAVEN_CUSTOM_OPTS")
+export_env_vars+=("MAVEN_CUSTOM_GOALS")
+export_env_vars+=("MAVEN_JAVA_OPTS")
+export_env_vars+=("HEROKU_BUILDPACK_DEBUG")
 
-mavenLayerToml="$(bp_layer_metadata_create "false" "true" "false" "version=\"3.6.2\"")"
-mavenLayer="$(bp_layer_init "$layersDir" "maven" "$mavenLayerToml")"
+bputils::export_env "${platform_dir}" "${export_env_vars[@]}"
 
-run_mvn "compile" "$appDir" "$mavenLayer"
-remove_mvn "$appDir" "$mavenLayer"
+########################################################################################################################
+# Install Maven
+########################################################################################################################
+log::cnb::header "Installing Maven"
 
-if [ -d target ]; then
-	while IFS="" read -r -d "" jarFile; do
-		if is_spring_boot "$appDir"; then
-			cat >>"${layersDir}/launch.toml" <<-EOF
+if ! maven::should_use_wrapper_for_app "${app_dir}"; then
+	if maven::app_contains_wrapper "${app_dir}"; then
+		log::cnb::warning "Unused Maven wrapper" <<-EOF
+			Your application contains Maven wrapper, but a Maven version was also specified in system.properties.
+			We will install that specified version and ignore the Maven wrapper.
+
+			We recommend that you use Maven wrapper instead of requesting a specific Maven version in system.properties.
+		EOF
+	fi
+
+	configured_version=$(maven::get_configured_version "${app_dir}" "$(maven::default_version)")
+	log::cnb::info "Selected Maven version: ${configured_version}"
+
+	maven_tarball_url=$(maven::tarball_url_for_version "${configured_version}")
+
+	if [[ -z "${maven_tarball_url}" ]]; then
+		log::cnb::error "Unsupported Maven version" <<-EOF
+			You have defined an unsupported Maven version in the system.properties file.
+			The default supported version is $(maven::default_version)
+		EOF
+		exit 1
+	fi
+
+	log::cnb::debug "Preparing Maven layer"
+	maven_layer_dir="${layers_dir}/maven"
+	maven_layer_toml="${maven_layer_dir}.toml"
+	mkdir -p "${maven_layer_dir}"
+
+	cat >"${maven_layer_toml}" <<-EOF
+		launch = false
+		build = true
+		cache = false
+
+		[metadata]
+		tarball-url = "${maven_tarball_url}"
+		version = "${configured_version}"
+	EOF
+
+	log::cnb::info "Downloading and extracting Maven tarball..."
+	if ! bputils::download_and_extract_tarball "${maven_tarball_url}" "${maven_layer_dir}"; then
+		log::cnb::error <<-EOF
+			Maven download failed
+
+			Could not download and extract Maven distribution. Please try again.
+			If this error persists, please contact us: https://help.heroku.com/
+		EOF
+		exit 1
+	fi
+
+	# Heroku's Maven tarballs historically also contained a .m2 directory with pre-populated dependencies for faster
+	# compilation. For all recent Maven versions, this directory is empty
+	mv "${maven_layer_dir}/.maven/"* "${maven_layer_dir}"
+	rm -r "${maven_layer_dir}/.maven"
+	rm -r "${maven_layer_dir}/.m2"
+
+	chmod +x "${maven_layer_dir}/bin/mvn"
+	export PATH="${PATH}:${maven_layer_dir}/bin"
+
+	log::cnb::info "Maven installation successful!"
+else
+	log::cnb::info "Maven wrapper detected, skipping installation."
+fi
+
+########################################################################################################################
+# Prepare for Maven execution, resolving options and configuration
+########################################################################################################################
+maven_executable="mvn"
+if maven::should_use_wrapper_for_app "${app_dir}"; then
+	maven_executable="./mvnw"
+fi
+
+maven_options=()
+maven_options+=("${MAVEN_CUSTOM_OPTS:-"-DskipTests"}")
+
+maven_goals=()
+for maven_goal in ${MAVEN_CUSTOM_GOALS:-clean install}; do
+	maven_goals+=("${maven_goal}")
+done
+
+maven_repository_layer_dir="${layers_dir}/maven-repository"
+mkdir -p "${maven_repository_layer_dir}"
+cat <<-EOF >"${layers_dir}/maven-repository.toml"
+	launch = false
+	cache = true
+	build = false
+EOF
+
+# We need to set some options that relate to buildpack implementation internals. Those options must not be overridden
+# by the user via MAVEN_CUSTOM_OPTS for the buildpack to work correctly. We also don't want to show them when we log
+# the Maven command we're running since they might be confusing to the user.
+internal_maven_options=()
+internal_maven_options+=("-B")
+internal_maven_options+=("-Duser.home=${app_dir}")
+internal_maven_options+=("-Dmaven.repo.local=${maven_repository_layer_dir}/.m2/repository")
+
+########################################################################################################################
+# Resolve settings.xml
+########################################################################################################################
+settings_file_path=""
+if [[ -n "${MAVEN_SETTINGS_PATH:-}" ]]; then
+	if [[ -f "${MAVEN_SETTINGS_PATH}" ]]; then
+		settings_file_path="${MAVEN_SETTINGS_PATH}"
+	else
+		log::cnb::error "Cannot find custom settings.xml file" <<-EOF
+			You have set MAVEN_SETTINGS_PATH to "${MAVEN_SETTINGS_PATH}". We could not find that file in your app.
+			Please verify the path is correct, ensure you committed this file to your app and then try again.
+		EOF
+		exit 1
+	fi
+
+elif [[ -n "${MAVEN_SETTINGS_URL:-}" ]]; then
+	settings_file_path=$(mktemp)
+	if ! bputils::download_file "${MAVEN_SETTINGS_URL}" "${settings_file_path}"; then
+		log::cnb::error "Download of settings.xml failed" <<-EOF
+			You have set MAVEN_SETTINGS_URL to "${MAVEN_SETTINGS_URL}". We tried to download the file at this
+			URL, but the download failed. Please verify that the given URL is correct and try again.
+		EOF
+		exit 1
+	fi
+
+elif [[ -f "${app_dir}/settings.xml" ]]; then
+	settings_file_path="${app_dir}/settings.xml"
+fi
+
+if [[ -n "${settings_file_path}" ]]; then
+	maven_options+=("-s" "${settings_file_path}")
+fi
+
+########################################################################################################################
+# Execute Maven
+########################################################################################################################
+log::cnb::header "Executing Maven"
+log::cnb::info "$ ${maven_executable} ${maven_options[*]} ${maven_goals[*]}"
+log::cnb::debug "Internal Maven options: ${internal_maven_options[*]}"
+
+# MAVEN_OPTS control JVM options that are used by Maven itself. To maintain backwards compatibility with the v2 Heroku
+# buildpack, the amount of memory is set to 1GB for now.
+export MAVEN_OPTS="${MAVEN_JAVA_OPTS:-"-Xmx1024m"}"
+log::cnb::debug "Setting MAVEN_OPTS=${MAVEN_OPTS}"
+
+if ! ${maven_executable} "${maven_options[@]}" "${internal_maven_options[@]}" "${maven_goals[@]}"; then
+	log::cnb::error "Failed to build app with Maven" <<-EOF
+		We're sorry this build is failing! If you can't find the issue in application code,
+		please submit a ticket so we can help: https://help.heroku.com/
+	EOF
+	exit 1
+fi
+
+########################################################################################################################
+# Generate target/mvn-dependency-list.log (For debugging and dep-tracker)
+########################################################################################################################
+${maven_executable} "${maven_options[@]}" "${internal_maven_options[@]}" \
+	"-DoutputFile=${app_dir}/target/mvn-dependency-list.log" "dependency:list" >/dev/null 2>&1
+
+########################################################################################################################
+# Generate launch.toml
+########################################################################################################################
+if [[ -d target ]]; then
+	while IFS="" read -r -d "" jar_file; do
+		if dependencies::has_spring_boot "${app_dir}"; then
+			cat >>"${layers_dir}/launch.toml" <<-EOF
 				[[processes]]
 				type = "web"
-				command = "java -Dserver.port=\$PORT \$JAVA_OPTS -jar $jarFile"
+				command = "java -Dserver.port=\$PORT \$JAVA_OPTS -jar $jar_file"
 			EOF
-		elif is_wildfly_swarm "$appDir"; then
-			cat >>"${layersDir}/launch.toml" <<-EOF
+		elif dependencies::has_wildfly_swarm "${app_dir}"; then
+			cat >>"${layers_dir}/launch.toml" <<-EOF
 				[[processes]]
 				type = "web"
-				command = "java -Dswarm.http.port=\$PORT \$JAVA_OPTS -jar $jarFile"
+				command = "java -Dswarm.http.port=\$PORT \$JAVA_OPTS -jar $jar_file"
 			EOF
 		fi
 

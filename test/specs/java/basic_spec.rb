@@ -5,8 +5,8 @@ describe "Heroku's Java CNB" do
   it "builds a simple app successfully" do
     rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
       rapier.pack_build(app_dir) do |pack_result|
-        expect(pack_result.stdout).to_not include("Installing Maven")
-        expect(pack_result.stdout).to include("$ ./mvnw")
+        expect(pack_result.stdout).to_not include("Downloading and extracting Maven tarball...")
+        expect(pack_result.stdout).to include("[INFO] $ ./mvnw")
 
         pack_result.start_container(expose_ports: 8080) do |container|
           payload = "Roy_Batty"

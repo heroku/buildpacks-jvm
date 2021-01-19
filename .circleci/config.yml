@@ -71,3 +71,4 @@ workflows:
             parameters:
               spec_dir:
                 - "test/specs/java"
+                - "test/specs/maven"
