@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/java"
-version = "0.1.1"
+version = "0.1.2"
 name = "Java"
 
 [[order]]
