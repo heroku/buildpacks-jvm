@@ -27,7 +27,7 @@ describe "Heroku's Maven Cloud Native Buildpack" do
 
           EOF
 
-          expect(container.file_contents("/app/target/mvn-dependency-list.log")).to eq(expected_dependency_list)
+          expect(container.get_file_contents("/app/target/mvn-dependency-list.log")).to eq(expected_dependency_list)
         end
       end
     end
