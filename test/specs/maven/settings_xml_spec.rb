@@ -17,9 +17,10 @@ describe "Heroku's Maven Cloud Native Buildpack" do
       rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
         rapier.pack_build(app_dir, exception_on_failure: false, build_env: {:MAVEN_SETTINGS_URL => "https://gist.githubusercontent.com/Malax/settings.xml"}) do |pack_result|
           expect(pack_result.build_success?).to be(false)
-          expect(pack_result.stdout).to include("Could not download settings.xml from the URL defined in MAVEN_SETTINGS_URL:")
-          # This error message comes from Maven itself. We expect Maven to to be executed at all.
-          expect(pack_result).to_not include("[INFO] BUILD FAILURE")
+          expect(pack_result.stderr).to include("You have set MAVEN_SETTINGS_URL to \"https://gist.githubusercontent.com/Malax/settings.xml\". We tried to download the file at this")
+          expect(pack_result.stderr).to include("URL, but the download failed. Please verify that the given URL is correct and try again.")
+          # This error message comes from Maven itself. We don't expect Maven to to be executed at all.
+          expect(pack_result.stdout).to_not include("[INFO] BUILD FAILURE")
         end
       end
     end
