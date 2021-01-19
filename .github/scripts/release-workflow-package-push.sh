@@ -49,6 +49,7 @@ while IFS="" read -r -d "" buildpack_toml_path; do
 		# We might have local changes after shimming the buildpack. To ensure scripts down the pipeline work with
 		# a clean state, we reset all local changes here.
 		git reset --hard
+		git clean -fdx
 
 		echo "::set-output name=id::${buildpack_id}"
 		echo "::set-output name=version::${buildpack_version}"
