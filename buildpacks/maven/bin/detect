@@ -9,4 +9,4 @@ for extension in "${extensions[@]}"; do
 done
 
 echo >&2 "Could not find a pom.xml file! Please check that it exists and is committed to Git."
-exit 1
+exit 100
