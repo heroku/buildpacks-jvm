@@ -6,17 +6,13 @@ log::cnb::header() {
 }
 
 log::cnb::error() {
-	exec 1>&2
-
 	echo
-	echo -e "\033[1;31m[ERROR: ${1:?}]\033[0m"
-	echo -e "\033[31m$(cat -)\033[0m"
+	echo 1>&2 -e "\033[1;31m[ERROR: ${1:?}]\033[0m"
+	echo 1>&2 -e "\033[31m$(cat -)\033[0m"
 	echo
 }
 
 log::cnb::warning() {
-	exec 1>&2
-
 	echo
 	echo -e "\033[1;33m[WARNING: ${1:?}]\033[0m"
 	echo -e "\033[33m$(cat -)\033[0m"

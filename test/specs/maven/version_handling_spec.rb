@@ -11,7 +11,8 @@ describe "Heroku's Maven Cloud Native Buildpack" do
     it "will use Maven wrapper to build the app" do
       rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
         rapier.pack_build(app_dir) do |pack_result|
-          expect(pack_result.stdout).to_not include("Installing Maven")
+          expect(pack_result.stdout).to_not include("Selected Maven version:")
+          expect(pack_result.stdout).to include("Maven wrapper detected, skipping installation.")
           expect(pack_result.stdout).to include("$ ./mvnw")
           expect(pack_result.stdout).to include("[BUILDPACK INTEGRATION TEST - MAVEN VERSION] #{SIMPLE_HTTP_SERVICE_MAVEN_WRAPPER_VERSION}")
         end
@@ -37,7 +38,7 @@ describe "Heroku's Maven Cloud Native Buildpack" do
           set_maven_version(app_dir, UNKNOWN_MAVEN_VERSION)
           rapier.pack_build(app_dir, exception_on_failure: false) do |pack_result|
             expect(pack_result.build_success?).to be(false)
-            expect(pack_result.stderr).to include("[Error: Unsupported Maven version]")
+            expect(pack_result.stderr).to include("[ERROR: Unsupported Maven version]")
             expect(pack_result.stderr).to include("You have defined an unsupported Maven version in the system.properties file.")
             expect(pack_result.stderr).to include("The default supported version is #{DEFAULT_MAVEN_VERSION}")
           end
@@ -68,7 +69,7 @@ describe "Heroku's Maven Cloud Native Buildpack" do
 
           rapier.pack_build(app_dir, exception_on_failure: false) do |pack_result|
             expect(pack_result.build_success?).to be(false)
-            expect(pack_result.stderr).to include("[Error: Unsupported Maven version]")
+            expect(pack_result.stderr).to include("[ERROR: Unsupported Maven version]")
             expect(pack_result.stderr).to include("You have defined an unsupported Maven version in the system.properties file.")
             expect(pack_result.stderr).to include("The default supported version is #{DEFAULT_MAVEN_VERSION}")
           end
