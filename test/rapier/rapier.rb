@@ -26,6 +26,22 @@ module Rapier
       buildpacks = @default_buildpacks if buildpacks.empty?
       builder = @default_builder if builder == nil
 
+      buildpacks = buildpacks.map do |buildpack|
+        if File.directory?(buildpack) && File.file?("#{buildpack}/build.sh")
+
+          unless File.directory?("#{buildpack}/target")
+            stdout, stderr, status = Open3.capture3("bash #{buildpack}/build.sh")
+            if status != 0
+              raise "Buildpack build step failed!\nstdout: #{stdout}\nstderr: #{stderr}"
+            end
+          end
+
+          "#{buildpack}/target"
+        else
+          buildpack
+        end
+      end
+
       # pack itself cannot handle meta-buildpacks well. It will look for the dependencies in the builder which might
       # not be there - especially during development. For each buildpack string, we check if it represents a local
       # directory with a package.toml, package the buildpack up and replace the string with the reference to the Docker

@@ -63,6 +63,15 @@ jobs:
       - checkout
       - pack/install-pack:
           version: 0.16.0
+      - run: sudo apt-get update && sudo apt-get install -y rsync jq
+      - run:
+          name: "Install build dependencies"
+          command: |
+            bin_dir="$(mktemp -d)"
+            curl --retry 3 --fail --max-time 10 --location "https://github.com/sclevine/yj/releases/download/v5.0.0/yj-linux" --output "${bin_dir}/yj"
+            chmod +x "${bin_dir}/yj"
+
+            echo "export PATH=\"${bin_dir}:\${PATH}\"" >> $BASH_ENV
       - run:
           name: Install Ruby dependencies
           command: |
