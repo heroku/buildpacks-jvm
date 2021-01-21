@@ -91,7 +91,9 @@ workflows:
               buildpack-dir:
                 - "buildpacks/jvm"
                 - "buildpacks/maven"
+                - "buildpacks/jvm-function-invoker"
                 - "meta-buildpacks/java"
+                - "meta-buildpacks/java-function"
                 - "shimmed-buildpacks/scala"
                 - "shimmed-buildpacks/gradle"
                 - "shimmed-buildpacks/clojure"

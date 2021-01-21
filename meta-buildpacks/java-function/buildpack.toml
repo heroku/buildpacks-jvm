@@ -1,0 +1,27 @@
+api = "0.4"
+
+[buildpack]
+id = "heroku/java-function"
+version = "0.1.0"
+name = "Java Function"
+
+[[order]]
+
+[[order.group]]
+id = "heroku/jvm"
+version = "0.1.2"
+
+[[order.group]]
+id = "heroku/maven"
+version = "0.2.1"
+
+[[order.group]]
+id = "heroku/jvm-function-invoker"
+version = "0.1.0"
+
+[metadata]
+
+[metadata.release]
+
+[metadata.release.docker]
+repository = "public.ecr.aws/r2f9u0w4/heroku-java-function-buildpack"
