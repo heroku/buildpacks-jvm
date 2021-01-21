@@ -6,7 +6,7 @@ orbs:
 jobs:
   package-buildpack:
     parameters:
-      package-toml:
+      buildpack-dir:
         type: string
     docker:
       - image: cimg/base:2020.01
@@ -15,7 +15,25 @@ jobs:
       - setup_remote_docker
       - pack/install-pack:
           version: 0.16.0
-      - run: pack package-buildpack test --config << parameters.package-toml >>
+      - run: sudo apt-get update && sudo apt-get install -y rsync jq
+      - run:
+          name: "Install build dependencies"
+          command: |
+            bin_dir="$(mktemp -d)"
+            curl --retry 3 --fail --max-time 10 --location "https://github.com/sclevine/yj/releases/download/v5.0.0/yj-linux" --output "${bin_dir}/yj"
+            chmod +x "${bin_dir}/yj"
+
+            echo "export PATH=\"${bin_dir}:\${PATH}\"" >> $BASH_ENV
+      - run:
+          name: "Build and package buildpack"
+          command: |
+            package_toml="<< parameters.buildpack-dir >>/package.toml"
+            if [[ -f "<< parameters.buildpack-dir >>/build.sh" ]]; then
+              "./<< parameters.buildpack-dir >>/build.sh"
+              package_toml="<< parameters.buildpack-dir >>/target/package.toml"
+            fi
+
+            pack buildpack package test --config "${package_toml}"
 
   shell-linting:
     docker:
@@ -62,10 +80,13 @@ workflows:
       - package-buildpack:
           matrix:
             parameters:
-              package-toml:
-                - "meta-buildpacks/java/package.toml"
-                - "buildpacks/jvm/package.toml"
-                - "buildpacks/maven/package.toml"
+              buildpack-dir:
+                - "buildpacks/jvm"
+                - "buildpacks/maven"
+                - "meta-buildpacks/java"
+                - "shimmed-buildpacks/scala"
+                - "shimmed-buildpacks/gradle"
+                - "shimmed-buildpacks/clojure"
       - rapier:
           matrix:
             parameters:

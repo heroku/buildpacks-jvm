@@ -30,12 +30,7 @@ if [[ -f "${buildpack_dir}/package.toml" ]]; then
 					realpath --relative-to "${target_dir}" "${dependency_buildpack_dir}/target"
 				)"
 
-				jq_filter=$(
-					cat <<-EOF
-						".dependencies
-							|= map(select(.uri == \"${original_dependency_uri}\").uri |= \"${updated_dependency_uri}\")"
-					EOF
-				)
+				jq_filter=".dependencies |= map(select(.uri == \"${original_dependency_uri}\").uri |= \"${updated_dependency_uri}\")"
 
 				updated_package_toml=$(yj -t <"${target_dir}/package.toml" | jq "${jq_filter}" | yj -jt)
 				echo "${updated_package_toml}" >"${target_dir}/package.toml"
