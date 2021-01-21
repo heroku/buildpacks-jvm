@@ -1,0 +1,16 @@
+api = "0.4"
+
+[buildpack]
+id = "heroku/jvm-function-invoker"
+version = "0.1.0"
+name = "JVM Function Invoker"
+clear-env = true
+
+[[stacks]]
+id = "heroku-18"
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "io.buildpacks.stacks.bionic"

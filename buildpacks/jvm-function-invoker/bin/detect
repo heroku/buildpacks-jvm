@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# shellcheck disable=SC2034
+app_dir="$(pwd)"
+# shellcheck disable=SC2034
+platform_dir="${1:?}"
+# shellcheck disable=SC2034
+build_plan="${2:?}"
+
+# We currently require an env var that points to a download URL for the invoker.
+# When the invoker is finally released, this requirement can be removed and this buildpack
+# will use the latest available version, recorded in the buildpack itself.
+if [[ ! -f "${platform_dir}/env/JVM_INVOKER_JAR_URL" ]]; then
+	exit 100
+fi
+
+cat >"${build_plan}" <<-EOF
+	[[requires]]
+	name = "jdk"
+EOF
+
+exit 0

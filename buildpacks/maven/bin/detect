@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC2034
+app_dir="$(pwd)"
+# shellcheck disable=SC2034
+platform_dir="${1:?}"
+# shellcheck disable=SC2034
+build_plan="${2:?}"
+
 extensions=(xml atom clj groovy rb scala yaml yml)
 
 for extension in "${extensions[@]}"; do

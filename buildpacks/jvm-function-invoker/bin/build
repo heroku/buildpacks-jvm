@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# shellcheck disable=SC2034
+app_dir="$(pwd)"
+# shellcheck disable=SC2034
+layers_dir="${1:?}"
+# shellcheck disable=SC2034
+platform_dir="${2:?}"
+# shellcheck disable=SC2034
+buildpack_plan="${3:?}"
+
+# shellcheck source=SCRIPTDIR/../lib/log/cnb.sh
+source "${CNB_BUILDPACK_DIR}/lib/log/cnb.sh"
+# shellcheck source=SCRIPTDIR/../lib/jvm_buildpack_utils.sh
+source "${CNB_BUILDPACK_DIR}/lib/jvm_buildpack_utils.sh"
+
+########################################################################################################################
+# Export environment variables
+########################################################################################################################
+export_env_vars=()
+export_env_vars+=("JVM_INVOKER_JAR_URL")
+export_env_vars+=("HEROKU_BUILDPACK_DEBUG")
+
+bputils::export_env "${platform_dir}" "${export_env_vars[@]}"
+
+########################################################################################################################
+# Download Invoker
+########################################################################################################################
+log::cnb::header "Installing JVM function invoker"
+log::cnb::debug "Preparing JVM invoker layer"
+invoker_layer_dir="${layers_dir}/jvm-invoker"
+invoker_layer_toml="${invoker_layer_dir}.toml"
+mkdir -p "${invoker_layer_dir}"
+
+cat >"${invoker_layer_toml}" <<-EOF
+	launch = true
+	build = true
+	cache = false
+EOF
+
+path_to_invoker_jar="${invoker_layer_dir}/invoker.jar"
+log::cnb::info "Downloading invoker JAR file: ${JVM_INVOKER_JAR_URL}"
+if ! bputils::download_file "${JVM_INVOKER_JAR_URL:-}" "${path_to_invoker_jar}"; then
+	log::cnb::error "Download of invoker JAR file failed" <<-EOF
+		You have set JVM_INVOKER_JAR_URL to "${JVM_INVOKER_JAR_URL}". We tried to download the file at this
+		URL, but the download failed. Please verify that the given URL is correct and try again.
+	EOF
+	exit 1
+fi
+
+log::cnb::info "Invoker installation successful!"
+
+########################################################################################################################
+# Generate launch.toml
+########################################################################################################################
+cat >>"${layers_dir}/launch.toml" <<-EOF
+	[[processes]]
+	type = "web"
+	command = "java -jar ${path_to_invoker_jar} ${app_dir}"
+EOF
