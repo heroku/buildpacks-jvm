@@ -14,10 +14,10 @@ buildpack_plan="${3:?}"
 source "${CNB_BUILDPACK_DIR}/lib/maven.sh"
 # shellcheck source=SCRIPTDIR/../lib/dependencies.sh
 source "${CNB_BUILDPACK_DIR}/lib/dependencies.sh"
-# shellcheck source=SCRIPTDIR/../lib/log/cnb.sh
-source "${CNB_BUILDPACK_DIR}/lib/log/cnb.sh"
-# shellcheck source=SCRIPTDIR/../lib/jvm_buildpack_utils.sh
-source "${CNB_BUILDPACK_DIR}/lib/jvm_buildpack_utils.sh"
+# shellcheck source=SCRIPTDIR/../common-lib/log/cnb.sh
+source "${CNB_BUILDPACK_DIR}/common-lib/log/cnb.sh"
+# shellcheck source=SCRIPTDIR/../common-lib/jvm_buildpack_utils.sh
+source "${CNB_BUILDPACK_DIR}/common-lib/jvm_buildpack_utils.sh"
 
 ########################################################################################################################
 # Export environment variables
