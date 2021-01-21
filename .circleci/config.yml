@@ -2,6 +2,21 @@ version: 2.1
 
 orbs:
   pack: buildpacks/pack@0.2.2
+  heroku-buildpacks:
+    commands:
+      install-build-dependencies:
+        steps:
+          - run:
+              name: "Install rsync, jq via apt"
+              command: sudo apt-get update && sudo apt-get install -y rsync jq
+          - run:
+              name: "Install yj 5.0.0"
+              command: |
+                bin_dir="$(mktemp -d)"
+                curl --retry 3 --fail --max-time 10 --location "https://github.com/sclevine/yj/releases/download/v5.0.0/yj-linux" --output "${bin_dir}/yj"
+                chmod +x "${bin_dir}/yj"
+
+                echo "export PATH=\"${bin_dir}:\${PATH}\"" >> $BASH_ENV
 
 jobs:
   package-buildpack:
@@ -15,15 +30,7 @@ jobs:
       - setup_remote_docker
       - pack/install-pack:
           version: 0.16.0
-      - run: sudo apt-get update && sudo apt-get install -y rsync jq
-      - run:
-          name: "Install build dependencies"
-          command: |
-            bin_dir="$(mktemp -d)"
-            curl --retry 3 --fail --max-time 10 --location "https://github.com/sclevine/yj/releases/download/v5.0.0/yj-linux" --output "${bin_dir}/yj"
-            chmod +x "${bin_dir}/yj"
-
-            echo "export PATH=\"${bin_dir}:\${PATH}\"" >> $BASH_ENV
+      - heroku-buildpacks/install-build-dependencies
       - run:
           name: "Build and package buildpack"
           command: |
@@ -63,15 +70,7 @@ jobs:
       - checkout
       - pack/install-pack:
           version: 0.16.0
-      - run: sudo apt-get update && sudo apt-get install -y rsync jq
-      - run:
-          name: "Install build dependencies"
-          command: |
-            bin_dir="$(mktemp -d)"
-            curl --retry 3 --fail --max-time 10 --location "https://github.com/sclevine/yj/releases/download/v5.0.0/yj-linux" --output "${bin_dir}/yj"
-            chmod +x "${bin_dir}/yj"
-
-            echo "export PATH=\"${bin_dir}:\${PATH}\"" >> $BASH_ENV
+      - heroku-buildpacks/install-build-dependencies
       - run:
           name: Install Ruby dependencies
           command: |
