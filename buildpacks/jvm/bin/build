@@ -64,9 +64,7 @@ else
 	EOF
 
 	if ! bputils::download_and_extract_tarball "${openjdk_uri}" "${openjdk_layer_dir}"; then
-		log::cnb::error <<-EOF
-			OpenJDK download failed
-
+		log::cnb::error "OpenJDK download failed" <<-EOF
 			Could not download and extract OpenJDK distribution. Please try again.
 			If this error persists, please contact us: https://help.heroku.com/
 		EOF
