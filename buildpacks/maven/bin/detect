@@ -11,6 +11,11 @@ extensions=(xml atom clj groovy rb scala yaml yml)
 
 for extension in "${extensions[@]}"; do
 	if [[ -f "pom.${extension}" ]]; then
+		cat <<-EOF >"${build_plan}"
+			[[requires]]
+			name = "jdk"
+		EOF
+
 		exit 0
 	fi
 done

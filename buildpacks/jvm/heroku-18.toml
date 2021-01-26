@@ -1,0 +1,199 @@
+[aliases]
+[aliases.versions]
+"1.7" = "7"
+"1.8" = "8"
+
+[aliases.vendors]
+azul = "zulu"
+openjdk = "heroku"
+
+[heroku.7]
+versions = [
+    { version = "1.7.0_292", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_292.tar.gz", sha256 = "1507ef0d524cfb7372e3a142c772599c68ba306562ca3b02e3ee6d53d7d56ba6" },
+    { version = "1.7.0_285", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_285.tar.gz", sha256 = "72419b44f2d999e57de51a7eec3f8050c4731696e7af85003f5463ea1c773b2d" },
+    { version = "1.7.0_282", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_282.tar.gz", sha256 = "24e1ec394956d49b4779c2111ab5f8151a329c0f84824d2b2227356e128dc536" },
+    { version = "1.7.0_272", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_272.tar.gz", sha256 = "899b8ba18adacf6aded4859c998e64b1ece30da0213cce37f449297452a9dc5b" },
+    { version = "1.7.0_262", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_262.tar.gz", sha256 = "e7e934c1bc633112b1f5720c73133a2060c6ad45cdf21db1c3ddf30304aa99c4" },
+    { version = "1.7.0_252", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_252.tar.gz", sha256 = "413fc18876e1dd7a0c21f06aa9019b02dcbd2ea2228f47f1873f0544cb248ff0" },
+    { version = "1.7.0_242", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_242.tar.gz", sha256 = "d6378b8a64477e807977afaeea9d238eff47d0da8904c29372486b1edf593102" },
+    { version = "1.7.0_232", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_232.tar.gz", sha256 = "b8638baabe1d7afd51cf5af089ddf7c8d3cdb03b8880ad3334db98b62fc70c91" },
+    { version = "1.7.0_222", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_222.tar.gz", sha256 = "cf40f62010ca88bc2f00833bc46ff1071d84bbec6bebbfa48f01b46d56fe92ff" },
+    { version = "1.7.0_201", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_201.tar.gz", sha256 = "345947f3cd4adb90909996f86420ae1eaad7c3e82b770e0b437006e7cb083801" },
+    { version = "1.7.0_181", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_181.tar.gz", sha256 = "f27331214b6c3d750def24be68f08fe8c4fbddc6b36d633521cba8f0b66cf2fd" },
+    { version = "1.7.0_171", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_171.tar.gz", sha256 = "982b063e6d814f83e4b2953de9e8b6ab32146eb68ccd4e10ec2d670f28060c3d" },
+    { version = "1.7.0_161", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_161.tar.gz", sha256 = "f5a512c5d50bf82e24feae17c4cf39a332e6d924d05a8d6dec609438cbc56db6" },
+    { version = "1.7.0_151", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_151.tar.gz", sha256 = "69a3759abab9eaab7fb1db647774c9c34703eda26d8ef02373b9db6803332fcc" },
+    { version = "1.7.0_141", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_141.tar.gz", sha256 = "bd991201a21aaf5bb42a842d6e6d77862f394e8b6d5db2da73217fd4348e2eed" },
+    { version = "1.7.0_131", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_131.tar.gz", sha256 = "5e7d6b2a3402bfdd3fe2c7331b9ba84f1221e35d725b53d73827c811d7490d08" },
+    { version = "1.7.0_121", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_121.tar.gz", sha256 = "f0bece8e6f47bf8dd5d0cb65042e74bc94c47118213f2faafbf415ee8117d04f" },
+    { version = "1.7.0_111", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.7.0_111.tar.gz", sha256 = "12f24110cccf3edbc75e3fe70e1797a2e2229419a1f3720fa88730f821e14f87" },
+]
+
+[heroku.8]
+versions = [
+    { version = "1.8.0_282", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_282.tar.gz", sha256 = "c6e1243b080a771661b145e5f70b4b85c55c4122e2b5fa84ec945f3c8ca12d60" },
+    { version = "1.8.0_275", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_275.tar.gz", sha256 = "9ba4826b86324241afa09a73b605d0e7fa6087525282eeff20f392caad07d0d2" },
+    { version = "1.8.0_272", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_272.tar.gz", sha256 = "6fcecd544b4a6fbb47f0784002f0ab0cd9b1d6ad789dda9ca95d1192f19d5632" },
+    { version = "1.8.0_265", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_265.tar.gz", sha256 = "45a56372f445dabb1aa7a3d93f45174cdc1b053f0d687aef6655229cbcb0e541" },
+    { version = "1.8.0_262", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_262.tar.gz", sha256 = "2d05c886ee9a38ff63e8e6e2346a35efc6789b09a6da233370d4aec43abcff2a" },
+    { version = "1.8.0_252", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_252.tar.gz", sha256 = "c299a3cf89359620f86e3ff5d6b04a364a0bf8d89a546438737e96392d5ecce5" },
+    { version = "1.8.0_242", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_242.tar.gz", sha256 = "d2109da3ecc725cc293d3daf59266124ca8d3203e5299ea26562a5f92a2e4f29" },
+    { version = "1.8.0_232", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_232.tar.gz", sha256 = "ef21a851c5a285e88680006d1a6504d8cb67379351326bb12c32e705042e9739" },
+    { version = "1.8.0_222", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_222.tar.gz", sha256 = "07594d689419405d16425a14e0d516371bce702a0b2e73b7e73a073ea0457ea5" },
+    { version = "1.8.0_212", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_212.tar.gz", sha256 = "0a3ff20c2a617eef2c7f89c2e39e97748fb312a9fcce3d1d9642552fb06ec0d9" },
+    { version = "1.8.0_202", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_202.tar.gz", sha256 = "d81bb7f7bc5a3b5b419b45d542d6b122a39a54bd7f0ab1d9ed3e08c7bbe3e52a" },
+    { version = "1.8.0_201", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_201.tar.gz", sha256 = "4af5250f1cf74cc3aef2642dd81d2815c5e52befded10a82d60fd547a4d7b886" },
+    { version = "1.8.0_192", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_192.tar.gz", sha256 = "87476b63062f10d7b8580ed130da141909ad9b5d321a25e7b85b9af3e7b5e285" },
+    { version = "1.8.0_191", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_191.tar.gz", sha256 = "87874ce42c7e4bcfc37b4e50ad3f81170004b499e352e15fe2943b7fcfbcfb7e" },
+    { version = "1.8.0_181", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_181.tar.gz", sha256 = "b1986b6544827bd20a62ada03ece54c83d57ba3d0102df86e0e7840f243ae8fd" },
+    { version = "1.8.0_172", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_172.tar.gz", sha256 = "4b1b7793374b6e5babd41b13a27eaa151e8b3da0ffb50f90479e792207ed1473" },
+    { version = "1.8.0_171", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_171.tar.gz", sha256 = "cd8d0020ea578279cbcda963c41ad2c04e52853a261689e5b63c0f3e1ba60465" },
+    { version = "1.8.0_162", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_162.tar.gz", sha256 = "0662c72243595437c547fcac9308d96356caac3ab0d790e2920e798f73c8480c" },
+    { version = "1.8.0_161", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_161.tar.gz", sha256 = "080994502f9e970335a85e33790752145c2c0a8dd5fcdfde2382985824374eca" },
+    { version = "1.8.0_152", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_152.tar.gz", sha256 = "255d9977dda9408e56d6a9bf489295384f967824883bdfbf8d6b627a8ea9ff77" },
+    { version = "1.8.0_151", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_151.tar.gz", sha256 = "98991ef4951f3b7d79ba91fe9a88fd651ad9b6123ec51d4d0129ffe753c7b4b0" },
+    { version = "1.8.0_144", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_144.tar.gz", sha256 = "281507278e6089d881c8d22a78ef1aa5e336ed356c94513485ef503d7f5dc2f4" },
+    { version = "1.8.0_141", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_141.tar.gz", sha256 = "8ae41a802d9265cf124822a61b789e2a2109102adedc5b5bc1a2493e3b2b0d89" },
+    { version = "1.8.0_131", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_131.tar.gz", sha256 = "78e1b2ccf85c222dd918d178cf80ff6914d95b4541d7eaee6aa6fa10e0a0aa02" },
+    { version = "1.8.0_121", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_121.tar.gz", sha256 = "13590f82261a89f4bd03d86a3e5b99c7e81b0249d9b9248940cf17d807e4422e" },
+    { version = "1.8.0_112", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_112.tar.gz", sha256 = "41fa018899289b38fb07cb6098b5286518320ff1362f8ebfe52f626ce5328c9c" },
+    { version = "1.8.0_111", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_111.tar.gz", sha256 = "3d259f0e207c7c62c3ee692939f007bc465590eb6c9d557360bdfbbea6390aaf" },
+    { version = "1.8.0_102", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_102.tar.gz", sha256 = "d8a1c73da1e5a0f9fc6fbbf30d728f969512189a1b3a459fefda5a35cde80793" },
+    { version = "1.8.0_101", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_101.tar.gz", sha256 = "9d00fdb37902e8038a0d51078f3a1f58fe7c33e2ab0d9453078a2353130e7d6e" },
+    { version = "1.8.0_92", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_92.tar.gz", sha256 = "149f22e2edef617534b8e2c5dbf6d3ad1d612c6a99aa1bba1590e8f76013c73f" },
+    { version = "1.8.0_91", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_91.tar.gz", sha256 = "71996f19ec8d8bcdfbcc4bfb606a42db059aef56d07b3db115802de5c0a924d8" },
+    { version = "1.8.0_77", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_77.tar.gz", sha256 = "783dbd5ecfd54d4a08caf902209c492542df0a5f6ed4859f8eafdb2ed259e7eb" },
+    { version = "1.8.0_74", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.8.0_74.tar.gz", sha256 = "f08482e45268b86daeff88a198ccb779446de84299d7080118d8c5b1b6ac1004" },
+]
+
+[heroku.9]
+versions = [
+    { version = "9.0.4", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk9.0.4.tar.gz", sha256 = "5d9c0c6b9484c4c22352bc3b48cc0e6d37527a90360878c8270798cc71d2a1aa" },
+    { version = "9.0.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk9.0.1.tar.gz", sha256 = "4e2a38381e84ce51f8bf246ebad0d0ebd94820f5f26c27cfa75873da5ebcc3b2" }
+]
+
+[heroku.10]
+versions = [
+    { version = "10.0.2", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk10.0.2.tar.gz", sha256 = "9745cfe2c9af514104c793e22136f7365c450a3ef22c0f07b9c46c873fe3078f" },
+    { version = "10.0.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk10.0.1.tar.gz", sha256 = "389a10a05bbcb562c2361c77ef214c6e6ee29ba91a759d3c6fda30c1278b5923" },
+    { version = "10.0.0", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk10.0.0.tar.gz", sha256 = "1267e6547505308f9ad94675c056fbe25b6149be7fe784eef447478448805daa" },
+]
+
+[heroku.11]
+versions = [
+    { version = "11.0.10", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.10.tar.gz", sha256 = "60c4fa8a637984d4d9cd254c882cde08aad6e0bdeba3692e189d5e39da7df6b4" },
+    { version = "11.0.9.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.9.1.tar.gz", sha256 = "8136fc3617f9f81179abfbe8ddba157f7614629bd2f3bb0e9f80e086f80fb301" },
+    { version = "11.0.9", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.9.tar.gz", sha256 = "97ced75d9295e48039f8f13cbea1eb40c08978a532758a7fc03db45f247e2939" },
+    { version = "11.0.8", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.8.tar.gz", sha256 = "7d8ed95564896710b62101692cc7187dea447eba85292f634fbcce689634de2c" },
+    { version = "11.0.7", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.7.tar.gz", sha256 = "dc2fcab516ad1e8d29dedfe2cb342faa7eb5e3adc268ef7f38951c9b4b906726" },
+    { version = "11.0.6", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.6.tar.gz", sha256 = "31580e4371832dcfbdc5e67df86f2b65eb30034bd3283cd2653c99e2750da614" },
+    { version = "11.0.5", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.5.tar.gz", sha256 = "683430a1c4294b166d488946172ad4c849832e2618365628f2d3ec135b07490c" },
+    { version = "11.0.4", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.4.tar.gz", sha256 = "a9f5a78024a655076a8bf59be9cbb48440092e8f03930c4901e04684b10e0015" },
+    { version = "11.0.3", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.3.tar.gz", sha256 = "b7e7e30cdb9230cac60cc603dbd5d45e07a63708d523faa4a626457ee9b479fd" },
+    { version = "11.0.2", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.2.tar.gz", sha256 = "84ae527bd17de6df591e2bb8f843336770e5f30d53733e6f97d8986ca4233129" },
+    { version = "11.0.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.1.tar.gz", sha256 = "a78d4ce112467248567845d939736d7a2e5dc43440c4fbe7e773b0f68fdaa25f" },
+    { version = "11.0.0", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk11.0.0.tar.gz", sha256 = "f739756494408d8595a75d881c249f76ab8d2aaa9f1d54819d662a74bfc8969c" },
+]
+
+[heroku.12]
+versions = [
+    { version = "12.0.2", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk12.0.2.tar.gz", sha256 = "64951eed9f335bfdf91ef6be17db4e1a34ff8d54507ec867a8fd248e8dcae30e" },
+    { version = "12.0.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk12.0.1.tar.gz", sha256 = "bf898c6d6be3675bcc8b6fc9fdea0171753efdf9f5202226be84213a1bd09e89" },
+    { version = "12.0.0", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk12.0.0.tar.gz", sha256 = "a820555543c007b32581e2fa51ac67445d7ccca37e39244299e3d6073f4ab6ec" },
+]
+
+[heroku.13]
+versions = [
+    { version = "13.0.6", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk13.0.6.tar.gz", sha256 = "9f65eca9707127211aaee7770d4099908b15731f48893307fe660e667855c9ea" },
+    { version = "13.0.5.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk13.0.5.1.tar.gz", sha256 = "118f0eac66f335105f4eb1dcf42588a6df4eebcec9762cd52f5ba75ece801baa" },
+    { version = "13.0.5", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk13.0.5.tar.gz", sha256 = "4477431de8c59405870f6d8b20ee7d0b1e665d9f7c9f81e9e25fe63f93970924" },
+    { version = "13.0.4", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk13.0.4.tar.gz", sha256 = "2a49579667915d503102a2ac7e284f0df424c79d3a9b4e87e0cc5c00cda237a2" },
+    { version = "13.0.3", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk13.0.3.tar.gz", sha256 = "426c3e46c45f0be26ef7a4e6162905012d335e8c8a68ce6b217dab6859324c32" },
+    { version = "13.0.2", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk13.0.2.tar.gz", sha256 = "b70e2cbeb351462fa683b622b72c17c85ab76b5bb5d461456b91787b22b3ab7c" },
+    { version = "13.0.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk13.0.1.tar.gz", sha256 = "8fe21c5308f60faa96c5a4312271983052d34144c98e603f5ef04ccc879ec322" },
+    { version = "13.0.0", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk13.0.0.tar.gz", sha256 = "1eb2f618507557bf44337d3d42a179f3dec1df0b1af02cd32a9219bbf06292b9" },
+]
+
+[heroku.14]
+versions = [
+    { version = "14.0.2", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk14.0.2.tar.gz", sha256 = "de55886efa9d4c1efe8ba9de6a0a0e79d11d09ccf97d81c7f1f763ebbd8293fc" },
+    { version = "14.0.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk14.0.1.tar.gz", sha256 = "06cd9b15a028264c40a26bea08d228bf759ec97a4073eb56d0696960e748a6a7" },
+    { version = "14.0.0", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk14.0.0.tar.gz", sha256 = "e2e14607a68e4b82d768df30aebbf195c43b53162d42fdfb7894d5c6fa2cf656" },
+]
+
+[heroku.15]
+versions = [
+    { version = "15.0.2", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk15.0.2.tar.gz", sha256 = "8a789dbba2622124435e8a97878e0deb03062e7fec782e49e8b1a18a9c036421" },
+    { version = "15.0.1", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk15.0.1.tar.gz", sha256 = "8f505116156e60fa7edabf3659988ddc5b2e05e4981b5fec6363f2c145c84254" },
+    { version = "15.0.0", uri = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk15.0.0.tar.gz", sha256 = "edccc4feeac28a8a23ee13d04f78469a6385e487edd4921fd24bc383c78e716e" },
+]
+
+[zulu.7]
+versions = [
+    { version = "1.7.0_292", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.7.0_292.tar.gz", sha256 = "" },
+    { version = "1.7.0_285", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.7.0_285.tar.gz", sha256 = "" },
+    { version = "1.7.0_282", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.7.0_282.tar.gz", sha256 = "" },
+    { version = "1.7.0_272", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.7.0_272.tar.gz", sha256 = "" },
+    { version = "1.7.0_222", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.7.0_222.tar.gz", sha256 = "" },
+]
+
+[zulu.8]
+versions = [
+    { version = "1.8.0_282", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_282.tar.gz", sha256 = "" },
+    { version = "1.8.0_275", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_275.tar.gz", sha256 = "" },
+    { version = "1.8.0_272", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_272.tar.gz", sha256 = "" },
+    { version = "1.8.0_265", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_265.tar.gz", sha256 = "" },
+    { version = "1.8.0_262", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_262.tar.gz", sha256 = "" },
+    { version = "1.8.0_252", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_252.tar.gz", sha256 = "" },
+    { version = "1.8.0_242", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_242.tar.gz", sha256 = "" },
+    { version = "1.8.0_232", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_232.tar.gz", sha256 = "" },
+    { version = "1.8.0_222", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_222.tar.gz", sha256 = "" },
+    { version = "1.8.0_212", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_212.tar.gz", sha256 = "" },
+    { version = "1.8.0_202", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_202.tar.gz", sha256 = "" },
+    { version = "1.8.0_144", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.8.0_144.tar.gz", sha256 = "" },
+]
+
+[zulu.11]
+versions = [
+    { version = "11.0.10", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.10.tar.gz", sha256 = "" },
+    { version = "11.0.9.1", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.9.1.tar.gz", sha256 = "" },
+    { version = "11.0.9", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.9.tar.gz", sha256 = "" },
+    { version = "11.0.8", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.8.tar.gz", sha256 = "" },
+    { version = "11.0.7", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.7.tar.gz", sha256 = "" },
+    { version = "11.0.6", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.6.tar.gz", sha256 = "" },
+    { version = "11.0.5", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.5.tar.gz", sha256 = "" },
+    { version = "11.0.4", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.4.tar.gz", sha256 = "" },
+    { version = "11.0.3", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.3.tar.gz", sha256 = "" },
+    { version = "11.0.2", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-11.0.2.tar.gz", sha256 = "" },
+]
+
+[zulu.12]
+versions = [
+    { version = "12.0.2", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-12.0.2.tar.gz", sha256 = "" },
+    { version = "12.0.1", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-12.0.1.tar.gz", sha256 = "" },
+    { version = "12.0.0", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-12.0.0.tar.gz", sha256 = "" },
+]
+
+[zulu.13]
+versions = [
+    { version = "13.0.6", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-13.0.6.tar.gz", sha256 = "" },
+    { version = "13.0.5.1", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-13.0.5.1.tar.gz", sha256 = "" },
+    { version = "13.0.5", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-13.0.5.tar.gz", sha256 = "" },
+    { version = "13.0.4", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-13.0.4.tar.gz", sha256 = "" },
+    { version = "13.0.3", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-13.0.3.tar.gz", sha256 = "" },
+    { version = "13.0.2", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-13.0.2.tar.gz", sha256 = "" },
+    { version = "13.0.1", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-13.0.1.tar.gz", sha256 = "" },
+]
+
+[zulu.14]
+versions = [
+    { version = "14.0.2", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-14.0.2.tar.gz", sha256 = "" },
+    { version = "14.0.1", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-14.0.1.tar.gz", sha256 = "" },
+    { version = "14.0.0", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-14.0.0.tar.gz", sha256 = "" },
+]
+
+[zulu.15]
+versions = [
+    { version = "15.0.1", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-15.0.1.tar.gz", sha256 = "" },
+    { version = "15.0.0", url = "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-15.0.0.tar.gz", sha256 = "" },
+]

@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/jvm"
-version = "0.1.3"
+version = "1.0.0"
 name = "JVM"
 
 [[stacks]]
@@ -20,3 +20,14 @@ id = "io.buildpacks.stacks.bionic"
 
 [metadata.release.docker]
 repository = "public.ecr.aws/r2f9u0w4/heroku-jvm-buildpack"
+
+[[metadata.build.dependencies]]
+name = "yj"
+uri = "https://github.com/sclevine/yj/releases/download/v5.0.0/yj-linux"
+sha256 = "171f1c0dc57266adf339069fa9db3f05cd5e9838c1e1a1a7949a75d90d41ef18"
+executable = true
+
+[[metadata.build.dependencies]]
+name = "heroku-java-metrics-agent.jar"
+uri = "https://repo1.maven.org/maven2/com/heroku/agent/heroku-java-metrics-agent/3.14/heroku-java-metrics-agent-3.14.jar"
+sha256 = "ad28a69907fb71b64549603065e4b7259ae9356989b054f6157ef289bbbfe4b6"

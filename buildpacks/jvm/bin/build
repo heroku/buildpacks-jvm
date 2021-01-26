@@ -1,63 +1,117 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-appDir="$(pwd)"
-bpDir="$(
-	cd "$(dirname "$0")/.."
-	pwd
-)" # absolute path
-layersDir="${1:?}"
+# shellcheck disable=SC2034
+app_dir="$(pwd)"
+# shellcheck disable=SC2034
+layers_dir="${1:?}"
+# shellcheck disable=SC2034
+platform_dir="${2:?}"
+# shellcheck disable=SC2034
+buildpack_plan="${3:?}"
 
-# shellcheck source=SCRIPTDIR/../lib/v3/common.sh
-source "${bpDir}/lib/v3/common.sh"
-# shellcheck source=SCRIPTDIR/../lib/v3/buildpack.sh
-source "${bpDir}/lib/v3/buildpack.sh"
-# shellcheck source=SCRIPTDIR/../lib/jvm.sh
-source "${bpDir}/lib/jvm.sh"
+# shellcheck source=SCRIPTDIR/../common-lib/log/cnb.sh
+source "${CNB_BUILDPACK_DIR}/common-lib/log/cnb.sh"
+# shellcheck source=SCRIPTDIR/../common-lib/jvm_buildpack_utils.sh
+source "${CNB_BUILDPACK_DIR}/common-lib/jvm_buildpack_utils.sh"
+# shellcheck source=SCRIPTDIR/../lib/openjdk.sh
+source "${CNB_BUILDPACK_DIR}/lib/openjdk.sh"
 
-status "Installing Java"
+export PATH="${CNB_BUILDPACK_DIR}/dependencies:${PATH}"
 
-# fail hard
-set -o pipefail
-# fail harder
-set -eu
+log::cnb::header "Installing OpenJDK"
 
-# TODO check the build plan to see if another JDK has already been installed?
+version_selector_string=$(openjdk:get_configured_version "${app_dir}" "8")
 
-bp_install_or_reuse_toolbox "${layersDir}/utils"
-export PATH="$PATH:${layersDir}/utils/bin"
+openjdk_json=$(openjdk::resolve_selector "${version_selector_string}")
+openjdk_version="$(echo "${openjdk_json}" | jq -r ".version")"
+openjdk_uri="$(echo "${openjdk_json}" | jq -r ".uri")"
+openjdk_sha256="$(echo "${openjdk_json}" | jq -r ".sha256")"
 
-jdkVersion="$(get_jdk_version "${appDir}")" # TODO read from build-plan instead
+openjdk_layer_dir="${layers_dir}/openjdk"
+openjdk_layer_toml="${openjdk_layer_dir}.toml"
 
-jdkUrl="$(get_jdk_url "${jdkVersion}")"
+metadata_uri=""
+metadata_version=""
+metadata_sha256=""
+if [[ -f "${openjdk_layer_toml}" ]]; then
+	metadata_uri="$(yj -t <"${openjdk_layer_toml}" | jq -r ".metadata.uri")"
+	metadata_version="$(yj -t <"${openjdk_layer_toml}" | jq -r ".metadata.version")"
+	metadata_sha256="$(yj -t <"${openjdk_layer_toml}" | jq -r ".metadata.sha256")"
+fi
 
-jdkCacheId="$(get_jdk_cache_id "${jdkUrl}")"
-
-jdkMetadata=$(
-	cat <<EOF
-version = "${jdkVersion}"
-cache_id = "${jdkCacheId}"
-EOF
-)
-
-if bp_layer_has_key "${layersDir}/jdk" ".metadata.cache_id" "${jdkCacheId}"; then
-	info "JDK ${jdkVersion} installed from cache"
-	touch "${layersDir}/jdk.toml"
-	info "JRE ${jdkVersion} installed from cache"
-	touch "${layersDir}/jre.toml"
+if [[ "${metadata_uri}" == "${openjdk_uri}" && "${metadata_version}" == "${openjdk_version}" && "${metadata_sha256}" == "${openjdk_sha256}" ]]; then
+	log::cnb::info "OpenJDK ${openjdk_version} installed from cache."
 else
-	jdkLayerToml="$(bp_layer_metadata_create "false" "true" "true" "${jdkMetadata}")"
-	jdkLayer="$(bp_layer_init "${layersDir}" "jdk" "${jdkLayerToml}")"
+	rm -rf "${openjdk_layer_dir}"
+	rm -f "${openjdk_layer_toml}"
+	mkdir -p "${openjdk_layer_dir}"
 
-	install_jdk "${jdkUrl}" "${jdkLayer}" "${bpDir}"
-	install_certs "${jdkLayer}"
-	install_profile "${bpDir}" "${jdkLayer}/profile.d"
-	install_jdk_overlay "${jdkVersion}" "${jdkLayer}" "${appDir}"
-	info "JDK ${jdkVersion} installed"
+	log::cnb::info "Installing OpenJDK ${openjdk_version}"
+	log::cnb::debug "Downloading ${openjdk_uri}"
 
-	jreLayerToml="$(bp_layer_metadata_create "true" "false" "false" "${jdkMetadata}")"
-	jreLayer="$(bp_layer_init "${layersDir}" "jre" "${jreLayerToml}")"
-	install_jre "${jdkLayer}" "${jreLayer}"
-	install_certs "${jreLayer}"
-	install_profile "${bpDir}" "${jreLayer}/profile.d"
-	info "JRE ${jdkVersion} installed"
+	log::cnb::debug "Preparing OpenJDK layer"
+
+	cat >"${openjdk_layer_toml}" <<-EOF
+		launch = true
+		build = true
+		cache = true
+
+		[metadata]
+		uri = "${openjdk_uri}"
+		version = "${openjdk_version}"
+		sha256 = "${openjdk_sha256}"
+	EOF
+
+	if ! bputils::download_and_extract_tarball "${openjdk_uri}" "${openjdk_layer_dir}"; then
+		log::cnb::error <<-EOF
+			OpenJDK download failed
+
+			Could not download and extract OpenJDK distribution. Please try again.
+			If this error persists, please contact us: https://help.heroku.com/
+		EOF
+		exit 1
+	fi
+
+	cacert_path="lib/security/cacerts"
+	#######################################################
+	# Certs
+	#######################################################
+	if [[ -f "${openjdk_layer_dir}/jre/${cacert_path}" && -f /etc/ssl/certs/java/cacerts ]]; then
+		mv "${openjdk_layer_dir}/jre/${cacert_path}" "${openjdk_layer_dir}/jre/${cacert_path}.old"
+		ln -s /etc/ssl/certs/java/cacerts "${openjdk_layer_dir}/jre/${cacert_path}"
+	elif [[ -f "${openjdk_layer_dir}/${cacert_path}" && -f /etc/ssl/certs/java/cacerts ]]; then
+		mv "${openjdk_layer_dir}/${cacert_path}" "${openjdk_layer_dir}/${cacert_path}.old"
+		ln -s /etc/ssl/certs/java/cacerts "${openjdk_layer_dir}/${cacert_path}"
+	fi
+
+	#######################################################
+	# Overlay
+	#######################################################
+	# TODO: If the JDK is used from cache, the overlay is not applied!
+	if [[ -d "${openjdk_layer_dir}" && -d "${app_dir}/.jdk-overlay" ]]; then
+		# Remove cacert symlinks if the overlay contains files for those to avoid errors while copying.
+		if [[ -f "${app_dir}/.jdk-overlay/jre/${cacert_path}" && -f "${openjdk_layer_dir}/jre/${cacert_path}" ]]; then
+			rm "${openjdk_layer_dir}/jre/${cacert_path}"
+		elif [[ -f "${app_dir}/.jdk-overlay/${cacert_path}" && -f "${openjdk_layer_dir}/${cacert_path}" ]]; then
+			rm "${openjdk_layer_dir}/${cacert_path}"
+		fi
+
+		shopt -s dotglob
+		cp -r "${app_dir}/.jdk-overlay/"* "${openjdk_layer_dir}"
+		shopt +s dotglob
+	fi
+
+	#######################################################
+	# Profile scripts
+	#######################################################
+	# TODO: If the JDK is used from cache, potentially new profile.d scripts are not added!
+	profile_dir="${openjdk_layer_dir}/profile.d"
+	mkdir -p "${profile_dir}"
+
+	cp "${CNB_BUILDPACK_DIR}/opt/jvmcommon.sh" "${profile_dir}"
+	cp "${CNB_BUILDPACK_DIR}/opt/jdbc.sh" "${profile_dir}"
+	cp "${CNB_BUILDPACK_DIR}/opt/jvm-redis.sh" "${profile_dir}"
+
+	log::cnb::info "OpenJDK ${openjdk_version} installed."
 fi
