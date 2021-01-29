@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/java-function"
-version = "0.1.1"
+version = "0.2.0"
 name = "Java Function"
 
 [[order]]
@@ -17,7 +17,7 @@ version = "0.2.1"
 
 [[order.group]]
 id = "heroku/jvm-function-invoker"
-version = "0.1.1"
+version = "0.2.0"
 
 [metadata]
 
