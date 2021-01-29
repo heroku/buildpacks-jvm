@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/jvm-function-invoker"
-version = "0.1.1"
+version = "0.2.0"
 name = "JVM Function Invoker"
 clear-env = true
 
@@ -16,6 +16,9 @@ id = "heroku-20"
 id = "io.buildpacks.stacks.bionic"
 
 [metadata]
+[metadata.runtime]
+url = "https://sf-fx-java-internal-early-access.s3.amazonaws.com/sf-fx-runtime-java-1.0-SNAPSHOT-jar-with-dependencies.jar"
+sha256 = "c36be4ca15331c7b87355988171adec852a4aa4b41a91a1fb34fbd6e1c8fca01"
 
 [metadata.release]
 

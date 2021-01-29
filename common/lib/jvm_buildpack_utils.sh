@@ -37,6 +37,13 @@ bputils::download_file() {
 	curl --retry 3 --silent --fail --max-time 10 --location "${url}" --output "${target_path}"
 }
 
+bputils::check_sha256() {
+	local -r path="${1:?}"
+	local -r expected_sha256="${2:?}"
+
+	echo "${expected_sha256} ${path}" | sha256sum --check --status
+}
+
 bputils::export_env() {
 	local -r platform_dir="${1:?}"
 	local -r env_vars=("${@:2}")
