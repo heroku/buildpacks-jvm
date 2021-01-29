@@ -28,3 +28,8 @@ log::cnb::debug() {
 log::cnb::info() {
 	echo "[INFO] $*"
 }
+
+log::cnb::bold() {
+	local -r string="${1:?}"
+	echo -e "\033[1m${string}\033[0m"
+}
