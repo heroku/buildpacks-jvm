@@ -6,6 +6,10 @@ buildpack_toml_path="${buildpack_dir}/buildpack.toml"
 target_dir_name="target"
 target_dir="${buildpack_dir}/${target_dir_name}"
 
+if [[ -d "${target_dir}" ]]; then
+	rm -r "${target_dir}"
+fi
+
 cnb_shim_tarball_url="https://github.com/heroku/cnb-shim/releases/download/v0.3/cnb-shim-v0.3.tgz"
 cnb_shim_tarball_sha256="109cfc01953cb04e69c82eec1c45c7c800bd57d2fd0eef030c37d8fc37a1cb4d"
 local_cnb_shim_tarball=$(mktemp)

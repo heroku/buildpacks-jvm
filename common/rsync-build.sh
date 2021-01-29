@@ -8,5 +8,9 @@ buildpack_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 target_dir_name="target"
 target_dir="${buildpack_dir}/${target_dir_name}"
 
+if [[ -d "${target_dir}" ]]; then
+	rm -r "${target_dir}"
+fi
+
 mkdir "${target_dir}"
 rsync -a -L "${buildpack_dir}/" "${target_dir}" --exclude "${target_dir_name}"
