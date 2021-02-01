@@ -16,6 +16,7 @@ id = "heroku-20"
 id = "io.buildpacks.stacks.bionic"
 
 [metadata]
+
 [metadata.runtime]
 url = "https://sf-fx-java-internal-early-access.s3.amazonaws.com/sf-fx-runtime-java-1.0-SNAPSHOT-jar-with-dependencies.jar"
 sha256 = "d29275cf21f27b12a0cf4c3b82fbcdfb512a5840792e2acbb0301d25d22d2074"
