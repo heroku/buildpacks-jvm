@@ -15,6 +15,9 @@ for extension in "${extensions[@]}"; do
 			[[requires]]
 			name = "jdk"
 
+			[[requires]]
+			name = "jvm-application"
+
 			[[provides]]
 			name = "jvm-application"
 		EOF
