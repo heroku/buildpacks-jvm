@@ -7,9 +7,18 @@ platform_dir="${1:?}"
 # shellcheck disable=SC2034
 build_plan="${2:?}"
 
-cat >"${build_plan}" <<-EOF
-	[[requires]]
-	name = "jdk"
-EOF
+# We check for a function.toml to be able to distinguish between regular JVM applications and a function.
+# Just from the application alone, they're indistinguishable by design.
+if [[ -f "${app_dir}/function.toml" ]]; then
+	cat >"${build_plan}" <<-EOF
+		[[requires]]
+		name = "jdk"
 
-exit 0
+		[[requires]]
+		name = "jvm-application"
+	EOF
+
+	exit 0
+fi
+
+exit 100
