@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 * Automated post-release PRs
+* Now requires (in the CNB sense) `jdk` to pass detection
+* Now provides (in the CNB sense) `jvm-application` to subsequent buildpacks
 
 ## [0.2.0]
 ### Added

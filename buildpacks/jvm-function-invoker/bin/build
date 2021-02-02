@@ -55,7 +55,9 @@ else
 
 		[metadata]
 		runtime_jar_url = "${runtime_jar_url}"
-		runtime_jar_sha256 = "${runtime_jar_sha256}"
+
+		# See commented code below on why this is currently not used
+		# runtime_jar_sha256 = "${runtime_jar_sha256}"
 	EOF
 	log::cnb::debug "Function runtime layer successfully created"
 
@@ -69,13 +71,16 @@ else
 	fi
 	log::cnb::info "Function runtime download successful"
 
-	if ! bputils::check_sha256 "${runtime_layer_jar_path}" "${runtime_jar_sha256}"; then
-		log::cnb::error "Function runtime integrity check failed" <<-EOF
-			We could not verify the integrity of the downloaded function runtime.
-			Please try again and contact us should the error persist.
-		EOF
-		exit 1
-	fi
+	# SHA256 checksum checking is disabled for as the function runtime is very unstable and is updated very often.
+	# We don't want to trigger a whole release cycle just for a minor update. This code must be reactivated for beta/GA!
+
+	#if ! bputils::check_sha256 "${runtime_layer_jar_path}" "${runtime_jar_sha256}"; then
+	#	log::cnb::error "Function runtime integrity check failed" <<-EOF
+	#		We could not verify the integrity of the downloaded function runtime.
+	#		Please try again and contact us should the error persist.
+	#	EOF
+	#	exit 1
+	#fi
 
 	log::cnb::info "Function runtime installation successful"
 fi
