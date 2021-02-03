@@ -30,10 +30,3 @@ version = "0.0.34"
 id = "heroku/procfile"
 version = "0.6.1"
 optional = true
-
-[metadata]
-
-[metadata.release]
-
-[metadata.release.docker]
-repository = "public.ecr.aws/r2f9u0w4/heroku-java-buildpack"
