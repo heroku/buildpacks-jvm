@@ -97,6 +97,8 @@ workflows:
                 - "shimmed-buildpacks/scala"
                 - "shimmed-buildpacks/gradle"
                 - "shimmed-buildpacks/clojure"
+                - "test/meta-buildpacks/java"
+                - "test/meta-buildpacks/java-function"
       - rapier:
           matrix:
             parameters:

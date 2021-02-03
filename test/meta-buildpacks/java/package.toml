@@ -2,13 +2,13 @@
 uri = "."
 
 [[dependencies]]
-uri = "docker://public.ecr.aws/r2f9u0w4/heroku-jvm-buildpack:0.1.2"
+uri = "../../../buildpacks/jvm"
 
 [[dependencies]]
-uri = "docker://public.ecr.aws/r2f9u0w4/heroku-maven-buildpack:0.2.0"
+uri = "../../../buildpacks/maven"
 
 [[dependencies]]
-uri = "docker://public.ecr.aws/r2f9u0w4/heroku-gradle-buildpack:0.0.34"
+uri = "../../../shimmed-buildpacks/gradle"
 
 [[dependencies]]
 # Should be urn:cnb:registry:heroku/procfile@0.6.1 as soon as pack supports it. (0.16.1?)
