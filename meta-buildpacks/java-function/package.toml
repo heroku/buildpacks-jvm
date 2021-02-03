@@ -2,10 +2,10 @@
 uri = "."
 
 [[dependencies]]
-uri = "../../buildpacks/jvm"
+uri = "public.ecr.aws/r2f9u0w4/heroku-jvm-buildpack:0.1.2"
 
 [[dependencies]]
-uri = "../../buildpacks/maven"
+uri = "public.ecr.aws/r2f9u0w4/heroku-maven-buildpack:0.2.0"
 
 [[dependencies]]
-uri = "../../buildpacks/jvm-function-invoker"
+uri = "public.ecr.aws/r2f9u0w4/heroku-jvm-function-invoker-buildpack:0.2.0"
