@@ -57,7 +57,7 @@ while IFS="" read -r -d "" buildpack_toml_path; do
 		#    to the released version instead.
 		target_version_for_meta_buildpack="${released_buildpack_next_version}"
 
-		released_buildpack_image_address_root="${released_buildpack_image_address%:*}"
+		released_buildpack_image_address_root="${released_buildpack_image_address%@*}"
 		if package_toml_contains_image_address_root "${buildpack_package_toml_path}" "${released_buildpack_image_address_root}"; then
 			target_version_for_meta_buildpack="${released_buildpack_version}"
 
