@@ -5,11 +5,10 @@ uri = "."
 uri = "docker://public.ecr.aws/r2f9u0w4/heroku-jvm-buildpack@sha256:37483599729c5afbd747a2c8d5965347a32d134e4c5d1b9b5dadfffa81fe5014"
 
 [[dependencies]]
-uri = "docker://public.ecr.aws/r2f9u0w4/heroku-maven-buildpack@sha256:e495f3562e5f1bb0c0ccc9e5b7c319c29ab95e4c2525c124800964981ada27f6"
+uri = "docker://public.ecr.aws/r2f9u0w4/heroku-maven-buildpack@sha256:7bff54457286a9a36dbcaec77ab041d61c2e1a47741d459c3457e429f6d2f268"
 
 [[dependencies]]
 uri = "docker://public.ecr.aws/r2f9u0w4/heroku-gradle-buildpack@sha256:7163f393470de8255fe03e06d55d3ae7bf59bf683f4ff2651ed92b6538eed0ad"
 
 [[dependencies]]
-# Should be urn:cnb:registry:heroku/procfile@0.6.1 as soon as pack supports it. (0.16.1?)
 uri = "docker://docker.io/heroku/procfile-cnb@sha256:74881b33e1e33eea38b419e667b0a99ac50e536727eeefd1b2eeb7ff3a937ffd"
