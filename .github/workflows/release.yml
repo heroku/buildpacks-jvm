@@ -50,7 +50,7 @@ jobs:
           release_name: ${{ steps.package.outputs.id }} ${{ steps.package.outputs.version }}
           body: |
             Find the changelog here: [CHANGELOG](${{ steps.package.outputs.path }}/CHANGELOG.md)
-            Docker: ${{ steps.package.outputs.address }}
+            Docker: `docker pull ${{ steps.package.outputs.address }}`
           draft: false
           prerelease: false
       - id: prepare-pr
