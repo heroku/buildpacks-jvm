@@ -8,9 +8,6 @@ uri = "../../../buildpacks/jvm"
 uri = "../../../buildpacks/maven"
 
 [[dependencies]]
-uri = "../../../buildpacks/jvm-function-invoker"
-
-[[dependencies]]
 uri = "../../../shimmed-buildpacks/gradle"
 
 [[dependencies]]
