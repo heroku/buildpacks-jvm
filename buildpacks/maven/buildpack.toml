@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/maven"
-version = "0.2.1"
+version = "0.2.2"
 name = "Maven"
 clear-env = true
 
