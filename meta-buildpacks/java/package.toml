@@ -2,7 +2,7 @@
 uri = "."
 
 [[dependencies]]
-uri = "docker://public.ecr.aws/r2f9u0w4/heroku-jvm-buildpack@sha256:37483599729c5afbd747a2c8d5965347a32d134e4c5d1b9b5dadfffa81fe5014"
+uri = "docker://public.ecr.aws/r2f9u0w4/heroku-jvm-buildpack@sha256:fd4da69a6f34bce57e7280e290dd741d4059fcf8f5e60c6c6eb66258956dcb3c"
 
 [[dependencies]]
 uri = "docker://public.ecr.aws/r2f9u0w4/heroku-maven-buildpack@sha256:7bff54457286a9a36dbcaec77ab041d61c2e1a47741d459c3457e429f6d2f268"
