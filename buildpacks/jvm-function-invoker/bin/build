@@ -92,6 +92,13 @@ log::cnb::header "Detecting function"
 
 function_bundle_layer_dir="${layers_dir}/function-bundle"
 function_bundle_toml="${function_bundle_layer_dir}.toml"
+
+# Workaround (Feb 2021): Benny 1.0.3 has a bug that restores this layer regardless of the cache setting.
+if [[ -d "${function_bundle_layer_dir}" ]]; then
+	rm -rf "${function_bundle_layer_dir}"
+fi
+# End workaround
+
 mkdir -p "${function_bundle_layer_dir}"
 
 cat >"${function_bundle_toml}" <<-EOF
@@ -151,5 +158,5 @@ log::cnb::info "Return type: $(log::cnb::bold "$(yj -t <"${bundle_toml}" | jq -r
 cat >>"${layers_dir}/launch.toml" <<-EOF
 	[[processes]]
 	type = "web"
-	command = "java -jar ${runtime_layer_jar_path} serve ${function_bundle_layer_dir}"
+	command = "java -jar ${runtime_layer_jar_path} serve ${function_bundle_layer_dir} -p \${PORT:-8080}"
 EOF
