@@ -4,6 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 * Upgraded `heroku/jvm-function-invoker` to `0.2.2`
+* Upgraded `heroku/jvm` to `0.1.3`
 
 ## [0.3.1] 2021/02/03
 * Upgraded `heroku/maven` to `0.2.1`
