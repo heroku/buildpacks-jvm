@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/java-function"
-version = "0.3.1"
+version = "0.3.2"
 name = "Java Function"
 
 [[order]]
