@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 status() {
-	local color="\033[0;35m"
+	local color="\033[1;35m"
 	local no_color="\033[0m"
 	echo -e "\n${color}[${1:-""}]${no_color}"
 }
