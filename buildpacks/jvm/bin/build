@@ -52,6 +52,10 @@ else
 	install_certs "${jdkLayer}"
 	install_profile "${bpDir}" "${jdkLayer}/profile.d"
 	install_jdk_overlay "${jdkVersion}" "${jdkLayer}" "${appDir}"
+
+	mkdir -p "${jdkLayer}/env.build"
+	echo -n "${jdkLayer}" >"${jdkLayer}/env.build/JAVA_HOME"
+
 	info "JDK ${jdkVersion} installed"
 
 	jreLayerToml="$(bp_layer_metadata_create "true" "false" "false" "${jdkMetadata}")"
@@ -59,5 +63,9 @@ else
 	install_jre "${jdkLayer}" "${jreLayer}"
 	install_certs "${jreLayer}"
 	install_profile "${bpDir}" "${jreLayer}/profile.d"
+
+	mkdir -p "${jreLayer}/env.launch"
+	echo -n "${jreLayer}" >"${jreLayer}/env.launch/JAVA_HOME"
+
 	info "JRE ${jdkVersion} installed"
 fi
