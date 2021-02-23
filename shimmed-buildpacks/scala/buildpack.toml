@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/scala"
-version = "0.0.89"
+version = "0.0.90"
 name = "Scala"
 homepage = "https://github.com/heroku/heroku-buildpack-scala"
 description = "Official Heroku buildpack for Scala applications. It uses sbt for building."
