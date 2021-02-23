@@ -24,7 +24,7 @@ optional = true
 
 [[order.group]]
 id = "heroku/gradle"
-version = "0.0.34"
+version = "0.0.35"
 
 [[order.group]]
 id = "heroku/procfile"

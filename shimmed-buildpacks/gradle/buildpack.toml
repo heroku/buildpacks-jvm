@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/gradle"
-version = "0.0.34"
+version = "0.0.35"
 name = "Gradle"
 homepage = "https://github.com/heroku/heroku-buildpack-gradle"
 description = "Official Heroku buildpack for Gradle applications."
@@ -21,8 +21,8 @@ id = "io.buildpacks.stacks.bionic"
 [metadata]
 
 [metadata.shim]
-tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/gradle-v34.tgz"
-sha256 = "56d9af33cc9ed33c2dd78991278b49063879d61954ed24cb7974aa7e0d43be8d"
+tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/gradle-v35.tgz"
+sha256 = "d49db802898e14667ddd98548baf244527875eb6ae4f556c417042540655660c"
 
 [metadata.release]
 
