@@ -5,6 +5,10 @@ id = "heroku/maven"
 version = "0.2.2"
 name = "Maven"
 clear-env = true
+homepage = "https://github.com/heroku/buildpacks-jvm"
+description = "Official Heroku buildpack for Maven applications."
+keywords = ["java", "maven", "mvn"]
+licenses = ["MIT"]
 
 [[stacks]]
 id = "heroku-18"

@@ -4,6 +4,10 @@ api = "0.4"
 id = "heroku/clojure"
 version = "0.0.86"
 name = "Clojure"
+homepage = "https://github.com/heroku/heroku-buildpack-clojure"
+description = "Official Heroku buildpack for Clojure applications. It uses Leiningen for building."
+keywords = ["clojure", "leiningen"]
+licenses = ["MIT"]
 
 [[stacks]]
 id = "heroku-18"

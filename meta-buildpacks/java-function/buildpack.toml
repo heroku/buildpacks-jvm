@@ -4,6 +4,9 @@ api = "0.4"
 id = "heroku/java-function"
 version = "0.3.3"
 name = "Java Function"
+homepage = "https://github.com/heroku/buildpacks-jvm"
+keywords = ["java", "function"]
+licenses = ["MIT"]
 
 [[order]]
 
