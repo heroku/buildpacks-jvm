@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/clojure"
-version = "0.0.86"
+version = "0.0.87"
 name = "Clojure"
 homepage = "https://github.com/heroku/heroku-buildpack-clojure"
 description = "Official Heroku buildpack for Clojure applications. It uses Leiningen for building."
@@ -21,8 +21,8 @@ id = "io.buildpacks.stacks.bionic"
 [metadata]
 
 [metadata.shim]
-tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/clojure-v86.tgz"
-sha256 = "c85cb7f4e10a2bc76fc9804d14842ea1021609a23d953359eed30cfd019560d1"
+tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/clojure-v87.tgz"
+sha256 = "86710aaba11ece315caefaad15db57153374c69846ac451c890505a28032ae68"
 
 [metadata.release]
 
