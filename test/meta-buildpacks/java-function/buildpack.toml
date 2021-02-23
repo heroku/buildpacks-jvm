@@ -9,7 +9,7 @@ name = "Java Function"
 
 [[order.group]]
 id = "heroku/jvm"
-version = "0.1.4"
+version = "0.1.5"
 
 [[order.group]]
 id = "heroku/maven"
