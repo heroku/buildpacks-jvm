@@ -4,6 +4,10 @@ api = "0.4"
 id = "heroku/scala"
 version = "0.0.88"
 name = "Scala"
+homepage = "https://github.com/heroku/heroku-buildpack-scala"
+description = "Official Heroku buildpack for Scala applications. It uses sbt for building."
+keywords = ["scala", "sbt"]
+licenses = ["MIT"]
 
 [[stacks]]
 id = "heroku-18"

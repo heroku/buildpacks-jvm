@@ -4,6 +4,10 @@ api = "0.4"
 id = "heroku/jvm"
 version = "0.1.4"
 name = "JVM"
+homepage = "https://github.com/heroku/buildpacks-jvm"
+description = "Official Heroku buildpack for installing a JVM."
+keywords = ["java", "jvm", "jdk", "openjdk"]
+licenses = ["MIT"]
 
 [[stacks]]
 id = "heroku-18"

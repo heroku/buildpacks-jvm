@@ -5,6 +5,9 @@ id = "heroku/jvm-function-invoker"
 version = "0.2.3"
 name = "JVM Function Invoker"
 clear-env = true
+homepage = "https://github.com/heroku/buildpacks-jvm"
+keywords = ["java", "function"]
+licenses = ["MIT"]
 
 [[stacks]]
 id = "heroku-18"

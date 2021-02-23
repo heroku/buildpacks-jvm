@@ -4,6 +4,10 @@ api = "0.4"
 id = "heroku/java"
 version = "0.3.3"
 name = "Java"
+homepage = "https://github.com/heroku/buildpacks-jvm"
+description = "Official Heroku buildpack for Java applications."
+keywords = ["java"]
+licenses = ["MIT"]
 
 [[order]]
 
