@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/clojure"
-version = "0.0.87"
+version = "0.0.88"
 name = "Clojure"
 homepage = "https://github.com/heroku/heroku-buildpack-clojure"
 description = "Official Heroku buildpack for Clojure applications. It uses Leiningen for building."
