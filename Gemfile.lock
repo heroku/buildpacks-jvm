@@ -6,7 +6,7 @@ GEM
       excon (>= 0.47.0)
       multi_json
     excon (0.78.1)
-    java-properties (0.2.1)
+    java-properties (0.3.0)
     multi_json (1.15.0)
     rspec-core (3.10.1)
       rspec-support (~> 3.10.0)
