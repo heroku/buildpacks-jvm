@@ -43,7 +43,7 @@ This buildpack will install OpenJDK 8 ([Configuration: OpenJDK Version](#openjdk
 - A `build.gradle` file and [Gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) in the root
   directory of your app. See [How it works: Gradle](#how-it-works-gradle) for Gradle specifics.
 
-The buildpack will try to figure out the required goals/tasks to run based on the framework used for your application.
+The buildpack will try to figure out the required goals/tasks to run based on the framework used by your application.
 It will also add a process type based on the framework. If required, those features can be configured:
 
 - [Configuration: Customizing Maven execution](#customizing-maven-execution)
