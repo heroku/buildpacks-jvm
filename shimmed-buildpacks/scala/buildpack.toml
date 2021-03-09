@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/scala"
-version = "0.0.89"
+version = "0.0.90"
 name = "Scala"
 homepage = "https://github.com/heroku/heroku-buildpack-scala"
 description = "Official Heroku buildpack for Scala applications. It uses sbt for building."
@@ -21,8 +21,8 @@ id = "io.buildpacks.stacks.bionic"
 [metadata]
 
 [metadata.shim]
-tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/scala-v89.tgz"
-sha256 = "6f595a022ebda2479de30d1d6bbf63d1302fdcea9a88f671a5626de19b3b3829"
+tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/scala-v90.tgz"
+sha256 = "31510a9f100ddf8d0427f0e9a840a95e565a8942ad46be35902d87e2235a525a"
 
 [metadata.release]
 
