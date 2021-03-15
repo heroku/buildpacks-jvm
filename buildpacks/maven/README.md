@@ -43,7 +43,7 @@ This buildpack will create a `target/mvn-dependency-list.log` in the application
 determine which dependencies (including transitive ones) have been installed during the build.
 
 ### Step 5: launch.toml
-For applications that use Spring Boot or Wildfly Swarm, this buildpack will generate a `launch.toml` with a process
+For applications that use Spring Boot or Wildfly Swarm, this buildpack will generate a `launch.toml` with a `web` process
 type to launch the application.
 
 
