@@ -40,7 +40,7 @@ In addition, some extra configuration is used to ensure Maven stores the local r
 
 ### Step 4: Generate target/mvn-dependency-list.log
 This buildpack will create a `target/mvn-dependency-list.log` in the application directory that can be used to later
-determine which dependencies (including transitive ones) have been installed during build.
+determine which dependencies (including transitive ones) have been installed during the build.
 
 ### Step 5: launch.toml
 For applications that use Spring Boot or Wildfly Swarm, this buildpack will generate a `launch.toml` with a process
