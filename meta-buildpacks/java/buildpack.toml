@@ -7,7 +7,9 @@ name = "Java"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for Java applications."
 keywords = ["java"]
-licenses = ["MIT"]
+
+[[licenses]]
+type = "MIT"
 
 [[order]]
 
