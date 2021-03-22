@@ -7,7 +7,9 @@ name = "Gradle"
 homepage = "https://github.com/heroku/heroku-buildpack-gradle"
 description = "Official Heroku buildpack for Gradle applications."
 keywords = ["java", "gradle"]
-licenses = ["MIT"]
+
+[[licenses]]
+type = "MIT"
 
 [[stacks]]
 id = "heroku-18"

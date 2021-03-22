@@ -8,7 +8,9 @@ clear-env = true
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for Maven applications."
 keywords = ["java", "maven", "mvn"]
-licenses = ["MIT"]
+
+[[licenses]]
+type = "MIT"
 
 [[stacks]]
 id = "heroku-18"
