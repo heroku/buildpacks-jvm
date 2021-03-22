@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 * Add documentation to `README.md`
 
+### Fixed
+* Fixed `licenses` in `buildpack.toml`
+
 ## [0.2.2] 2021/02/23
 
 ## [0.2.1] 2021/02/03
