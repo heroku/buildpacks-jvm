@@ -5,6 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 * Fixed `licenses` in `buildpack.toml`
+* Updated function runtime to `0.1.1-ea`
 
 ## [0.2.3] 2021/02/23
 
