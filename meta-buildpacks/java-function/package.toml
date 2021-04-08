@@ -8,4 +8,4 @@ uri = "docker://public.ecr.aws/r2f9u0w4/heroku-jvm-buildpack@sha256:ba6736066b22
 uri = "docker://public.ecr.aws/r2f9u0w4/heroku-maven-buildpack@sha256:0f16d1abcba8a1fcea3a77343e2e11f7902ec19121d1a672f067a8d100620f05"
 
 [[dependencies]]
-uri = "docker://public.ecr.aws/r2f9u0w4/heroku-jvm-function-invoker-buildpack@sha256:15839c34479c67c35783f68893f6e67bfc953701de3bb0e80d09b6d0ff8e102f"
+uri = "docker://public.ecr.aws/r2f9u0w4/heroku-jvm-function-invoker-buildpack@sha256:ab6494cedd18735bee2e611f77b75d789df3859d16fe2ae059846eb50b55f9a5"
