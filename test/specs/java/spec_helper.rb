@@ -1,14 +1,31 @@
 require "rspec/core"
 require "rspec/retry"
 require "java-properties"
-require_relative "../../rapier/rapier"
 
-def rapier
-  Rapier::Runner.new("test/fixtures", "heroku/buildpacks:18", default_buildpacks: ["./test/meta-buildpacks/java"])
+require "cutlass"
+
+def test_dir
+  Pathname(__dir__).join("../..")
+end
+
+JVM_BUILDPACK = Cutlass::LocalBuildpack.new(directory: test_dir.join("meta-buildpacks/java"))
+Cutlass.config do |config|
+  config.default_buildpack_paths = [JVM_BUILDPACK]
+  config.default_builder = "heroku/buildpacks:18"
+  config.default_repo_dirs = [test_dir.join("fixtures")]
 end
 
 RSpec.configure do |config|
   # config.filter_run :focus => true
+
+  config.before(:suite) do
+    Cutlass::CleanTestEnv.record
+  end
+
+  config.after(:suite) do
+    JVM_BUILDPACK.teardown
+    Cutlass::CleanTestEnv.check
+  end
 end
 
 def remove_maven_wrapper(app_dir)

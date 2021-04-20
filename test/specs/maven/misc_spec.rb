@@ -2,9 +2,9 @@ require_relative "spec_helper"
 
 describe "Heroku's Maven Cloud Native Buildpack" do
   it "will write ${APP_DIR}/target/mvn-dependency-list.log with the app's dependencies" do
-    rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
-      rapier.pack_build(app_dir, build_env: {:MAVEN_CUSTOM_GOALS => "clean"}) do |pack_result|
-        pack_result.start_container do |container|
+    Cutlass::App.new("simple-http-service", config: {MAVEN_CUSTOM_GOALS: "clean"}).transaction do |app|
+      app.pack_build do |pack_result|
+        app.start_container do |container|
           expected_dependency_list = <<~EOF
 
               The following files have been resolved:
@@ -34,9 +34,9 @@ describe "Heroku's Maven Cloud Native Buildpack" do
   end
 
   it "will not leave unexpected files in ${APP_DIR}" do
-    rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
-      rapier.pack_build(app_dir) do |pack_result|
-        pack_result.start_container do |container|
+    Cutlass::App.new("simple-http-service").transaction do |app|
+      app.pack_build do |pack_result|
+        app.start_container do |container|
 
           expected_output = <<~EOF
             /workspace/.mvn/wrapper/MavenWrapperDownloader.java
@@ -83,8 +83,8 @@ describe "Heroku's Maven Cloud Native Buildpack" do
   end
 
   it "will not log internal Maven options and goals" do
-    rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
-      rapier.pack_build(app_dir) do |pack_result|
+    Cutlass::App.new("simple-http-service").transaction do |app|
+      app.pack_build do |pack_result|
         expect(pack_result.stdout).to_not include("-Dmaven.repo.local=")
         expect(pack_result.stdout).to_not include("-Duser.home=")
         expect(pack_result.stdout).to_not include("dependency:list")
@@ -94,21 +94,22 @@ describe "Heroku's Maven Cloud Native Buildpack" do
   end
 
   it "will cache dependencies between builds" do
-    rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
-      rapier.pack_build(app_dir) do |first_pack_result|
-        rapier.pack_build(app_dir, image_name: first_pack_result.image_name) do |second_pack_result|
-          expect(first_pack_result.stdout).to include("Downloading from central")
-          expect(second_pack_result.stdout).to_not include("Downloading from central")
-        end
+    Cutlass::App.new("simple-http-service").transaction do |app|
+      app.pack_build do |pack_result|
+        expect(pack_result.stdout).to include("Downloading from central")
+      end
+
+      app.pack_build do |pack_result|
+        expect(pack_result.stdout).to_not include("Downloading from central")
       end
     end
   end
 
   context "with an app that does not compile" do
     it "will exit with a descriptive error message" do
-      rapier.app_dir_from_fixture("app-with-compile-error") do |app_dir|
-        rapier.pack_build(app_dir, exception_on_failure: false) do |pack_result|
-          expect(pack_result.build_success?).to be(false)
+      Cutlass::App.new("app-with-compile-error", exception_on_failure: false).transaction do |app|
+        app.pack_build do |pack_result|
+          expect(pack_result.success?).to be(false)
           expect(pack_result.stdout).to include("[INFO] BUILD FAILURE")
 
           expect(pack_result.stderr).to include("[ERROR: Failed to build app with Maven]")
