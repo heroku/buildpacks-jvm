@@ -24,6 +24,21 @@ export_env_vars+=("HEROKU_BUILDPACK_DEBUG")
 bputils::export_env "${platform_dir}" "${export_env_vars[@]}"
 
 ########################################################################################################################
+# Create opt layer
+########################################################################################################################
+opt_layer_dir="${layers_dir}/opt"
+opt_layer_toml="${layers_dir}/opt.toml"
+mkdir -p "${opt_layer_dir}"
+
+cat >"${opt_layer_toml}" <<-EOF
+	launch = true
+	build = true
+	cache = false
+EOF
+
+cp -a "${CNB_BUILDPACK_DIR}/opt/." "${opt_layer_dir}/"
+
+########################################################################################################################
 # Install Java function runtime
 ########################################################################################################################
 log::cnb::header "Installing Java function runtime"
@@ -153,5 +168,5 @@ log::cnb::info "Return type: $(log::cnb::bold "$(yj -t <"${bundle_toml}" | jq -r
 cat >>"${layers_dir}/launch.toml" <<-EOF
 	[[processes]]
 	type = "web"
-	command = "java -jar ${runtime_layer_jar_path} serve ${function_bundle_layer_dir} -h 0.0.0.0 -p \${PORT:-8080}"
+	command = "${opt_layer_dir}/run.sh ${runtime_layer_jar_path} ${function_bundle_layer_dir}"
 EOF
