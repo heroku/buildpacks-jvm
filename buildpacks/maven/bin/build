@@ -200,6 +200,29 @@ ${maven_executable} "${maven_options[@]}" "${internal_maven_options[@]}" \
 	"-DoutputFile=${app_dir}/target/mvn-dependency-list.log" "dependency:list" >/dev/null 2>&1
 
 ########################################################################################################################
+# Create Maven configuration layer
+########################################################################################################################
+maven_config_layer_dir="${layers_dir}/maven_config"
+maven_config_layer_toml="${layers_dir}/maven_config.toml"
+
+mkdir -p "${maven_config_layer_dir}"
+
+cat >"${maven_config_layer_toml}" <<-EOF
+	launch = false
+	build = true
+	cache = false
+EOF
+
+# We set MAVEN_OPTS so that later Maven executions in other buildpacks have the correct paths for the local
+# repository and can re-use the cache.
+maven_opts_environment_settings=()
+maven_opts_environment_settings+=("-Duser.home=${app_dir}")
+maven_opts_environment_settings+=("-Dmaven.repo.local=${maven_repository_layer_dir}/.m2/repository")
+
+mkdir -p "${maven_config_layer_dir}/env"
+echo -n "${maven_opts_environment_settings[@]}" >"${maven_config_layer_dir}/env/MAVEN_OPTS.append"
+
+########################################################################################################################
 # Generate launch.toml
 ########################################################################################################################
 if [[ -d target ]]; then

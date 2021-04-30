@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Documentation in `README.md`
 * `M2_HOME` environment variable is now set for subsequent buildpacks if Maven was installed.
+* `MAVEN_OPTS` environment variable will be set for subsequent buildpacks to allow the use of the local
+  repository layer without explicit configuration.
 
 ### Fixed
 * Fixed `licenses` in `buildpack.toml`
