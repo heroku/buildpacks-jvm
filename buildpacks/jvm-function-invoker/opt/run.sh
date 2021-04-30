@@ -16,5 +16,5 @@ if [[ -n "${SF_FX_REMOTE_DEBUG:-""}" ]]; then
 	fi
 fi
 
-java "${additional_java_args[@]}" \
+exec java "${additional_java_args[@]}" \
 	-jar "${runtime_layer_jar_path}" serve "${function_bundle_layer_dir}" -h 0.0.0.0 -p "${PORT:-8080}"
