@@ -4,7 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-* Support for the `SF_FN_REMOTE_DEBUG` runtime environment variable. If set, the invoker will listen for incoming JDWP
+* Support for the `SF_FX_REMOTE_DEBUG` runtime environment variable. If set, the invoker will listen for incoming JDWP
   connections on port `5005`.
 
 ### Changed
