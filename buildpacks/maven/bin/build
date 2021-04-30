@@ -95,6 +95,14 @@ if ! maven::should_use_wrapper_for_app "${app_dir}"; then
 	chmod +x "${maven_layer_dir}/bin/mvn"
 	export PATH="${PATH}:${maven_layer_dir}/bin"
 
+	mkdir -p "${maven_layer_dir}/env"
+
+	# Even though M2_HOME is no longer supported by Maven versions greater 3.5.0, other tooling such as Maven invoker
+	# might still depend on it. References:
+	# - https://maven.apache.org/docs/3.5.0/release-notes.html#overview-about-the-changes
+	# - https://maven.apache.org/shared/maven-invoker/usage.html
+	echo -n "${maven_layer_dir}" >"${maven_layer_dir}/env/M2_HOME"
+
 	log::cnb::info "Maven installation successful!"
 else
 	log::cnb::info "Maven wrapper detected, skipping installation."
