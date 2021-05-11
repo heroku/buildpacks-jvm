@@ -9,7 +9,7 @@ build_plan="${2:?}"
 
 # We check for a project.toml/function.toml to be able to distinguish between regular JVM applications and a function.
 # Just from the application alone, they're indistinguishable by design.
-if [[ -f "${app_dir}/function.toml" || -f "${app_dir}/project.toml" ]]; then
+if [[ -f "${app_dir}/function.toml" || (-f "${app_dir}/project.toml" && $(yj -t <"${app_dir}/project.toml" | jq -r .com.salesforce.type) == "function") ]]; then
 	cat >"${build_plan}" <<-EOF
 		[[requires]]
 		name = "jdk"
