@@ -42,6 +42,8 @@ name = "jdk"
 
 [[requires]]
 name = "jdk"
+
+[requires.metadata]
 version = "$fullJdkVersion"
 
 [[provides]]
@@ -49,6 +51,8 @@ name = "jre"
 
 [[requires]]
 name = "jre"
+
+[requires.metadata]
 version = "$fullJdkVersion"
 TOML
 }
