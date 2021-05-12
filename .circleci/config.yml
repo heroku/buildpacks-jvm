@@ -57,7 +57,7 @@ jobs:
           name: "shfmt"
           command: "shfmt -f . | grep -v ^test/ | xargs shfmt -d"
 
-  rapier:
+  cutlass:
     parameters:
       spec_dir:
         type: string
@@ -99,9 +99,10 @@ workflows:
                 - "shimmed-buildpacks/clojure"
                 - "test/meta-buildpacks/java"
                 - "test/meta-buildpacks/java-function"
-      - rapier:
+      - cutlass:
           matrix:
             parameters:
               spec_dir:
                 - "test/specs/java"
+                - "test/specs/java-function"
                 - "test/specs/maven"
