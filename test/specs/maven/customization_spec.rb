@@ -3,8 +3,8 @@ require_relative "spec_helper"
 describe "Heroku's Maven Cloud Native Buildpack" do
   context "with the MAVEN_CUSTOM_GOALS environment variable set" do
     it "will only use goals from MAVEN_CUSTOM_GOALS" do
-      rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
-        rapier.pack_build(app_dir, build_env: {:MAVEN_CUSTOM_GOALS => "site"}) do |pack_result|
+      Cutlass::App.new("simple-http-service", config: {MAVEN_CUSTOM_GOALS: "site"}).transaction do |app|
+        app.pack_build do |pack_result|
           expect(pack_result.stdout).to include("./mvnw -DskipTests site")
           expect(pack_result.stdout).to include("[INFO] --- maven-site-plugin:3.7.1:site (default-site) @ simple-http-service ---")
         end
@@ -14,12 +14,12 @@ describe "Heroku's Maven Cloud Native Buildpack" do
     # This is implemented by using the dependency:list goal. We need to ensure it won't be overwritten by
     # the user's choice of goals.
     it "will still create ${APP_DIR}/target/mvn-dependency-list.log" do
-      rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
-        rapier.pack_build(app_dir, build_env: {:MAVEN_CUSTOM_GOALS => "clean"}) do |pack_result|
+      Cutlass::App.new("simple-http-service", config: {MAVEN_CUSTOM_GOALS: "clean"}).transaction do |app|
+        app.pack_build do |pack_result|
           expect(pack_result.stdout).to include("./mvnw -DskipTests clean")
           expect(pack_result.stdout).to include("[INFO] --- maven-clean-plugin:3.1.0:clean (default-clean) @ simple-http-service ---")
 
-          pack_result.start_container do |container|
+          app.start_container do |container|
 
             expected_dependency_list = <<~EOF
 
@@ -52,8 +52,8 @@ describe "Heroku's Maven Cloud Native Buildpack" do
 
   context "with the MAVEN_CUSTOM_OPTS environment variable set" do
     it "will only use options from MAVEN_CUSTOM_OPTS" do
-      rapier.app_dir_from_fixture("simple-http-service") do |app_dir|
-        rapier.pack_build(app_dir, build_env: {:MAVEN_CUSTOM_OPTS => "-X"}) do |pack_result|
+      Cutlass::App.new("simple-http-service", config: {MAVEN_CUSTOM_OPTS: "-X"}).transaction do |app|
+        app.pack_build do |pack_result|
           expect(pack_result.stdout).to include("./mvnw -X clean install")
           expect(pack_result.stdout).to include("[DEBUG] -- end configuration --")
 
