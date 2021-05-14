@@ -5,6 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 * `SF_FX_REMOTE_DEBUG` was renamed to `DEBUG_PORT` and also species the port on with the JDWP agent will listen on.
+* Updated function runtime to `0.2.1`
 
 ## [0.2.7] 2021/05/05
 ### Changed
