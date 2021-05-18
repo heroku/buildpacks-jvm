@@ -17,4 +17,4 @@ version = "0.2.4"
 
 [[order.group]]
 id = "heroku/jvm-function-invoker"
-version = "0.2.10"
+version = "0.2.11"
