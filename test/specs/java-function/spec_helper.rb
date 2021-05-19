@@ -18,6 +18,9 @@ RSpec.configure do |config|
   # config.filter_run :focus => true
 
   config.before(:suite) do
+    Dir.chdir("#{test_dir}/../buildpacks/rust-jvm-function-invoker/") do
+      system("cargo make pack")
+    end
     Cutlass::CleanTestEnv.record
   end
 
