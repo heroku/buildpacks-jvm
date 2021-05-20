@@ -46,11 +46,11 @@ jobs:
             package_toml="<< parameters.buildpack-dir >>/package.toml"
             if [[ -f "<< parameters.buildpack-dir >>/build.sh" ]]; then
               "./<< parameters.buildpack-dir >>/build.sh"
-	      if [[ -d "<< parameters.buildpack-dir>>/target/buildpack/release" ]]; then
-	        package_toml="<< parameters.buildpack-dir >>/target/buildpack/release/package.toml"
-	      else
-                package_toml="<< parameters.buildpack-dir >>/target/package.toml"
-	      fi
+              if [[ -d "<< parameters.buildpack-dir>>/target/buildpack/release" ]]; then
+                package_toml="<< parameters.buildpack-dir >>/target/buildpack/release/package.toml"
+              else
+                    package_toml="<< parameters.buildpack-dir >>/target/package.toml"
+              fi
             fi
 
             pack buildpack package test --config "${package_toml}"
