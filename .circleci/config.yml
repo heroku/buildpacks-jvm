@@ -40,14 +40,17 @@ jobs:
       - pack/install-pack:
           version: 0.16.0
       - heroku-buildpacks/install-build-dependencies
-      - run: cargo install cargo-make
       - run:
           name: "Build and package buildpack"
           command: |
             package_toml="<< parameters.buildpack-dir >>/package.toml"
             if [[ -f "<< parameters.buildpack-dir >>/build.sh" ]]; then
               "./<< parameters.buildpack-dir >>/build.sh"
-              package_toml="<< parameters.buildpack-dir >>/target/package.toml"
+	      if [[ -d "<< parameters.buildpack-dir>>/target/buildpack/release" ]]; then
+	        package_toml="<< parameters.buildpack-dir >>/target/buildpack/release/package.toml"
+	      else
+                package_toml="<< parameters.buildpack-dir >>/target/package.toml"
+	      fi
             fi
 
             pack buildpack package test --config "${package_toml}"
@@ -102,6 +105,7 @@ workflows:
                 - "buildpacks/jvm"
                 - "buildpacks/maven"
                 - "buildpacks/jvm-function-invoker"
+                - "buildpacks/rust-jvm-function-invoker"
                 - "meta-buildpacks/java"
                 - "meta-buildpacks/java-function"
                 - "shimmed-buildpacks/scala"
