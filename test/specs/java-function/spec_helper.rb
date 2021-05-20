@@ -7,7 +7,7 @@ def test_dir
   Pathname(__dir__).join("../..")
 end
 
-JVM_FUNCTION_BUILDPACK = Cutlass::LocalBuildpack.new(directory: test_dir.join("meta-buildpacks/java-function"))
+JVM_FUNCTION_BUILDPACK = Cutlass::LocalBuildpack.new(directory: test_dir.join("meta-buildpacks/java-function/target/"))
 Cutlass.config do |config|
   config.default_buildpack_paths = [JVM_FUNCTION_BUILDPACK]
   config.default_builder = "heroku/buildpacks:18"
@@ -18,9 +18,7 @@ RSpec.configure do |config|
   # config.filter_run :focus => true
 
   config.before(:suite) do
-    Dir.chdir("#{test_dir}/../buildpacks/rust-jvm-function-invoker/") do
-      system("cargo make pack")
-    end
+    system("#{test_dir}/meta-buildpacks/java-function/build.sh")
     Cutlass::CleanTestEnv.record
   end
 

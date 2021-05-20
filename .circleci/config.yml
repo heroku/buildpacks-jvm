@@ -24,13 +24,14 @@ jobs:
       buildpack-dir:
         type: string
     docker:
-      - image: cimg/base:2020.01
+      - image: cimg/rust:1.52.1
     steps:
       - checkout
       - setup_remote_docker
       - pack/install-pack:
           version: 0.16.0
       - heroku-buildpacks/install-build-dependencies
+      - run: cargo install cargo-make
       - run:
           name: "Build and package buildpack"
           command: |

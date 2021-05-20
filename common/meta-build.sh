@@ -6,6 +6,8 @@ set -euo pipefail
 # package.toml, execute their build script if present and modifies the meta-buildpack's package.toml
 # (within the target directory) to point to the built version of the of the dependency.
 
+export CARGO_MAKE_PROFILE="production"
+
 buildpack_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 target_dir_name="target"
 target_dir="${buildpack_dir}/${target_dir_name}"
@@ -31,7 +33,11 @@ if [[ -f "${buildpack_dir}/package.toml" ]]; then
 				"${dependency_buildpack_dir}/build.sh"
 				echo "Build complete!"
 
-				dependency_target_dir="${dependency_buildpack_dir}/target"
+				if [[ -d "${dependency_buildpack_dir}/target/buildpack/release" ]]; then
+					dependency_target_dir="${dependency_buildpack_dir}/target/buildpack/release"
+				else
+					dependency_target_dir="${dependency_buildpack_dir}/target"
+				fi
 			fi
 
 			updated_dependency_uri="$(
