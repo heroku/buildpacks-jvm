@@ -17,6 +17,15 @@ orbs:
                 chmod +x "${bin_dir}/yj"
 
                 echo "export PATH=\"${bin_dir}:\${PATH}\"" >> $BASH_ENV
+          - run:
+              name: "Install Rust Stable"
+              command: |
+                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+                echo "export PATH=\"$HOME/.cargo/bin:$PATH"\"
+          - run:
+              name: "Install cargo-make"
+              command: cargo install cargo-make
+
 
 jobs:
   package-buildpack:
