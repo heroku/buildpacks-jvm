@@ -20,7 +20,7 @@ dependencies = ["check-crosscompile-mac-deps"]
 "CC_x86_64_unknown_linux_musl" = "x86_64-linux-musl-gcc"
 
 [tasks.strip]
-condition = { profiles = [ "production" ] }
+condition = { profiles = [ "production" ], platforms = [ "linux" ] }
 command = "strip"
 args = ["target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/bp_detect", "target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/bp_build"]
 
