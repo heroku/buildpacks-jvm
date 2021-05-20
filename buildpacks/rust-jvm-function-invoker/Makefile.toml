@@ -1,9 +1,12 @@
+[env]
+CARGO_TARGET_DIR="./target-cargo"
+
 [env.development]
-TARGET_DIR = "debug"
+CARGO_PROFILE = "debug"
 BUILD_FLAGS = ["build", "--target", "x86_64-unknown-linux-musl", "--features", "vendored-openssl"]
 
 [env.production]
-TARGET_DIR = "release"
+CARGO_PROFILE = "release"
 BUILD_FLAGS = ["build", "--target", "x86_64-unknown-linux-musl", "--features", "vendored-openssl", "--release"]
 
 [tasks.build]
@@ -19,7 +22,7 @@ dependencies = ["check-crosscompile-mac-deps"]
 [tasks.strip]
 condition = { profiles = [ "production" ] }
 command = "strip"
-args = ["target/x86_64-unknown-linux-musl/${TARGET_DIR}/bp_detect", "target/x86_64-unknown-linux-musl/${TARGET_DIR}/bp_build"]
+args = ["target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/bp_detect", "target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/bp_build"]
 
 [tasks.check-crosscompile-mac-deps]
 script_runner = "@rust"
@@ -68,26 +71,20 @@ use std::fs;
 use std::collections::HashMap;
 
 fn main() {
-    let destination = PathBuf::from("target").join("buildpack").join(env!("TARGET_DIR"));
+    let destination = PathBuf::from("target");
     if !destination.exists() {
         fs::create_dir_all(&destination.join("bin")).unwrap();
     }
 
     let mut files = HashMap::new();
-    files.insert(PathBuf::from("./target/x86_64-unknown-linux-musl").join(env!("TARGET_DIR")).join("bp_detect"), destination.join("bin/detect"));
-    files.insert(PathBuf::from("./target/x86_64-unknown-linux-musl").join(env!("TARGET_DIR")).join("bp_build"), destination.join("bin/build"));
+    files.insert(PathBuf::from("./target-cargo/x86_64-unknown-linux-musl").join(env!("CARGO_PROFILE")).join("bp_detect"), destination.join("bin/detect"));
+    files.insert(PathBuf::from("./target-cargo/x86_64-unknown-linux-musl").join(env!("CARGO_PROFILE")).join("bp_build"), destination.join("bin/build"));
     files.insert(PathBuf::from("./buildpack.toml"), destination.join("buildpack.toml"));
     files.insert(PathBuf::from("./package.toml"), destination.join("package.toml"));
 
     for (from, to) in &files {
         fs::copy(from, to).unwrap();
     }
-
-    println!("{}", "Successfully created buildpack directory".bold().green());
-    println!("{}", "========================================".bold().green());
-    println!("To try out your buildpack run:");
-    println!("$ pack build {} -b {} --path {}", "$IMAGE_NAME".bold(), destination.to_str().unwrap().bold(), "$APP_DIR".bold());
-    println!("");
 }
 '''
 
