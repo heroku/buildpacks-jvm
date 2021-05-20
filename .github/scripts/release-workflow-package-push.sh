@@ -6,8 +6,6 @@ set -euo pipefail
 #
 # REQUESTED_BUILDPACK_ID - The ID of the buildpack to package and push to the container registry.
 
-export CARGO_MAKE_PROFILE="production"
-
 while IFS="" read -r -d "" buildpack_toml_path; do
 	buildpack_id="$(yj -t <"${buildpack_toml_path}" | jq -r .buildpack.id)"
 	buildpack_version="$(yj -t <"${buildpack_toml_path}" | jq -r .buildpack.version)"
@@ -24,11 +22,6 @@ while IFS="" read -r -d "" buildpack_toml_path; do
 			echo "Build finished!"
 
 			buildpack_build_path="${buildpack_path}/target"
-			if [[ -d "${buildpack_path}/target/buildpack/release" ]]; then
-				buildpack_build_path="${buildpack_path}/target/buildpack/release"
-			else
-				buildpack_build_path="${buildpack_path}/target"
-			fi
 		fi
 
 		image_name="${buildpack_docker_repository}:${buildpack_version}"
