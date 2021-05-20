@@ -72,9 +72,10 @@ use std::collections::HashMap;
 
 fn main() {
     let destination = PathBuf::from("target");
-    if !destination.exists() {
-        fs::create_dir_all(&destination.join("bin")).unwrap();
+    if destination.exists() {
+        fs::remove_dir_all(&destination).unwrap();
     }
+    fs::create_dir_all(&destination.join("bin")).unwrap();
 
     let mut files = HashMap::new();
     files.insert(PathBuf::from("./target-cargo/x86_64-unknown-linux-musl").join(env!("CARGO_PROFILE")).join("bp_detect"), destination.join("bin/detect"));
