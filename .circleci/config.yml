@@ -93,6 +93,21 @@ jobs:
           name: Execute rspec << parameters.spec_dir >>
           command: bundle exec rspec << parameters.spec_dir >>
 
+  cargo-test:
+    parameters:
+      buildpack-dir:
+        type: string
+    docker:
+      - image: cimg/rust:1.52.1
+    steps:
+      - checkout
+      - setup_remote_docker
+      - heroku-buildpacks/install-build-dependencies
+      - run:
+          name: cargo test
+          command: cargo test
+          working_directory: << parameters.buildpack-dir >>
+
 workflows:
   version: 2
   ci:
@@ -120,3 +135,8 @@ workflows:
                 - "test/specs/java"
                 - "test/specs/java-function"
                 - "test/specs/maven"
+      - cargo-test:
+          matrix:
+            parameters:
+              buildpack-dir:
+                - "buildpacks/rust-jvm-function-invoker"
