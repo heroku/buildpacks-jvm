@@ -43,6 +43,8 @@ jobs:
       - run:
           name: "Build and package buildpack"
           command: |
+            export CARGO_MAKE_PROFILE=production
+
             package_toml="<< parameters.buildpack-dir >>/package.toml"
             if [[ -f "<< parameters.buildpack-dir >>/build.sh" ]]; then
               "./<< parameters.buildpack-dir >>/build.sh"
