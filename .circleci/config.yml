@@ -4,6 +4,13 @@ orbs:
   pack: buildpacks/pack@0.2.2
   heroku-buildpacks:
     commands:
+      install-rust:
+        steps:
+          - run:
+              name: "Install Rust Stable"
+              command: |
+                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y -t x86_64-unknown-linux-musl
+                echo "export PATH=\"$HOME/.cargo/bin:$PATH"\"
       install-build-dependencies:
         steps:
           - run:
@@ -17,11 +24,6 @@ orbs:
                 chmod +x "${bin_dir}/yj"
 
                 echo "export PATH=\"${bin_dir}:\${PATH}\"" >> $BASH_ENV
-          - run:
-              name: "Install Rust Stable"
-              command: |
-                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y -t x86_64-unknown-linux-musl
-                echo "export PATH=\"$HOME/.cargo/bin:$PATH"\"
           - run:
               name: "Install cargo-make"
               command: cargo install cargo-make
@@ -79,6 +81,7 @@ jobs:
       - checkout
       - pack/install-pack:
           version: 0.16.0
+      - heroku-buildpacks/install-rust
       - heroku-buildpacks/install-build-dependencies
       - run:
           name: Install Ruby dependencies
