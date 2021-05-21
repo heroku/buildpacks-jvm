@@ -58,14 +58,9 @@ fn main() {
 [tasks.copy-files]
 script_runner = "@rust"
 script = '''
-//! ```cargo
-//! [dependencies]
-//! colored = "2.0.0"
-//! ```
 // Silence warning from rust-script:
 #![allow(non_snake_case)]
 
-use colored::*;
 use std::path::PathBuf;
 use std::fs;
 use std::collections::HashMap;
