@@ -7,8 +7,8 @@ orbs:
       install-build-dependencies:
         steps:
           - run:
-              name: "Install rsync, jq, libssl-dev, musl-tools via apt"
-              command: sudo apt-get update && sudo apt-get install -y rsync jq libssl-dev musl-tools
+              name: "Install rsync, jq, libssl-dev, musl-tools, pkg-config via apt"
+              command: sudo apt-get update && sudo apt-get install -y rsync jq libssl-dev musl-tools pkg-config
           - run:
               name: "Install yj 5.0.0"
               command: |
