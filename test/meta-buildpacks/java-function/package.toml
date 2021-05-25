@@ -8,4 +8,4 @@ uri = "../../../buildpacks/jvm"
 uri = "../../../buildpacks/maven"
 
 [[dependencies]]
-uri = "../../../buildpacks/rust-jvm-function-invoker"
+uri = "../../../buildpacks/jvm-function-invoker"

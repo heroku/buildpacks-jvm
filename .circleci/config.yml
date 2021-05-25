@@ -131,7 +131,6 @@ workflows:
                 - "buildpacks/jvm"
                 - "buildpacks/maven"
                 - "buildpacks/jvm-function-invoker"
-                - "buildpacks/rust-jvm-function-invoker"
                 - "meta-buildpacks/java"
                 - "meta-buildpacks/java-function"
                 - "shimmed-buildpacks/scala"
@@ -150,9 +149,9 @@ workflows:
           matrix:
             parameters:
               buildpack-dir:
-                - "buildpacks/rust-jvm-function-invoker"
+                - "buildpacks/jvm-function-invoker"
       - rustfmt:
           matrix:
             parameters:
               buildpack-dir:
-                - "buildpacks/rust-jvm-function-invoker"
+                - "buildpacks/jvm-function-invoker"
