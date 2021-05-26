@@ -33,7 +33,7 @@ jobs:
       buildpack-dir:
         type: string
     docker:
-       - image: cimg/base:2020.01
+      - image: cimg/base:2020.01
     steps:
       - checkout
       - setup_remote_docker
