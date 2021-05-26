@@ -9,7 +9,7 @@ license = "MIT"
 
 [dependencies]
 anyhow = "1"
-libcnb = "0.1.0"
+libcnb = { git = "https://github.com/Malax/libcnb.rs", branch = "layer_toml_optional_metadata" }
 reqwest = { version = "0.11", features = ["blocking"] }
 serde = { version = "1.0", features = ["derive"] }
 sha2 = "0.9"
