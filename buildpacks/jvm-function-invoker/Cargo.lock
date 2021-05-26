@@ -381,8 +381,9 @@ checksum = "ba4aede83fc3617411dc6993bc8c70919750c1c257c6ca6a502aed6e0e2394ae"
 
 [[package]]
 name = "libcnb"
-version = "0.1.0"
-source = "git+https://github.com/Malax/libcnb.rs?branch=layer_toml_optional_metadata#3dc7a9e618790ab91fa55a01a772869ccdb23dc4"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df32beec81d5707590fc07182d3510dc660a519cfb79bb0f8ebda47b94502838"
 dependencies = [
  "lazy_static",
  "regex",

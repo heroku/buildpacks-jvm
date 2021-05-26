@@ -16,11 +16,11 @@ impl<'a, 'b> Builder<'a, 'b> {
 
     pub fn contribute_opt_layer(&self) -> anyhow::Result<Layer> {
         let mut layer = self.ctx.layer("opt")?;
-        let mut content_metadata = layer.mut_content_metadata();
-        content_metadata.launch = true;
-        content_metadata.build = true;
-        content_metadata.cache = false;
-        layer.write_content_metadata()?;
+        layer.write_content_metadata_with_fn(|content_metadata| {
+            content_metadata.launch = true;
+            content_metadata.build = true;
+            content_metadata.cache = false;
+        })?;
 
         let contents = include_str!("../opt/run.sh");
         let run_sh_path = layer.as_path().join("run.sh");
@@ -50,20 +50,20 @@ impl<'a, 'b> Builder<'a, 'b> {
                 .info("Installed Java function runtime from cache")?;
         } else {
             self.logger.debug("Creating function runtime layer")?;
-            let mut content_metadata = runtime_layer.mut_content_metadata();
-            content_metadata.launch = true;
-            content_metadata.build = false;
-            content_metadata.cache = true;
+            runtime_layer.write_content_metadata_with_fn(|content_metadata| {
+                content_metadata.launch = true;
+                content_metadata.build = false;
+                content_metadata.cache = true;
 
-            content_metadata.metadata.insert(
-                String::from("runtime_jar_url"),
-                toml::Value::String(buildpack_toml_metadata.runtime.url.clone()),
-            );
-            content_metadata.metadata.insert(
-                String::from("runtime_jar_sha256"),
-                toml::Value::String(buildpack_toml_metadata.runtime.sha256.clone()),
-            );
-            runtime_layer.write_content_metadata()?;
+                content_metadata.metadata.insert(
+                    String::from("runtime_jar_url"),
+                    toml::Value::String(buildpack_toml_metadata.runtime.url.clone()),
+                );
+                content_metadata.metadata.insert(
+                    String::from("runtime_jar_sha256"),
+                    toml::Value::String(buildpack_toml_metadata.runtime.sha256.clone()),
+                );
+            })?;
 
             self.logger
                 .debug("Function runtime layer successfully created")?;
@@ -103,11 +103,11 @@ Please try again and contact us should the error persist.
         self.logger.header("Detecting function")?;
 
         let mut function_bundle_layer = self.ctx.layer("function-bundle")?;
-        let mut content_metadata = function_bundle_layer.mut_content_metadata();
-        content_metadata.launch = true;
-        content_metadata.build = false;
-        content_metadata.cache = false;
-        function_bundle_layer.write_content_metadata()?;
+        function_bundle_layer.write_content_metadata_with_fn(|content_metadata| {
+            content_metadata.launch = true;
+            content_metadata.build = false;
+            content_metadata.cache = false;
+        })?;
 
         let exit_status = Command::new("java")
             .arg("-jar")
