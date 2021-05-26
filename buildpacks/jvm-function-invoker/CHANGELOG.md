@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Change implementation to Rust
 
 ## [0.2.11] 2021/05/21
-* Updated function runtime to 0.2.4
+* Updated function runtime to `0.2.4`
 
 ## [0.2.10] 2021/05/18
 * Updated function runtime to `0.2.3`
