@@ -10,6 +10,7 @@
 * libssl-dev
   * Linux (Debian): `sudo apt install libssl-dev`
   * MacOS: `brew install openssl`
+* [pack](https://buildpacks.io/docs/tools/pack/) (for local development)
 
 ## Usage
 This buildpack targets `x86_64-unknown-linux-musl` as the platform for the buildpack and comes with tooling to support cross-compilation on macOS. It uses [`libcnb.rs`](https://github.com/Malax/libcnb.rs) as the language binding for buildpacks.
@@ -21,7 +22,13 @@ To use this buildpack for local development that can be used by `pack`, a buildp
 $ cargo make pack
 ```
 
-This will create a `target/` directory that can be passed to `pack`. With the heroku builder image set and from the buildpack directory:
+This will create a `target/` directory that can be passed to `pack`. If a default builder hasn't been set, the heroku one can be set:
+
+```
+$ pack config default-builder heroku/buildpacks:20
+```
+
+With the heroku builder image set and from the buildpack directory:
 
 ```
 $ pack build <IMAGE NAME> -b heroku/jvm -b heroku/maven -b `target` -p <APP SOURCE DIR>
