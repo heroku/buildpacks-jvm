@@ -363,6 +363,7 @@ dependencies = [
  "reqwest",
  "serde",
  "sha2",
+ "tempfile",
  "termcolor",
  "toml",
 ]
@@ -382,8 +383,7 @@ checksum = "ba4aede83fc3617411dc6993bc8c70919750c1c257c6ca6a502aed6e0e2394ae"
 [[package]]
 name = "libcnb"
 version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df32beec81d5707590fc07182d3510dc660a519cfb79bb0f8ebda47b94502838"
+source = "git+https://github.com/Malax/libcnb.rs?branch=build_context_new#24e33ea46d527ab2304dcca0ca971dad12b7faf8"
 dependencies = [
  "lazy_static",
  "regex",

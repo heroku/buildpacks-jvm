@@ -9,7 +9,7 @@ license = "MIT"
 
 [dependencies]
 anyhow = "1"
-libcnb = "0.1.1"
+libcnb = { git = "https://github.com/Malax/libcnb.rs", branch = "build_context_new" }
 reqwest = { version = "0.11", features = ["blocking"] }
 serde = { version = "1.0", features = ["derive"] }
 sha2 = "0.9"
@@ -17,6 +17,9 @@ termcolor = "1.1"
 toml = "0.5"
 
 openssl-sys = "*"
+
+[dev-dependencies]
+tempfile = "3"
 
 [features]
 vendored-openssl = ["openssl-sys/vendored"]

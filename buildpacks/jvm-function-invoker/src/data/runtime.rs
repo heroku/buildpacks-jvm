@@ -2,12 +2,15 @@ use serde::Deserialize;
 use toml::value::Table;
 
 #[derive(Debug, Deserialize)]
+/// Struct containing the url and sha256 checksum for a downloadable sf-fx-runtime-java-runtime.
+/// This is used in both `buildpack.toml` and the `layer.toml` but with different keys.
 pub struct Runtime {
     pub url: String,
     pub sha256: String,
 }
 
 impl Runtime {
+    /// Build a `Runtime` from the `layer.toml`'s `metadata` keys.
     pub fn from_runtime_layer(metadata: &Table) -> Self {
         let empty_string = toml::Value::String("".to_string());
         let sha256 = metadata

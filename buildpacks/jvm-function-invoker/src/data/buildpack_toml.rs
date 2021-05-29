@@ -4,6 +4,7 @@ use std::convert::TryFrom;
 use toml::value::Table;
 
 #[derive(Deserialize)]
+/// This struct is the buildpack defined `metadata` key in the `buildpack.toml`.
 pub struct Metadata {
     pub runtime: Runtime,
     pub release: Release,

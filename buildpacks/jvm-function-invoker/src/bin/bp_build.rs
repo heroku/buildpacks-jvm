@@ -1,6 +1,6 @@
 use jvm_function_invoker_buildpack::{
     builder::{Builder, RUNTIME_JAR_FILE_NAME},
-    util::logger::Logger,
+    util::logger::HerokuLogger,
 };
 use libcnb::{
     build::{cnb_runtime_build, GenericBuildContext},
@@ -16,8 +16,8 @@ fn main() -> anyhow::Result<()> {
 
 fn build(ctx: GenericBuildContext) -> anyhow::Result<()> {
     let heroku_debug = ctx.platform.env().var("HEROKU_BUILDPACK_DEBUG").is_ok();
-    let logger = Logger::new(heroku_debug);
-    let builder = Builder::new(&ctx, &logger)?;
+    let mut logger = HerokuLogger::new(heroku_debug);
+    let mut builder = Builder::new(&ctx, &mut logger)?;
 
     let opt_layer = builder.contribute_opt_layer()?;
     let runtime_layer = builder.contribute_runtime_layer()?;
