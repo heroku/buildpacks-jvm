@@ -8,16 +8,14 @@ use libcnb::{
     platform::Platform,
 };
 
-fn main() -> anyhow::Result<()> {
+fn main() {
     cnb_runtime_build(build);
-
-    Ok(())
 }
 
 fn build(ctx: GenericBuildContext) -> anyhow::Result<()> {
     let heroku_debug = ctx.platform.env().var("HEROKU_BUILDPACK_DEBUG").is_ok();
     let mut logger = HerokuLogger::new(heroku_debug);
-    let mut builder = Builder::new(&ctx, &mut logger)?;
+    let mut builder = Builder::new(&ctx, &mut logger);
 
     let opt_layer = builder.contribute_opt_layer()?;
     let runtime_layer = builder.contribute_runtime_layer()?;

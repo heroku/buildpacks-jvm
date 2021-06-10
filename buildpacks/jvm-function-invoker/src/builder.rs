@@ -10,8 +10,8 @@ pub struct Builder<'a, 'b, T: Logger> {
 }
 
 impl<'a, 'b, T: Logger> Builder<'a, 'b, T> {
-    pub fn new(ctx: &'a GenericBuildContext, logger: &'b mut T) -> anyhow::Result<Self> {
-        Ok(Builder { ctx, logger })
+    pub fn new(ctx: &'a GenericBuildContext, logger: &'b mut T) -> Self {
+        Builder { ctx, logger }
     }
 
     pub fn contribute_opt_layer(&self) -> anyhow::Result<Layer> {
