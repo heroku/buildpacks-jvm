@@ -235,7 +235,7 @@ mod tests {
         let tmp_dir = tempdir().unwrap();
         let ctx = setup_context(&tmp_dir);
         let mut logger = MemoryLogger::new(true);
-        let builder = Builder::new(&ctx, &mut logger).unwrap();
+        let builder = Builder::new(&ctx, &mut logger);
 
         let result = builder.contribute_opt_layer();
         assert!(result.is_ok());
@@ -252,7 +252,7 @@ mod tests {
         let tmp_dir = tempdir().unwrap();
         let ctx = setup_context(&tmp_dir);
         let mut logger = MemoryLogger::new(true);
-        let mut builder = Builder::new(&ctx, &mut logger).unwrap();
+        let mut builder = Builder::new(&ctx, &mut logger);
 
         let result = builder.contribute_runtime_layer();
         assert!(result.is_ok());
@@ -278,7 +278,7 @@ mod tests {
         let tmp_dir = tempdir().unwrap();
         let ctx = setup_context(&tmp_dir);
         let mut logger = MemoryLogger::new(true);
-        let mut builder = Builder::new(&ctx, &mut logger).unwrap();
+        let mut builder = Builder::new(&ctx, &mut logger);
 
         // Simulate an existing layer pulled from a previous build
         fs::write(
@@ -331,7 +331,7 @@ runtime_jar_sha256 = {}
         let tmp_dir = tempdir().unwrap();
         let ctx = setup_context(&tmp_dir);
         let mut logger = MemoryLogger::new(true);
-        let mut builder = Builder::new(&ctx, &mut logger).unwrap();
+        let mut builder = Builder::new(&ctx, &mut logger);
 
         // Simulate an existing layer pulled from a previous build
         fs::write(
@@ -378,7 +378,7 @@ runtime_jar_sha256 = "foobar"
         let tmp_dir = tempdir().unwrap();
         let ctx = setup_context(&tmp_dir);
         let mut logger = MemoryLogger::new(true);
-        let mut builder = Builder::new(&ctx, &mut logger).unwrap();
+        let mut builder = Builder::new(&ctx, &mut logger);
 
         // Simulate an existing layer pulled from a previous build
         fs::write(
