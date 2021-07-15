@@ -28,6 +28,12 @@ jobs:
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         env:
           AWS_REGION: us-east-1
+      - id: install-rust-toolchain
+        name: "Install Rust toolchain"
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: "x86_64-unknown-linux-musl"
       - id: install-cargo-make
         name: "Install cargo-make"
         uses: actions-rs/install@v0.1
