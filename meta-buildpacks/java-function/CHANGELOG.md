@@ -3,6 +3,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.3.13] 2021/07/16
 * Upgraded `heroku/maven` to `0.2.4`
 * Upgraded `heroku/jvm-function-invoker` to `0.3.0`
 
