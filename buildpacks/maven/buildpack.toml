@@ -1,4 +1,4 @@
-api = "0.4"
+api = "0.5"
 
 [buildpack]
 id = "heroku/maven"
@@ -20,6 +20,10 @@ id = "heroku-20"
 
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
+
+# The buildpack does not use any platform specific tooling, but are only tested against heroku/ubuntu stacks.
+[[stacks]]
+id = "*"
 
 [metadata]
 
