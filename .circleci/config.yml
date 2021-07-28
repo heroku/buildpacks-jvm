@@ -7,8 +7,8 @@ orbs:
       install-build-dependencies:
         steps:
           - run:
-              name: "Install rsync, jq, libssl-dev, musl-tools, pkg-config via apt"
-              command: sudo apt-get update && sudo apt-get install -y rsync jq libssl-dev musl-tools pkg-config
+              name: "Install rsync, jq via apt"
+              command: sudo apt-get update && sudo apt-get install -y rsync jq
           - run:
               name: "Install yj 5.0.0"
               command: |
@@ -17,15 +17,6 @@ orbs:
                 chmod +x "${bin_dir}/yj"
 
                 echo "export PATH=\"${bin_dir}:\${PATH}\"" >> $BASH_ENV
-          - run:
-              name: "Install Rust Stable"
-              command: |
-                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y -t x86_64-unknown-linux-musl
-                echo "export PATH=\"$HOME/.cargo/bin:$PATH\"" >> $BASH_ENV
-          - run:
-              name: "Install cargo-make"
-              command: cargo install cargo-make
-
 
 jobs:
   package-buildpack:
@@ -89,36 +80,6 @@ jobs:
           name: Execute rspec << parameters.spec_dir >>
           command: bundle exec rspec << parameters.spec_dir >>
 
-  cargo-test:
-    parameters:
-      buildpack-dir:
-        type: string
-    docker:
-      - image: cimg/rust:1.52.1
-    steps:
-      - checkout
-      - setup_remote_docker
-      - heroku-buildpacks/install-build-dependencies
-      - run:
-          name: cargo test
-          command: cargo test
-          working_directory: << parameters.buildpack-dir >>
-
-  rustfmt:
-    parameters:
-      buildpack-dir:
-        type: string
-    docker:
-      - image: cimg/base:2020.01
-    steps:
-      - checkout
-      - setup_remote_docker
-      - heroku-buildpacks/install-build-dependencies
-      - run:
-          name: cargo make test
-          command: cargo make test
-          working_directory: << parameters.buildpack-dir >>
-
 workflows:
   version: 2
   ci:
@@ -145,13 +106,3 @@ workflows:
                 - "test/specs/java"
                 - "test/specs/java-function"
                 - "test/specs/maven"
-      - cargo-test:
-          matrix:
-            parameters:
-              buildpack-dir:
-                - "buildpacks/jvm-function-invoker"
-      - rustfmt:
-          matrix:
-            parameters:
-              buildpack-dir:
-                - "buildpacks/jvm-function-invoker"
