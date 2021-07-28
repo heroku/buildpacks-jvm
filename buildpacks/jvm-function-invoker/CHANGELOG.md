@@ -4,6 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 * Revert all changes from `0.3.0`
+* Updated function runtime to `1.0.0` again
 
 ## [0.3.0] 2021/07/15
 * Changed implementation to Rust
