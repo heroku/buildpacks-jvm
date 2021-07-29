@@ -29,4 +29,4 @@ sha256 = "86710aaba11ece315caefaad15db57153374c69846ac451c890505a28032ae68"
 [metadata.release]
 
 [metadata.release.docker]
-repository = "public.ecr.aws/r2f9u0w4/heroku-clojure-buildpack"
+repository = "public.ecr.aws/heroku-buildpacks/heroku-clojure-buildpack"
