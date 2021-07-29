@@ -29,4 +29,4 @@ sha256 = "31510a9f100ddf8d0427f0e9a840a95e565a8942ad46be35902d87e2235a525a"
 [metadata.release]
 
 [metadata.release.docker]
-repository = "public.ecr.aws/r2f9u0w4/heroku-scala-buildpack"
+repository = "public.ecr.aws/heroku-buildpacks/heroku-scala-buildpack"

@@ -29,4 +29,4 @@ sha256 = "dcd4b399d73b3963e2e4f984b269d4c2f64de76a736379fc3687b2204bb19161"
 [metadata.release]
 
 [metadata.release.docker]
-repository = "public.ecr.aws/r2f9u0w4/heroku-jvm-function-invoker-buildpack"
+repository = "public.ecr.aws/heroku-buildpacks/heroku-jvm-function-invoker-buildpack"

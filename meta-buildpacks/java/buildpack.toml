@@ -42,4 +42,4 @@ optional = true
 [metadata.release]
 
 [metadata.release.docker]
-repository = "public.ecr.aws/r2f9u0w4/heroku-java-buildpack"
+repository = "public.ecr.aws/heroku-buildpacks/heroku-java-buildpack"

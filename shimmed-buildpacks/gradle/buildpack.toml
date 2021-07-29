@@ -29,4 +29,4 @@ sha256 = "d49db802898e14667ddd98548baf244527875eb6ae4f556c417042540655660c"
 [metadata.release]
 
 [metadata.release.docker]
-repository = "public.ecr.aws/r2f9u0w4/heroku-gradle-buildpack"
+repository = "public.ecr.aws/heroku-buildpacks/heroku-gradle-buildpack"
