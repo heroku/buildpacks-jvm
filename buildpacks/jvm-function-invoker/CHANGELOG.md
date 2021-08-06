@@ -4,6 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 * Changed implementation to Rust
+* Upgrade libcnb to `0.1.3`
 
 ## [0.4.0] 2021/07/28
 * Revert all changes from `0.3.0`

@@ -219,7 +219,7 @@ mod tests {
         let buildpack_descriptor: BuildpackToml =
             toml::from_str(&fs::read_to_string(&buildpack_toml_path).unwrap()).unwrap();
 
-        BuildContext::new(
+        BuildContext {
             layers_dir,
             app_dir,
             buildpack_dir,
@@ -227,7 +227,7 @@ mod tests {
             platform,
             buildpack_plan,
             buildpack_descriptor,
-        )
+        }
     }
 
     #[test]
