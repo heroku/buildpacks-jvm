@@ -4,9 +4,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Ensures `mvnw` is executable
+
 ## [0.2.4] 2021/07/16
 ### Added
-* Loosen stack requiremets allowing any linux distro use this buildpacak
+* Loosen stack requiremets allowing any linux distro use this buildpack
 
 ## [0.2.3] 2021/05/05
 ### Added

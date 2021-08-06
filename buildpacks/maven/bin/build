@@ -185,6 +185,11 @@ log::cnb::debug "Internal Maven options: ${internal_maven_options[*]}"
 export MAVEN_OPTS="${MAVEN_JAVA_OPTS:-"-Xmx1024m"}"
 log::cnb::debug "Setting MAVEN_OPTS=${MAVEN_OPTS}"
 
+# Ensure customer vendored maven is executable
+if [ -f "${maven_executable}" ]; then
+	chmod +x "${maven_executable}"
+fi
+
 if ! ${maven_executable} "${maven_options[@]}" "${internal_maven_options[@]}" "${maven_goals[@]}"; then
 	log::cnb::error "Failed to build app with Maven" <<-EOF
 		We're sorry this build is failing! If you can't find the issue in application code,
