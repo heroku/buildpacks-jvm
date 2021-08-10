@@ -114,6 +114,7 @@ fi
 maven_executable="mvn"
 if maven::should_use_wrapper_for_app "${app_dir}"; then
 	maven_executable="./mvnw"
+	chmod +x "${maven_executable}"
 fi
 
 maven_options=()

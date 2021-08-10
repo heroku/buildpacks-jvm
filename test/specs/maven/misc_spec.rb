@@ -1,6 +1,17 @@
 require_relative "spec_helper"
 
 describe "Heroku's Maven Cloud Native Buildpack" do
+  it "will ensure mvn is executable regardless of file permissions" do
+    Cutlass::App.new("simple-http-service").transaction do |app|
+      FileUtils.chmod(0444, app.tmpdir.join("mvnw")) # Set executable to read only on purpose
+
+      app.pack_build do |pack_result|
+        expect(pack_result.stdout).to include("Successfully built image")
+        expect(pack_result.success?).to be_truthy
+      end
+    end
+  end
+
   it "will write ${APP_DIR}/target/mvn-dependency-list.log with the app's dependencies" do
     Cutlass::App.new("simple-http-service", config: {MAVEN_CUSTOM_GOALS: "clean"}).transaction do |app|
       app.pack_build do |pack_result|
