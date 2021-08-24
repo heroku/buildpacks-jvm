@@ -195,7 +195,7 @@ if ! ${maven_executable} "${maven_options[@]}" "${internal_maven_options[@]}" "$
 fi
 
 ########################################################################################################################
-# Generate target/mvn-dependency-list.log (For debugging and dep-tracker)
+# Generate target/mvn-dependency-list.log (For debugging)
 ########################################################################################################################
 ${maven_executable} "${maven_options[@]}" "${internal_maven_options[@]}" \
 	"-DoutputFile=${app_dir}/target/mvn-dependency-list.log" "dependency:list" >/dev/null 2>&1
