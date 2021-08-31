@@ -1,14 +1,14 @@
 use std::path::PathBuf;
 
-use libcnb::{BuildContext, GenericPlatform};
 use libcnb::data::launch::{Launch, Process};
 use libcnb::layer_lifecycle::execute_layer_lifecycle;
+use libcnb::{BuildContext, GenericPlatform};
 
 use crate::error::JvmFunctionInvokerBuildpackError;
-use crate::JvmFunctionInvokerBuildpackMetadata;
 use crate::layers::bundle::BundleLayerLifecycle;
 use crate::layers::opt::OptLayerLifecycle;
 use crate::layers::runtime::RuntimeLayerLifecycle;
+use crate::JvmFunctionInvokerBuildpackMetadata;
 
 pub fn build(
     context: BuildContext<GenericPlatform, JvmFunctionInvokerBuildpackMetadata>,

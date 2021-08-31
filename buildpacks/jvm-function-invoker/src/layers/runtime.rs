@@ -8,7 +8,7 @@ use thiserror::Error;
 use crate::error::JvmFunctionInvokerBuildpackError;
 use crate::JvmFunctionInvokerBuildpackMetadata;
 use libcnb::{BuildContext, GenericPlatform};
-use libherokubuildpack::{log_header, log_info, DownloadError, download_file, sha256};
+use libherokubuildpack::{download_file, log_header, log_info, sha256, DownloadError};
 
 pub struct RuntimeLayerLifecycle {}
 

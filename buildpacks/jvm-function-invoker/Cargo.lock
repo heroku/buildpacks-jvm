@@ -408,12 +408,8 @@ dependencies = [
  "indoc",
  "libcnb",
  "libherokubuildpack",
- "openssl",
- "reqwest",
  "serde",
- "sha2",
  "tempfile",
- "termcolor",
  "thiserror",
  "toml",
 ]
