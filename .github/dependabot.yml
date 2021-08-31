@@ -7,7 +7,8 @@ updates:
     labels:
       - "skip changelog"
   - package-ecosystem: "cargo"
-    directory: "/"
+    # TODO: Switch this back to "/" once this repo is using cargo workspaces.
+    directory: "/buildpacks/jvm-function-invoker"
     schedule:
       interval: "daily"
     labels:
