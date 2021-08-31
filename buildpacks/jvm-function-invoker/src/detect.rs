@@ -54,9 +54,6 @@ mod test {
         )
         .unwrap();
 
-        assert_eq!(
-            project_toml_salesforce_type_is_function(&project_toml_path),
-            true
-        );
+        assert!(project_toml_salesforce_type_is_function(&project_toml_path));
     }
 }
