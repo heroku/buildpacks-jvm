@@ -22,7 +22,7 @@ dependencies = ["check-crosscompile-mac-deps"]
 [tasks.strip]
 condition = { profiles = [ "production" ], platforms = [ "linux" ] }
 command = "strip"
-args = ["target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/jvm-function-invoker-buildpack"]
+args = ["target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/${CARGO_MAKE_CRATE_NAME}"]
 
 [tasks.check-crosscompile-mac-deps]
 script_runner = "@rust"
@@ -74,7 +74,7 @@ fn main() {
     fs::create_dir_all(&destination.join("opt")).unwrap();
 
     let mut files = HashMap::new();
-    files.insert(PathBuf::from("./target-cargo/x86_64-unknown-linux-musl").join(env!("CARGO_PROFILE")).join("jvm-function-invoker-buildpack"), destination.join("bin/build"));
+    files.insert(PathBuf::from("./target-cargo/x86_64-unknown-linux-musl").join(env!("CARGO_PROFILE")).join(env!("CARGO_MAKE_CRATE_NAME")), destination.join("bin/build"));
     files.insert(PathBuf::from("./buildpack.toml"), destination.join("buildpack.toml"));
     files.insert(PathBuf::from("./package.toml"), destination.join("package.toml"));
     files.insert(PathBuf::from("./opt/run.sh"), destination.join("opt/run.sh"));
