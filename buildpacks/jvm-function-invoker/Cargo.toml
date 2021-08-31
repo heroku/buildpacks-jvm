@@ -9,7 +9,7 @@ indoc = "1.0.3"
 libcnb = "0.2.0"
 libherokubuildpack = { version = "0.1.1", features = ["toml"] }
 serde = "1.0.126"
-thiserror = "1.0.25"
+thiserror = "1.0.28"
 toml = "0.5.8"
 
 [dev-dependencies]
