@@ -81,7 +81,7 @@ impl
     }
 
     fn on_keep(&self) {
-        log_info("Using cached Java function runtime from previous build.")
+        log_info("Using cached Java function runtime from previous build.");
     }
 
     fn on_lifecycle_end(&self) {
