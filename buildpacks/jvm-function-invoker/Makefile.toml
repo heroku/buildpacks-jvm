@@ -3,11 +3,11 @@ CARGO_TARGET_DIR="./target-cargo"
 
 [env.development]
 CARGO_PROFILE = "debug"
-BUILD_FLAGS = ["build", "--target", "x86_64-unknown-linux-musl", "--features", "vendored-openssl"]
+BUILD_FLAGS = ["build", "--target", "x86_64-unknown-linux-musl"]
 
 [env.production]
 CARGO_PROFILE = "release"
-BUILD_FLAGS = ["build", "--target", "x86_64-unknown-linux-musl", "--features", "vendored-openssl", "--release"]
+BUILD_FLAGS = ["build", "--target", "x86_64-unknown-linux-musl", "--release"]
 
 [tasks.build]
 args = ["@@split(BUILD_FLAGS, ;)"]
@@ -22,7 +22,7 @@ dependencies = ["check-crosscompile-mac-deps"]
 [tasks.strip]
 condition = { profiles = [ "production" ], platforms = [ "linux" ] }
 command = "strip"
-args = ["target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/bp_detect", "target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/bp_build"]
+args = ["target-cargo/x86_64-unknown-linux-musl/${CARGO_PROFILE}/${CARGO_MAKE_CRATE_NAME}"]
 
 [tasks.check-crosscompile-mac-deps]
 script_runner = "@rust"
@@ -71,16 +71,19 @@ fn main() {
         fs::remove_dir_all(&destination).unwrap();
     }
     fs::create_dir_all(&destination.join("bin")).unwrap();
+    fs::create_dir_all(&destination.join("opt")).unwrap();
 
     let mut files = HashMap::new();
-    files.insert(PathBuf::from("./target-cargo/x86_64-unknown-linux-musl").join(env!("CARGO_PROFILE")).join("bp_detect"), destination.join("bin/detect"));
-    files.insert(PathBuf::from("./target-cargo/x86_64-unknown-linux-musl").join(env!("CARGO_PROFILE")).join("bp_build"), destination.join("bin/build"));
+    files.insert(PathBuf::from("./target-cargo/x86_64-unknown-linux-musl").join(env!("CARGO_PROFILE")).join(env!("CARGO_MAKE_CRATE_NAME")), destination.join("bin/build"));
     files.insert(PathBuf::from("./buildpack.toml"), destination.join("buildpack.toml"));
     files.insert(PathBuf::from("./package.toml"), destination.join("package.toml"));
+    files.insert(PathBuf::from("./opt/run.sh"), destination.join("opt/run.sh"));
 
     for (from, to) in &files {
         fs::copy(from, to).unwrap();
     }
+
+    fs::hard_link(destination.join("bin/build"), destination.join("bin/detect")).unwrap();
 }
 '''
 

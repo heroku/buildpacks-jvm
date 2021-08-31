@@ -1,24 +1,16 @@
 [package]
 name = "jvm-function-invoker-buildpack"
 version = "0.0.0"
+publish = false
 edition = "2018"
-license = "MIT"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1"
-libcnb = "0.1.3"
-reqwest = { version = "0.11", features = ["blocking"] }
-serde = { version = "1.0", features = ["derive"] }
-sha2 = "0.9"
-termcolor = "1.1"
-toml = "0.5"
-
-openssl-sys = "*"
+indoc = "1.0.3"
+libcnb = "0.2.0-prerelease1"
+libherokubuildpack = { version = "0.1.1", features = ["toml"] }
+serde = "1.0.126"
+thiserror = "1.0.25"
+toml = "0.5.8"
 
 [dev-dependencies]
-tempfile = "3"
-
-[features]
-vendored-openssl = ["openssl-sys/vendored"]
+tempfile = "^3.2.0"
