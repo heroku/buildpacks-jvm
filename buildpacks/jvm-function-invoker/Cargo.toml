@@ -1,7 +1,6 @@
 [package]
 name = "jvm-function-invoker-buildpack"
-version = "0.1.0"
-authors = ["Manuel Fuchs <manuel.fuchs@salesforce.com>"]
+version = "0.0.0"
 edition = "2018"
 
 [dependencies]
