@@ -40,7 +40,7 @@ pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) -> i32 {
             ),
         },
         JvmFunctionInvokerBuildpackError::RuntimeLayerError(inner) => match inner {
-            RuntimeLayerError::RuntimeDownloadFailed(download_error) => log_error(
+            RuntimeLayerError::DownloadFailed(download_error) => log_error(
                 "Runtime installation failed",
                 formatdoc! {"
                         An error occurred while downloading the Java function runtime. In some cases,
@@ -50,7 +50,7 @@ pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) -> i32 {
                         {download_error}
                     ", download_error = download_error},
             ),
-            RuntimeLayerError::RuntimeChecksumFailed(io_error) => log_error(
+            RuntimeLayerError::ChecksumFailed(io_error) => log_error(
                 "Runtime installation failed",
                 formatdoc! {"
                         The integrity of the downloaded Java function runtime could not be verified
@@ -58,7 +58,7 @@ pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) -> i32 {
                         {io_error}
                     ", io_error = io_error},
             ),
-            RuntimeLayerError::RuntimeChecksumMismatch(checksum) => log_error(
+            RuntimeLayerError::ChecksumMismatch(checksum) => log_error(
                 "Runtime installation failed",
                 formatdoc! {"
                         The integrity check of the downloaded Java function runtime failed. The

@@ -34,12 +34,12 @@ impl
             &context.buildpack_descriptor.metadata.runtime.url,
             &runtime_jar_path,
         )
-        .map_err(RuntimeLayerError::RuntimeDownloadFailed)?;
+        .map_err(RuntimeLayerError::DownloadFailed)?;
 
         log_info("Function runtime download successful");
 
         let actual_runtime_jar_sha256 =
-            sha256(&runtime_jar_path).map_err(RuntimeLayerError::RuntimeChecksumFailed)?;
+            sha256(&runtime_jar_path).map_err(RuntimeLayerError::ChecksumFailed)?;
 
         if actual_runtime_jar_sha256 == context.buildpack_descriptor.metadata.runtime.sha256 {
             Ok(LayerContentMetadata::default()
@@ -49,7 +49,7 @@ impl
                     installed_runtime_sha256: actual_runtime_jar_sha256,
                 }))
         } else {
-            Err(RuntimeLayerError::RuntimeChecksumMismatch(actual_runtime_jar_sha256).into())
+            Err(RuntimeLayerError::ChecksumMismatch(actual_runtime_jar_sha256).into())
         }
     }
 
@@ -97,11 +97,11 @@ pub struct RuntimeLayerMetadata {
 #[derive(Error, Debug)]
 pub enum RuntimeLayerError {
     #[error("Could not download runtime JAR: {0}")]
-    RuntimeDownloadFailed(DownloadError),
+    DownloadFailed(DownloadError),
 
     #[error("Could not obtain checksum for runtime JAR: {0}")]
-    RuntimeChecksumFailed(std::io::Error),
+    ChecksumFailed(std::io::Error),
 
     #[error("Checksum validation of runtime JAR failed! Checksum was: {0}")]
-    RuntimeChecksumMismatch(String),
+    ChecksumMismatch(String),
 }
