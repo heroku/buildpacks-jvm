@@ -10,6 +10,8 @@ use crate::layers::opt::OptLayerLifecycle;
 use crate::layers::runtime::RuntimeLayerLifecycle;
 use crate::JvmFunctionInvokerBuildpackMetadata;
 
+// https://github.com/Malax/libcnb.rs/issues/63
+#[allow(clippy::needless_pass_by_value)]
 pub fn build(
     context: BuildContext<GenericPlatform, JvmFunctionInvokerBuildpackMetadata>,
 ) -> Result<(), libcnb::Error<JvmFunctionInvokerBuildpackError>> {
