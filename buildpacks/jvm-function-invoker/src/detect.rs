@@ -8,6 +8,10 @@ use crate::JvmFunctionInvokerBuildpackMetadata;
 use libherokubuildpack::toml_select_value;
 use toml::Value;
 
+// https://github.com/Malax/libcnb.rs/issues/63
+#[allow(clippy::needless_pass_by_value)]
+// https://github.com/Malax/libcnb.rs/issues/86
+#[allow(clippy::unnecessary_wraps)]
 pub fn detect(
     context: DetectContext<GenericPlatform, JvmFunctionInvokerBuildpackMetadata>,
 ) -> Result<DetectOutcome, Error<JvmFunctionInvokerBuildpackError>> {
@@ -31,7 +35,7 @@ fn project_toml_salesforce_type_is_function(project_toml_path: &Path) -> bool {
         .ok()
         .and_then(|table: Value| {
             toml_select_value(vec!["com", "salesforce", "type"], &table)
-                .and_then(|value| value.as_str())
+                .and_then(toml::Value::as_str)
                 .map(|value| value == "function")
         })
         .unwrap_or(false)
