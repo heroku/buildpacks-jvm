@@ -184,7 +184,7 @@ name = "jvm-function-invoker-buildpack"
 version = "0.0.0"
 dependencies = [
  "indoc",
- "libcnb",
+ "libcnb 0.3.0",
  "libherokubuildpack",
  "serde",
  "tempfile",
@@ -219,13 +219,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "libcnb"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9adfe0e4625435e4dbaac927cf99ae6059aeaaf49b390346ba6a2110c6010f7"
+dependencies = [
+ "lazy_static",
+ "regex",
+ "semver",
+ "serde",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
 name = "libherokubuildpack"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "419ce3bdd78e34113036a2d4a872184a6166863353f1e0bb29e17548a5d49ecc"
 dependencies = [
  "flate2",
- "libcnb",
+ "libcnb 0.2.0",
  "pathdiff",
  "sha2",
  "tar",
