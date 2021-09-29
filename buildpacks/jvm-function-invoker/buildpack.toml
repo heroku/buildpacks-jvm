@@ -23,8 +23,8 @@ id = "io.buildpacks.stacks.bionic"
 [metadata]
 
 [metadata.runtime]
-url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.0.1/sf-fx-runtime-java-runtime-1.0.1-jar-with-dependencies.jar"
-sha256 = "399ff5afda07682e0f68e9ff3137ddbf2bce4cde83ce798adbf0c35b5b497855"
+url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.0.2/sf-fx-runtime-java-runtime-1.0.2-jar-with-dependencies.jar"
+sha256 = "e16ea09922f90077ee6cb0ace0fe538cc609062b185e04db10743bac45879abc"
 
 [metadata.release]
 
