@@ -4,6 +4,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Updated function runtime to `1.0.3`
+
 ## [0.5.3] 2021/09/29
 * Updated function runtime to `1.0.2`
 * Update buildpack API version from `0.4` to `0.5`
