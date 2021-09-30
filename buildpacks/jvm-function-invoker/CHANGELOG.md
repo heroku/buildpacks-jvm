@@ -4,6 +4,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.4] 2021/09/30
+
 * Updated function runtime to `1.0.3`
 
 ## [0.5.3] 2021/09/29
