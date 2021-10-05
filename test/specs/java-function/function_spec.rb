@@ -15,6 +15,8 @@ describe "Heroku's Java CNB" do
           body: body
         ).call
 
+        expect(container.logs.stdout).to include("logging info 1")
+
         expect(query.as_json).to eq(body.reverse)
         expect(query.success?).to be_truthy
       end
