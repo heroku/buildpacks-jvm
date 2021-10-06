@@ -2,3 +2,6 @@
 **/target/
 **/target-cargo/
 .DS_Store
+
+.project
+.classpath
