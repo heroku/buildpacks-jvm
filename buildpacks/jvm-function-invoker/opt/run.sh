@@ -16,5 +16,7 @@ if [[ -n "${DEBUG_PORT:-""}" ]]; then
 	fi
 fi
 
-exec java "${additional_java_args[@]}" \
+JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom"
+
+exec java "${additional_java_args[@]}" "${JAVA_OPTS}" \
 	-jar "${runtime_layer_jar_path}" serve "${function_bundle_layer_dir}" -h 0.0.0.0 -p "${PORT:-8080}"
