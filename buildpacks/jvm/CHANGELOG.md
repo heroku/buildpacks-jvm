@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 * Default version for **OpenJDK 17** is now `17.0.1`
 
+## [0.1.10] 2021/10/27
+
 ## [0.1.9] 2021/10/19
 ### Changed
 * Default version for **OpenJDK 8** is now `1.8.0_312`
