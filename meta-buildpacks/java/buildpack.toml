@@ -9,7 +9,7 @@ description = "Official Heroku buildpack for Java applications."
 keywords = ["java"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[order]]
 

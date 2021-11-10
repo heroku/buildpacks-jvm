@@ -52,4 +52,4 @@ scripts must be located in a file named `build.sh` in the buildpack root directo
 - [jq](https://github.com/stedolan/jq) >= `1.6` in `$PATH`
 
 ## License
-Licensed under the MIT License. See [LICENSE](./LICENSE) file.
+See [LICENSE](./LICENSE) file.
