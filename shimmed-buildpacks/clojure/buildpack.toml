@@ -9,7 +9,7 @@ description = "Official Heroku buildpack for Clojure applications. It uses Leini
 keywords = ["clojure", "leiningen"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[stacks]]
 id = "heroku-18"

@@ -50,4 +50,4 @@ $ cargo test
 ```
 
 ## License
-Licensed under the MIT License. See [LICENSE](../../LICENSE) file.
+See [LICENSE](../../LICENSE) file.

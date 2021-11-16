@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed `licenses` in `buildpack.toml`
 
+### Changed
+* Switch to BSD 3-Clause License
+
 ## [0.0.35] 2021/02/23
 
 ## [0.0.35]

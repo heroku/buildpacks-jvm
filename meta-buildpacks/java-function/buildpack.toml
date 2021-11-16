@@ -8,7 +8,7 @@ homepage = "https://github.com/heroku/buildpacks-jvm"
 keywords = ["java", "function"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[order]]
 

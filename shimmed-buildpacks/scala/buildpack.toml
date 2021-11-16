@@ -9,7 +9,7 @@ description = "Official Heroku buildpack for Scala applications. It uses sbt for
 keywords = ["scala", "sbt"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[stacks]]
 id = "heroku-18"
