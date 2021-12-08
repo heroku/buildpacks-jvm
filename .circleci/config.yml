@@ -115,8 +115,7 @@ jobs:
       - setup_remote_docker
       - heroku-buildpacks/install-build-dependencies
       - run:
-          name: cargo make test
-          command: cargo make test
+          command: cargo fmt --all -- --check
           working_directory: << parameters.buildpack-dir >>
 
 workflows:
