@@ -9,7 +9,7 @@ cargo libcnb package --release
 
 mv target target-cargo
 mkdir target
-cp -r target-cargo/buildpack/release/heroku_jvm-function-invoker/ target/
+cp -r target-cargo/buildpack/release/heroku_jvm-function-invoker/* target/
 cp package.toml target/
 
 popd
