@@ -30,8 +30,8 @@ impl From<JvmFunctionInvokerBuildpackError> for Error<JvmFunctionInvokerBuildpac
 pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) -> i32 {
     match error {
         JvmFunctionInvokerBuildpackError::OptLayerError(inner) => match inner {
-            OptLayerError::CouldNotCopyRunSh(io_error)
-            | OptLayerError::CouldNotSetExecutableBitForRunSh(io_error) => log_error(
+            OptLayerError::CouldNotWriteRuntimeScript(io_error)
+            | OptLayerError::CouldNotSetExecutableBitForRuntimeScript(io_error) => log_error(
                 "Unexpected Error",
                 formatdoc! {"
                     An error occurred while copying files from the buildpack directory to the container.
@@ -107,6 +107,12 @@ pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) -> i32 {
                         Could not read function bundle metadata after running detection phase:
                         {toml_error}
                     ", toml_error = toml_error},
+            ),
+            BundleLayerError::FunctionRuntimeNotFound => log_error(
+                "Detection failed",
+                indoc! {"
+                    Could not find function runtime in environment.
+                "},
             ),
         },
         JvmFunctionInvokerBuildpackError::CouldNotWriteLaunchToml(toml_error) => log_error(

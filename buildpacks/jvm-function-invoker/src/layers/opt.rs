@@ -1,55 +1,55 @@
+use libcnb::build::BuildContext;
+use libcnb::data::layer_content_metadata::LayerTypes;
+use libcnb::generic::GenericMetadata;
+use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
+
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
-use std::path::{Path, PathBuf};
-
-use libcnb::data::layer_content_metadata::LayerContentMetadata;
-use libcnb::layer_lifecycle::LayerLifecycle;
-use libcnb::{BuildContext, GenericMetadata, GenericPlatform};
+use std::path::Path;
 
 use crate::error::JvmFunctionInvokerBuildpackError;
-use crate::JvmFunctionInvokerBuildpackMetadata;
+use crate::JvmFunctionInvokerBuildpack;
 
-pub struct OptLayerLifecycle {}
+pub struct OptLayer;
 
-#[cfg(target_family = "unix")]
-impl
-    LayerLifecycle<
-        GenericPlatform,
-        JvmFunctionInvokerBuildpackMetadata,
-        GenericMetadata,
-        PathBuf,
-        JvmFunctionInvokerBuildpackError,
-    > for OptLayerLifecycle
-{
-    fn create(
-        &self,
-        path: &Path,
-        context: &BuildContext<GenericPlatform, JvmFunctionInvokerBuildpackMetadata>,
-    ) -> Result<LayerContentMetadata<GenericMetadata>, JvmFunctionInvokerBuildpackError> {
-        let source = context.buildpack_dir.join("opt").join("run.sh");
-        let destination = path.join("run.sh");
+impl Layer for OptLayer {
+    type Buildpack = JvmFunctionInvokerBuildpack;
+    type Metadata = GenericMetadata;
 
-        fs::copy(&source, &destination).map_err(OptLayerError::CouldNotCopyRunSh)?;
-
-        fs::set_permissions(&destination, fs::Permissions::from_mode(0o755))
-            .map_err(OptLayerError::CouldNotSetExecutableBitForRunSh)?;
-
-        Ok(LayerContentMetadata::default().launch(true))
+    fn types(&self) -> LayerTypes {
+        LayerTypes {
+            launch: true,
+            build: false,
+            cache: false,
+        }
     }
 
-    fn layer_lifecycle_data(
+    fn create(
         &self,
-        path: &Path,
-        _layer_content_metadata: LayerContentMetadata<GenericMetadata>,
-    ) -> Result<PathBuf, JvmFunctionInvokerBuildpackError> {
-        Ok(path.join("run.sh"))
+        _context: &BuildContext<Self::Buildpack>,
+        layer_path: &Path,
+    ) -> Result<LayerResult<Self::Metadata>, JvmFunctionInvokerBuildpackError> {
+        let layer_bin_dir = layer_path.join("bin");
+        let destination = layer_bin_dir.join(JVM_RUNTIME_SCRIPT_NAME);
+
+        fs::create_dir_all(&layer_bin_dir).map_err(OptLayerError::CouldNotWriteRuntimeScript)?;
+
+        fs::write(&destination, include_bytes!("../../opt/jvm-runtime.sh"))
+            .map_err(OptLayerError::CouldNotWriteRuntimeScript)?;
+
+        fs::set_permissions(&destination, fs::Permissions::from_mode(0o755))
+            .map_err(OptLayerError::CouldNotSetExecutableBitForRuntimeScript)?;
+
+        LayerResultBuilder::new(GenericMetadata::default()).build()
     }
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum OptLayerError {
-    #[error("Could not copy run.sh to layer: {0}")]
-    CouldNotCopyRunSh(std::io::Error),
-    #[error("Could not set executable bit on run.sh: {0}")]
-    CouldNotSetExecutableBitForRunSh(std::io::Error),
+    #[error("Could not write runtime script to layer: {0}")]
+    CouldNotWriteRuntimeScript(std::io::Error),
+    #[error("Could not set executable bit on runtime script: {0}")]
+    CouldNotSetExecutableBitForRuntimeScript(std::io::Error),
 }
+
+pub const JVM_RUNTIME_SCRIPT_NAME: &str = "jvm-runtime.sh";
