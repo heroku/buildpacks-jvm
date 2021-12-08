@@ -23,8 +23,8 @@ orbs:
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y -t x86_64-unknown-linux-musl
                 echo "export PATH=\"$HOME/.cargo/bin:$PATH\"" >> $BASH_ENV
           - run:
-              name: "Install cargo-make"
-              command: cargo install cargo-make
+              name: "Install libcnb-cargo"
+              command: cargo install libcnb-cargo
 
 
 jobs:
