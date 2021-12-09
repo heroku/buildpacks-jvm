@@ -23,7 +23,7 @@ use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::TargetLifecycle;
 use libcnb::{buildpack_main, Error};
 use libcnb::{Buildpack, Env};
-use libherokubuildpack::{log_header, log_info};
+use libherokubuildpack::{handle_error_heroku, log_header, log_info};
 use serde::Deserialize;
 
 mod common;
@@ -94,10 +94,7 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
     }
 
     fn handle_error(&self, error: Error<Self::Error>) -> i32 {
-        match error {
-            Error::BuildpackError(buildpack_error) => handle_buildpack_error(buildpack_error),
-            error => panic!("{:?}", error),
-        }
+        handle_error_heroku(handle_buildpack_error, error)
     }
 }
 
