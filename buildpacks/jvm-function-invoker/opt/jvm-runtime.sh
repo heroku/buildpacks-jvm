@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-runtime_layer_jar_path="${1}"
-function_bundle_layer_dir="${2}"
-
 additional_java_args=()
 if [[ -n "${DEBUG_PORT:-""}" ]]; then
 	java_version=$(java -version 2>&1 | grep -i version | awk '{gsub(/"/, "", $3); print $3}')
@@ -17,4 +14,4 @@ if [[ -n "${DEBUG_PORT:-""}" ]]; then
 fi
 
 exec java "${additional_java_args[@]}" \
-	-jar "${runtime_layer_jar_path}" serve "${function_bundle_layer_dir}" -h 0.0.0.0 -p "${PORT:-8080}"
+	-jar "${JVM_FUNCTION_RUNTIME_JAR_PATH}" serve "${JVM_FUNCTION_BUNDLE_DIR}" -h 0.0.0.0 -p "${PORT:-8080}"

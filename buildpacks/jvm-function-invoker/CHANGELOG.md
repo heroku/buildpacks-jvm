@@ -4,6 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 * Switch to BSD 3-Clause License
+* Upgrade to `libcnb` version `0.4.0`
 
 ## [0.5.5] 2021/10/19
 
