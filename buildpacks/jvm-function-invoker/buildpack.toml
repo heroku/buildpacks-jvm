@@ -1,15 +1,15 @@
-api = "0.4"
+api = "0.6"
 
 [buildpack]
 id = "heroku/jvm-function-invoker"
-version = "0.5.2"
+version = "0.6.0"
 name = "JVM Function Invoker"
 clear-env = true
 homepage = "https://github.com/heroku/buildpacks-jvm"
 keywords = ["java", "function"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[stacks]]
 id = "heroku-18"
@@ -23,8 +23,8 @@ id = "io.buildpacks.stacks.bionic"
 [metadata]
 
 [metadata.runtime]
-url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.0.1/sf-fx-runtime-java-runtime-1.0.1-jar-with-dependencies.jar"
-sha256 = "399ff5afda07682e0f68e9ff3137ddbf2bce4cde83ce798adbf0c35b5b497855"
+url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.0.4/sf-fx-runtime-java-runtime-1.0.4-jar-with-dependencies.jar"
+sha256 = "386c15d8d2c44685b87f5a434e2497471bda85c7cd7355eac65d4db35a7ef0c5"
 
 [metadata.release]
 

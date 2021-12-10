@@ -3,6 +3,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+* Switch to BSD 3-Clause License
+* Upgrade to `libcnb` version `0.4.0`
+* Updated function runtime to `1.0.4`
+
+## [0.5.5] 2021/10/19
+
+## [0.5.4] 2021/09/30
+
+* Updated function runtime to `1.0.3`
+
+## [0.5.3] 2021/09/29
+* Updated function runtime to `1.0.2`
+* Update buildpack API version from `0.4` to `0.5`
+* Update `libcnb` and `libherokubuildpack` to new major versions
+
+## [0.5.2] 2021/08/31
 * Rewrite to use libcnb 0.2.0 features
 
 ## [0.5.1] 2021/08/25

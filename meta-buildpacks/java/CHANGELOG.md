@@ -4,6 +4,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 * Update github-action to upload buildpackage to Github Releases
+* Switch to BSD 3-Clause License
+
+## [0.3.13] 2021/10/28
+* Upgraded `heroku/jvm` to `0.1.11`
+* Upgraded `heroku/jvm` to `0.1.10`
+* Upgraded `heroku/jvm` to `0.1.9`
+
+## [0.3.12] 2021/10/19
+
+## [0.3.11] 2021/09/15
+* Upgraded `heroku/jvm` to `0.1.8`
 
 ## [0.3.10] 2021/08/10
 * Upgraded `heroku/maven` to `0.2.5`

@@ -9,7 +9,7 @@ description = "Official Heroku buildpack for Gradle applications."
 keywords = ["java", "gradle"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[stacks]]
 id = "heroku-18"

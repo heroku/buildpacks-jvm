@@ -2,20 +2,20 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/java"
-version = "0.3.11"
+version = "0.3.14"
 name = "Java"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for Java applications."
 keywords = ["java"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[order]]
 
 [[order.group]]
 id = "heroku/jvm"
-version = "0.1.7"
+version = "0.1.11"
 
 [[order.group]]
 id = "heroku/maven"

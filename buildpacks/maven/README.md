@@ -84,4 +84,4 @@ Allows overriding the Java options for the Maven process during build. The defau
 If set, the buildpack will emit debug log messages.
 
 ## License
-Licensed under the MIT License. See [LICENSE](../../LICENSE) file.
+See [LICENSE](../../LICENSE) file.

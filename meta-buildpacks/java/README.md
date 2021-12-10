@@ -180,4 +180,4 @@ by default. To use another task, set the `GRADLE_TASK` environment variable to t
 your application.
 
 ## License
-Licensed under the MIT License. See [LICENSE](../../LICENSE) file.
+See [LICENSE](../../LICENSE) file.

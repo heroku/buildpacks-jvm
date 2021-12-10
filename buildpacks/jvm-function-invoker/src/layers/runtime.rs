@@ -1,34 +1,43 @@
-use std::path::{Path, PathBuf};
+use libcnb::build::BuildContext;
+use libcnb::data::layer_content_metadata::LayerTypes;
+use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::layer_env::{LayerEnv, ModificationBehavior, TargetLifecycle};
+use std::path::Path;
 
-use libcnb::data::layer_content_metadata::LayerContentMetadata;
-use libcnb::layer_lifecycle::{LayerLifecycle, ValidateResult};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::error::JvmFunctionInvokerBuildpackError;
-use crate::JvmFunctionInvokerBuildpackMetadata;
-use libcnb::{BuildContext, GenericPlatform};
-use libherokubuildpack::{download_file, log_header, log_info, sha256, DownloadError};
+use crate::JvmFunctionInvokerBuildpack;
+use libherokubuildpack::{download_file, log_info, sha256, DownloadError};
 
-pub struct RuntimeLayerLifecycle {}
+pub struct RuntimeLayer;
 
-impl
-    LayerLifecycle<
-        GenericPlatform,
-        JvmFunctionInvokerBuildpackMetadata,
-        RuntimeLayerMetadata,
-        PathBuf,
-        JvmFunctionInvokerBuildpackError,
-    > for RuntimeLayerLifecycle
-{
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct RuntimeLayerMetadata {
+    installed_runtime_sha256: String,
+}
+
+impl Layer for RuntimeLayer {
+    type Buildpack = JvmFunctionInvokerBuildpack;
+    type Metadata = RuntimeLayerMetadata;
+
+    fn types(&self) -> LayerTypes {
+        LayerTypes {
+            launch: true,
+            build: false,
+            cache: true,
+        }
+    }
+
     fn create(
         &self,
-        path: &Path,
-        context: &BuildContext<GenericPlatform, JvmFunctionInvokerBuildpackMetadata>,
-    ) -> Result<LayerContentMetadata<RuntimeLayerMetadata>, JvmFunctionInvokerBuildpackError> {
-        let runtime_jar_path = path.join("sf-fx-runtime-java.jar");
-
+        context: &BuildContext<Self::Buildpack>,
+        layer_path: &Path,
+    ) -> Result<LayerResult<Self::Metadata>, JvmFunctionInvokerBuildpackError> {
         log_info("Starting download of function runtime");
+
+        let runtime_jar_path = layer_path.join("sf-fx-runtime-java.jar");
 
         download_file(
             &context.buildpack_descriptor.metadata.runtime.url,
@@ -42,56 +51,39 @@ impl
             sha256(&runtime_jar_path).map_err(RuntimeLayerError::ChecksumFailed)?;
 
         if actual_runtime_jar_sha256 == context.buildpack_descriptor.metadata.runtime.sha256 {
-            Ok(LayerContentMetadata::default()
-                .launch(true)
-                .cache(true)
-                .metadata(RuntimeLayerMetadata {
-                    installed_runtime_sha256: actual_runtime_jar_sha256,
-                }))
+            LayerResultBuilder::new(RuntimeLayerMetadata {
+                installed_runtime_sha256: actual_runtime_jar_sha256,
+            })
+            .env(LayerEnv::new().chainable_insert(
+                TargetLifecycle::All,
+                ModificationBehavior::Override,
+                RUNTIME_JAR_PATH_ENV_VAR_NAME,
+                runtime_jar_path,
+            ))
+            .build()
         } else {
             Err(RuntimeLayerError::ChecksumMismatch(actual_runtime_jar_sha256).into())
         }
     }
 
-    fn validate(
+    fn existing_layer_strategy(
         &self,
-        _path: &Path,
-        layer_content_metadata: &LayerContentMetadata<RuntimeLayerMetadata>,
-        build_context: &BuildContext<GenericPlatform, JvmFunctionInvokerBuildpackMetadata>,
-    ) -> ValidateResult {
-        if layer_content_metadata.metadata.installed_runtime_sha256
-            == build_context.buildpack_descriptor.metadata.runtime.sha256
-        {
-            ValidateResult::KeepLayer
+        context: &BuildContext<Self::Buildpack>,
+        layer_data: &LayerData<Self::Metadata>,
+    ) -> Result<ExistingLayerStrategy, JvmFunctionInvokerBuildpackError> {
+        let sha256_matches = layer_data
+            .content_metadata
+            .metadata
+            .installed_runtime_sha256
+            == context.buildpack_descriptor.metadata.runtime.sha256;
+
+        if sha256_matches {
+            log_info("Using cached Java function runtime from previous build.");
+            Ok(ExistingLayerStrategy::Keep)
         } else {
-            ValidateResult::RecreateLayer
+            Ok(ExistingLayerStrategy::Recreate)
         }
     }
-
-    fn layer_lifecycle_data(
-        &self,
-        path: &Path,
-        _layer_content_metadata: LayerContentMetadata<RuntimeLayerMetadata>,
-    ) -> Result<PathBuf, JvmFunctionInvokerBuildpackError> {
-        Ok(path.join("sf-fx-runtime-java.jar"))
-    }
-
-    fn on_lifecycle_start(&self) {
-        log_header("Installing Java function runtime");
-    }
-
-    fn on_keep(&self) {
-        log_info("Using cached Java function runtime from previous build.");
-    }
-
-    fn on_lifecycle_end(&self) {
-        log_info("Function runtime installation successful");
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct RuntimeLayerMetadata {
-    installed_runtime_sha256: String,
 }
 
 #[derive(Error, Debug)]
@@ -105,3 +97,5 @@ pub enum RuntimeLayerError {
     #[error("Checksum validation of runtime JAR failed! Checksum was: {0}")]
     ChecksumMismatch(String),
 }
+
+pub const RUNTIME_JAR_PATH_ENV_VAR_NAME: &str = "JVM_FUNCTION_RUNTIME_JAR_PATH";

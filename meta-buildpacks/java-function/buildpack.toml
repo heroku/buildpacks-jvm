@@ -2,19 +2,19 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/java-function"
-version = "0.3.17"
+version = "0.3.25"
 name = "Java Function"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 keywords = ["java", "function"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[order]]
 
 [[order.group]]
 id = "heroku/jvm"
-version = "0.1.7"
+version = "0.1.11"
 
 [[order.group]]
 id = "heroku/maven"
@@ -22,7 +22,7 @@ version = "0.2.5"
 
 [[order.group]]
 id = "heroku/jvm-function-invoker"
-version = "0.5.1"
+version = "0.5.5"
 
 [metadata]
 

@@ -10,7 +10,7 @@ description = "Official Heroku buildpack for Maven applications."
 keywords = ["java", "maven", "mvn"]
 
 [[licenses]]
-type = "MIT"
+type = "BSD-3-Clause"
 
 [[stacks]]
 id = "heroku-18"

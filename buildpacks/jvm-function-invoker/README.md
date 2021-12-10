@@ -13,41 +13,27 @@
 * [pack](https://buildpacks.io/docs/tools/pack/) (for local development)
 
 ## Usage
-This buildpack targets `x86_64-unknown-linux-musl` as the platform for the buildpack and comes with tooling to support cross-compilation on macOS. It uses [`libcnb.rs`](https://github.com/Malax/libcnb.rs) as the language binding for buildpacks.
+This buildpack targets `x86_64-unknown-linux-musl` as the platform for the buildpack. It uses [`libcnb.rs`](https://github.com/Malax/libcnb.rs) as the language binding for buildpacks which cames with tooling for cross-compilation and packagaing.
 
 ### Development
-To use this buildpack for local development that can be used by `pack`, a buildpack dir needs to be made:
+Use [`libcnb-cargo`](https://github.com/Malax/libcnb.rs/tree/main/libcnb-cargo) to cross-compile and build the buildpack for local development and testing:
 
-```
-$ cargo make pack
-```
-
-This will create a `target/` directory that can be passed to `pack`. If a default builder hasn't been set, the heroku one can be set:
-
-```
-$ pack config default-builder heroku/buildpacks:20
-```
-
-With the heroku builder image set and from the buildpack directory:
-
-```
-$ pack build <IMAGE NAME> -b heroku/jvm -b heroku/maven -b `target` -p <APP SOURCE DIR>
+```shell
+$ cargo libcnb package
 ```
 
 ### Production
-`cargo-make` has the concept of [profiles](https://sagiegurari.github.io/cargo-make/#usage-workspace-profiles) which is how it can choose where to do a "release" build with optimizations for runtime vs. optimizing for build speed.
+A production release can also be build with `libcnb-cargo` by passing in the `--release` flag:
 
-When packaging up the buildpack the `build.sh` script uses this `cargo-make` command:
-
-```
-$ cargo make pack --profile production
+```shell
+$ cargo libcnb package --release
 ```
 
 ### Testing
 To run the unit + doc tests:
-```
+```shell
 $ cargo test
 ```
 
 ## License
-Licensed under the MIT License. See [LICENSE](../../LICENSE) file.
+See [LICENSE](../../LICENSE) file.
