@@ -73,7 +73,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.package.outputs.package }}
-          tag: ${{ github.ref }}
+          tag: ${{ steps.package.outputs.id }}_${{ steps.package.outputs.version }}
           overwrite: true
       - id: prepare-pr
         name: "Prepare PR with version bumps and CHANGELOG updates"

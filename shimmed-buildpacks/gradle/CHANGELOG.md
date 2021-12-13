@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * Switch to BSD 3-Clause License
+* This buildpack now supports all stacks (stacks = "*" in buildpack.toml)
 
 ## [0.0.35] 2021/02/23
 

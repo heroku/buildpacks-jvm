@@ -1,8 +1,8 @@
-api = "0.4"
+api = "0.5"
 
 [buildpack]
 id = "heroku/gradle"
-version = "0.0.36"
+version = "0.0.35.1"
 name = "Gradle"
 homepage = "https://github.com/heroku/heroku-buildpack-gradle"
 description = "Official Heroku buildpack for Gradle applications."
@@ -19,6 +19,9 @@ id = "heroku-20"
 
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
+
+[[stacks]]
+id = "*"
 
 [metadata]
 
