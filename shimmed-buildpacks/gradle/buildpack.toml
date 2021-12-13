@@ -1,4 +1,4 @@
-api = "0.4"
+api = "0.5"
 
 [buildpack]
 id = "heroku/gradle"
@@ -12,19 +12,13 @@ keywords = ["java", "gradle"]
 type = "BSD-3-Clause"
 
 [[stacks]]
-id = "heroku-18"
-
-[[stacks]]
-id = "heroku-20"
-
-[[stacks]]
-id = "io.buildpacks.stacks.bionic"
+id = "*"
 
 [metadata]
 
 [metadata.shim]
-tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/gradle-v35.tgz"
-sha256 = "d49db802898e14667ddd98548baf244527875eb6ae4f556c417042540655660c"
+tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/gradle-v36.tgz"
+sha256 = "4c2058cc0ecea7ab6eb3a0c620740d4b8b20b8586518efd0db9ce1b64b98bb31"
 
 [metadata.release]
 
