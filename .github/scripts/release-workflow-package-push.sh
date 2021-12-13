@@ -55,9 +55,7 @@ image_name="${buildpack_docker_repository}:${buildpack_version}"
 echo "Publishing ${buildpack_id} v${buildpack_version} to ${image_name}"
 pack package-buildpack --config "${buildpack_build_path}/package.toml" --publish "${image_name}"
 
-org_name=$(dirname "$buildpack_id")
-bp_name=$(basename "$buildpack_id")
-file_name="${org_name}-${bp_name}-${buildpack_version}.tgz"
+file_name="${buildpack_id//\//_}-${buildpack_version}.cnb"
 
 echo "Publishing ${buildpack_id} v${buildpack_version} to ${file_name}"
 pack buildpack package --format file --config "${buildpack_build_path}/package.toml" "${file_name}"
