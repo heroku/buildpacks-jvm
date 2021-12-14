@@ -55,10 +55,10 @@ image_name="${buildpack_docker_repository}:${buildpack_version}"
 echo "Publishing ${buildpack_id} v${buildpack_version} to ${image_name}"
 pack package-buildpack --config "${buildpack_build_path}/package.toml" --publish "${image_name}"
 
-file_name="${buildpack_id//\//_}-${buildpack_version}.cnb"
+cnb_package_file_path="${TMPDIR}/${buildpack_id//\//_}-${buildpack_version}.cnb"
 
-echo "Publishing ${buildpack_id} v${buildpack_version} to ${file_name}"
-pack buildpack package --format file --config "${buildpack_build_path}/package.toml" "${file_name}"
+echo "Packaging .cnb file for ${buildpack_id} v${buildpack_version} to ${cnb_package_file_path}"
+pack buildpack package --format file --config "${buildpack_build_path}/package.toml" "${cnb_package_file_path}"
 
 # We might have local changes after building and/or shimming the buildpack. To ensure scripts down the pipeline
 # work with a clean state, we reset all local changes here.
@@ -69,4 +69,4 @@ echo "::set-output name=id::${buildpack_id}"
 echo "::set-output name=version::${buildpack_version}"
 echo "::set-output name=path::${buildpack_path}"
 echo "::set-output name=address::${buildpack_docker_repository}@$(crane digest "${image_name}")"
-echo "::set-output name=package::${file_name}"
+echo "::set-output name=cnb_package_file_path::${cnb_package_file_path}"
