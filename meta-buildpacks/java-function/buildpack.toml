@@ -7,7 +7,7 @@ name = "Java Function"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 keywords = ["java", "function"]
 
-[[licenses]]
+[[buildpack.licenses]]
 type = "BSD-3-Clause"
 
 [[order]]
