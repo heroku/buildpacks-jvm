@@ -8,7 +8,7 @@ homepage = "https://github.com/heroku/heroku-buildpack-scala"
 description = "Official Heroku buildpack for Scala applications. It uses sbt for building."
 keywords = ["scala", "sbt"]
 
-[[licenses]]
+[[buildpack.licenses]]
 type = "BSD-3-Clause"
 
 [[stacks]]

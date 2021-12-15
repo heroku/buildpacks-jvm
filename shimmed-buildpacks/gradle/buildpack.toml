@@ -8,7 +8,7 @@ homepage = "https://github.com/heroku/heroku-buildpack-gradle"
 description = "Official Heroku buildpack for Gradle applications."
 keywords = ["java", "gradle"]
 
-[[licenses]]
+[[buildpack.licenses]]
 type = "BSD-3-Clause"
 
 [[stacks]]
