@@ -55,7 +55,7 @@ image_name="${buildpack_docker_repository}:${buildpack_version}"
 echo "Publishing ${buildpack_id} v${buildpack_version} to ${image_name}"
 pack package-buildpack --config "${buildpack_build_path}/package.toml" --publish "${image_name}"
 
-cnb_package_file_path="${TMPDIR}/${buildpack_id//\//_}-${buildpack_version}.cnb"
+cnb_package_file_path="$(mktemp -d)/${buildpack_id//\//_}-${buildpack_version}.cnb"
 
 echo "Packaging .cnb file for ${buildpack_id} v${buildpack_version} to ${cnb_package_file_path}"
 pack buildpack package --format file --config "${buildpack_build_path}/package.toml" "${cnb_package_file_path}"
