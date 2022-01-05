@@ -36,11 +36,11 @@ jobs:
         with:
           toolchain: stable
           target: "x86_64-unknown-linux-musl"
-      - id: install-cargo-make
-        name: "Install cargo-make"
+      - id: install-libcnb-cargo
+        name: "Install libcnb-cargo"
         uses: actions-rs/install@v0.1
         with:
-          crate: cargo-make
+          crate: libcnb-cargo
           version: latest
       - id: package
         name: "Package buildpack and publish to container registry"
