@@ -7,11 +7,11 @@ rust-version = "1.56"
 
 [dependencies]
 indoc = "1.0.3"
-libcnb = "0.4.0"
-libherokubuildpack = { version = "0.4.0", features = ["toml"] }
+libcnb = "0.5.0"
+libherokubuildpack = { version = "0.5.0", features = ["toml"] }
 serde = "1.0.133"
 thiserror = "1.0.30"
 toml = "0.5.8"
 
 [dev-dependencies]
-tempfile = "^3.3.0"
+tempfile = "3.3.0"

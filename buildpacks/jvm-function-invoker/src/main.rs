@@ -15,15 +15,15 @@ use crate::layers::opt::OptLayer;
 use crate::layers::runtime::RuntimeLayer;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::{Launch, Process};
+use libcnb::data::launch::{Launch, ProcessBuilder};
 use libcnb::data::layer_name;
 use libcnb::data::process_type;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
-use libcnb::layer_env::TargetLifecycle;
+use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Error};
 use libcnb::{Buildpack, Env};
-use libherokubuildpack::{handle_error_heroku, log_header, log_info};
+use libherokubuildpack::{log_header, log_info, on_error_heroku};
 use serde::Deserialize;
 
 mod common;
@@ -78,23 +78,23 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
         context.handle_layer(
             layer_name!("bundle"),
             BundleLayer {
-                env: runtime_layer.env.apply(TargetLifecycle::Build, &Env::new()),
+                env: runtime_layer.env.apply(Scope::Build, &Env::new()),
             },
         )?;
 
         BuildResultBuilder::new()
-            .launch(Launch::default().process(Process::new(
-                process_type!("web"),
-                String::from(layers::opt::JVM_RUNTIME_SCRIPT_NAME),
-                Vec::<String>::new(),
-                false,
-                true,
-            )))
+            .launch(
+                Launch::new().process(
+                    ProcessBuilder::new(process_type!("web"), layers::opt::JVM_RUNTIME_SCRIPT_NAME)
+                        .default(true)
+                        .build(),
+                ),
+            )
             .build()
     }
 
-    fn handle_error(&self, error: Error<Self::Error>) -> i32 {
-        handle_error_heroku(handle_buildpack_error, error)
+    fn on_error(&self, error: Error<Self::Error>) -> i32 {
+        on_error_heroku(handle_buildpack_error, error)
     }
 }
 
