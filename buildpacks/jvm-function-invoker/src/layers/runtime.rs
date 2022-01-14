@@ -1,7 +1,7 @@
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
-use libcnb::layer_env::{LayerEnv, ModificationBehavior, TargetLifecycle};
+use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
@@ -55,7 +55,7 @@ impl Layer for RuntimeLayer {
                 installed_runtime_sha256: actual_runtime_jar_sha256,
             })
             .env(LayerEnv::new().chainable_insert(
-                TargetLifecycle::All,
+                Scope::All,
                 ModificationBehavior::Override,
                 RUNTIME_JAR_PATH_ENV_VAR_NAME,
                 runtime_jar_path,

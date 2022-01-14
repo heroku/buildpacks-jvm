@@ -2,7 +2,7 @@ use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::generic::GenericMetadata;
 use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
-use libcnb::layer_env::{LayerEnv, ModificationBehavior, TargetLifecycle};
+use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::{read_toml_file, Env, TomlFileError};
 
 use std::path::Path;
@@ -61,7 +61,7 @@ impl Layer for BundleLayer {
                 log_function_metadata(&layer_path)?;
                 LayerResultBuilder::new(GenericMetadata::default())
                     .env(LayerEnv::new().chainable_insert(
-                        TargetLifecycle::All,
+                        Scope::All,
                         ModificationBehavior::Override,
                         FUNCTION_BUNDLE_DIR_ENV_VAR_NAME,
                         layer_path,
