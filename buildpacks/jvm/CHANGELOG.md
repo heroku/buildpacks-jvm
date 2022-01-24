@@ -3,6 +3,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.1.12] 2022/01/24
 * Switch to BSD 3-Clause License
 * Default version for **OpenJDK 7** is now `1.7.0_332`
 * Default version for **OpenJDK 8** is now `1.8.0_322`
