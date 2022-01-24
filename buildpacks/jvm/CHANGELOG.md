@@ -4,6 +4,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 * Switch to BSD 3-Clause License
+* Default version for **OpenJDK 7** is now `1.7.0_332`
+* Default version for **OpenJDK 8** is now `1.8.0_322`
+* Default version for **OpenJDK 11** is now `11.0.14`
+* Default version for **OpenJDK 13** is now `13.0.10`
+* Default version for **OpenJDK 15** is now `15.0.6`
+* Default version for **OpenJDK 17** is now `17.0.2`
 
 ## [0.1.11] 2021/10/28
 ### Changed
