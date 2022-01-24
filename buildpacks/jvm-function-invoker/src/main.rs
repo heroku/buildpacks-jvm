@@ -6,22 +6,19 @@
 // Re-disable pedantic lints that are too noisy/unwanted.
 #![allow(clippy::module_name_repetitions)]
 
-use std::fmt::Debug;
-
 use crate::common::project_toml_salesforce_type_is_function;
 use crate::error::{handle_buildpack_error, JvmFunctionInvokerBuildpackError};
 use crate::layers::bundle::BundleLayer;
 use crate::layers::opt::OptLayer;
 use crate::layers::runtime::RuntimeLayer;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
+use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{Launch, ProcessBuilder};
-use libcnb::data::layer_name;
-use libcnb::data::process_type;
+use libcnb::data::{layer_name, process_type};
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
-use libcnb::{buildpack_main, Error};
 use libcnb::{Buildpack, Env};
 use libherokubuildpack::{log_header, log_info, on_error_heroku};
 use serde::Deserialize;
@@ -93,7 +90,7 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
             .build()
     }
 
-    fn on_error(&self, error: Error<Self::Error>) -> i32 {
+    fn on_error(&self, error: libcnb::Error<Self::Error>) -> i32 {
         on_error_heroku(handle_buildpack_error, error)
     }
 }
