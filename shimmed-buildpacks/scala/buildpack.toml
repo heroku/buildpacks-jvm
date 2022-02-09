@@ -23,8 +23,8 @@ id = "io.buildpacks.stacks.bionic"
 [metadata]
 
 [metadata.shim]
-tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/scala-v91.tgz"
-sha256 = "a41c61addccd7c24d38e24ecff67b63c9fb03efdaea1735255385a8e0669db69"
+tarball = "https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/scala-v92.tgz"
+sha256 = "4081cbf84b9fe6eb1af2a3b3c35345e2a19cfa3df46bd5465ef77e83fcba44bf"
 
 [metadata.release]
 
