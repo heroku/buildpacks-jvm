@@ -51,7 +51,7 @@ else
 	install_jdk "${jdkUrl}" "${jdkLayer}" "${bpDir}"
 	install_certs "${jdkLayer}"
 	install_profile "${bpDir}" "${jdkLayer}/profile.d"
-	install_jdk_overlay "${jdkVersion}" "${jdkLayer}" "${appDir}"
+	install_jdk_overlay "${jdkLayer}" "${appDir}"
 
 	mkdir -p "${jdkLayer}/env.build"
 	echo -n "${jdkLayer}" >"${jdkLayer}/env.build/JAVA_HOME"
