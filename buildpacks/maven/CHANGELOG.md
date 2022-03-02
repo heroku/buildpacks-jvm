@@ -4,6 +4,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6] 2022/03/02
+
 * Switch to BSD 3-Clause License
 * Applications that use Spring Boot are now properly detected even if their dependency to Spring Boot is transitive
 
