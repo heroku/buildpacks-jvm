@@ -4,7 +4,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
 * Default version for **OpenJDK 11** is now `11.0.14.1`
+
+### Fixed
+
+* JDK overlays (using the `.jdk-overlay` directory) are now properly applied
 
 ## [0.1.12] 2022/01/24
 * Switch to BSD 3-Clause License
