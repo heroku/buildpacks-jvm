@@ -3,7 +3,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 * Switch to BSD 3-Clause License
+* Applications that use Spring Boot are now properly detected even if their dependency to Spring Boot is transitive
 
 ## [0.2.5] 2021/08/10
 ### Fixed
