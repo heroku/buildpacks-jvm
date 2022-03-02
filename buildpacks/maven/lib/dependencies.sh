@@ -2,11 +2,10 @@
 
 dependencies::has_spring_boot() {
 	local -r app_directory=${1:?}
-	local -r pom_path="${app_directory}/pom.xml"
+	local -r dependency_list_path="${app_directory}/target/mvn-dependency-list.log"
 
-	if [[ -f "${pom_path}" ]]; then
-		grep -q "<groupId>org.springframework.boot" "${pom_path}" &&
-			grep -q "<artifactId>spring-boot" "${pom_path}"
+	if [[ -f "${dependency_list_path}" ]]; then
+		grep -q "org.springframework.boot:spring-boot" "${dependency_list_path}"
 	fi
 }
 
