@@ -17,4 +17,4 @@ toml = "0.5.8"
 url = "2.2.2"
 
 [dev-dependencies]
-libcnb-test = { path = "../../../libcnb.rs/libcnb-test" }
+libcnb-test = "0.3.0"
