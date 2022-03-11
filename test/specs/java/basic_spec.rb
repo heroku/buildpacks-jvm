@@ -6,7 +6,7 @@ describe "Heroku's Java CNB" do
     Cutlass::App.new("simple-http-service").transaction do |app|
       app.pack_build do |pack_result|
         expect(pack_result.stdout).to_not include("Downloading and extracting Maven tarball...")
-        expect(pack_result.stdout).to include("[INFO] $ ./mvnw")
+        expect(pack_result.stdout).to include("$ ./mvnw")
       end
 
       app.start_container(expose_ports: 8080) do |container|
