@@ -24,7 +24,9 @@ use libcnb::{buildpack_main, Buildpack, Env, Platform};
 use libherokubuildpack::{log_header, log_info, DownloadError};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::path::PathBuf;
 
+use libcnb::layer_env::Scope;
 use std::process::Command;
 
 mod layer;
@@ -101,9 +103,11 @@ impl Buildpack for MavenBuildpack {
         )
         .map_err(MavenBuildpackError::DetermineModeError)?;
 
-        match maven_mode {
+        let (mvn_executable, mvn_env) = match maven_mode {
             Mode::UseWrapper => {
                 log_header("Using Apache Maven wrapper from application");
+
+                (context.app_dir.join("mvnw"), Env::from_current())
             }
             Mode::InstallVersion {
                 version,
@@ -120,7 +124,7 @@ impl Buildpack for MavenBuildpack {
                     log_default_maven_version_warning(&version);
                 }
 
-                let _maven_layer = context
+                let maven_layer = context
                     .buildpack_descriptor
                     .metadata
                     .tarballs
@@ -134,6 +138,11 @@ impl Buildpack for MavenBuildpack {
                     })?;
 
                 log_info(format!("Successfully installed Apache Maven {}", &version));
+
+                (
+                    PathBuf::from("mvn"),
+                    maven_layer.env.apply(Scope::Build, &Env::from_current()),
+                )
             }
         };
 
@@ -187,19 +196,20 @@ impl Buildpack for MavenBuildpack {
 
         log_header("Executing Maven");
         log_info(format!(
-            "$ mvn {} {}",
+            "$ {} {} {}",
+            mvn_executable.to_string_lossy(),
             shell_words::join(&maven_options),
             shell_words::join(&maven_goals)
         ));
 
-        Command::new("/layers/heroku_maven/maven/bin/mvn")
+        Command::new(mvn_executable)
             .args(
                 maven_options
                     .iter()
                     .chain(&internal_maven_options)
                     .chain(&maven_goals),
             )
-            .envs(&Env::from_current())
+            .envs(&mvn_env)
             .spawn()
             .unwrap()
             .wait()
