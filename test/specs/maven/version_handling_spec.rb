@@ -40,7 +40,7 @@ describe "Heroku's Maven Cloud Native Buildpack" do
           set_maven_version(app.tmpdir, UNKNOWN_MAVEN_VERSION)
           app.pack_build do |pack_result|
             expect(pack_result.success?).to be(false)
-            expect(pack_result.stderr).to include("[ERROR: Unsupported Maven version]")
+            expect(pack_result.stderr).to include("[Error: Unsupported Maven version]")
             expect(pack_result.stderr).to include("You have defined an unsupported Maven version in the system.properties file.")
             expect(pack_result.stderr).to include("The default supported version is #{DEFAULT_MAVEN_VERSION}")
           end
@@ -74,7 +74,7 @@ describe "Heroku's Maven Cloud Native Buildpack" do
 
           app.pack_build do |pack_result|
             expect(pack_result.success?).to be(false)
-            expect(pack_result.stderr).to include("[ERROR: Unsupported Maven version]")
+            expect(pack_result.stderr).to include("[Error: Unsupported Maven version]")
             expect(pack_result.stderr).to include("You have defined an unsupported Maven version in the system.properties file.")
             expect(pack_result.stderr).to include("The default supported version is #{DEFAULT_MAVEN_VERSION}")
           end

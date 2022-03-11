@@ -8,27 +8,26 @@
 
 extern crate core;
 
+use crate::error::on_error_maven_buildpack;
 use crate::layer::maven::MavenLayer;
 use crate::layer::maven_repo::MavenRepositoryLayer;
 use crate::mode::{determine_mode, DetermineModeError, Mode};
 use crate::settings::{resolve_settings_xml_path, SettingsError};
 use crate::warnings::{log_default_maven_version_warning, log_unused_maven_wrapper_warning};
-
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
-
-use libcnb::{buildpack_main, Buildpack, Env, Platform};
+use libcnb::layer_env::Scope;
+use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::{log_header, log_info, DownloadError};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::process::{Command, ExitStatus};
 
-use libcnb::layer_env::Scope;
-use std::process::Command;
-
+mod error;
 mod layer;
 mod mode;
 mod settings;
@@ -52,6 +51,8 @@ pub enum MavenBuildpackError {
     CannotSplitMavenCustomGoals(shell_words::ParseError),
     DetermineModeError(DetermineModeError),
     SettingsError(SettingsError),
+    MavenBuildUnexpectedExitCode(ExitStatus),
+    MavenBuildIoError(std::io::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -204,21 +205,25 @@ impl Buildpack for MavenBuildpack {
             shell_words::join(&maven_goals)
         ));
 
-        Command::new(mvn_executable)
-            .current_dir(&context.app_dir)
-            .args(
-                maven_options
-                    .iter()
-                    .chain(&internal_maven_options)
-                    .chain(&maven_goals),
-            )
-            .envs(&mvn_env)
-            .spawn()
-            .unwrap()
-            .wait()
-            .unwrap();
+        util::run_command(
+            Command::new(mvn_executable)
+                .current_dir(&context.app_dir)
+                .args(
+                    maven_options
+                        .iter()
+                        .chain(&internal_maven_options)
+                        .chain(&maven_goals),
+                )
+                .envs(&mvn_env),
+            MavenBuildpackError::MavenBuildIoError,
+            MavenBuildpackError::MavenBuildUnexpectedExitCode,
+        )?;
 
         BuildResultBuilder::new().build()
+    }
+
+    fn on_error(&self, error: Error<Self::Error>) -> i32 {
+        libherokubuildpack::on_error_heroku(on_error_maven_buildpack, error)
     }
 }
 

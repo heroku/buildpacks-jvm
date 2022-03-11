@@ -34,7 +34,12 @@ pub fn handle_maven_settings_url_env_var(
             let path = temp_dir().join("settings.xml");
 
             libherokubuildpack::download_file(maven_settings_url.to_string_lossy(), &path)
-                .map_err(SettingsError::DownloadError)
+                .map_err(|error| {
+                    SettingsError::DownloadError(
+                        maven_settings_url.to_string_lossy().to_string(),
+                        error,
+                    )
+                })
                 .map(|_| path)
         })
 }
@@ -55,5 +60,5 @@ pub fn resolve_settings_xml_path(
 #[derive(Debug)]
 pub enum SettingsError {
     InvalidMavenSettingsPath(PathBuf),
-    DownloadError(DownloadError),
+    DownloadError(String, DownloadError),
 }
