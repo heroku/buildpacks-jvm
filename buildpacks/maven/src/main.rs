@@ -103,9 +103,11 @@ impl Buildpack for MavenBuildpack {
         )
         .map_err(MavenBuildpackError::DetermineModeError)?;
 
+        log_header("Installing Maven");
+
         let (mvn_executable, mvn_env) = match maven_mode {
             Mode::UseWrapper => {
-                log_header("Using Apache Maven wrapper from application");
+                log_info("Maven wrapper detected, skipping installation.");
 
                 (context.app_dir.join("mvnw"), Env::from_current())
             }
@@ -114,8 +116,6 @@ impl Buildpack for MavenBuildpack {
                 warn_about_unused_maven_wrapper,
                 warn_about_default_version,
             } => {
-                log_header(format!("Installing Apache Maven {}", &version));
-
                 if warn_about_unused_maven_wrapper {
                     log_unused_maven_wrapper_warning(&version);
                 }
@@ -123,6 +123,8 @@ impl Buildpack for MavenBuildpack {
                 if warn_about_default_version {
                     log_default_maven_version_warning(&version);
                 }
+
+                log_info(format!("Selected Maven version: {}", &version));
 
                 let maven_layer = context
                     .buildpack_descriptor
