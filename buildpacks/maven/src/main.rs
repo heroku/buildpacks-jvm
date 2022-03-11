@@ -109,7 +109,7 @@ impl Buildpack for MavenBuildpack {
             Mode::UseWrapper => {
                 log_info("Maven wrapper detected, skipping installation.");
 
-                (context.app_dir.join("mvnw"), Env::from_current())
+                (PathBuf::from("./mvnw"), Env::from_current())
             }
             Mode::InstallVersion {
                 version,
@@ -205,6 +205,7 @@ impl Buildpack for MavenBuildpack {
         ));
 
         Command::new(mvn_executable)
+            .current_dir(&context.app_dir)
             .args(
                 maven_options
                     .iter()
