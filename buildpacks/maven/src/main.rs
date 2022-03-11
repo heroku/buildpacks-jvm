@@ -206,13 +206,37 @@ impl Buildpack for MavenBuildpack {
         ));
 
         util::run_command(
-            Command::new(mvn_executable)
+            Command::new(&mvn_executable)
                 .current_dir(&context.app_dir)
                 .args(
                     maven_options
                         .iter()
                         .chain(&internal_maven_options)
                         .chain(&maven_goals),
+                )
+                .envs(&mvn_env),
+            MavenBuildpackError::MavenBuildIoError,
+            MavenBuildpackError::MavenBuildUnexpectedExitCode,
+        )?;
+
+        util::run_command(
+            Command::new(&mvn_executable)
+                .current_dir(&context.app_dir)
+                .args(
+                    maven_options.iter().chain(&internal_maven_options).chain(
+                        [
+                            format!(
+                                "-DoutputFile={}",
+                                context
+                                    .app_dir
+                                    .join("target/mvn-dependency-list.log")
+                                    .to_string_lossy()
+                                    .to_string()
+                            ),
+                            String::from("dependency:list"),
+                        ]
+                        .iter(),
+                    ),
                 )
                 .envs(&mvn_env),
             MavenBuildpackError::MavenBuildIoError,
