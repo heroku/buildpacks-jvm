@@ -24,6 +24,9 @@ use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::{log_header, log_info, DownloadError};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fs;
+use std::fs::Permissions;
+use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::process::{Command, ExitStatus};
 
@@ -53,6 +56,7 @@ pub enum MavenBuildpackError {
     SettingsError(SettingsError),
     MavenBuildUnexpectedExitCode(ExitStatus),
     MavenBuildIoError(std::io::Error),
+    CannotSetExecutableBit(PathBuf, std::io::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -109,6 +113,12 @@ impl Buildpack for MavenBuildpack {
         let (mvn_executable, mvn_env) = match maven_mode {
             Mode::UseWrapper => {
                 log_info("Maven wrapper detected, skipping installation.");
+
+                let maven_wrapper_path = context.app_dir.join("mvnw");
+
+                fs::set_permissions(&maven_wrapper_path, Permissions::from_mode(0o777)).map_err(
+                    |error| MavenBuildpackError::CannotSetExecutableBit(maven_wrapper_path, error),
+                )?;
 
                 (PathBuf::from("./mvnw"), Env::from_current())
             }

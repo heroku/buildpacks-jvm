@@ -75,10 +75,7 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                 Details: {error}
             ", error = error },
         ),
-        MavenBuildpackError::MavenTarballNormalizationError(_) => {}
-        MavenBuildpackError::CannotSplitMavenCustomOpts(_) => {}
-        MavenBuildpackError::CannotSplitMavenCustomGoals(_) => {}
-        MavenBuildpackError::DetermineModeError(_) => {}
+
         MavenBuildpackError::MavenBuildUnexpectedExitCode(exit_status) => {
             let exit_code_string = exit_status
                 .code()
@@ -96,6 +93,11 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
             )
         }
         MavenBuildpackError::MavenBuildIoError(_) => {}
+        MavenBuildpackError::CannotSetExecutableBit(_, _) => {}
+        MavenBuildpackError::MavenTarballNormalizationError(_) => {}
+        MavenBuildpackError::CannotSplitMavenCustomOpts(_) => {}
+        MavenBuildpackError::CannotSplitMavenCustomGoals(_) => {}
+        MavenBuildpackError::DetermineModeError(_) => {}
     }
 
     1
