@@ -75,12 +75,26 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                 Details: {error}
             ", error = error },
         ),
-
         MavenBuildpackError::MavenTarballNormalizationError(_) => {}
         MavenBuildpackError::CannotSplitMavenCustomOpts(_) => {}
         MavenBuildpackError::CannotSplitMavenCustomGoals(_) => {}
         MavenBuildpackError::DetermineModeError(_) => {}
-        MavenBuildpackError::MavenBuildUnexpectedExitCode(_) => {}
+        MavenBuildpackError::MavenBuildUnexpectedExitCode(exit_status) => {
+            let exit_code_string = exit_status
+                .code()
+                .map(|exit_code| exit_code.to_string())
+                .unwrap_or(String::from("<unknown>"));
+
+            log_error(
+                "Failed to build app with Maven",
+                formatdoc! {"
+                We're sorry this build is failing! If you can't find the issue in application code,
+                please submit a ticket so we can help: https://help.heroku.com/
+
+                Maven exit code was: {exit_code}
+            ", exit_code = exit_code_string },
+            )
+        }
         MavenBuildpackError::MavenBuildIoError(_) => {}
     }
 
