@@ -423,6 +423,7 @@ dependencies = [
  "java-properties",
  "libcnb",
  "libherokubuildpack",
+ "regex",
  "serde",
  "shell-words",
  "tempfile",

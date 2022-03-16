@@ -8,6 +8,7 @@
 
 extern crate core;
 
+use crate::dependencies::Framework;
 use crate::error::on_error_maven_buildpack;
 use crate::layer::maven::MavenLayer;
 use crate::layer::maven_repo::MavenRepositoryLayer;
@@ -16,7 +17,9 @@ use crate::settings::{resolve_settings_xml_path, SettingsError};
 use crate::warnings::{log_default_maven_version_warning, log_unused_maven_wrapper_warning};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
+use libcnb::data::launch::{Launch, Process, ProcessBuilder};
 use libcnb::data::layer_name;
+use libcnb::data::process_type;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
@@ -24,12 +27,14 @@ use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::{log_header, log_info, DownloadError};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::fs;
 use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::process::{Command, ExitStatus};
 
+mod dependencies;
 mod error;
 mod layer;
 mod mode;
@@ -253,7 +258,53 @@ impl Buildpack for MavenBuildpack {
             MavenBuildpackError::MavenBuildUnexpectedExitCode,
         )?;
 
-        BuildResultBuilder::new().build()
+        // Generate launch.toml
+        let launch = dependencies::detect_framework(&context.app_dir)
+            .unwrap()
+            .and_then(|framework| {
+                util::list_directory_contents(context.app_dir.join("target"))
+                    .unwrap()
+                    .iter()
+                    .find(|path| {
+                        path.file_name()
+                            .map(|file_name| file_name.to_string_lossy().to_string())
+                            .filter(|file_name| {
+                                file_name.ends_with(".jar")
+                                    && !file_name.ends_with("-sources.jar")
+                                    && !file_name.ends_with("-javadoc.jar")
+                            })
+                            .is_some()
+                    })
+                    .map(|main_jar_file_path| match framework {
+                        Framework::SpringBoot => {
+                            format!(
+                                "java -Dserver.port=$PORT $JAVA_OPTS -jar {}",
+                                main_jar_file_path.to_string_lossy()
+                            )
+                        }
+                        Framework::WildflySwarm => {
+                            format!(
+                                "java -Dsswarm.http.port=$PORT $JAVA_OPTS -jar {}",
+                                main_jar_file_path.to_string_lossy()
+                            )
+                        }
+                    })
+                    .map(|command| {
+                        Launch::new().process(
+                            ProcessBuilder::new(process_type!("web"), command)
+                                .default(true)
+                                .build(),
+                        )
+                    })
+            });
+
+        let mut build_result_builder = BuildResultBuilder::new();
+
+        if let Some(launch) = launch {
+            build_result_builder = build_result_builder.launch(launch);
+        }
+
+        build_result_builder.build()
     }
 
     fn on_error(&self, error: Error<Self::Error>) -> i32 {
