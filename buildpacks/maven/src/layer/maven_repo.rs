@@ -2,9 +2,11 @@ use crate::MavenBuildpack;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::generic::GenericMetadata;
-use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
+use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
+use serde::{Deserialize, Serialize};
+use std::fs;
 use std::path::Path;
 
 pub struct MavenRepositoryLayer;
@@ -26,8 +28,6 @@ impl Layer for MavenRepositoryLayer {
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
-        let repository_path = layer_path.join(".m2/repository");
-
         LayerResultBuilder::new(GenericMetadata::default())
             .env(
                 LayerEnv::new()
@@ -41,9 +41,17 @@ impl Layer for MavenRepositoryLayer {
                         Scope::Build,
                         ModificationBehavior::Append,
                         "MAVEN_OPTS",
-                        format!("-Dmaven.repo.local={}", &repository_path.to_string_lossy()),
+                        format!("-Dmaven.repo.local={}", &layer_path.to_string_lossy()),
                     ),
             )
             .build()
+    }
+
+    fn existing_layer_strategy(
+        &self,
+        _context: &BuildContext<Self::Buildpack>,
+        _layer_data: &LayerData<Self::Metadata>,
+    ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
+        Ok(ExistingLayerStrategy::Keep)
     }
 }
