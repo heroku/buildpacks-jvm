@@ -1,11 +1,11 @@
-use crate::{DetermineModeError, MavenBuildpackError, SettingsError};
+use crate::{MavenBuildpackError, SettingsError, SystemPropertiesError};
 use indoc::formatdoc;
 use libherokubuildpack::log_error;
 use std::fmt::Display;
 
 pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
     match error {
-        MavenBuildpackError::DetermineModeError(DetermineModeError::SystemPropertiesIoError(error)) => log_please_try_again_error(
+        MavenBuildpackError::DetermineModeError(SystemPropertiesError::IoError(error)) => log_please_try_again_error(
             "Unexpected IO error",
             "Could not read your application's system.properties file due to an unexpected I/O error.",
             error,
@@ -130,7 +130,7 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
             ", error = error },
         ),
         MavenBuildpackError::DetermineModeError(
-            DetermineModeError::SystemPropertiesPropertiesError(error),
+            SystemPropertiesError::PropertiesError(error),
         ) => log_error(
             "Invalid system.properties file",
             formatdoc! {"

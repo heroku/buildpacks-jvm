@@ -11,64 +11,55 @@ pub enum Mode {
     },
 }
 
-#[derive(Debug)]
-pub enum DetermineModeError {
-    SystemPropertiesIoError(std::io::Error),
-    SystemPropertiesPropertiesError(java_properties::PropertiesError),
-}
-
 pub fn determine_mode<P: AsRef<Path>, S: Into<String>>(
     app_dir: P,
     default_version: S,
-) -> Result<Mode, DetermineModeError> {
-    let app_contains_maven_wrapper = ["mvnw", ".mvn/wrapper/maven-wrapper.properties"]
+) -> Result<Mode, SystemPropertiesError> {
+    let app_contains_maven_wrapper = app_contains_maven_wrapper(&app_dir);
+
+    app_configured_maven_version(&app_dir).map(|app_configured_maven_version| {
+        if app_contains_maven_wrapper && app_configured_maven_version.is_none() {
+            Mode::UseWrapper
+        } else {
+            Mode::InstallVersion {
+                version: app_configured_maven_version
+                    .clone()
+                    .unwrap_or(default_version.into()),
+                warn_about_default_version: app_configured_maven_version.is_none(),
+                warn_about_unused_maven_wrapper: app_contains_maven_wrapper,
+            }
+        }
+    })
+}
+
+fn app_contains_maven_wrapper<P: AsRef<Path>>(app_dir: P) -> bool {
+    ["mvnw", ".mvn/wrapper/maven-wrapper.properties"]
         .iter()
         .map(|path| app_dir.as_ref().join(path))
-        .all(|path| path.exists());
+        .all(|path| path.exists())
+}
 
-    let app_configured_maven_version = Some(app_dir.as_ref().join("system.properties"))
+fn app_configured_maven_version<P: AsRef<Path>>(
+    app_dir: P,
+) -> Result<Option<String>, SystemPropertiesError> {
+    Some(app_dir.as_ref().join("system.properties"))
         .filter(|path| path.exists())
         .map_or_else(
             || Ok(None),
             |system_properties_path| {
                 File::open(&system_properties_path)
-                    .map_err(DetermineModeError::SystemPropertiesIoError)
+                    .map_err(SystemPropertiesError::IoError)
                     .and_then(|file| {
                         java_properties::read(file)
-                            .map_err(DetermineModeError::SystemPropertiesPropertiesError)
+                            .map_err(SystemPropertiesError::PropertiesError)
                             .map(|properties| properties.get("maven.version").cloned())
                     })
             },
-        );
+        )
+}
 
-    app_configured_maven_version.map(|app_configured_maven_version| {
-        match app_configured_maven_version {
-            None => {
-                if app_contains_maven_wrapper {
-                    Mode::UseWrapper
-                } else {
-                    Mode::InstallVersion {
-                        version: default_version.into(),
-                        warn_about_default_version: true,
-                        warn_about_unused_maven_wrapper: false,
-                    }
-                }
-            }
-            Some(version) => {
-                if app_contains_maven_wrapper {
-                    Mode::InstallVersion {
-                        version,
-                        warn_about_unused_maven_wrapper: true,
-                        warn_about_default_version: false,
-                    }
-                } else {
-                    Mode::InstallVersion {
-                        version,
-                        warn_about_unused_maven_wrapper: false,
-                        warn_about_default_version: false,
-                    }
-                }
-            }
-        }
-    })
+#[derive(Debug)]
+pub enum SystemPropertiesError {
+    IoError(std::io::Error),
+    PropertiesError(java_properties::PropertiesError),
 }
