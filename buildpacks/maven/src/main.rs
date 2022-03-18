@@ -27,7 +27,6 @@ use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::{log_header, log_info, DownloadError};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
 use std::fs;
 use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
@@ -190,8 +189,8 @@ impl Buildpack for MavenBuildpack {
                 },
             )?;
 
-        let settings_xml_path =
-            resolve_settings_xml_path(&context).map_err(MavenBuildpackError::SettingsError)?;
+        let settings_xml_path = resolve_settings_xml_path(&context.app_dir, context.platform.env())
+            .map_err(MavenBuildpackError::SettingsError)?;
 
         if let Some(settings_xml_path) = settings_xml_path {
             maven_options.push(String::from("-s"));
