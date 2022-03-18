@@ -1,6 +1,4 @@
-use crate::MavenBuildpack;
-use libcnb::build::BuildContext;
-use libcnb::{Env, Platform};
+use libcnb::Env;
 use libherokubuildpack::DownloadError;
 use std::env::temp_dir;
 use std::path::{Path, PathBuf};

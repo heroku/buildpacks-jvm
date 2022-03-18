@@ -3,6 +3,7 @@ use indoc::formatdoc;
 use libherokubuildpack::log_error;
 use std::fmt::Display;
 
+#[allow(clippy::too_many_lines)]
 pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
     match error {
         MavenBuildpackError::DetermineModeError(SystemPropertiesError::IoError(error)) => log_please_try_again_error(
@@ -20,13 +21,11 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
             "Could not download Maven distribution.",
             error,
         ),
-        MavenBuildpackError::CannotSetMavenWrapperExecutableBit(error) => {
-            log_please_try_again_error(
-                "Failed to set executable bit for Maven wrapper",
-                "Failed to set executable bit for Maven wrapper",
-                error,
-            )
-        },
+        MavenBuildpackError::CannotSetMavenWrapperExecutableBit(error) => log_please_try_again_error(
+            "Failed to set executable bit for Maven wrapper",
+            "Failed to set executable bit for Maven wrapper",
+            error,
+        ),
         MavenBuildpackError::MavenTarballNormalizationError(error) => log_please_try_again_error(
             "Maven distribution post-processing error",
             "Could not post-process the downloaded Maven distribution.",
@@ -45,7 +44,7 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                     You have set MAVEN_SETTINGS_PATH to \"{path}\". We could not find that file in your app.
                     Please verify the path is correct, ensure you committed this file to your app and then try again.
                 ", path = path.to_string_lossy() },
-            )
+            );
         }
         MavenBuildpackError::SettingsError(SettingsError::DownloadError(url, error)) => log_error(
             "Download of settings.xml failed",
@@ -56,7 +55,6 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                 Details: {error}
             ", url = url, error = error },
         ),
-
         MavenBuildpackError::MavenTarballSha256Mismatch {
             expected_sha256,
             actual_sha256,
@@ -82,12 +80,10 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                 Details: {error}
             ", error = error },
         ),
-
         MavenBuildpackError::MavenBuildUnexpectedExitCode(exit_status) => {
             let exit_code_string = exit_status
                 .code()
-                .map(|exit_code| exit_code.to_string())
-                .unwrap_or(String::from("<unknown>"));
+                .map_or_else(|| String::from("<unknown>"), |exit_code| exit_code.to_string());
 
             log_error(
                 "Failed to build app with Maven",
@@ -97,7 +93,7 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
 
                     Maven exit code was: {exit_code}
                 ", exit_code = exit_code_string },
-            )
+            );
         },
         MavenBuildpackError::MavenBuildIoError(error) => log_error(
             "Failed to build app with Maven",
@@ -108,18 +104,15 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                 Details: {error}
             ", error = error },
         ),
+        MavenBuildpackError::CannotSplitMavenCustomOpts(error) => log_error(
+            "Invalid MAVEN_CUSTOM_OPTS",
+            formatdoc! {"
+                Could not split the value of the MAVEN_CUSTOM_OPTS environment variable into separate
+                Maven options. Please check MAVEN_CUSTOM_OPTS for quoting and escaping mistakes and try again.
 
-        MavenBuildpackError::CannotSplitMavenCustomOpts(error) => {
-            log_error(
-                "Invalid MAVEN_CUSTOM_OPTS",
-                formatdoc! {"
-                    Could not split the value of the MAVEN_CUSTOM_OPTS environment variable into separate
-                    Maven options. Please check MAVEN_CUSTOM_OPTS for quoting and escaping mistakes and try again.
-
-                    Details: {error}
-                ", error = error },
-            )
-        },
+                Details: {error}
+            ", error = error },
+        ),
         MavenBuildpackError::CannotSplitMavenCustomGoals(error) => log_error(
             "Invalid MAVEN_CUSTOM_GOALS",
             formatdoc! {"
@@ -160,5 +153,5 @@ fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Display>(
 
             Details: {error}
         ", message = message.as_ref(), error = error },
-    )
+    );
 }

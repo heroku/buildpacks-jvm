@@ -24,11 +24,7 @@ pub fn detect_framework<P: AsRef<Path>>(
         (wildfly_swarm_regex, Framework::WildflySwarm),
     ]
     .iter()
-    .find_map(|(regex, framework)| {
-        regex
-            .is_match(&dependency_list_string)
-            .then(|| framework.clone())
-    });
+    .find_map(|(regex, framework)| regex.is_match(&dependency_list_string).then(|| *framework));
 
     Ok(framework)
 }

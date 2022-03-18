@@ -6,8 +6,6 @@
 // This lint is too noisy and enforces a style that reduces readability in many cases.
 #![allow(clippy::module_name_repetitions)]
 
-extern crate core;
-
 use crate::errors::on_error_maven_buildpack;
 use crate::framework::Framework;
 use crate::layer::maven::MavenLayer;
@@ -244,7 +242,6 @@ impl Buildpack for MavenBuildpack {
                                     .app_dir
                                     .join("target/mvn-dependency-list.log")
                                     .to_string_lossy()
-                                    .to_string()
                             ),
                             String::from("dependency:list"),
                         ]
@@ -264,6 +261,7 @@ impl Buildpack for MavenBuildpack {
                     .unwrap()
                     .iter()
                     .find(|path| {
+                        #[allow(clippy::case_sensitive_file_extension_comparisons)]
                         path.file_name()
                             .map(|file_name| file_name.to_string_lossy().to_string())
                             .filter(|file_name| {

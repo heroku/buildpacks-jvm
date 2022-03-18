@@ -21,12 +21,7 @@ pub fn move_directory_contents<P: AsRef<Path>, Q: AsRef<Path>>(
 pub fn list_directory_contents<P: AsRef<Path>>(path: P) -> std::io::Result<Vec<PathBuf>> {
     std::fs::read_dir(path.as_ref())
         .and_then(Iterator::collect::<std::io::Result<Vec<DirEntry>>>)
-        .map(|dir_entries| {
-            dir_entries
-                .iter()
-                .map(|dir_entry| dir_entry.path())
-                .collect()
-        })
+        .map(|dir_entries| dir_entries.iter().map(DirEntry::path).collect())
 }
 
 pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(ExitStatus) -> E>(

@@ -24,7 +24,7 @@ pub fn determine_mode<P: AsRef<Path>, S: Into<String>>(
             Mode::InstallVersion {
                 version: app_configured_maven_version
                     .clone()
-                    .unwrap_or(default_version.into()),
+                    .unwrap_or_else(|| default_version.into()),
                 warn_about_default_version: app_configured_maven_version.is_none(),
                 warn_about_unused_maven_wrapper: app_contains_maven_wrapper,
             }
