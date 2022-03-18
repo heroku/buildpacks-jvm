@@ -7,7 +7,7 @@
 #![allow(clippy::module_name_repetitions)]
 
 use crate::errors::on_error_maven_buildpack;
-use crate::framework::Framework;
+
 use crate::layer::maven::MavenLayer;
 use crate::layer::maven_repo::MavenRepositoryLayer;
 use crate::mode::{determine_mode, Mode, SystemPropertiesError};
@@ -17,7 +17,7 @@ use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{Launch, ProcessBuilder};
 use libcnb::data::layer_name;
-use libcnb::data::process_type;
+
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
@@ -253,51 +253,10 @@ impl Buildpack for MavenBuildpack {
             MavenBuildpackError::MavenBuildUnexpectedExitCode,
         )?;
 
-        // Generate launch.toml
-        let launch = framework::detect_framework(&context.app_dir)
-            .unwrap()
-            .and_then(|framework| {
-                util::list_directory_contents(context.app_dir.join("target"))
-                    .unwrap()
-                    .iter()
-                    .find(|path| {
-                        #[allow(clippy::case_sensitive_file_extension_comparisons)]
-                        path.file_name()
-                            .map(|file_name| file_name.to_string_lossy().to_string())
-                            .filter(|file_name| {
-                                file_name.ends_with(".jar")
-                                    && !file_name.ends_with("-sources.jar")
-                                    && !file_name.ends_with("-javadoc.jar")
-                            })
-                            .is_some()
-                    })
-                    .map(|main_jar_file_path| match framework {
-                        Framework::SpringBoot => {
-                            format!(
-                                "java -Dserver.port=$PORT $JAVA_OPTS -jar {}",
-                                main_jar_file_path.to_string_lossy()
-                            )
-                        }
-                        Framework::WildflySwarm => {
-                            format!(
-                                "java -Dsswarm.http.port=$PORT $JAVA_OPTS -jar {}",
-                                main_jar_file_path.to_string_lossy()
-                            )
-                        }
-                    })
-                    .map(|command| {
-                        Launch::new().process(
-                            ProcessBuilder::new(process_type!("web"), command)
-                                .default(true)
-                                .build(),
-                        )
-                    })
-            });
-
         let mut build_result_builder = BuildResultBuilder::new();
 
-        if let Some(launch) = launch {
-            build_result_builder = build_result_builder.launch(launch);
+        if let Some(process) = framework::default_app_process(&context.app_dir) {
+            build_result_builder = build_result_builder.launch(Launch::new().process(process));
         }
 
         build_result_builder.build()

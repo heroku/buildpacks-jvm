@@ -45,7 +45,7 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                     Please verify the path is correct, ensure you committed this file to your app and then try again.
                 ", path = path.to_string_lossy() },
             );
-        }
+        },
         MavenBuildpackError::SettingsError(SettingsError::DownloadError(url, error)) => log_error(
             "Download of settings.xml failed",
             formatdoc! {"
