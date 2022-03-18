@@ -8,8 +8,8 @@
 
 extern crate core;
 
-use crate::dependencies::Framework;
 use crate::errors::on_error_maven_buildpack;
+use crate::framework::Framework;
 use crate::layer::maven::MavenLayer;
 use crate::layer::maven_repo::MavenRepositoryLayer;
 use crate::mode::{determine_mode, Mode, SystemPropertiesError};
@@ -33,8 +33,8 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::process::{Command, ExitStatus};
 
-mod dependencies;
 mod errors;
+mod framework;
 mod layer;
 mod mode;
 mod settings;
@@ -257,7 +257,7 @@ impl Buildpack for MavenBuildpack {
         )?;
 
         // Generate launch.toml
-        let launch = dependencies::detect_framework(&context.app_dir)
+        let launch = framework::detect_framework(&context.app_dir)
             .unwrap()
             .and_then(|framework| {
                 util::list_directory_contents(context.app_dir.join("target"))
