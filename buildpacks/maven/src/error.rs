@@ -1,9 +1,37 @@
-use crate::{MavenBuildpackError, SettingsError};
+use crate::{DetermineModeError, MavenBuildpackError, SettingsError};
 use indoc::formatdoc;
 use libherokubuildpack::log_error;
+use std::fmt::Display;
 
 pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
     match error {
+        MavenBuildpackError::DetermineModeError(DetermineModeError::SystemPropertiesIoError(error)) => log_please_try_again_error(
+            "Unexpected IO error",
+            "Could not read your application's system.properties file due to an unexpected I/O error.",
+            error,
+        ),
+        MavenBuildpackError::MavenTarballDownloadError(error) => log_please_try_again_error(
+            "Maven download failed",
+            "Could not download Maven distribution.",
+            error,
+        ),
+        MavenBuildpackError::MavenTarballDecompressError(error) => log_please_try_again_error(
+            "Maven download failed",
+            "Could not download Maven distribution.",
+            error,
+        ),
+        MavenBuildpackError::CannotSetMavenWrapperExecutableBit(error) => {
+            log_please_try_again_error(
+                "Failed to set executable bit for Maven wrapper",
+                "Failed to set executable bit for Maven wrapper",
+                error,
+            )
+        },
+        MavenBuildpackError::MavenTarballNormalizationError(error) => log_please_try_again_error(
+            "Maven distribution post-processing error",
+            "Could not post-process the downloaded Maven distribution.",
+            error,
+        ),
         MavenBuildpackError::UnsupportedMavenVersion(version) => log_error(
             "Unsupported Maven version",
             formatdoc! {"
@@ -28,17 +56,7 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                 Details: {error}
             ", url = url, error = error },
         ),
-        MavenBuildpackError::MavenTarballDownloadError(error) => log_error(
-            "Maven download failed",
-            formatdoc! {"
-                Could not download Maven distribution.
 
-                Please try again. If this error persists, please contact us:
-                https://help.heroku.com/
-
-                Details: {error}
-            ", error = error },
-        ),
         MavenBuildpackError::MavenTarballSha256Mismatch {
             expected_sha256,
             actual_sha256,
@@ -64,17 +82,6 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
                 Details: {error}
             ", error = error },
         ),
-        MavenBuildpackError::MavenTarballDecompressError(error) => log_error(
-            "Maven download failed",
-            formatdoc! {"
-                Could not download Maven distribution.
-
-                Please try again. If this error persists, please contact us:
-                https://help.heroku.com/
-
-                Details: {error}
-            ", error = error },
-        ),
 
         MavenBuildpackError::MavenBuildUnexpectedExitCode(exit_status) => {
             let exit_code_string = exit_status
@@ -85,20 +92,73 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
             log_error(
                 "Failed to build app with Maven",
                 formatdoc! {"
+                    We're sorry this build is failing! If you can't find the issue in application code,
+                    please submit a ticket so we can help: https://help.heroku.com/
+
+                    Maven exit code was: {exit_code}
+                ", exit_code = exit_code_string },
+            )
+        },
+        MavenBuildpackError::MavenBuildIoError(error) => log_error(
+            "Failed to build app with Maven",
+            formatdoc! {"
                 We're sorry this build is failing! If you can't find the issue in application code,
                 please submit a ticket so we can help: https://help.heroku.com/
 
-                Maven exit code was: {exit_code}
-            ", exit_code = exit_code_string },
+                Details: {error}
+            ", error = error },
+        ),
+
+        MavenBuildpackError::CannotSplitMavenCustomOpts(error) => {
+            log_error(
+                "Invalid MAVEN_CUSTOM_OPTS",
+                formatdoc! {"
+                    Could not split the value of the MAVEN_CUSTOM_OPTS environment variable into separate
+                    Maven options. Please check MAVEN_CUSTOM_OPTS for quoting and escaping mistakes and try again.
+
+                    Details: {error}
+                ", error = error },
             )
-        }
-        MavenBuildpackError::MavenBuildIoError(_) => {}
-        MavenBuildpackError::CannotSetExecutableBit(_, _) => {}
-        MavenBuildpackError::MavenTarballNormalizationError(_) => {}
-        MavenBuildpackError::CannotSplitMavenCustomOpts(_) => {}
-        MavenBuildpackError::CannotSplitMavenCustomGoals(_) => {}
-        MavenBuildpackError::DetermineModeError(_) => {}
+        },
+        MavenBuildpackError::CannotSplitMavenCustomGoals(error) => log_error(
+            "Invalid MAVEN_CUSTOM_GOALS",
+            formatdoc! {"
+                Could not split the value of the MAVEN_CUSTOM_GOALS environment variable into separate
+                Maven goals. Please check MAVEN_CUSTOM_GOALS for quoting and escaping mistakes and try again.
+
+                Details: {error}
+            ", error = error },
+        ),
+        MavenBuildpackError::DetermineModeError(
+            DetermineModeError::SystemPropertiesPropertiesError(error),
+        ) => log_error(
+            "Invalid system.properties file",
+            formatdoc! {"
+                Could not parse your application's system.properties file. Please ensure that your
+                system.properties file is a valid Java properties file and try again.
+
+                Details: {error}
+            ", error = error },
+        ),
     }
 
     1
+}
+
+fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Display>(
+    header: H,
+    message: M,
+    error: E,
+) {
+    log_error(
+        header,
+        formatdoc! {"
+            {message}
+
+            Please try again. If this error persists, please contact us:
+            https://help.heroku.com/
+
+            Details: {error}
+        ", message = message.as_ref(), error = error },
+    )
 }

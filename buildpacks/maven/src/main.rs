@@ -17,7 +17,7 @@ use crate::settings::{resolve_settings_xml_path, SettingsError};
 use crate::warnings::{log_default_maven_version_warning, log_unused_maven_wrapper_warning};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::{Launch, Process, ProcessBuilder};
+use libcnb::data::launch::{Launch, ProcessBuilder};
 use libcnb::data::layer_name;
 use libcnb::data::process_type;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
@@ -27,7 +27,7 @@ use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::{log_header, log_info, DownloadError};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::ffi::OsStr;
+
 use std::fs;
 use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
@@ -61,7 +61,7 @@ pub enum MavenBuildpackError {
     SettingsError(SettingsError),
     MavenBuildUnexpectedExitCode(ExitStatus),
     MavenBuildIoError(std::io::Error),
-    CannotSetExecutableBit(PathBuf, std::io::Error),
+    CannotSetMavenWrapperExecutableBit(std::io::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -121,9 +121,8 @@ impl Buildpack for MavenBuildpack {
 
                 let maven_wrapper_path = context.app_dir.join("mvnw");
 
-                fs::set_permissions(&maven_wrapper_path, Permissions::from_mode(0o777)).map_err(
-                    |error| MavenBuildpackError::CannotSetExecutableBit(maven_wrapper_path, error),
-                )?;
+                fs::set_permissions(&maven_wrapper_path, Permissions::from_mode(0o777))
+                    .map_err(MavenBuildpackError::CannotSetMavenWrapperExecutableBit)?;
 
                 (PathBuf::from("./mvnw"), Env::from_current())
             }

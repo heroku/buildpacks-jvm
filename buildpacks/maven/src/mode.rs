@@ -13,8 +13,8 @@ pub enum Mode {
 
 #[derive(Debug)]
 pub enum DetermineModeError {
-    IoError(std::io::Error),
-    PropertiesError(java_properties::PropertiesError),
+    SystemPropertiesIoError(std::io::Error),
+    SystemPropertiesPropertiesError(java_properties::PropertiesError),
 }
 
 pub fn determine_mode<P: AsRef<Path>, S: Into<String>>(
@@ -32,10 +32,10 @@ pub fn determine_mode<P: AsRef<Path>, S: Into<String>>(
             || Ok(None),
             |system_properties_path| {
                 File::open(&system_properties_path)
-                    .map_err(DetermineModeError::IoError)
+                    .map_err(DetermineModeError::SystemPropertiesIoError)
                     .and_then(|file| {
                         java_properties::read(file)
-                            .map_err(DetermineModeError::PropertiesError)
+                            .map_err(DetermineModeError::SystemPropertiesPropertiesError)
                             .map(|properties| properties.get("maven.version").cloned())
                     })
             },
