@@ -9,7 +9,7 @@
 extern crate core;
 
 use crate::dependencies::Framework;
-use crate::error::on_error_maven_buildpack;
+use crate::errors::on_error_maven_buildpack;
 use crate::layer::maven::MavenLayer;
 use crate::layer::maven_repo::MavenRepositoryLayer;
 use crate::mode::{determine_mode, Mode, SystemPropertiesError};
@@ -35,7 +35,7 @@ use std::path::PathBuf;
 use std::process::{Command, ExitStatus};
 
 mod dependencies;
-mod error;
+mod errors;
 mod layer;
 mod mode;
 mod settings;
