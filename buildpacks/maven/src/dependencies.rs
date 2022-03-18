@@ -1,5 +1,6 @@
 use std::path::Path;
 
+#[derive(Copy, Clone)]
 pub enum Framework {
     SpringBoot,
     WildflySwarm,
@@ -15,11 +16,21 @@ pub fn detect_framework<P: AsRef<Path>>(
     let spring_boot_regex = regex::Regex::new("org.springframework.boot:spring-boot")
         .map_err(DetectFrameworkError::RegexError)?;
 
-    if spring_boot_regex.is_match(&dependency_list_string) {
-        Ok(Some(Framework::SpringBoot))
-    } else {
-        Ok(None)
-    }
+    let wildfly_swarm_regex =
+        regex::Regex::new("org.wildfly.swarm").map_err(DetectFrameworkError::RegexError)?;
+
+    let framework = [
+        (spring_boot_regex, Framework::SpringBoot),
+        (wildfly_swarm_regex, Framework::WildflySwarm),
+    ]
+    .iter()
+    .find_map(|(regex, framework)| {
+        regex
+            .is_match(&dependency_list_string)
+            .then(|| framework.clone())
+    });
+
+    Ok(framework)
 }
 
 #[derive(Debug)]
