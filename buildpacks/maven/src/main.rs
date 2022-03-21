@@ -7,7 +7,7 @@
 #![allow(clippy::module_name_repetitions)]
 
 use crate::errors::on_error_maven_buildpack;
-
+use crate::framework::DefaultAppProcessError;
 use crate::layer::maven::MavenLayer;
 use crate::layer::maven_repo::MavenRepositoryLayer;
 use crate::mode::{determine_mode, Mode, SystemPropertiesError};
@@ -17,8 +17,6 @@ use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{Launch, ProcessBuilder};
 use libcnb::data::layer_name;
-
-use crate::framework::DefaultAppProcessError;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
