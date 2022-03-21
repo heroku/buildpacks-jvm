@@ -1,7 +1,7 @@
 use crate::{MavenBuildpackError, SettingsError, SystemPropertiesError};
 use indoc::formatdoc;
 use libherokubuildpack::log_error;
-use std::fmt::Display;
+use std::fmt::Debug;
 
 #[allow(clippy::too_many_lines)]
 pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
@@ -29,6 +29,11 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
         MavenBuildpackError::MavenTarballNormalizationError(error) => log_please_try_again_error(
             "Maven distribution post-processing error",
             "Could not post-process the downloaded Maven distribution.",
+            error,
+        ),
+        MavenBuildpackError::DefaultAppProcessError(error) => log_please_try_again_error(
+            "Could not determine default process",
+            "While trying to determine a default process based on the used application framework, an unexpected error occurred.",
             error,
         ),
         MavenBuildpackError::UnsupportedMavenVersion(version) => log_error(
@@ -138,7 +143,7 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
     1
 }
 
-fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Display>(
+fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Debug>(
     header: H,
     message: M,
     error: E,
@@ -151,7 +156,7 @@ fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Display>(
             Please try again. If this error persists, please contact us:
             https://help.heroku.com/
 
-            Details: {error}
+            Details: {error:?}
         ", message = message.as_ref(), error = error },
     );
 }

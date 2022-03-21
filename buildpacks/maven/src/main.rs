@@ -18,6 +18,7 @@ use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{Launch, ProcessBuilder};
 use libcnb::data::layer_name;
 
+use crate::framework::DefaultAppProcessError;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
@@ -59,6 +60,7 @@ pub enum MavenBuildpackError {
     MavenBuildUnexpectedExitCode(ExitStatus),
     MavenBuildIoError(std::io::Error),
     CannotSetMavenWrapperExecutableBit(std::io::Error),
+    DefaultAppProcessError(DefaultAppProcessError),
 }
 
 #[derive(Debug, Deserialize)]
@@ -255,7 +257,9 @@ impl Buildpack for MavenBuildpack {
 
         let mut build_result_builder = BuildResultBuilder::new();
 
-        if let Some(process) = framework::default_app_process(&context.app_dir) {
+        if let Some(process) = framework::default_app_process(&context.app_dir)
+            .map_err(MavenBuildpackError::DefaultAppProcessError)?
+        {
             build_result_builder = build_result_builder.launch(Launch::new().process(process));
         }
 

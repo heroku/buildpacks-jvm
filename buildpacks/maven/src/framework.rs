@@ -32,12 +32,15 @@ pub fn detect_framework<P: AsRef<Path>>(
     Ok(framework)
 }
 
-pub fn default_app_process<P: AsRef<Path>>(app_dir: P) -> Option<Process> {
-    detect_framework(app_dir.as_ref())
-        .unwrap()
-        .and_then(|framework| {
-            util::list_directory_contents(app_dir.as_ref().join("target"))
-                .unwrap()
+pub fn default_app_process<P: AsRef<Path>>(
+    app_dir: P,
+) -> Result<Option<Process>, DefaultAppProcessError> {
+    let framework =
+        detect_framework(app_dir.as_ref()).map_err(DefaultAppProcessError::DetectFrameworkError)?;
+
+    let main_jar_file_path = util::list_directory_contents(app_dir.as_ref().join("target"))
+        .map(|paths| {
+            paths
                 .iter()
                 .find(|path| {
                     #[allow(clippy::case_sensitive_file_extension_comparisons)]
@@ -50,27 +53,45 @@ pub fn default_app_process<P: AsRef<Path>>(app_dir: P) -> Option<Process> {
                         })
                         .is_some()
                 })
-                .map(|main_jar_file_path| match framework {
-                    Framework::SpringBoot => {
-                        format!(
-                            "java -Dserver.port=$PORT $JAVA_OPTS -jar {}",
-                            main_jar_file_path.to_string_lossy()
-                        )
-                    }
-                    Framework::WildflySwarm => {
-                        format!(
-                            "java -Dsswarm.http.port=$PORT $JAVA_OPTS -jar {}",
-                            main_jar_file_path.to_string_lossy()
-                        )
-                    }
-                })
-                .map(|command| {
-                    // TODO: ARGS INSTEAD?
-                    ProcessBuilder::new(process_type!("web"), command)
-                        .default(true)
-                        .build()
-                })
+                .cloned()
         })
+        .map_err(DefaultAppProcessError::IoError)?;
+
+    let process = match (framework, main_jar_file_path) {
+        (Some(Framework::SpringBoot), Some(main_jar_file_path)) => Some(
+            ProcessBuilder::new(process_type!("web"), "java")
+                .args([
+                    "-Dserver.port=$PORT",
+                    "$JAVA_OPTS",
+                    "-jar",
+                    &main_jar_file_path.to_string_lossy(),
+                ])
+                .direct(false)
+                .default(true)
+                .build(),
+        ),
+        (Some(Framework::WildflySwarm), Some(main_jar_file_path)) => Some(
+            ProcessBuilder::new(process_type!("web"), "java")
+                .args([
+                    "-Dswarm.http.port=$PORT",
+                    "$JAVA_OPTS",
+                    "-jar",
+                    &main_jar_file_path.to_string_lossy(),
+                ])
+                .direct(false)
+                .default(true)
+                .build(),
+        ),
+        _ => None,
+    };
+
+    Ok(process)
+}
+
+#[derive(Debug)]
+pub enum DefaultAppProcessError {
+    DetectFrameworkError(DetectFrameworkError),
+    IoError(std::io::Error),
 }
 
 #[derive(Debug)]
