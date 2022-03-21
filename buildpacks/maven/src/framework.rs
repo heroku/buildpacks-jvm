@@ -59,28 +59,28 @@ pub fn default_app_process<P: AsRef<Path>>(
 
     let process = match (framework, main_jar_file_path) {
         (Some(Framework::SpringBoot), Some(main_jar_file_path)) => Some(
-            ProcessBuilder::new(process_type!("web"), "java")
-                .args([
-                    "-Dserver.port=$PORT",
-                    "$JAVA_OPTS",
-                    "-jar",
-                    &main_jar_file_path.to_string_lossy(),
-                ])
-                .direct(false)
-                .default(true)
-                .build(),
+            ProcessBuilder::new(
+                process_type!("web"),
+                format!(
+                    "java -Dserver.port=$PORT $JAVA_OPTS -jar {}",
+                    main_jar_file_path.to_string_lossy()
+                ),
+            )
+            .direct(false)
+            .default(true)
+            .build(),
         ),
         (Some(Framework::WildflySwarm), Some(main_jar_file_path)) => Some(
-            ProcessBuilder::new(process_type!("web"), "java")
-                .args([
-                    "-Dswarm.http.port=$PORT",
-                    "$JAVA_OPTS",
-                    "-jar",
-                    &main_jar_file_path.to_string_lossy(),
-                ])
-                .direct(false)
-                .default(true)
-                .build(),
+            ProcessBuilder::new(
+                process_type!("web"),
+                format!(
+                    "java -Dswarm.http.port=$PORT $JAVA_OPTS -jar {}",
+                    main_jar_file_path.to_string_lossy()
+                ),
+            )
+            .direct(false)
+            .default(true)
+            .build(),
         ),
         _ => None,
     };
