@@ -121,7 +121,12 @@ impl Buildpack for MavenBuildpack {
                 fs::set_permissions(&maven_wrapper_path, Permissions::from_mode(0o777))
                     .map_err(MavenBuildpackError::CannotSetMavenWrapperExecutableBit)?;
 
-                (PathBuf::from("./mvnw"), Env::from_current())
+                (
+                    PathBuf::from("./mvnw"),
+                    maven_repository_layer
+                        .env
+                        .apply(Scope::Build, &Env::from_current()),
+                )
             }
             Mode::InstallVersion {
                 version,
@@ -155,7 +160,12 @@ impl Buildpack for MavenBuildpack {
 
                 (
                     PathBuf::from("mvn"),
-                    maven_layer.env.apply(Scope::Build, &Env::from_current()),
+                    maven_layer.env.apply(
+                        Scope::Build,
+                        &maven_repository_layer
+                            .env
+                            .apply(Scope::Build, &Env::from_current()),
+                    ),
                 )
             }
         };
@@ -199,14 +209,7 @@ impl Buildpack for MavenBuildpack {
         // options must not be overridden by the user via MAVEN_CUSTOM_OPTS for the buildpack to
         // work correctly. We also don't want to show them when we log the Maven command we're
         // running since they might be confusing to the user.
-        let internal_maven_options = vec![
-            String::from("-B"),
-            format!("-Duser.home={}", &context.app_dir.to_string_lossy()),
-            format!(
-                "-Dmaven.repo.local={}",
-                maven_repository_layer.path.to_string_lossy()
-            ),
-        ];
+        let internal_maven_options = vec![String::from("-B")];
 
         log_header("Executing Maven");
         log_info(format!(
