@@ -23,7 +23,7 @@ impl Layer for MavenRepositoryLayer {
 
     fn create(
         &self,
-        context: &BuildContext<Self::Buildpack>,
+        _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
         LayerResultBuilder::new(GenericMetadata::default())
@@ -39,11 +39,7 @@ impl Layer for MavenRepositoryLayer {
                         Scope::Build,
                         ModificationBehavior::Append,
                         "MAVEN_OPTS",
-                        format!(
-                            "-Dmaven.repo.local={} -Duser.home={}",
-                            &layer_path.to_string_lossy(),
-                            context.app_dir.to_string_lossy()
-                        ),
+                        format!("-Dmaven.repo.local={}", &layer_path.to_string_lossy()),
                     ),
             )
             .build()
