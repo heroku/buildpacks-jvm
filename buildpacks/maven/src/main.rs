@@ -29,7 +29,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 
 mod errors;
@@ -240,10 +240,7 @@ impl Buildpack for MavenBuildpack {
                         [
                             format!(
                                 "-DoutputFile={}",
-                                context
-                                    .app_dir
-                                    .join("target/mvn-dependency-list.log")
-                                    .to_string_lossy()
+                                app_dependency_list_path(&context.app_dir).to_string_lossy()
                             ),
                             String::from("dependency:list"),
                         ]
@@ -277,6 +274,10 @@ impl From<MavenBuildpackError> for libcnb::Error<MavenBuildpackError> {
     fn from(e: MavenBuildpackError) -> Self {
         libcnb::Error::BuildpackError(e)
     }
+}
+
+pub fn app_dependency_list_path<P: AsRef<Path>>(app_dir: P) -> PathBuf {
+    app_dir.as_ref().join("target/mvn-dependency-list.log")
 }
 
 fn default_maven_goals() -> Vec<String> {
