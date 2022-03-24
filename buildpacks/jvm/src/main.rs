@@ -3,7 +3,7 @@ mod layers;
 mod util;
 mod version;
 
-use crate::layers::metrics_agent::MetricsAgentLayer;
+use crate::layers::heroku_metrics_agent::HerokuMetricsAgentLayer;
 use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::util::ValidateSha256Error;
@@ -69,7 +69,7 @@ impl Buildpack for OpenJdkBuildpack {
             },
         )?;
 
-        context.handle_layer(layer_name!("metrics_agent"), MetricsAgentLayer)?;
+        context.handle_layer(layer_name!("heroku_metrics_agent"), HerokuMetricsAgentLayer)?;
         context.handle_layer(layer_name!("runtime"), RuntimeLayer)?;
 
         BuildResultBuilder::new().build()

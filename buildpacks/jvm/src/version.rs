@@ -21,6 +21,7 @@ pub fn normalize_version_string<S: Into<String>>(
         "15" => "15.0.6",
         "16" => "16.0.2",
         "17" => "17.0.2",
+        "18" => "18.0.0",
         other => other,
     };
 

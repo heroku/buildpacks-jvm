@@ -1,27 +1,24 @@
 use crate::util::validate_sha256;
-use crate::{
-    HerokuMetricsAgentMetadata, OpenJdkBuildpack, OpenJdkBuildpackError,
-    JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME,
-};
+use crate::{HerokuMetricsAgentMetadata, OpenJdkBuildpack, OpenJdkBuildpackError};
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Buildpack;
+use libcnb::{additional_buildpack_binary_path, Buildpack};
 use serde::Deserialize;
 use serde::Serialize;
 use std::path::Path;
 
-pub struct MetricsAgentLayer;
+pub struct HerokuMetricsAgentLayer;
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct MetricsAgentLayerMetadata {
+pub struct HerokuMetricsAgentLayerMetadata {
     source: HerokuMetricsAgentMetadata,
 }
 
-impl Layer for MetricsAgentLayer {
+impl Layer for HerokuMetricsAgentLayer {
     type Buildpack = OpenJdkBuildpack;
-    type Metadata = MetricsAgentLayerMetadata;
+    type Metadata = HerokuMetricsAgentLayerMetadata;
 
     fn types(&self) -> LayerTypes {
         LayerTypes {
@@ -48,23 +45,18 @@ impl Layer for MetricsAgentLayer {
         validate_sha256(&agent_jar_path, &metrics_agent_metadata.sha256)
             .map_err(OpenJdkBuildpackError::MetricsAgentSha256ValidationError)?;
 
-        LayerResultBuilder::new(MetricsAgentLayerMetadata {
+        LayerResultBuilder::new(HerokuMetricsAgentLayerMetadata {
             source: (*metrics_agent_metadata).clone(),
         })
-        .env(
-            LayerEnv::new()
-                .chainable_insert(
-                    Scope::Launch,
-                    ModificationBehavior::Delimiter,
-                    JAVA_TOOL_OPTIONS_ENV_VAR_NAME,
-                    JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER,
-                )
-                .chainable_insert(
-                    Scope::Launch,
-                    ModificationBehavior::Prepend,
-                    JAVA_TOOL_OPTIONS_ENV_VAR_NAME,
-                    format!("-javaagent:{}", agent_jar_path.to_string_lossy()),
-                ),
+        .env(LayerEnv::new().chainable_insert(
+            Scope::All,
+            ModificationBehavior::Override,
+            "HEROKU_METRICS_AGENT_PATH",
+            agent_jar_path,
+        ))
+        .exec_d_program(
+            "heroku_metrics_agent_setup",
+            additional_buildpack_binary_path!("heroku_metrics_agent_setup"),
         )
         .build()
     }
