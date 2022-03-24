@@ -1,0 +1,15 @@
+[package]
+name = "maven"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+indoc = "1.0.4"
+java-properties = "1.4.0"
+libcnb = "0.6.0"
+libherokubuildpack = "0.6.0"
+serde = { version = "1.0.136", features = ["derive"] }
+tempfile = "3.3.0"
+shell-words = "1.1.0"
+regex = "1.5.5"
