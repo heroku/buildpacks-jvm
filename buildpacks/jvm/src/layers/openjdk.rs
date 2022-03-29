@@ -3,6 +3,7 @@ use crate::{
     JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
 use fs_extra::dir::CopyOptions;
+use libcnb::additional_buildpack_binary_path;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
@@ -132,8 +133,12 @@ impl Layer for OpenJdkLayer {
                     Scope::All,
                     ModificationBehavior::Prepend,
                     JAVA_TOOL_OPTIONS_ENV_VAR_NAME,
-                    "-XX:+UseContainerSupport -Dfile.encoding=UTF-8",
+                    "-Dfile.encoding=UTF-8",
                 ),
+        )
+        .exec_d_program(
+            "heroku_dynamic_jvm_opts",
+            additional_buildpack_binary_path!("heroku_dynamic_jvm_opts"),
         )
         .build()
     }
