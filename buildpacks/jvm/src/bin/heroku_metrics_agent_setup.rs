@@ -60,7 +60,7 @@ mod tests {
         env.insert("DYNO", "web.1");
         env.insert("HEROKU_METRICS_URL", "https://example.com/metrics");
 
-        let output = output_from_env(env);
+        let output = output_from_env(&env);
 
         assert_eq!(
             output.get(&exec_d_program_output_key!("JAVA_TOOL_OPTIONS")),
@@ -75,7 +75,7 @@ mod tests {
         env.insert("DYNO", "web.1");
         env.insert("HEROKU_METRICS_URL", "https://example.com/metrics");
 
-        let output = output_from_env(env);
+        let output = output_from_env(&env);
 
         assert_eq!(
             output.get(&exec_d_program_output_key!("JAVA_TOOL_OPTIONS")),
@@ -91,7 +91,7 @@ mod tests {
         env.insert("DYNO", "run.1");
         env.insert("HEROKU_METRICS_URL", "https://example.com/metrics");
 
-        assert!(output_from_env(env).is_empty());
+        assert!(output_from_env(&env).is_empty());
     }
 
     #[test]
@@ -101,7 +101,7 @@ mod tests {
         env.insert("JAVA_TOOL_OPTIONS", JAVA_TOOL_OPTIONS);
         env.insert("DYNO", "web.1");
 
-        assert!(output_from_env(env).is_empty());
+        assert!(output_from_env(&env).is_empty());
     }
 
     #[test]
@@ -112,7 +112,7 @@ mod tests {
         env.insert("DYNO", "web.1");
         env.insert("HEROKU_METRICS_URL", "https://example.com/metrics");
 
-        output_from_env(env);
+        output_from_env(&env);
     }
 
     #[test]
@@ -124,7 +124,7 @@ mod tests {
         env.insert("HEROKU_METRICS_URL", "https://example.com/metrics");
         env.insert("DISABLE_HEROKU_METRICS_AGENT", "true");
 
-        assert!(output_from_env(env).is_empty());
+        assert!(output_from_env(&env).is_empty());
     }
 
     const AGENT_PATH: &str = "/layers/buildpack/agent/agent.jar";

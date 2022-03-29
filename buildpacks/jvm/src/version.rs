@@ -96,23 +96,35 @@ mod tests {
     #[test]
     fn foo() {
         assert_eq!(
-            resolve_openjdk_url(stack_id!("heroku-20"), OpenJDKDistribution::Heroku, "1.0.0"),
+            resolve_openjdk_url(
+                &stack_id!("heroku-20"),
+                OpenJDKDistribution::Heroku,
+                "1.0.0"
+            ),
             "https://lang-jvm.s3.amazonaws.com/jdk/heroku-20/openjdk1.0.0.tar.gz"
         );
 
         assert_eq!(
-            resolve_openjdk_url(stack_id!("heroku-20"), OpenJDKDistribution::Heroku, "1.2.3"),
+            resolve_openjdk_url(
+                &stack_id!("heroku-20"),
+                OpenJDKDistribution::Heroku,
+                "1.2.3"
+            ),
             "https://lang-jvm.s3.amazonaws.com/jdk/heroku-20/openjdk1.2.3.tar.gz"
         );
 
         assert_eq!(
-            resolve_openjdk_url(stack_id!("heroku-22"), OpenJDKDistribution::Heroku, "1.2.3"),
+            resolve_openjdk_url(
+                &stack_id!("heroku-22"),
+                OpenJDKDistribution::Heroku,
+                "1.2.3"
+            ),
             "https://lang-jvm.s3.amazonaws.com/jdk/heroku-22/openjdk1.2.3.tar.gz"
         );
 
         assert_eq!(
             resolve_openjdk_url(
-                stack_id!("heroku-18"),
+                &stack_id!("heroku-18"),
                 OpenJDKDistribution::Heroku,
                 "1.2.3.4.5-suffix"
             ),
@@ -124,7 +136,7 @@ mod tests {
     fn foo_zulu() {
         assert_eq!(
             resolve_openjdk_url(
-                stack_id!("heroku-20"),
+                &stack_id!("heroku-20"),
                 OpenJDKDistribution::AzulZulu,
                 "1.0.0"
             ),
@@ -133,7 +145,7 @@ mod tests {
 
         assert_eq!(
             resolve_openjdk_url(
-                stack_id!("heroku-20"),
+                &stack_id!("heroku-20"),
                 OpenJDKDistribution::AzulZulu,
                 "1.2.3"
             ),
@@ -142,7 +154,7 @@ mod tests {
 
         assert_eq!(
             resolve_openjdk_url(
-                stack_id!("heroku-22"),
+                &stack_id!("heroku-22"),
                 OpenJDKDistribution::AzulZulu,
                 "1.2.3"
             ),
@@ -151,7 +163,7 @@ mod tests {
 
         assert_eq!(
             resolve_openjdk_url(
-                stack_id!("heroku-18"),
+                &stack_id!("heroku-18"),
                 OpenJDKDistribution::AzulZulu,
                 "1.2.3.4.5-suffix"
             ),
