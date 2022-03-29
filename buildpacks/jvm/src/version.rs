@@ -1,4 +1,6 @@
 use libcnb::data::buildpack::StackId;
+use std::fs::File;
+use std::path::Path;
 
 pub fn normalize_version_string<S: Into<String>>(
     user_version_string: S,
@@ -6,6 +8,7 @@ pub fn normalize_version_string<S: Into<String>>(
     let user_version_string = user_version_string.into();
 
     let (user_distribution_string, user_version_string) = user_version_string
+        .trim()
         .split_once("-")
         .unwrap_or(("heroku", &user_version_string));
 
@@ -60,6 +63,29 @@ pub fn resolve_openjdk_url<V: Into<String>>(
 pub enum OpenJDKDistribution {
     Heroku,
     AzulZulu,
+}
+
+pub fn read_version_string_from_app_dir<P: AsRef<Path>>(
+    app_dir: P,
+) -> Result<Option<String>, ReadVersionStringError> {
+    let system_properties_path = app_dir.as_ref().join("system.properties");
+
+    if system_properties_path.exists() {
+        File::open(&system_properties_path)
+            .map_err(ReadVersionStringError::CannotReadSystemProperties)
+            .and_then(|file| {
+                java_properties::read(&file).map_err(ReadVersionStringError::InvalidPropertiesFile)
+            })
+            .map(|properties| properties.get("java.runtime.version").cloned())
+    } else {
+        Ok(None)
+    }
+}
+
+#[derive(Debug)]
+pub enum ReadVersionStringError {
+    CannotReadSystemProperties(std::io::Error),
+    InvalidPropertiesFile(java_properties::PropertiesError),
 }
 
 #[cfg(test)]

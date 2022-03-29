@@ -1,5 +1,5 @@
 use crate::{
-    OpenJdkBuildpack, OpenJdkBuildpackError, JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER,
+    util, OpenJdkBuildpack, OpenJdkBuildpackError, JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER,
     JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
 use fs_extra::dir::CopyOptions;
@@ -43,7 +43,7 @@ impl Layer for OpenJdkLayer {
     ) -> Result<LayerResult<Self::Metadata>, OpenJdkBuildpackError> {
         libherokubuildpack::log_header("Installing OpenJDK");
 
-        let temp_dir = tempdir().map_err(OpenJdkBuildpackError::CannotCreateTempDir)?;
+        let temp_dir = tempdir().map_err(OpenJdkBuildpackError::CannotCreateOpenJdkTempDir)?;
         let path = temp_dir.path().join("openjdk.tar.gz");
 
         libherokubuildpack::download_file(&self.tarball_url, &path)
@@ -64,7 +64,7 @@ impl Layer for OpenJdkLayer {
         let relative_jdk_cacerts_path = ["jre/lib/security/cacerts", "lib/security/cacerts"]
             .iter()
             .find(|path| layer_path.join(path).is_file())
-            .unwrap();
+            .ok_or(OpenJdkBuildpackError::MissingJdkCertificatesFile)?;
 
         let symlink_ubuntu_java_cacerts_file = ubuntu_java_cacerts_file_path.is_file()
             && !app_jdk_overlay_dir_path
@@ -78,25 +78,20 @@ impl Layer for OpenJdkLayer {
                 &absolute_jdk_cacerts_path,
                 &absolute_jdk_cacerts_path.with_extension("old"),
             )
-            .unwrap();
+            .map_err(OpenJdkBuildpackError::CannotSymlinkUbuntuCertificates)?;
 
             // We symlink instead of copying to ensure cacerts is always the latest version,
             // even when the image is rebased.
             std::os::unix::fs::symlink(ubuntu_java_cacerts_file_path, absolute_jdk_cacerts_path)
-                .unwrap();
+                .map_err(OpenJdkBuildpackError::CannotSymlinkUbuntuCertificates)?;
         }
 
         let mut jdk_overlay_applied = false;
         if app_jdk_overlay_dir_path.is_dir() {
             jdk_overlay_applied = true;
 
-            let jdk_overlay_contents = fs::read_dir(&app_jdk_overlay_dir_path)
-                .and_then(|read_dir| {
-                    read_dir
-                        .map(|dir_entry| dir_entry.map(|dir_entry| dir_entry.path()))
-                        .collect::<std::io::Result<Vec<PathBuf>>>()
-                })
-                .unwrap();
+            let jdk_overlay_contents = util::list_directory_contents(&app_jdk_overlay_dir_path)
+                .map_err(OpenJdkBuildpackError::CannotListJdkOverlayContents)?;
 
             fs_extra::copy_items(
                 &jdk_overlay_contents,
@@ -108,7 +103,7 @@ impl Layer for OpenJdkLayer {
                     ..CopyOptions::default()
                 },
             )
-            .unwrap();
+            .map_err(OpenJdkBuildpackError::CannotCopyJdkOverlayContents)?;
         }
 
         LayerResultBuilder::new(OpenJdkLayerMetadata {

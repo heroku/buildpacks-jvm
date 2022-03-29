@@ -5,14 +5,17 @@
 #![allow(clippy::module_name_repetitions)]
 
 mod constants;
+mod errors;
 mod layers;
 mod util;
 mod version;
 
+use crate::errors::on_error_jvm_buildpack;
 use crate::layers::heroku_metrics_agent::HerokuMetricsAgentLayer;
 use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::util::ValidateSha256Error;
+use crate::version::{NormalizeVersionStringError, ReadVersionStringError};
 pub use constants::*;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
@@ -23,8 +26,6 @@ use libcnb::generic::GenericPlatform;
 use libcnb::Buildpack;
 use libherokubuildpack::DownloadError;
 use serde::{Deserialize, Serialize};
-use std::fs::File;
-use std::path::Path;
 
 pub struct OpenJdkBuildpack;
 
@@ -33,9 +34,15 @@ pub enum OpenJdkBuildpackError {
     OpenJdkDownloadError(DownloadError),
     MetricsAgentDownloadError(DownloadError),
     MetricsAgentSha256ValidationError(ValidateSha256Error),
-    CannotCreateTempDir(std::io::Error),
+    CannotCreateOpenJdkTempDir(std::io::Error),
     CannotOpenOpenJdkTarball(std::io::Error),
     CannotDecompressOpenJdkTarball(std::io::Error),
+    ReadVersionStringError(ReadVersionStringError),
+    NormalizeVersionStringError(NormalizeVersionStringError),
+    MissingJdkCertificatesFile,
+    CannotSymlinkUbuntuCertificates(std::io::Error),
+    CannotListJdkOverlayContents(std::io::Error),
+    CannotCopyJdkOverlayContents(fs_extra::error::Error),
 }
 
 impl Buildpack for OpenJdkBuildpack {
@@ -55,22 +62,22 @@ impl Buildpack for OpenJdkBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let x = match read_version_string_from_app_dir(&context.app_dir) {
-            Ok(Some(user_version)) => version::normalize_version_string(user_version),
-            Ok(None) => version::normalize_version_string("8"),
-            Err(ReadVersionStringError::CannotReadSystemProperties(_)) => {
-                version::normalize_version_string("8")
-            }
-            Err(ReadVersionStringError::InvalidPropertiesFile(_)) => {
-                version::normalize_version_string("8")
-            }
-        }
-        .unwrap();
+        let app_dir_version_string = version::read_version_string_from_app_dir(&context.app_dir)
+            .map_err(OpenJdkBuildpackError::ReadVersionStringError)?;
+
+        let normalized_version = version::normalize_version_string(
+            app_dir_version_string.unwrap_or_else(|| String::from("8")),
+        )
+        .map_err(OpenJdkBuildpackError::NormalizeVersionStringError)?;
 
         context.handle_layer(
             layer_name!("openjdk"),
             OpenJdkLayer {
-                tarball_url: version::resolve_openjdk_url(&context.stack_id, x.0, x.1),
+                tarball_url: version::resolve_openjdk_url(
+                    &context.stack_id,
+                    normalized_version.0,
+                    normalized_version.1,
+                ),
             },
         )?;
 
@@ -79,23 +86,10 @@ impl Buildpack for OpenJdkBuildpack {
 
         BuildResultBuilder::new().build()
     }
-}
 
-fn read_version_string_from_app_dir<P: AsRef<Path>>(
-    app_dir: P,
-) -> Result<Option<String>, ReadVersionStringError> {
-    File::open(app_dir.as_ref().join("system.properties"))
-        .map_err(ReadVersionStringError::CannotReadSystemProperties)
-        .and_then(|file| {
-            java_properties::read(&file).map_err(ReadVersionStringError::InvalidPropertiesFile)
-        })
-        .map(|properties| properties.get("java.runtime.version").cloned())
-}
-
-#[derive(Debug)]
-enum ReadVersionStringError {
-    CannotReadSystemProperties(std::io::Error),
-    InvalidPropertiesFile(java_properties::PropertiesError),
+    fn on_error(&self, error: libcnb::Error<Self::Error>) -> i32 {
+        libherokubuildpack::on_error_heroku(on_error_jvm_buildpack, error)
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -111,3 +105,9 @@ pub struct HerokuMetricsAgentMetadata {
 }
 
 buildpack_main!(OpenJdkBuildpack);
+
+impl From<OpenJdkBuildpackError> for libcnb::Error<OpenJdkBuildpackError> {
+    fn from(error: OpenJdkBuildpackError) -> Self {
+        libcnb::Error::BuildpackError(error)
+    }
+}

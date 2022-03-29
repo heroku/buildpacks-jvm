@@ -1,4 +1,5 @@
-use std::path::Path;
+use std::fs::DirEntry;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 pub enum ValidateSha256Error {
@@ -24,4 +25,10 @@ pub(crate) fn validate_sha256<P: AsRef<Path>, S: Into<String>>(
                 })
             }
         })
+}
+
+pub fn list_directory_contents<P: AsRef<Path>>(path: P) -> std::io::Result<Vec<PathBuf>> {
+    std::fs::read_dir(path.as_ref())
+        .and_then(Iterator::collect::<std::io::Result<Vec<DirEntry>>>)
+        .map(|dir_entries| dir_entries.iter().map(DirEntry::path).collect())
 }
