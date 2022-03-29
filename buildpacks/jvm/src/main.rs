@@ -7,19 +7,18 @@ use crate::layers::heroku_metrics_agent::HerokuMetricsAgentLayer;
 use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::util::ValidateSha256Error;
+pub use constants::*;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
-use std::fs::File;
-use std::path::Path;
-
-pub use constants::*;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::Buildpack;
 use libherokubuildpack::DownloadError;
 use serde::{Deserialize, Serialize};
+use std::fs::File;
+use std::path::Path;
 
 pub struct OpenJdkBuildpack;
 

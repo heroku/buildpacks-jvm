@@ -28,7 +28,7 @@ fn output_from_env(env: Env) -> HashMap<ExecDProgramOutputKey, String> {
 
         let suffix = env
             .get("JAVA_TOOL_OPTIONS")
-            .map(|value| format!(" {}", value.to_string_lossy().to_string()))
+            .map(|value| format!(" {}", value.to_string_lossy()))
             .unwrap_or_default();
 
         HashMap::from([(
