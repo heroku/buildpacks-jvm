@@ -4,6 +4,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Re-implement buildpack using [libcnb.rs](https://github.com/Malax/libcnb.rs) ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Remove support for GPG signed OpenJDK binaries. This feature wasn't used and will be replaced by a unified solution across Heroku buildpacks. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Remove support for the `JDK_BASE_URL` environment variable. It was deprecated in Jan 2021 and was slated for removal Oct 2021. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Remove support for the `JVM_BUILDPACK_ASSETS_BASE_URL` environment variable. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Remove legacy debugging scripts: `with_jmap`, `with_jmap_and_jstack`, `with_jmap_and_jstack_java`, `with_jmap_java`, `with_jstack` and `with_jstack_java`. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Remove explicit setting of `-XX:+UseContainerSupport` as it's nowadays the default for all supported Java versions. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Fixed caching behaviour when a JDK overlay was used. Updated overlays will now be always applied to a clean version of OpenJDK. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Improved compatibility when reading Java properties files (`system.properties`). ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Support for selecting a major version when using Azul Zulu as the OpenJDK distribution. Users no longer have to pick a specific version when using Azul Zulu. To select, for example, the latest OpenJDK 11 release from Azul Zulu, use `java.runtime.version=zulu-11` in your `system.properties` file. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Add checksum validation when installing the Heroku JVM Metrics Agent. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* No longer installs `jq` and `yj` command-line tools during the buildpack bootstrap, improving overall build times. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Improved compatibility when rewriting the `DATABASE_URL` environment variable by using proper URL parsing. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Improved error messages when unexpected IO errors occur during the build. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+
 ## [0.1.15] 2022/03/24
 
 ### Added
