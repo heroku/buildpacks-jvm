@@ -1,11 +1,11 @@
-api = "0.4"
+api = "0.6"
 
 [buildpack]
 id = "heroku/jvm"
-version = "0.1.16"
-name = "JVM"
+version = "1.0.0"
+name = "Heroku OpenJDK Buildpack"
 homepage = "https://github.com/heroku/buildpacks-jvm"
-description = "Official Heroku buildpack for installing a JVM."
+description = "Official Heroku buildpack for installing OpenJDK"
 keywords = ["java", "jvm", "jdk", "openjdk"]
 
 [[buildpack.licenses]]
@@ -20,9 +20,9 @@ id = "heroku-20"
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
 
-[metadata]
-
-[metadata.release]
+[metadata.heroku-metrics-agent]
+url = "https://repo1.maven.org/maven2/com/heroku/agent/heroku-java-metrics-agent/3.14/heroku-java-metrics-agent-3.14.jar"
+sha256 = "ad28a69907fb71b64549603065e4b7259ae9356989b054f6157ef289bbbfe4b6"
 
 [metadata.release.docker]
 repository = "public.ecr.aws/heroku-buildpacks/heroku-jvm-buildpack"
