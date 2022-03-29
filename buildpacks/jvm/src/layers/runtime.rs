@@ -27,8 +27,8 @@ impl Layer for RuntimeLayer {
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
         LayerResultBuilder::new(GenericMetadata::default())
             .exec_d_program(
-                "env_var_rewrite",
-                additional_buildpack_binary_path!("env_var_rewrite"),
+                "heroku_database_env_var_rewrite",
+                additional_buildpack_binary_path!("heroku_database_env_var_rewrite"),
             )
             .build()
     }
