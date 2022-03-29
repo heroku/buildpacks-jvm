@@ -71,6 +71,15 @@ fn jvm_env_vars_for_env(input: &HashMap<String, String>) -> HashMap<String, Stri
         ));
     }
 
+    // Spring uses a dedicated environment variable when connecting to Redis. If that environment
+    // variable is not already set, we copy the value from the Heroku REDIS_URL into
+    // SPRING_REDIS_URL for convenience.
+    if !input.contains_key("DISABLE_SPRING_REDIS_URL") && !input.contains_key("SPRING_REDIS_URL") {
+        if let Some(redis_url) = input.get("REDIS_URL") {
+            result.insert(String::from("SPRING_REDIS_URL"), redis_url.clone());
+        }
+    }
+
     result
 }
 
@@ -497,5 +506,58 @@ mod test {
             result.get("JDBC_DATABASE_PASSWORD"),
             Some(&String::from("hunter2"))
         );
+    }
+
+    #[test]
+    fn spring_redis_url() {
+        let result = jvm_env_vars_for_env(&HashMap::from([(
+            String::from("REDIS_URL"),
+            String::from("redis://h:asdfqwer1234asdf@ec2-111-1-1-1.compute-1.amazonaws.com:111"),
+        )]));
+
+        assert_eq!(
+            result.get("SPRING_REDIS_URL"),
+            Some(&String::from(
+                "redis://h:asdfqwer1234asdf@ec2-111-1-1-1.compute-1.amazonaws.com:111"
+            ))
+        );
+    }
+
+    #[test]
+    fn spring_redis_url_disabled() {
+        let result = jvm_env_vars_for_env(&HashMap::from([
+            (
+                String::from("REDIS_URL"),
+                String::from(
+                    "redis://h:asdfqwer1234asdf@ec2-111-1-1-1.compute-1.amazonaws.com:111",
+                ),
+            ),
+            (
+                String::from("DISABLE_SPRING_REDIS_URL"),
+                String::from("true"),
+            ),
+        ]));
+
+        assert_eq!(result.get("SPRING_REDIS_URL"), None);
+    }
+
+    #[test]
+    fn spring_redis_url_already_set() {
+        let result = jvm_env_vars_for_env(&HashMap::from([
+            (
+                String::from("REDIS_URL"),
+                String::from(
+                    "redis://h:asdfqwer1234asdf@ec2-111-1-1-1.compute-1.amazonaws.com:111",
+                ),
+            ),
+            (
+                String::from("SPRING_REDIS_URL"),
+                String::from(
+                    "redis://h:asdfqwer1234asdf@ec2-111-1-1-1.compute-1.amazonaws.com:222",
+                ),
+            ),
+        ]));
+
+        assert_eq!(result.get("SPRING_REDIS_URL"), None);
     }
 }
