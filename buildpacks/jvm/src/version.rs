@@ -41,7 +41,7 @@ pub enum NormalizeVersionStringError {
 }
 
 pub fn resolve_openjdk_url<V: Into<String>>(
-    stack_id: StackId,
+    stack_id: &StackId,
     distribution: OpenJDKDistribution,
     version_string: V,
 ) -> String {
@@ -56,7 +56,7 @@ pub fn resolve_openjdk_url<V: Into<String>>(
     format!("{base_url}/{file_name}")
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum OpenJDKDistribution {
     Heroku,
     AzulZulu,

@@ -520,7 +520,6 @@ dependencies = [
  "libcnb",
  "libcnb-test",
  "libherokubuildpack",
- "regex",
  "serde",
  "sha2",
  "tempfile",

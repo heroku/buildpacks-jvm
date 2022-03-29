@@ -1,3 +1,9 @@
+// Enable rustc and Clippy lints that are disabled by default.
+// https://rust-lang.github.io/rust-clippy/stable/index.html
+#![warn(clippy::pedantic)]
+// This lint is too noisy and enforces a style that reduces readability in many cases.
+#![allow(clippy::module_name_repetitions)]
+
 mod constants;
 mod layers;
 mod util;
@@ -64,7 +70,7 @@ impl Buildpack for OpenJdkBuildpack {
         context.handle_layer(
             layer_name!("openjdk"),
             OpenJdkLayer {
-                tarball_url: version::resolve_openjdk_url(context.stack_id.clone(), x.0, x.1),
+                tarball_url: version::resolve_openjdk_url(&context.stack_id, x.0, x.1),
             },
         )?;
 

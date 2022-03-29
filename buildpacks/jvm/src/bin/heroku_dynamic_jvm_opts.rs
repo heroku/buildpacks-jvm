@@ -1,3 +1,9 @@
+// Enable rustc and Clippy lints that are disabled by default.
+// https://rust-lang.github.io/rust-clippy/stable/index.html
+#![warn(clippy::pedantic)]
+// This lint is too noisy and enforces a style that reduces readability in many cases.
+#![allow(clippy::module_name_repetitions)]
+
 use libcnb::data::exec_d::ExecDProgramOutputKey;
 use libcnb::data::exec_d_program_output_key;
 use libcnb::exec_d::write_exec_d_program_output;
@@ -5,10 +11,10 @@ use libcnb::Env;
 use std::collections::HashMap;
 
 fn main() {
-    write_exec_d_program_output(output_from_env(Env::from_current()));
+    write_exec_d_program_output(output_from_env(&Env::from_current()));
 }
 
-fn output_from_env(env: Env) -> HashMap<ExecDProgramOutputKey, String> {
+fn output_from_env(env: &Env) -> HashMap<ExecDProgramOutputKey, String> {
     let prefix = dyno_type_jvm_opts().join(" ");
 
     let suffix = env
