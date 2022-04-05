@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "buildpacks/jvm",
+    "buildpacks/maven",
+    "buildpacks/jvm-function-invoker"
+]

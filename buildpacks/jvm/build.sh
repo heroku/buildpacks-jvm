@@ -8,9 +8,8 @@ pushd "${buildpack_dir}"
 
 cargo libcnb package --release
 
-mv target target-cargo
 mkdir target
-cp -r target-cargo/buildpack/release/heroku_jvm/* target/
+cp -r ../../target/buildpack/release/heroku_jvm/* target/
 cp package.toml target/
 
 popd
