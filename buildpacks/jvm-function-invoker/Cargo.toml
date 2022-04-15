@@ -11,7 +11,7 @@ libcnb = "0.6.0"
 libherokubuildpack = { version = "0.6.0", features = ["toml"] }
 serde = "1.0.136"
 thiserror = "1.0.30"
-toml = "0.5.8"
+toml = "0.5.9"
 
 [dev-dependencies]
 tempfile = "3.3.0"
