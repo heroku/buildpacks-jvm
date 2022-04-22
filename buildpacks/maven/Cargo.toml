@@ -7,7 +7,7 @@ publish = false
 [dependencies]
 indoc = "1.0.4"
 java-properties = "1.4.0"
-libcnb = "0.6.0"
+libcnb = "0.7.0"
 libherokubuildpack = "0.6.0"
 serde = { version = "1.0.136", features = ["derive"] }
 tempfile = "3.3.0"
