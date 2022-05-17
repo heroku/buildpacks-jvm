@@ -14,6 +14,8 @@ describe "Heroku's Maven Cloud Native Buildpack" do
 
   it "will write ${APP_DIR}/target/mvn-dependency-list.log with the app's dependencies" do
     Cutlass::App.new("simple-http-service", config: {MAVEN_CUSTOM_GOALS: "clean"}).transaction do |app|
+      replace_web_process_with_sleep(app.tmpdir)
+
       app.pack_build do |pack_result|
         app.start_container do |container|
           expected_dependency_list = <<~EOF
