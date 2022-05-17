@@ -12,7 +12,7 @@ JVM_BUILDPACK = Cutlass::LocalBuildpack.new(directory: root_dir.join("buildpacks
 MAVEN_BUILDPACK = Cutlass::LocalBuildpack.new(directory: root_dir.join("buildpacks/maven"))
 
 Cutlass.config do |config|
-  config.default_buildpack_paths = [JVM_BUILDPACK, MAVEN_BUILDPACK, "heroku/procfile@0.6.2"]
+  config.default_buildpack_paths = [JVM_BUILDPACK, MAVEN_BUILDPACK, "heroku/procfile@1.0.1"]
   config.default_builder = "heroku/buildpacks:18"
   config.default_repo_dirs = [root_dir.join("test/fixtures")]
 end
