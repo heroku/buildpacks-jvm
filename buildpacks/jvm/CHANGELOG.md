@@ -4,6 +4,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] 2022/05/17
+
 * Re-implement buildpack using [libcnb.rs](https://github.com/Malax/libcnb.rs) ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
 * Remove support for GPG signed OpenJDK binaries. This feature wasn't used and will be replaced by a unified solution across Heroku buildpacks. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
 * Remove support for the `JDK_BASE_URL` environment variable. It was deprecated in Jan 2021 and was slated for removal Oct 2021. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
