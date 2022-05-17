@@ -79,3 +79,8 @@ def write_settings_xml(app_dir, filename, test_value)
 
   File.open(File.join(app_dir, filename), "w") { |file| file.write(settings_xml) }
 end
+
+def replace_web_process_with_sleep(app_dir)
+  File.delete(app_dir.join("Procfile"))
+  File.write(app_dir.join("Procfile"), "web: sleep 3600")
+end
