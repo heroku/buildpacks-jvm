@@ -7,15 +7,15 @@ publish = false
 [dependencies]
 fs_extra = "1.2.0"
 java-properties = "1.4.0"
-libcnb = "0.6.0"
-libherokubuildpack = "0.6.0"
-serde = { version = "1.0.133", features = ["derive"] }
+libcnb = "0.7.0"
+libherokubuildpack = "0.7.0"
+serde = { version = "1.0.137", features = ["derive"] }
 sha2 = "0.10.1"
 tempfile = "3.3.0"
-toml = "0.5.8"
+toml = "0.5.9"
 url = "2.2.2"
 ureq = "2.4.0"
 indoc = "1.0.4"
 
 [dev-dependencies]
-libcnb-test = "0.3.0"
+libcnb-test = "0.3.1"
