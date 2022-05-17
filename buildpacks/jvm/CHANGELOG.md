@@ -17,6 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * No longer installs `jq` and `yj` command-line tools during the buildpack bootstrap, improving overall build times. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
 * Improved compatibility when rewriting the `DATABASE_URL` environment variable by using proper URL parsing. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
 * Improved error messages when unexpected IO errors occur during the build. ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))
+* Default version for **OpenJDK 7** is now `1.7.0_342`
+* Default version for **OpenJDK 8** is now `1.8.0_332`
+* Default version for **OpenJDK 11** is now `11.0.15`
+* Default version for **OpenJDK 13** is now `13.0.11`
+* Default version for **OpenJDK 15** is now `15.0.7`
+* Default version for **OpenJDK 17** is now `17.0.3`
+* Default version for **OpenJDK 18** is now `18.0.1`
+
 
 ## [0.1.15] 2022/03/24
 
