@@ -38,7 +38,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - pack/install-pack:
-          version: 0.23.0
+          version: 0.26.0
       - heroku-buildpacks/install-build-dependencies
       - run:
           name: "Build and package buildpack"
@@ -78,7 +78,7 @@ jobs:
     steps:
       - checkout
       - pack/install-pack:
-          version: 0.23.0
+          version: 0.26.0
       - heroku-buildpacks/install-build-dependencies
       - run:
           name: Install Ruby dependencies
