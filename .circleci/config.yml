@@ -94,7 +94,7 @@ jobs:
       buildpack-dir:
         type: string
     docker:
-      - image: cimg/rust:1.58
+      - image: cimg/rust:1.60
     steps:
       - checkout
       - setup_remote_docker
