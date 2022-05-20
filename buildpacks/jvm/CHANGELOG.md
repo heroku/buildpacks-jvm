@@ -4,6 +4,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Add support for the `heroku-22` stack. ([#304](https://github.com/heroku/buildpacks-jvm/pull/304))
+* [Azul Zulu Builds of OpenJDK](https://www.azul.com/downloads/?package=jdk#download-openjdk) is now the default OpenJDK distribution. This change does not affect the `heroku-18` and `heroku-20` stack. ([#304](https://github.com/heroku/buildpacks-jvm/pull/304))
+
 ## [1.0.0] 2022/05/17
 
 * Re-implement buildpack using [libcnb.rs](https://github.com/Malax/libcnb.rs) ([#272](https://github.com/heroku/buildpacks-jvm/pull/272))

@@ -19,6 +19,9 @@ id = "heroku-18"
 id = "heroku-20"
 
 [[stacks]]
+id = "heroku-22"
+
+[[stacks]]
 id = "*"
 
 [metadata]

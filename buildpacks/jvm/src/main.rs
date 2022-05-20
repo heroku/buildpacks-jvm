@@ -66,6 +66,7 @@ impl Buildpack for OpenJdkBuildpack {
             .map_err(OpenJdkBuildpackError::ReadVersionStringError)?;
 
         let normalized_version = version::normalize_version_string(
+            &context.stack_id,
             app_dir_version_string.unwrap_or_else(|| String::from("8")),
         )
         .map_err(OpenJdkBuildpackError::NormalizeVersionStringError)?;

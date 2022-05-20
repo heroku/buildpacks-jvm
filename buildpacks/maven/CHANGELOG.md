@@ -4,6 +4,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Add support for the `heroku-22` stack. ([#304](https://github.com/heroku/buildpacks-jvm/pull/304))
+
 ## [1.0.0] 2022/03/24
 
 * Re-implement buildpack using [libcnb.rs](https://github.com/Malax/libcnb.rs) ([#273](https://github.com/heroku/buildpacks-jvm/pull/273))

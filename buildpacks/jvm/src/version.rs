@@ -3,6 +3,7 @@ use std::fs::File;
 use std::path::Path;
 
 pub fn normalize_version_string<S: Into<String>>(
+    stack_id: &StackId,
     user_version_string: S,
 ) -> Result<(OpenJDKDistribution, String), NormalizeVersionStringError> {
     let user_version_string = user_version_string.into();
@@ -10,7 +11,10 @@ pub fn normalize_version_string<S: Into<String>>(
     let (user_distribution_string, user_version_string) = user_version_string
         .trim()
         .split_once("-")
-        .unwrap_or(("heroku", &user_version_string));
+        .map(|(split_distribution_string, split_version_string)| {
+            (Some(split_distribution_string), split_version_string)
+        })
+        .unwrap_or((None, &user_version_string));
 
     let version_string = match user_version_string {
         "7" | "1.7" => "1.7.0_342",
@@ -29,16 +33,24 @@ pub fn normalize_version_string<S: Into<String>>(
     };
 
     match user_distribution_string {
-        "heroku" | "openjdk" => Ok(OpenJDKDistribution::Heroku),
-        "zulu" => Ok(OpenJDKDistribution::AzulZulu),
-        unknown => Err(NormalizeVersionStringError::UnknownDistribution(
+        None => Ok(default_distribution(&stack_id)),
+        Some("heroku") | Some("openjdk") => Ok(OpenJDKDistribution::Heroku),
+        Some("zulu") => Ok(OpenJDKDistribution::AzulZulu),
+        Some(unknown) => Err(NormalizeVersionStringError::UnknownDistribution(
             String::from(unknown),
         )),
     }
     .map(|distribution| (distribution, String::from(version_string)))
 }
 
-#[derive(Debug)]
+fn default_distribution(stack_id: &StackId) -> OpenJDKDistribution {
+    match stack_id.as_str() {
+        "heroku-18" | "heroku-20" => OpenJDKDistribution::Heroku,
+        _ => OpenJDKDistribution::AzulZulu,
+    }
+}
+
+#[derive(Debug, Eq, PartialEq)]
 pub enum NormalizeVersionStringError {
     UnknownDistribution(String),
 }
@@ -59,7 +71,7 @@ pub fn resolve_openjdk_url<V: Into<String>>(
     format!("{base_url}/{file_name}")
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum OpenJDKDistribution {
     Heroku,
     AzulZulu,
@@ -92,6 +104,29 @@ pub enum ReadVersionStringError {
 mod tests {
     use super::*;
     use libcnb::data::stack_id;
+
+    #[test]
+    fn normalize_version_string_stack_specific_distribution() {
+        assert_eq!(
+            normalize_version_string(&stack_id!("heroku-18"), "8"),
+            Ok((OpenJDKDistribution::Heroku, String::from("1.8.0_332")))
+        );
+
+        assert_eq!(
+            normalize_version_string(&stack_id!("heroku-20"), "8"),
+            Ok((OpenJDKDistribution::Heroku, String::from("1.8.0_332")))
+        );
+
+        assert_eq!(
+            normalize_version_string(&stack_id!("heroku-22"), "8"),
+            Ok((OpenJDKDistribution::AzulZulu, String::from("1.8.0_332")))
+        );
+
+        assert_eq!(
+            normalize_version_string(&stack_id!("bogus"), "8"),
+            Ok((OpenJDKDistribution::AzulZulu, String::from("1.8.0_332")))
+        );
+    }
 
     #[test]
     fn foo() {
