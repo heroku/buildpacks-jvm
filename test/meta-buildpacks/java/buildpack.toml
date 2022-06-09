@@ -19,10 +19,3 @@ version = "1.0.1"
 id = "heroku/procfile"
 version = "1.0.1"
 optional = true
-
-[[order]]
-
-[[order.group]]
-id = "heroku/procfile"
-version = "1.0.1"
-optional = true
