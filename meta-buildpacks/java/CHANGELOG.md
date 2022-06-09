@@ -3,6 +3,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+* Upgraded `heroku/jvm` to `1.0.1`
 ### Breaking
 * Remove Gradle support from this meta-buildpack. Gradle support was realized by using a shimmed version of the `heroku/gradle` Heroku buildpack. We decided to strictly separate shimmed buildpacks from proper CNBs. Gradle support will be re-added later, using a native CNB. ([#308](https://github.com/heroku/buildpacks-jvm/pull/308))
 
