@@ -7,7 +7,6 @@ Heroku's official Cloud Native Buildpack for Java applications.
 ## Table of Contents
 * [How it works](#how-it-works)
     + [How it works: Maven](#how-it-works-maven)
-    + [How it works: Gradle](#how-it-works-gradle)
 * [Configuration](#configuration)
     + [Procfile](#procfile)
     + [OpenJDK](#openjdk)
@@ -26,28 +25,21 @@ Heroku's official Cloud Native Buildpack for Java applications.
         - [Using a custom Maven settings file](#using-a-custom-maven-settings-file)
             * [Environment variable: `MAVEN_SETTINGS_PATH`](#environment-variable-maven_settings_path)
             * [Environment variable: `MAVEN_SETTINGS_URL`](#environment-variable-maven_settings_url)
-    + [Gradle](#gradle)
-        - [Gradle Version](#gradle-version)
-        - [Customizing Gradle execution](#customizing-gradle-execution)
-            * [Environment variable: `GRADLE_TASK`](#environment-variable-gradle_task)
 * [License](#license)
 
 ## How it works
 
 This buildpack will install OpenJDK 8 ([Configuration: OpenJDK Version](#openjdk-version)) and builds your app with
-[Maven](https://maven.apache.org/) or [Gradle](https://gradle.org/). It requires either:
+[Maven](https://maven.apache.org/). It requires either:
 
 - A `pom.xml` file, or one of the other POM formats supported by the
   [Maven Polyglot plugin](https://github.com/takari/polyglot-maven) in the root directory of your app. See
   [How it works: Maven](#how-it-works-maven) for Maven specifics.
-- A `build.gradle` file and [Gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) in the root
-  directory of your app. See [How it works: Gradle](#how-it-works-gradle) for Gradle specifics.
 
 The buildpack will try to figure out the required goals/tasks to run based on the framework used by your application.
 It will also add a process type based on the framework. If required, those features can be configured:
 
 - [Configuration: Customizing Maven execution](#customizing-maven-execution)
-- [Configuration: Customizing Gradle execution](#customizing-gradle-execution)
 - [Configuration: Procfile](#procfile)
 
 ### How it works: Maven
@@ -57,13 +49,6 @@ it will install Maven and use that instead.
 
 The local Maven repository (`.m2` folder) will be cached between builds for dependency resolution. However, neither
 the `mvn` executable (if installed) nor the `.m2` folder will be available in your container at runtime.
-
-### How it works: Gradle
-The buildpack will use the [Gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) in your app's
-root directory to execute the build defined by your `build.gradle` and download your dependencies. Gradle's
-[dependency cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:dependency_cache) is
-persisted between builds to speed up subsequent builds. However, the dependency cache will not be available in your
-container at runtime.
 
 ## Configuration
 ### Procfile
@@ -164,20 +149,6 @@ capability with the `MAVEN_SETTINGS_PATH` environment variable.
 ##### Environment variable: `MAVEN_SETTINGS_URL`
 When the `MAVEN_SETTINGS_URL` config variable is defined, the buildpack will download the file at the given location
 and use it to configure Maven.
-
-### Gradle
-#### Gradle Version
-The buildpack will not install Gradle itself and requires that your application uses
-[Gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) to configure the Gradle version.
-
-#### Customizing Gradle execution
-There is a set of environment variables that can be used to customize the Gradle execution.
-
-##### Environment variable: `GRADLE_TASK`
-This buildpack tries to determine the correct Gradle task to run based on the framework you use. In some cases, you
-might not use a framework or use one that is not directly supported. In such cases, the `stage` task will be executed
-by default. To use another task, set the `GRADLE_TASK` environment variable to the task you want to execute for building
-your application.
 
 ## License
 See [LICENSE](../../LICENSE) file.

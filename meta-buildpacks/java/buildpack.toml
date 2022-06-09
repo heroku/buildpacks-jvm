@@ -2,7 +2,7 @@ api = "0.4"
 
 [buildpack]
 id = "heroku/java"
-version = "0.5.1"
+version = "0.6.0"
 name = "Java"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for Java applications."
@@ -20,17 +20,6 @@ version = "1.0.0"
 [[order.group]]
 id = "heroku/maven"
 version = "1.0.0"
-
-[[order.group]]
-id = "heroku/procfile"
-version = "1.0.1"
-optional = true
-
-[[order]]
-
-[[order.group]]
-id = "heroku/gradle"
-version = "0.0.35"
 
 [[order.group]]
 id = "heroku/procfile"
