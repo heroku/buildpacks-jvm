@@ -8,7 +8,7 @@ fn test() {
             .start_with_shell_command("java -version", |container| {
                 assert_contains!(
                     container.logs_wait().stderr,
-                    "openjdk version \"1.8.0_322-heroku\""
+                    "openjdk version \"1.8.0_332-heroku\""
                 )
             });
     })
