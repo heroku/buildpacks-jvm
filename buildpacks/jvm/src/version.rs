@@ -61,7 +61,7 @@ pub fn resolve_openjdk_url<V: Into<String>>(
     version_string: V,
 ) -> String {
     let version_string = version_string.into();
-    let base_url = format!("https://lang-jvm.s3.amazonaws.com/jdk/{stack_id}");
+    let base_url = format!("https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/{stack_id}");
 
     let file_name = match distribution {
         OpenJDKDistribution::Heroku => format!("openjdk{version_string}.tar.gz"),
@@ -136,7 +136,7 @@ mod tests {
                 OpenJDKDistribution::Heroku,
                 "1.0.0"
             ),
-            "https://lang-jvm.s3.amazonaws.com/jdk/heroku-20/openjdk1.0.0.tar.gz"
+            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-20/openjdk1.0.0.tar.gz"
         );
 
         assert_eq!(
@@ -145,7 +145,7 @@ mod tests {
                 OpenJDKDistribution::Heroku,
                 "1.2.3"
             ),
-            "https://lang-jvm.s3.amazonaws.com/jdk/heroku-20/openjdk1.2.3.tar.gz"
+            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-20/openjdk1.2.3.tar.gz"
         );
 
         assert_eq!(
@@ -154,7 +154,7 @@ mod tests {
                 OpenJDKDistribution::Heroku,
                 "1.2.3"
             ),
-            "https://lang-jvm.s3.amazonaws.com/jdk/heroku-22/openjdk1.2.3.tar.gz"
+            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-22/openjdk1.2.3.tar.gz"
         );
 
         assert_eq!(
@@ -163,7 +163,7 @@ mod tests {
                 OpenJDKDistribution::Heroku,
                 "1.2.3.4.5-suffix"
             ),
-            "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/openjdk1.2.3.4.5-suffix.tar.gz"
+            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-18/openjdk1.2.3.4.5-suffix.tar.gz"
         );
     }
 
@@ -175,7 +175,7 @@ mod tests {
                 OpenJDKDistribution::AzulZulu,
                 "1.0.0"
             ),
-            "https://lang-jvm.s3.amazonaws.com/jdk/heroku-20/zulu-1.0.0.tar.gz"
+            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-20/zulu-1.0.0.tar.gz"
         );
 
         assert_eq!(
@@ -184,7 +184,7 @@ mod tests {
                 OpenJDKDistribution::AzulZulu,
                 "1.2.3"
             ),
-            "https://lang-jvm.s3.amazonaws.com/jdk/heroku-20/zulu-1.2.3.tar.gz"
+            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-20/zulu-1.2.3.tar.gz"
         );
 
         assert_eq!(
@@ -193,7 +193,7 @@ mod tests {
                 OpenJDKDistribution::AzulZulu,
                 "1.2.3"
             ),
-            "https://lang-jvm.s3.amazonaws.com/jdk/heroku-22/zulu-1.2.3.tar.gz"
+            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-22/zulu-1.2.3.tar.gz"
         );
 
         assert_eq!(
@@ -202,7 +202,7 @@ mod tests {
                 OpenJDKDistribution::AzulZulu,
                 "1.2.3.4.5-suffix"
             ),
-            "https://lang-jvm.s3.amazonaws.com/jdk/heroku-18/zulu-1.2.3.4.5-suffix.tar.gz"
+            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-18/zulu-1.2.3.4.5-suffix.tar.gz"
         );
     }
 }
