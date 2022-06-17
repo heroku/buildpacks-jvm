@@ -13,10 +13,10 @@
 * [pack](https://buildpacks.io/docs/tools/pack/) (for local development)
 
 ## Usage
-This buildpack targets `x86_64-unknown-linux-musl` as the platform for the buildpack. It uses [`libcnb.rs`](https://github.com/Malax/libcnb.rs) as the language binding for buildpacks which cames with tooling for cross-compilation and packagaing.
+This buildpack targets `x86_64-unknown-linux-musl` as the platform for the buildpack. It uses [`libcnb.rs`](https://github.com/heroku/libcnb.rs) as the language binding for buildpacks which cames with tooling for cross-compilation and packagaing.
 
 ### Development
-Use [`libcnb-cargo`](https://github.com/Malax/libcnb.rs/tree/main/libcnb-cargo) to cross-compile and build the buildpack for local development and testing:
+Use [`libcnb-cargo`](https://github.com/heroku/libcnb.rs/tree/main/libcnb-cargo) to cross-compile and build the buildpack for local development and testing:
 
 ```shell
 $ cargo libcnb package
