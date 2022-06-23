@@ -3,7 +3,7 @@ use libcnb_test::{assert_contains, TestConfig, TestRunner};
 #[test]
 fn test() {
     TestRunner::default().run_test(
-        TestConfig::new("heroku/buildpacks:20", "fixtures/java-8-app"),
+        TestConfig::new("heroku/buildpacks:20", "../../test-fixtures/java-8-app"),
         |context| {
             context
                 .prepare_container()
