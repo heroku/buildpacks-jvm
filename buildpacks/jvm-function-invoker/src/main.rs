@@ -90,7 +90,7 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
             .build()
     }
 
-    fn on_error(&self, error: libcnb::Error<Self::Error>) -> i32 {
+    fn on_error(&self, error: libcnb::Error<Self::Error>) {
         on_error_heroku(handle_buildpack_error, error)
     }
 }

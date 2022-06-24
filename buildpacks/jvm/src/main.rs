@@ -88,8 +88,8 @@ impl Buildpack for OpenJdkBuildpack {
         BuildResultBuilder::new().build()
     }
 
-    fn on_error(&self, error: libcnb::Error<Self::Error>) -> i32 {
-        libherokubuildpack::on_error_heroku(on_error_jvm_buildpack, error)
+    fn on_error(&self, error: libcnb::Error<Self::Error>) {
+        libherokubuildpack::on_error_heroku(on_error_jvm_buildpack, error);
     }
 }
 

@@ -27,7 +27,7 @@ impl From<JvmFunctionInvokerBuildpackError> for Error<JvmFunctionInvokerBuildpac
     }
 }
 
-pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) -> i32 {
+pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) {
     match error {
         JvmFunctionInvokerBuildpackError::OptLayerError(inner) => match inner {
             OptLayerError::CouldNotWriteRuntimeScript(io_error)
@@ -122,8 +122,4 @@ pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) -> i32 {
                     ", toml_error = toml_error},
         ),
     };
-
-    BUILDPACK_ERROR_EXIT_CODE
 }
-
-const BUILDPACK_ERROR_EXIT_CODE: i32 = 99;

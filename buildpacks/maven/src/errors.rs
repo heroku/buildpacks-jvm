@@ -4,7 +4,7 @@ use libherokubuildpack::log_error;
 use std::fmt::Debug;
 
 #[allow(clippy::too_many_lines)]
-pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
+pub fn on_error_maven_buildpack(error: MavenBuildpackError) {
     match error {
         MavenBuildpackError::DetermineModeError(SystemPropertiesError::IoError(error)) => log_please_try_again_error(
             "Unexpected IO error",
@@ -139,8 +139,6 @@ pub fn on_error_maven_buildpack(error: MavenBuildpackError) -> i32 {
             ", error = error },
         ),
     }
-
-    1
 }
 
 fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Debug>(
