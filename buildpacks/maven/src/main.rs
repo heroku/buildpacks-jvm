@@ -264,8 +264,8 @@ impl Buildpack for MavenBuildpack {
         build_result_builder.build()
     }
 
-    fn on_error(&self, error: Error<Self::Error>) -> i32 {
-        libherokubuildpack::on_error_heroku(on_error_maven_buildpack, error)
+    fn on_error(&self, error: Error<Self::Error>) {
+        libherokubuildpack::on_error_heroku(on_error_maven_buildpack, error);
     }
 }
 
