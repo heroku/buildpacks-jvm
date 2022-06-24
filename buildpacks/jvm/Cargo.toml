@@ -18,4 +18,4 @@ ureq = "2.4.0"
 indoc = "1.0.4"
 
 [dev-dependencies]
-libcnb-test = "0.3.1"
+libcnb-test = "0.4.0"
