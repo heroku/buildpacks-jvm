@@ -5,6 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * Upgrade `libcnb` to `0.8.0` and `libherokubuildpack` to `0.8.0`.
+* Updated function runtime to `1.0.7`
 
 ## [0.6.2] 2022/06/09
 
