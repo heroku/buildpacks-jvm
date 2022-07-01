@@ -12,7 +12,7 @@ JVM_BUILDPACK = Cutlass::LocalBuildpack.new(directory: test_dir.join("meta-build
 Cutlass.config do |config|
   config.default_buildpack_paths = [JVM_BUILDPACK]
   config.default_builder = "heroku/buildpacks:18"
-  config.default_repo_dirs = [test_dir.join("fixtures")]
+  config.default_repo_dirs = [test_dir.join("../test-fixtures")]
 end
 
 RSpec.configure do |config|

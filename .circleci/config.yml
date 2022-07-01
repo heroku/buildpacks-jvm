@@ -60,10 +60,10 @@ jobs:
       - checkout
       - run:
           name: "shellcheck"
-          command: "shfmt -f . | grep -v ^test/ | xargs shellcheck"
+          command: "shfmt -f . | grep -v ^test-fixtures/ | xargs shellcheck"
       - run:
           name: "shfmt"
-          command: "shfmt -f . | grep -v ^test/ | xargs shfmt -d"
+          command: "shfmt -f . | grep -v ^test-fixtures/ | xargs shfmt -d"
 
   cutlass:
     parameters:
@@ -133,4 +133,3 @@ workflows:
               spec_dir:
                 - "test/specs/java"
                 - "test/specs/java-function"
-                - "test/specs/maven"

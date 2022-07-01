@@ -754,11 +754,13 @@ dependencies = [
  "indoc",
  "java-properties",
  "libcnb",
+ "libcnb-test",
  "libherokubuildpack",
  "regex",
  "serde",
  "shell-words",
  "tempfile",
+ "ureq",
 ]
 
 [[package]]
