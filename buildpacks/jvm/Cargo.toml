@@ -14,7 +14,7 @@ sha2 = "0.10.1"
 tempfile = "3.3.0"
 toml = "0.5.9"
 url = "2.2.2"
-ureq = "2.4.0"
+ureq = "2.5.0"
 indoc = "1.0.4"
 
 [dev-dependencies]
