@@ -8,4 +8,4 @@ uri = "docker://public.ecr.aws/heroku-buildpacks/heroku-jvm-buildpack@sha256:dd3
 uri = "docker://public.ecr.aws/heroku-buildpacks/heroku-maven-buildpack@sha256:e17eeb20348354547793da1dc85401a0556bda9129c476aa1f6c2216bab898a3"
 
 [[dependencies]]
-uri = "docker://docker.io/heroku/procfile-cnb@sha256:79697af377bb9a213a34488253a2ad99e2feb676491bc1f9b6c6fc5418441128"
+uri = "docker://docker.io/heroku/procfile-cnb:1.0.2"

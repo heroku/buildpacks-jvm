@@ -8,4 +8,4 @@ uri = "../../../buildpacks/jvm"
 uri = "../../../buildpacks/maven"
 
 [[dependencies]]
-uri = "docker://docker.io/heroku/procfile-cnb@sha256:79697af377bb9a213a34488253a2ad99e2feb676491bc1f9b6c6fc5418441128"
+uri = "docker://docker.io/heroku/procfile-cnb:1.0.2"
