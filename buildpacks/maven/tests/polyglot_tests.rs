@@ -1,9 +1,9 @@
-use libcnb_test::{assert_contains, BuildpackReference, TestConfig, TestRunner};
+use libcnb_test::{assert_contains, BuildConfig, BuildpackReference, TestRunner};
 
 #[test]
 fn polyglot_maven_app() {
-    TestRunner::default().run_test(
-        TestConfig::new(
+    TestRunner::default().build(
+        BuildConfig::new(
             "heroku/buildpacks:20",
             "../../test-fixtures/simple-http-service-groovy-polyglot",
         )
