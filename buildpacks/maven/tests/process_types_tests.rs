@@ -1,11 +1,11 @@
-use libcnb_test::{BuildpackReference, TestConfig, TestRunner};
+use libcnb_test::{BuildConfig, BuildpackReference, ContainerConfig, TestRunner};
 use std::thread;
 use std::time::Duration;
 
 #[test]
 fn spring_boot_process_type() {
-    TestRunner::default().run_test(
-        TestConfig::new(
+    TestRunner::default().build(
+        BuildConfig::new(
             "heroku/buildpacks:20",
             "../../test-fixtures/buildpack-java-spring-boot-test",
         )
@@ -14,10 +14,9 @@ fn spring_boot_process_type() {
             BuildpackReference::Crate,
         ]),
         |context| {
-            context
-                .prepare_container()
-                .expose_port(8080)
-                .start_with_default_process(|container_context| {
+            context.start_container(
+                ContainerConfig::new().expose_port(8080),
+                |container_context| {
                     let addr = container_context.address_for_port(8080).unwrap();
                     let url = format!("http://{}:{}/", addr.ip().to_string(), addr.port());
 
@@ -29,7 +28,8 @@ fn spring_boot_process_type() {
                         ureq::get(&url).call().unwrap().into_string().unwrap(),
                         "Hello from Spring Boot!"
                     );
-                });
+                },
+            );
         },
     )
 }

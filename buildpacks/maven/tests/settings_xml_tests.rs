@@ -1,13 +1,13 @@
 use indoc::formatdoc;
 use libcnb_test::{
-    assert_contains, assert_not_contains, BuildpackReference, PackResult, TestConfig, TestRunner,
+    assert_contains, assert_not_contains, BuildConfig, BuildpackReference, PackResult, TestRunner,
 };
 use std::fs;
 use std::path::PathBuf;
 
 #[test]
 fn maven_settings_url_success() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config().env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL),
         |context| {
             assert_contains!(
@@ -22,7 +22,7 @@ fn maven_settings_url_success() {
 
 #[test]
 fn maven_settings_url_failure() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
             default_config()
                 .env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL_404)
                 .expected_pack_result(PackResult::Failure),
@@ -43,7 +43,7 @@ fn maven_settings_path() {
     let settings_xml_filename = "forgreatjustice.xml";
     let settings_xml_test_value = "Take off every 'ZIG'!!";
 
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config()
             .app_dir_preprocessor(|dir| {
                 write_settings_xml(
@@ -68,7 +68,7 @@ fn maven_settings_path_and_settings_url() {
     let settings_xml_filename = "zerowing.xml";
     let settings_xml_test_value = "We get signal.";
 
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config()
             .app_dir_preprocessor(|dir| {
                 write_settings_xml(
@@ -95,7 +95,7 @@ fn maven_settings_xml_in_app_root() {
     let settings_xml_filename = "settings.xml";
     let settings_xml_test_value = "Somebody set up us the bomb.";
 
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         // Note that there is no MAVEN_SETTINGS_PATH here
         default_config().app_dir_preprocessor(|dir| {
             write_settings_xml(
@@ -121,7 +121,7 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_path() {
     let zero_wing_filename = "zerowing.xml";
     let zero_wing_test_value = "How are you gentlemen !!";
 
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         // Note that there is no MAVEN_SETTINGS_PATH here
         default_config()
             .app_dir_preprocessor(|dir| {
@@ -152,7 +152,7 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_url() {
     let settings_xml_filename = "settings.xml";
     let settings_xml_test_value = "Somebody set up us the bomb.";
 
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         // Note that there is no MAVEN_SETTINGS_PATH here
         default_config()
             .app_dir_preprocessor(|dir| {
@@ -173,8 +173,8 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_url() {
     );
 }
 
-fn default_config() -> TestConfig {
-    TestConfig::new(
+fn default_config() -> BuildConfig {
+    BuildConfig::new(
         "heroku/buildpacks:20",
         "../../test-fixtures/simple-http-service",
     )

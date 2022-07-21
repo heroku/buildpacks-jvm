@@ -1,12 +1,12 @@
 use libcnb_test::{
-    assert_contains, assert_not_contains, BuildpackReference, PackResult, TestConfig, TestRunner,
+    assert_contains, assert_not_contains, BuildConfig, BuildpackReference, PackResult, TestRunner,
 };
 use std::fs::OpenOptions;
 use std::path::Path;
 
 #[test]
 fn with_wrapper() {
-    TestRunner::default().run_test(default_config(), |context| {
+    TestRunner::default().build(default_config(), |context| {
             assert_not_contains!(context.pack_stdout, "Selected Maven version:");
             assert_contains!(context.pack_stdout, "Maven wrapper detected, skipping installation.");
             assert_contains!(context.pack_stdout, "$ ./mvnw");
@@ -16,7 +16,7 @@ fn with_wrapper() {
 
 #[test]
 fn with_wrapper_and_system_properties() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
             set_maven_version_app_dir_preprocessor(PREVIOUS_MAVEN_VERSION, &path)
@@ -37,7 +37,7 @@ fn with_wrapper_and_system_properties() {
 
 #[test]
 fn with_wrapper_and_unknown_system_properties() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
             default_config().app_dir_preprocessor(|path| set_maven_version_app_dir_preprocessor(
                 UNKNOWN_MAVEN_VERSION, &path
             )).expected_pack_result(PackResult::Failure),
@@ -50,7 +50,7 @@ fn with_wrapper_and_unknown_system_properties() {
 
 #[test]
 fn without_wrapper_and_without_system_properties() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
         }),
@@ -70,7 +70,7 @@ fn without_wrapper_and_without_system_properties() {
 
 #[test]
 fn without_wrapper_and_unknown_system_properties() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
             default_config().app_dir_preprocessor(|path| {
                 remove_maven_wrapper(&path);
                 set_maven_version_app_dir_preprocessor(UNKNOWN_MAVEN_VERSION, &path);
@@ -84,7 +84,7 @@ fn without_wrapper_and_unknown_system_properties() {
 
 #[test]
 fn without_wrapper_and_maven_3_6_2_system_properties() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
             set_maven_version_app_dir_preprocessor("3.6.2", &path);
@@ -101,7 +101,7 @@ fn without_wrapper_and_maven_3_6_2_system_properties() {
 
 #[test]
 fn without_wrapper_and_maven_3_5_4_system_properties() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
             set_maven_version_app_dir_preprocessor("3.5.4", &path);
@@ -118,7 +118,7 @@ fn without_wrapper_and_maven_3_5_4_system_properties() {
 
 #[test]
 fn without_wrapper_and_maven_3_3_9_system_properties() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
             set_maven_version_app_dir_preprocessor("3.3.9", &path);
@@ -135,7 +135,7 @@ fn without_wrapper_and_maven_3_3_9_system_properties() {
 
 #[test]
 fn without_wrapper_and_maven_3_2_5_system_properties() {
-    TestRunner::default().run_test(
+    TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
             set_maven_version_app_dir_preprocessor("3.2.5", &path);
@@ -150,8 +150,8 @@ fn without_wrapper_and_maven_3_2_5_system_properties() {
     )
 }
 
-fn default_config() -> TestConfig {
-    TestConfig::new(
+fn default_config() -> BuildConfig {
+    BuildConfig::new(
         "heroku/buildpacks:20",
         "../../test-fixtures/simple-http-service",
     )
