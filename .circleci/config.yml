@@ -52,11 +52,10 @@ jobs:
 
   shell-linting:
     docker:
-      - image: koalaman/shellcheck-alpine:v0.7.1
+      - image: koalaman/shellcheck-alpine:stable
     steps:
       - run: "apk add git"
-      # shfmt is currently (Jan 2021) only available in the edge community repository.
-      - run: "apk add shfmt --repository=http://dl-3.alpinelinux.org/alpine/edge/community"
+      - run: "apk add shfmt"
       - checkout
       - run:
           name: "shellcheck"
