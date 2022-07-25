@@ -4,6 +4,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Default version for **OpenJDK 11** is now `11.0.16`
+* Default version for **OpenJDK 13** is now `13.0.12`
+* Default version for **OpenJDK 15** is now `15.0.8`
+* Default version for **OpenJDK 17** is now `17.0.4`
+* Default version for **OpenJDK 18** is now `18.0.2`
 * Updated `libcnb` and `libherokubuildpack` to `0.9.0`. ([#330](https://github.com/heroku/buildpacks-nodejs/pull/330))
 * Switch to the recommended regional S3 domain instead of the global one. ([#314](https://github.com/heroku/buildpacks-jvm/pull/314))
 * Upgrade `libcnb` to `0.8.0` and `libherokubuildpack` to `0.8.0`.
