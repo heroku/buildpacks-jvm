@@ -17,18 +17,18 @@ pub fn normalize_version_string<S: Into<String>>(
         .unwrap_or((None, &user_version_string));
 
     let version_string = match user_version_string {
-        "7" | "1.7" => "1.7.0_342",
-        "8" | "1.8" => "1.8.0_332",
+        "7" | "1.7" => "1.7.0_352",
+        "8" | "1.8" => "1.8.0_342",
         "9" | "1.9" => "9.0.4",
         "10" => "10.0.2",
-        "11" => "11.0.15",
+        "11" => "11.0.16",
         "12" => "12.0.2",
-        "13" => "13.0.11",
+        "13" => "13.0.12",
         "14" => "14.0.2",
-        "15" => "15.0.7",
+        "15" => "15.0.8",
         "16" => "16.0.2",
-        "17" => "17.0.3",
-        "18" => "18.0.1",
+        "17" => "17.0.4",
+        "18" => "18.0.2",
         other => other,
     };
 
@@ -109,22 +109,22 @@ mod tests {
     fn normalize_version_string_stack_specific_distribution() {
         assert_eq!(
             normalize_version_string(&stack_id!("heroku-18"), "8"),
-            Ok((OpenJDKDistribution::Heroku, String::from("1.8.0_332")))
+            Ok((OpenJDKDistribution::Heroku, String::from("1.8.0_342")))
         );
 
         assert_eq!(
             normalize_version_string(&stack_id!("heroku-20"), "8"),
-            Ok((OpenJDKDistribution::Heroku, String::from("1.8.0_332")))
+            Ok((OpenJDKDistribution::Heroku, String::from("1.8.0_342")))
         );
 
         assert_eq!(
             normalize_version_string(&stack_id!("heroku-22"), "8"),
-            Ok((OpenJDKDistribution::AzulZulu, String::from("1.8.0_332")))
+            Ok((OpenJDKDistribution::AzulZulu, String::from("1.8.0_342")))
         );
 
         assert_eq!(
             normalize_version_string(&stack_id!("bogus"), "8"),
-            Ok((OpenJDKDistribution::AzulZulu, String::from("1.8.0_332")))
+            Ok((OpenJDKDistribution::AzulZulu, String::from("1.8.0_342")))
         );
     }
 
