@@ -7,7 +7,7 @@ fn test() {
         |context| {
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"1.8.0_332-heroku\""
+                "openjdk version \"1.8.0_342-heroku\""
             );
         },
     )
