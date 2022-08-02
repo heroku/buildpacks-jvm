@@ -4,6 +4,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.34] 2022/07/29
+* Upgraded `heroku/maven` to `1.0.2`
+
 ## [0.3.33] 2022/07/26
 * Upgraded `heroku/jvm` to `1.0.2`
 
