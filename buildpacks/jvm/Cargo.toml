@@ -15,7 +15,7 @@ tempfile = "3.3.0"
 toml = "0.5.9"
 url = "2.2.2"
 ureq = "2.5.0"
-indoc = "1.0.6"
+indoc = "1.0.7"
 
 [dev-dependencies]
 libcnb-test = "0.6.0"
