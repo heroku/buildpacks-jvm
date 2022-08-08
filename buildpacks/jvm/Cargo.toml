@@ -9,7 +9,7 @@ fs_extra = "1.2.0"
 java-properties = "1.4.1"
 libcnb = "0.9.0"
 libherokubuildpack = "0.9.0"
-serde = { version = "1.0.140", features = ["derive"] }
+serde = { version = "1.0.142", features = ["derive"] }
 sha2 = "0.10.2"
 tempfile = "3.3.0"
 toml = "0.5.9"
