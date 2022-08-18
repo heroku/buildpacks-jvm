@@ -4,7 +4,7 @@ use libcnb_test::{assert_contains, BuildConfig, BuildpackReference, TestRunner};
 fn polyglot_maven_app() {
     TestRunner::default().build(
         BuildConfig::new(
-            "heroku/buildpacks:20",
+            std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
             "../../test-fixtures/simple-http-service-groovy-polyglot",
         )
         .buildpacks(vec![

@@ -6,7 +6,7 @@ use std::time::Duration;
 fn spring_boot_process_type() {
     TestRunner::default().build(
         BuildConfig::new(
-            "heroku/buildpacks:20",
+            std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
             "../../test-fixtures/buildpack-java-spring-boot-test",
         )
         .buildpacks(vec![

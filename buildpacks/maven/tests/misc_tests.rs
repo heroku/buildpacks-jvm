@@ -138,7 +138,7 @@ fn descriptive_error_message_on_failed_build() {
 
 fn default_config() -> BuildConfig {
     BuildConfig::new(
-        "heroku/buildpacks:20",
+        std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
         "../../test-fixtures/simple-http-service",
     )
     .buildpacks(vec![

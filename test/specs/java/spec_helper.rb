@@ -11,7 +11,7 @@ end
 JVM_BUILDPACK = Cutlass::LocalBuildpack.new(directory: test_dir.join("meta-buildpacks/java"))
 Cutlass.config do |config|
   config.default_buildpack_paths = [JVM_BUILDPACK]
-  config.default_builder = "heroku/buildpacks:18"
+  config.default_builder = ENV["INTEGRATION_TEST_CNB_BUILDER"]
   config.default_repo_dirs = [test_dir.join("../test-fixtures")]
 end
 

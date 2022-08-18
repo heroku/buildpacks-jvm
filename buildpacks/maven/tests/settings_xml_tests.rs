@@ -175,7 +175,7 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_url() {
 
 fn default_config() -> BuildConfig {
     BuildConfig::new(
-        "heroku/buildpacks:20",
+        std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
         "../../test-fixtures/simple-http-service",
     )
     .buildpacks(vec![
