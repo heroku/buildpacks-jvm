@@ -68,11 +68,14 @@ jobs:
     parameters:
       spec_dir:
         type: string
+      cnb_builder:
+        type: string
     machine:
       image: ubuntu-2004:current
     resource_class: xlarge
     environment:
       PARALLEL_SPLIT_TEST_PROCESSES: 8
+      INTEGRATION_TEST_CNB_BUILDER: "<< parameters.cnb_builder >>"
     steps:
       - checkout
       - pack/install-pack:
@@ -88,8 +91,13 @@ jobs:
           command: bundle exec rspec << parameters.spec_dir >>
 
   cargo-test:
+    parameters:
+      cnb_builder:
+        type: string
     machine:
       image: ubuntu-2004:current
+    environment:
+      INTEGRATION_TEST_CNB_BUILDER: "<< parameters.cnb_builder >>"
     steps:
       - checkout
       - heroku-buildpacks/install-build-dependencies
@@ -113,7 +121,6 @@ workflows:
   ci:
     jobs:
       - shell-linting
-      - cargo-test
       - rustfmt
       - package-buildpack:
           matrix:
@@ -126,9 +133,18 @@ workflows:
                 - "meta-buildpacks/java-function"
                 - "test/meta-buildpacks/java"
                 - "test/meta-buildpacks/java-function"
+      - cargo-test:
+          matrix:
+            parameters:
+              cnb_builder:
+                - "heroku/buildpacks:20"
+                - "heroku/builder:22"
       - cutlass:
           matrix:
             parameters:
               spec_dir:
                 - "test/specs/java"
                 - "test/specs/java-function"
+              cnb_builder:
+                - "heroku/buildpacks:20"
+                - "heroku/builder:22"

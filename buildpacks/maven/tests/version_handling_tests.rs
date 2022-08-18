@@ -152,7 +152,7 @@ fn without_wrapper_and_maven_3_2_5_system_properties() {
 
 fn default_config() -> BuildConfig {
     BuildConfig::new(
-        "heroku/buildpacks:20",
+        std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
         "../../test-fixtures/simple-http-service",
     )
     .buildpacks(vec![
