@@ -7,7 +7,7 @@ publish = false
 [dependencies]
 fs_extra = "1.2.0"
 java-properties = "1.4.1"
-libcnb = "0.9.0"
+libcnb = "0.10.0"
 libherokubuildpack = "0.9.0"
 serde = { version = "1.0.144", features = ["derive"] }
 sha2 = "0.10.2"
