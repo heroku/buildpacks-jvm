@@ -15,7 +15,7 @@ use crate::settings::{resolve_settings_xml_path, SettingsError};
 use crate::warnings::{log_default_maven_version_warning, log_unused_maven_wrapper_warning};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::{Launch, ProcessBuilder};
+use libcnb::data::launch::{LaunchBuilder, ProcessBuilder};
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
@@ -258,7 +258,8 @@ impl Buildpack for MavenBuildpack {
         if let Some(process) = framework::default_app_process(&context.app_dir)
             .map_err(MavenBuildpackError::DefaultAppProcessError)?
         {
-            build_result_builder = build_result_builder.launch(Launch::new().process(process));
+            build_result_builder =
+                build_result_builder.launch(LaunchBuilder::new().process(process).build());
         }
 
         build_result_builder.build()
