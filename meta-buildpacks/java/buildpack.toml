@@ -1,4 +1,4 @@
-api = "0.4"
+api = "0.8"
 
 [buildpack]
 id = "heroku/java"

@@ -14,7 +14,7 @@ use crate::layers::runtime::RuntimeLayer;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::{Launch, ProcessBuilder};
+use libcnb::data::launch::{LaunchBuilder, ProcessBuilder};
 use libcnb::data::{layer_name, process_type};
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
@@ -81,11 +81,16 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
 
         BuildResultBuilder::new()
             .launch(
-                Launch::new().process(
-                    ProcessBuilder::new(process_type!("web"), layers::opt::JVM_RUNTIME_SCRIPT_NAME)
+                LaunchBuilder::new()
+                    .process(
+                        ProcessBuilder::new(
+                            process_type!("web"),
+                            layers::opt::JVM_RUNTIME_SCRIPT_NAME,
+                        )
                         .default(true)
                         .build(),
-                ),
+                    )
+                    .build(),
             )
             .build()
     }
