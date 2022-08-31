@@ -4,7 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Buildpack now requires buildpack API version `0.8`. ([#363](https://github.com/heroku/buildpacks-jvm/pull/363))
+* Buildpack now implements buildpack API version `0.8` and so requires lifecycle version `0.14.x` or newer. ([#363](https://github.com/heroku/buildpacks-jvm/pull/363))
 
 ## [0.3.35] 2022/08/29
 * Upgraded `heroku/jvm` to `1.0.3`
