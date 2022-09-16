@@ -10,7 +10,7 @@ java-properties = "1.4.1"
 libcnb = "0.10.0"
 libherokubuildpack = "0.10.0"
 serde = { version = "1.0.144", features = ["derive"] }
-sha2 = "0.10.5"
+sha2 = "0.10.6"
 tempfile = "3.3.0"
 toml = "0.5.9"
 url = "2.3.1"
