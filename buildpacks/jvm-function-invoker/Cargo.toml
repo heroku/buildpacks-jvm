@@ -1,14 +1,13 @@
 [package]
 name = "jvm-function-invoker-buildpack"
-version = "0.0.0"
-publish = false
-edition = "2021"
-rust-version = "1.56"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [dependencies]
 indoc = "1.0.7"
-libcnb = "0.10.0"
-libherokubuildpack = { version = "0.10.0", features = ["toml"] }
+libcnb.workspace = true
+libherokubuildpack.workspace = true
 serde = "1.0.144"
 thiserror = "1.0.35"
 toml = "0.5.9"

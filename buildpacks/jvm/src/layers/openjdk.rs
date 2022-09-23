@@ -41,18 +41,18 @@ impl Layer for OpenJdkLayer {
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, OpenJdkBuildpackError> {
-        libherokubuildpack::log_header("Installing OpenJDK");
+        libherokubuildpack::log::log_header("Installing OpenJDK");
 
         let temp_dir = tempdir().map_err(OpenJdkBuildpackError::CannotCreateOpenJdkTempDir)?;
         let path = temp_dir.path().join("openjdk.tar.gz");
 
-        libherokubuildpack::download_file(&self.tarball_url, &path)
+        libherokubuildpack::download::download_file(&self.tarball_url, &path)
             .map_err(OpenJdkBuildpackError::OpenJdkDownloadError)?;
 
         std::fs::File::open(&path)
             .map_err(OpenJdkBuildpackError::CannotOpenOpenJdkTarball)
             .and_then(|mut file| {
-                libherokubuildpack::decompress_tarball(&mut file, &layer_path)
+                libherokubuildpack::tar::decompress_tarball(&mut file, &layer_path)
                     .map_err(OpenJdkBuildpackError::CannotDecompressOpenJdkTarball)
             })?;
 

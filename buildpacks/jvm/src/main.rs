@@ -24,7 +24,7 @@ use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::Buildpack;
-use libherokubuildpack::DownloadError;
+use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
 
 pub struct OpenJdkBuildpack;
@@ -89,7 +89,7 @@ impl Buildpack for OpenJdkBuildpack {
     }
 
     fn on_error(&self, error: libcnb::Error<Self::Error>) {
-        libherokubuildpack::on_error_heroku(on_error_jvm_buildpack, error);
+        libherokubuildpack::error::on_error(on_error_jvm_buildpack, error);
     }
 }
 

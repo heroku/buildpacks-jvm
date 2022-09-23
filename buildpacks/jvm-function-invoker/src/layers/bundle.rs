@@ -1,19 +1,16 @@
+use crate::error::JvmFunctionInvokerBuildpackError;
+use crate::JvmFunctionInvokerBuildpack;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::generic::GenericMetadata;
 use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::{read_toml_file, Env, TomlFileError};
-
+use libherokubuildpack::log::{log_header, log_info};
+use serde::Deserialize;
 use std::path::Path;
 use std::process::Command;
-
-use serde::Deserialize;
 use thiserror::Error;
-
-use crate::error::JvmFunctionInvokerBuildpackError;
-use crate::JvmFunctionInvokerBuildpack;
-use libherokubuildpack::{log_header, log_info};
 
 pub struct BundleLayer {
     pub env: Env,

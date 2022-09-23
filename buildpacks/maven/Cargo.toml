@@ -1,19 +1,19 @@
 [package]
 name = "maven"
-version = "0.0.0"
-edition = "2021"
-publish = false
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [dependencies]
 indoc = "1.0.7"
 java-properties = "1.4.1"
-libcnb = "0.10.0"
-libherokubuildpack = "0.10.0"
+libcnb.workspace = true
+libherokubuildpack.workspace = true
 serde = { version = "1.0.144", features = ["derive"] }
 tempfile = "3.3.0"
 shell-words = "1.1.0"
 regex = "1.6.0"
 
 [dev-dependencies]
-libcnb-test = "0.10.0"
+libcnb-test.workspace = true
 ureq = "2.5.0"

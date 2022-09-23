@@ -37,10 +37,10 @@ impl Layer for MavenLayer {
         let temp_dir = tempfile::tempdir().unwrap();
         let temp_file_path = temp_dir.path().join("maven.tar.gz");
 
-        libherokubuildpack::download_file(&self.tarball.url, &temp_file_path)
+        libherokubuildpack::download::download_file(&self.tarball.url, &temp_file_path)
             .map_err(MavenBuildpackError::MavenTarballDownloadError)?;
 
-        libherokubuildpack::sha256(&temp_file_path)
+        libherokubuildpack::digest::sha256(&temp_file_path)
             .map_err(MavenBuildpackError::MavenTarballSha256IoError)
             .and_then(|downloaded_tarball_sha256| {
                 if downloaded_tarball_sha256 == self.tarball.sha256 {
@@ -53,7 +53,7 @@ impl Layer for MavenLayer {
                 }
             })?;
 
-        libherokubuildpack::decompress_tarball(
+        libherokubuildpack::tar::decompress_tarball(
             &mut File::open(&temp_file_path).unwrap(),
             &layer_path,
         )

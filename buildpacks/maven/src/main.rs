@@ -21,7 +21,8 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
-use libherokubuildpack::{log_header, log_info, DownloadError};
+use libherokubuildpack::download::DownloadError;
+use libherokubuildpack::log::{log_header, log_info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -266,7 +267,7 @@ impl Buildpack for MavenBuildpack {
     }
 
     fn on_error(&self, error: Error<Self::Error>) {
-        libherokubuildpack::on_error_heroku(on_error_maven_buildpack, error);
+        libherokubuildpack::error::on_error(on_error_maven_buildpack, error);
     }
 }
 

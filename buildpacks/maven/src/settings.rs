@@ -1,5 +1,5 @@
 use libcnb::Env;
-use libherokubuildpack::DownloadError;
+use libherokubuildpack::download::DownloadError;
 use std::env::temp_dir;
 use std::path::{Path, PathBuf};
 
@@ -38,7 +38,7 @@ fn handle_maven_settings_url_env_var(env: &Env) -> Option<Result<PathBuf, Settin
     env.get("MAVEN_SETTINGS_URL").map(|maven_settings_url| {
         let path = temp_dir().join(SETTINGS_XML_FILENAME);
 
-        libherokubuildpack::download_file(maven_settings_url.to_string_lossy(), &path)
+        libherokubuildpack::download::download_file(maven_settings_url.to_string_lossy(), &path)
             .map_err(|error| {
                 SettingsError::DownloadError(
                     maven_settings_url.to_string_lossy().to_string(),

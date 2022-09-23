@@ -1,6 +1,6 @@
 use crate::{MavenBuildpackError, SettingsError, SystemPropertiesError};
 use indoc::formatdoc;
-use libherokubuildpack::log_error;
+use libherokubuildpack::log::log_error;
 use std::fmt::Debug;
 
 #[allow(clippy::too_many_lines)]

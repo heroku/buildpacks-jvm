@@ -1,5 +1,5 @@
 use libcnb::read_toml_file;
-use libherokubuildpack::toml_select_value;
+use libherokubuildpack::toml::toml_select_value;
 use std::path::Path;
 use toml::Value;
 

@@ -1,5 +1,5 @@
 use indoc::formatdoc;
-use libherokubuildpack::log_warning;
+use libherokubuildpack::log::log_warning;
 
 pub fn log_unused_maven_wrapper_warning(version: &str) {
     log_warning(
