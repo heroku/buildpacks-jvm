@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Upgrade `libcnb` and `libherokubuildpack` to `0.10.0`. ([#363](https://github.com/heroku/buildpacks-jvm/pull/363))
 * Buildpack now implements buildpack API version `0.8` and so requires lifecycle version `0.14.x` or newer. ([#363](https://github.com/heroku/buildpacks-jvm/pull/363))
+* Default version for **OpenJDK 18** is now `18.0.2.1`. ([#372](https://github.com/heroku/buildpacks-jvm/pull/372))
+
+### Added
+* Support for Java 19. ([#372](https://github.com/heroku/buildpacks-jvm/pull/372))
 
 ## [1.0.3] 2022/08/29
 
