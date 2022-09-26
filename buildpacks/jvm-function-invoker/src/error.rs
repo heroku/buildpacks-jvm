@@ -4,7 +4,7 @@ use libcnb::{Error, TomlFileError};
 use crate::layers::bundle::BundleLayerError;
 use crate::layers::opt::OptLayerError;
 use crate::layers::runtime::RuntimeLayerError;
-use libherokubuildpack::log_error;
+use libherokubuildpack::log::log_error;
 
 #[derive(thiserror::Error, Debug)]
 pub enum JvmFunctionInvokerBuildpackError {

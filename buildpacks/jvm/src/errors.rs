@@ -2,7 +2,8 @@ use crate::{
     NormalizeVersionStringError, OpenJdkBuildpackError, ReadVersionStringError, ValidateSha256Error,
 };
 use indoc::formatdoc;
-use libherokubuildpack::{log_error, DownloadError};
+use libherokubuildpack::download::DownloadError;
+use libherokubuildpack::log::log_error;
 use std::fmt::Debug;
 
 #[allow(clippy::too_many_lines)]

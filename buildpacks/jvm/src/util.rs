@@ -13,7 +13,7 @@ pub(crate) fn validate_sha256<P: AsRef<Path>, S: Into<String>>(
 ) -> Result<(), ValidateSha256Error> {
     let expected_sha256 = expected_sha256.into();
 
-    libherokubuildpack::sha256(path.as_ref())
+    libherokubuildpack::digest::sha256(path.as_ref())
         .map_err(ValidateSha256Error::CouldNotObtainSha256)
         .and_then(|actual_sha256| {
             if expected_sha256 == actual_sha256 {

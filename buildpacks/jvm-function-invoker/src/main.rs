@@ -20,7 +20,8 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{Buildpack, Env};
-use libherokubuildpack::{log_header, log_info, on_error_heroku};
+use libherokubuildpack::error::on_error;
+use libherokubuildpack::log::{log_header, log_info};
 use serde::Deserialize;
 
 mod common;
@@ -96,7 +97,7 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
     }
 
     fn on_error(&self, error: libcnb::Error<Self::Error>) {
-        on_error_heroku(handle_buildpack_error, error)
+        on_error(handle_buildpack_error, error)
     }
 }
 

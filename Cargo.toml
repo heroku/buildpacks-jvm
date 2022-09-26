@@ -1,7 +1,17 @@
 [workspace]
-
 members = [
     "buildpacks/jvm",
     "buildpacks/maven",
     "buildpacks/jvm-function-invoker"
 ]
+
+[workspace.package]
+version = "0.0.0"
+rust-version = "1.64"
+edition = "2021"
+publish = false
+
+[workspace.dependencies]
+libcnb = "0.11.0"
+libherokubuildpack = "0.11.0"
+libcnb-test = "0.11.0"
