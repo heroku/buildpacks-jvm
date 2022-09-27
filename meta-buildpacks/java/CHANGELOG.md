@@ -4,6 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Upgraded `heroku/procfile` to `2.0.0`. ([#374](https://github.com/heroku/buildpacks-jvm/pull/374))
 * Buildpack now implements buildpack API version `0.8` and so requires lifecycle version `0.14.x` or newer. ([#363](https://github.com/heroku/buildpacks-jvm/pull/363))
 
 ## [0.6.3] 2022/08/29
