@@ -15,7 +15,7 @@ type = "BSD-3-Clause"
 
 [[order.group]]
 id = "heroku/jvm"
-version = "1.0.3"
+version = "1.0.4"
 
 [[order.group]]
 id = "heroku/maven"
