@@ -2,7 +2,7 @@ api = "0.8"
 
 [buildpack]
 id = "heroku/jvm-function-invoker"
-version = "0.6.4"
+version = "0.6.5"
 name = "JVM Function Invoker"
 clear-env = true
 homepage = "https://github.com/heroku/buildpacks-jvm"
