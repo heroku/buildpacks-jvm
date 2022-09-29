@@ -1,0 +1,96 @@
+name: heroku/buildpacks-jvm/ci
+on:
+  push:
+jobs:
+  shell-linting:
+    runs-on: sfdc-hk-ubuntu-latest
+    container:
+      image: koalaman/shellcheck-alpine:stable
+    steps:
+    - run: apk add git
+    - run: apk add shfmt
+    - uses: actions/checkout@v2
+    - name: shellcheck
+      run: shfmt -f . | grep -v ^test-fixtures/ | xargs shellcheck
+    - name: shfmt
+      run: shfmt -f . | grep -v ^test-fixtures/ | xargs shfmt -d
+  rustfmt:
+    runs-on: sfdc-hk-ubuntu-latest
+    container:
+      image: ubuntu
+    steps:
+    - uses: actions/checkout@v2
+#     # 'setup_remote_docker' was not transformed because there is no suitable equivalent in GitHub Actions
+#     # This item has no matching transformer
+#     - '':
+    - run: cargo fmt --all -- --check
+  package-buildpack:
+    runs-on: sfdc-hk-ubuntu-latest
+    container:
+      image: ubuntu
+    strategy:
+      matrix:
+        buildpack-dir:
+        - buildpacks/jvm
+        - buildpacks/maven
+        - buildpacks/jvm-function-invoker
+        - meta-buildpacks/java
+        - meta-buildpacks/java-function
+        - test/meta-buildpacks/java
+        - test/meta-buildpacks/java-function
+    steps:
+    - uses: actions/checkout@v2
+#     # 'setup_remote_docker' was not transformed because there is no suitable equivalent in GitHub Actions
+#     # This item has no matching transformer
+#     - buildpacks_pack_install_pack:
+#     # This item has no matching transformer
+#     - '':
+    - name: Build and package buildpack
+      run: |-
+        package_toml="${{ matrix.buildpack-dir }}/package.toml"
+        if [[ -f "${{ matrix.buildpack-dir }}/build.sh" ]]; then
+          "./${{ matrix.buildpack-dir }}/build.sh"
+          package_toml="${{ matrix.buildpack-dir }}/target/package.toml"
+        fi
+        pack buildpack package test --config "${package_toml}"
+  cargo-test:
+    runs-on: ubuntu-20.04
+    env:
+      INTEGRATION_TEST_CNB_BUILDER: xxxxxxx
+    strategy:
+      matrix:
+        cnb_builder:
+        - heroku/buildpacks:20
+        - heroku/builder:22
+    steps:
+    - uses: actions/checkout@v2
+#     # This item has no matching transformer
+#     - '':
+#     # This item has no matching transformer
+#     - buildpacks_pack_install_pack:
+    - run: cargo test
+  cutlass:
+    runs-on: sfdc-hk-ubuntu-20.04-large
+    env:
+      PARALLEL_SPLIT_TEST_PROCESSES: xxxxxxx
+      INTEGRATION_TEST_CNB_BUILDER: xxxxxxx
+    strategy:
+      matrix:
+        spec_dir:
+        - test/specs/java
+        - test/specs/java-function
+        cnb_builder:
+        - heroku/buildpacks:20
+        - heroku/builder:22
+    steps:
+    - uses: actions/checkout@v2
+#     # This item has no matching transformer
+#     - buildpacks_pack_install_pack:
+#     # This item has no matching transformer
+#     - '':
+    - name: Install Ruby dependencies
+      run: |-
+        gem install bundler
+        bundle install
+    - name: Execute rspec ${{ matrix.spec_dir }}
+      run: bundle exec rspec ${{ matrix.spec_dir }}
