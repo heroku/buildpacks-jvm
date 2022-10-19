@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Default version for **OpenJDK 15** is now `15.0.9`. ([#387](https://github.com/heroku/buildpacks-jvm/pull/387))
 * Default version for **OpenJDK 17** is now `17.0.5`. ([#387](https://github.com/heroku/buildpacks-jvm/pull/387))
 * Default version for **OpenJDK 19** is now `19.0.1`. ([#387](https://github.com/heroku/buildpacks-jvm/pull/387))
-* Upgrade `libcnb` and `libherokubuildpack` to `0.11.1`. ([#387](https://github.com/heroku/buildpacks-jvm/pull/387))
+* Upgrade `libcnb` and `libherokubuildpack` to `0.11.1`. ([#384](https://github.com/heroku/buildpacks-jvm/pull/384) and [#386](https://github.com/heroku/buildpacks-jvm/pull/386))
 
 ## [1.0.4] 2022/09/28
 
