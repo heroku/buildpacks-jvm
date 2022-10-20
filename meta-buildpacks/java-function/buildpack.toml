@@ -22,9 +22,11 @@ version = "1.0.3"
 
 [[order.group]]
 id = "heroku/jvm-function-invoker"
-version = "0.6.4"
+version = "0.6.5"
 
 [metadata]
+
 [metadata.release]
+
 [metadata.release.docker]
 repository = "public.ecr.aws/heroku-buildpacks/heroku-java-function-buildpack"
