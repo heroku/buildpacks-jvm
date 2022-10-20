@@ -2,7 +2,7 @@ api = "0.8"
 
 [buildpack]
 id = "heroku/jvm"
-version = "1.0.5"
+version = "1.0.6"
 name = "Heroku OpenJDK Buildpack"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for installing OpenJDK"
@@ -24,12 +24,9 @@ id = "heroku-22"
 id = "io.buildpacks.stacks.bionic"
 
 [metadata]
-
 [metadata.heroku-metrics-agent]
 url = "https://repo1.maven.org/maven2/com/heroku/agent/heroku-java-metrics-agent/3.14/heroku-java-metrics-agent-3.14.jar"
 sha256 = "ad28a69907fb71b64549603065e4b7259ae9356989b054f6157ef289bbbfe4b6"
-
 [metadata.release]
-
 [metadata.release.docker]
 repository = "public.ecr.aws/heroku-buildpacks/heroku-jvm-buildpack"
