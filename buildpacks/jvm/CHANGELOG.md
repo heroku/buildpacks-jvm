@@ -4,6 +4,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] 2022/10/20
+
 * Default version for **OpenJDK 8** is now `1.8.0_352`. ([#387](https://github.com/heroku/buildpacks-jvm/pull/387))
 * Default version for **OpenJDK 11** is now `11.0.17`. ([#387](https://github.com/heroku/buildpacks-jvm/pull/387))
 * Default version for **OpenJDK 13** is now `13.0.13`. ([#387](https://github.com/heroku/buildpacks-jvm/pull/387))
