@@ -4,7 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Updated function runtime to `1.1.1`. ([#387](https://github.com/heroku/buildpacks-jvm/pull/387))
+* Updated function runtime to `1.1.1`. ([#388](https://github.com/heroku/buildpacks-jvm/pull/388))
 * Upgrade `libcnb` and `libherokubuildpack` to `0.11.1`. ([#384](https://github.com/heroku/buildpacks-jvm/pull/384) and [#386](https://github.com/heroku/buildpacks-jvm/pull/386))
 
 ## [0.6.4] 2022/09/28
