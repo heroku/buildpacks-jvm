@@ -55,7 +55,7 @@ impl Layer for BundleLayer {
 
         match exit_status.code() {
             Some(0) => {
-                log_function_metadata(&layer_path)?;
+                log_function_metadata(layer_path)?;
                 LayerResultBuilder::new(GenericMetadata::default())
                     .env(LayerEnv::new().chainable_insert(
                         Scope::All,

@@ -177,7 +177,7 @@ fn set_maven_version_app_dir_preprocessor(version: &str, path: &Path) {
         .unwrap();
 
     let mut properties = java_properties::read(&mut properties_file).unwrap();
-    properties.insert(String::from("maven.version"), version.clone());
+    properties.insert(String::from("maven.version"), version);
     java_properties::write(&mut properties_file, &properties).unwrap();
 }
 

@@ -8,13 +8,13 @@ pub fn normalize_version_string<S: Into<String>>(
 ) -> Result<(OpenJDKDistribution, String), NormalizeVersionStringError> {
     let user_version_string = user_version_string.into();
 
-    let (user_distribution_string, user_version_string) = user_version_string
-        .trim()
-        .split_once("-")
-        .map(|(split_distribution_string, split_version_string)| {
-            (Some(split_distribution_string), split_version_string)
-        })
-        .unwrap_or((None, &user_version_string));
+    let (user_distribution_string, user_version_string) =
+        user_version_string.trim().split_once('-').map_or(
+            (None, user_version_string.as_str()),
+            |(split_distribution_string, split_version_string)| {
+                (Some(split_distribution_string), split_version_string)
+            },
+        );
 
     let version_string = match user_version_string {
         "7" | "1.7" => "1.7.0_352",
@@ -34,8 +34,8 @@ pub fn normalize_version_string<S: Into<String>>(
     };
 
     match user_distribution_string {
-        None => Ok(default_distribution(&stack_id)),
-        Some("heroku") | Some("openjdk") => Ok(OpenJDKDistribution::Heroku),
+        None => Ok(default_distribution(stack_id)),
+        Some("heroku" | "openjdk") => Ok(OpenJDKDistribution::Heroku),
         Some("zulu") => Ok(OpenJDKDistribution::AzulZulu),
         Some(unknown) => Err(NormalizeVersionStringError::UnknownDistribution(
             String::from(unknown),

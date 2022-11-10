@@ -52,7 +52,7 @@ impl Layer for OpenJdkLayer {
         std::fs::File::open(&path)
             .map_err(OpenJdkBuildpackError::CannotOpenOpenJdkTarball)
             .and_then(|mut file| {
-                libherokubuildpack::tar::decompress_tarball(&mut file, &layer_path)
+                libherokubuildpack::tar::decompress_tarball(&mut file, layer_path)
                     .map_err(OpenJdkBuildpackError::CannotDecompressOpenJdkTarball)
             })?;
 
@@ -68,11 +68,11 @@ impl Layer for OpenJdkLayer {
 
         let symlink_ubuntu_java_cacerts_file = ubuntu_java_cacerts_file_path.is_file()
             && !app_jdk_overlay_dir_path
-                .join(&relative_jdk_cacerts_path)
+                .join(relative_jdk_cacerts_path)
                 .exists();
 
         if symlink_ubuntu_java_cacerts_file {
-            let absolute_jdk_cacerts_path = layer_path.join(&relative_jdk_cacerts_path);
+            let absolute_jdk_cacerts_path = layer_path.join(relative_jdk_cacerts_path);
 
             fs::rename(
                 &absolute_jdk_cacerts_path,
@@ -95,7 +95,7 @@ impl Layer for OpenJdkLayer {
 
             fs_extra::copy_items(
                 &jdk_overlay_contents,
-                &layer_path,
+                layer_path,
                 &CopyOptions {
                     overwrite: true,
                     skip_exist: false,
@@ -116,7 +116,7 @@ impl Layer for OpenJdkLayer {
                     Scope::All,
                     ModificationBehavior::Override,
                     "JAVA_HOME",
-                    &layer_path,
+                    layer_path,
                 )
                 .chainable_insert(
                     Scope::All,

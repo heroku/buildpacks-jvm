@@ -9,6 +9,7 @@ use libcnb::exec_d::write_exec_d_program_output;
 use std::collections::HashMap;
 use url::Url;
 
+#[allow(clippy::missing_panics_doc)]
 pub fn main() {
     write_exec_d_program_output(
         jvm_env_vars_for_env(&std::env::vars().collect())
@@ -352,7 +353,7 @@ mod test {
             String::from("postgres://pooluser:poolpass@pooled.example.com:5432/testdb"),
         )]));
 
-        assert_eq!(result, HashMap::new())
+        assert_eq!(result, HashMap::new());
     }
 
     #[test]
@@ -466,7 +467,7 @@ mod test {
             String::from("postgres://test123@ec2-52-13-12"),
         )]));
 
-        assert_eq!(result, HashMap::new())
+        assert_eq!(result, HashMap::new());
     }
 
     #[test]

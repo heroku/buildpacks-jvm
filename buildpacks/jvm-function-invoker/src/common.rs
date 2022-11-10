@@ -4,7 +4,7 @@ use std::path::Path;
 use toml::Value;
 
 pub fn project_toml_salesforce_type_is_function(project_toml_path: &Path) -> bool {
-    read_toml_file(&project_toml_path)
+    read_toml_file(project_toml_path)
         .ok()
         .and_then(|table: Value| {
             toml_select_value(vec!["com", "salesforce", "type"], &table)
