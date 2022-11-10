@@ -3,6 +3,7 @@ use std::thread;
 use std::time::Duration;
 
 #[test]
+#[ignore = "integration test"]
 fn spring_boot_process_type() {
     TestRunner::default().build(
         BuildConfig::new(
@@ -18,7 +19,7 @@ fn spring_boot_process_type() {
                 ContainerConfig::new().expose_port(8080),
                 |container_context| {
                     let addr = container_context.address_for_port(8080).unwrap();
-                    let url = format!("http://{}:{}/", addr.ip().to_string(), addr.port());
+                    let url = format!("http://{}:{}/", addr.ip(), addr.port());
 
                     // Give the application a little time to boot up:
                     // https://github.com/heroku/libcnb.rs/issues/280

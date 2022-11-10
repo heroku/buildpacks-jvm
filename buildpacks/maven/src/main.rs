@@ -1,6 +1,4 @@
 // Enable rustc and Clippy lints that are disabled by default.
-// https://doc.rust-lang.org/rustc/lints/listing/allowed-by-default.html#unused-crate-dependencies
-#![warn(unused_crate_dependencies)]
 // https://rust-lang.github.io/rust-clippy/stable/index.html
 #![warn(clippy::pedantic)]
 // This lint is too noisy and enforces a style that reduces readability in many cases.
@@ -101,6 +99,7 @@ impl Buildpack for MavenBuildpack {
         }
     }
 
+    #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
         let maven_repository_layer =
             context.handle_layer(layer_name!("repository"), MavenRepositoryLayer)?;

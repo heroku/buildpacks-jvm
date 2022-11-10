@@ -5,6 +5,7 @@ use std::fs::OpenOptions;
 use std::path::Path;
 
 #[test]
+#[ignore = "integration test"]
 fn with_wrapper() {
     TestRunner::default().build(default_config(), |context| {
             assert_not_contains!(context.pack_stdout, "Selected Maven version:");
@@ -15,6 +16,7 @@ fn with_wrapper() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn with_wrapper_and_system_properties() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
@@ -36,6 +38,7 @@ fn with_wrapper_and_system_properties() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn with_wrapper_and_unknown_system_properties() {
     TestRunner::default().build(
             default_config().app_dir_preprocessor(|path| set_maven_version_app_dir_preprocessor(
@@ -49,6 +52,7 @@ fn with_wrapper_and_unknown_system_properties() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn without_wrapper_and_without_system_properties() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
@@ -69,6 +73,7 @@ fn without_wrapper_and_without_system_properties() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn without_wrapper_and_unknown_system_properties() {
     TestRunner::default().build(
             default_config().app_dir_preprocessor(|path| {
@@ -83,6 +88,7 @@ fn without_wrapper_and_unknown_system_properties() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn without_wrapper_and_maven_3_6_2_system_properties() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
@@ -100,6 +106,7 @@ fn without_wrapper_and_maven_3_6_2_system_properties() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn without_wrapper_and_maven_3_5_4_system_properties() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
@@ -117,6 +124,7 @@ fn without_wrapper_and_maven_3_5_4_system_properties() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn without_wrapper_and_maven_3_3_9_system_properties() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
@@ -134,6 +142,7 @@ fn without_wrapper_and_maven_3_3_9_system_properties() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn without_wrapper_and_maven_3_2_5_system_properties() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
@@ -177,7 +186,7 @@ fn set_maven_version_app_dir_preprocessor(version: &str, path: &Path) {
         .unwrap();
 
     let mut properties = java_properties::read(&mut properties_file).unwrap();
-    properties.insert(String::from("maven.version"), version.clone());
+    properties.insert(String::from("maven.version"), version);
     java_properties::write(&mut properties_file, &properties).unwrap();
 }
 

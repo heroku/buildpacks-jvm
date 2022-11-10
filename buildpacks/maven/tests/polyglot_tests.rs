@@ -1,6 +1,7 @@
 use libcnb_test::{assert_contains, BuildConfig, BuildpackReference, TestRunner};
 
 #[test]
+#[ignore = "integration test"]
 fn polyglot_maven_app() {
     TestRunner::default().build(
         BuildConfig::new(

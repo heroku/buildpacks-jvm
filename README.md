@@ -1,5 +1,5 @@
 # Heroku Cloud Native JVM Buildpacks
-[![CircleCI](https://circleci.com/gh/heroku/buildpacks-jvm/tree/main.svg?style=shield)](https://circleci.com/gh/heroku/buildpacks-jvm/tree/main)
+[![CI](https://github.com/heroku/buildpacks-jvm/actions/workflows/ci.yml/badge.svg)](https://github.com/heroku/buildpacks-jvm/actions/workflows/ci.yml)
 
 Heroku's official [Cloud Native Buildpacks](https://buildpacks.io) for the JVM ecosystem.
 

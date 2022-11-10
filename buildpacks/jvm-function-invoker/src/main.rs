@@ -97,7 +97,7 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
     }
 
     fn on_error(&self, error: libcnb::Error<Self::Error>) {
-        on_error(handle_buildpack_error, error)
+        on_error(handle_buildpack_error, error);
     }
 }
 

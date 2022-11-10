@@ -55,13 +55,13 @@ impl Layer for MavenLayer {
 
         libherokubuildpack::tar::decompress_tarball(
             &mut File::open(&temp_file_path).unwrap(),
-            &layer_path,
+            layer_path,
         )
         .map_err(MavenBuildpackError::MavenTarballDecompressError)?;
 
         // The actual Maven installation is located in the .maven subdirectory of the tarball. We
         // need to move its contents to the layer itself before it can be used:
-        util::move_directory_contents(layer_path.join(".maven"), &layer_path)
+        util::move_directory_contents(layer_path.join(".maven"), layer_path)
             .map_err(MavenBuildpackError::MavenTarballNormalizationError)?;
 
         std::fs::remove_dir_all(layer_path.join(".maven"))
@@ -81,7 +81,7 @@ impl Layer for MavenLayer {
             Scope::Build,
             ModificationBehavior::Override,
             "M2_HOME",
-            &layer_path,
+            layer_path,
         );
 
         LayerResultBuilder::new(MavenLayerMetadata {
