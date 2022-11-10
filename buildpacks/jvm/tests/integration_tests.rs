@@ -1,6 +1,7 @@
 use libcnb_test::{assert_contains, BuildConfig, TestRunner};
 
 #[test]
+#[ignore = "integration test"]
 fn test() {
     let builder_name = std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap();
 

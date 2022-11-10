@@ -2,6 +2,7 @@ use indoc::indoc;
 use libcnb_test::{assert_contains, BuildConfig, BuildpackReference, TestRunner};
 
 #[test]
+#[ignore = "integration test"]
 fn maven_custom_goals() {
     TestRunner::default().build(default_config().env("MAVEN_CUSTOM_GOALS", "site"), |context| {
         // Assert only the goals in MAVEN_CUSTOM_GOALS are executed
@@ -38,6 +39,7 @@ fn maven_custom_goals() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn maven_custom_opts() {
     TestRunner::default().build(default_config().env("MAVEN_CUSTOM_OPTS", "-X"), |context| {
         // Assert only the options in MAVEN_CUSTOM_GOALS are used

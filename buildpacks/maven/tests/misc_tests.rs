@@ -6,6 +6,7 @@ use std::fs;
 use std::os::unix::fs::PermissionsExt;
 
 #[test]
+#[ignore = "integration test"]
 fn mvnw_executable_bit() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|dir| {
@@ -20,6 +21,7 @@ fn mvnw_executable_bit() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn mvn_dependency_list() {
     TestRunner::default().build(default_config(), |context| {
         assert_eq!(
@@ -50,6 +52,7 @@ fn mvn_dependency_list() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn no_unexpected_files_in_app_dir() {
     TestRunner::default().build(default_config(), |context| {
         assert_eq!(
@@ -96,6 +99,7 @@ fn no_unexpected_files_in_app_dir() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn no_internal_maven_options_logging() {
     TestRunner::default().build(default_config(), |context| {
         assert_not_contains!(context.pack_stdout, "-Dmaven.repo.local=");
@@ -109,6 +113,7 @@ fn no_internal_maven_options_logging() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn cache_dependencies_between_builds() {
     TestRunner::default().build(default_config(), |context| {
         assert_contains!(context.pack_stdout, "Downloading from central");
@@ -120,6 +125,7 @@ fn cache_dependencies_between_builds() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn descriptive_error_message_on_failed_build() {
     TestRunner::default().build(default_config().app_dir("../../test-fixtures/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
             assert_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");

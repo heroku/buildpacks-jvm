@@ -3,6 +3,7 @@ use std::thread;
 use std::time::Duration;
 
 #[test]
+#[ignore = "integration test"]
 fn spring_boot_process_type() {
     TestRunner::default().build(
         BuildConfig::new(

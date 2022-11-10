@@ -6,6 +6,7 @@ use std::fs;
 use std::path::PathBuf;
 
 #[test]
+#[ignore = "integration test"]
 fn maven_settings_url_success() {
     TestRunner::default().build(
         default_config().env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL),
@@ -21,6 +22,7 @@ fn maven_settings_url_success() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn maven_settings_url_failure() {
     TestRunner::default().build(
             default_config()
@@ -39,6 +41,7 @@ fn maven_settings_url_failure() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn maven_settings_path() {
     let settings_xml_filename = "forgreatjustice.xml";
     let settings_xml_test_value = "Take off every 'ZIG'!!";
@@ -61,6 +64,7 @@ fn maven_settings_path() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn maven_settings_path_and_settings_url() {
     let settings_xml_filename = "zerowing.xml";
     let settings_xml_test_value = "We get signal.";
@@ -85,6 +89,7 @@ fn maven_settings_path_and_settings_url() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn maven_settings_xml_in_app_root() {
     let settings_xml_filename = "settings.xml";
     let settings_xml_test_value = "Somebody set up us the bomb.";
@@ -106,6 +111,7 @@ fn maven_settings_xml_in_app_root() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn maven_settings_xml_in_app_root_and_explicit_settings_path() {
     let settings_xml_filename = "settings.xml";
     let settings_xml_test_value = "Somebody set up us the bomb.";
@@ -132,6 +138,7 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_path() {
 }
 
 #[test]
+#[ignore = "integration test"]
 fn maven_settings_xml_in_app_root_and_explicit_settings_url() {
     let settings_xml_filename = "settings.xml";
     let settings_xml_test_value = "Somebody set up us the bomb.";
