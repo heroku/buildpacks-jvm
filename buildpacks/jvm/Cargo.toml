@@ -10,7 +10,7 @@ fs_extra = "1.2.0"
 java-properties = "1.4.1"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
-serde = { version = "1.0.147", features = ["derive"] }
+serde = { version = "1.0.148", features = ["derive"] }
 sha2 = "0.10.6"
 tempfile = "3.3.0"
 toml = "0.5.9"

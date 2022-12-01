@@ -10,7 +10,7 @@ indoc = "1.0.7"
 java-properties = "1.4.1"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
-serde = { version = "1.0.147", features = ["derive"] }
+serde = { version = "1.0.148", features = ["derive"] }
 tempfile = "3.3.0"
 shell-words = "1.1.0"
 regex = "1.6.0"
