@@ -9,7 +9,7 @@ publish.workspace = true
 indoc = "1.0.7"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
-serde = "1.0.148"
+serde = "1.0.152"
 thiserror = "1.0.37"
 toml = "0.5.9"
 
