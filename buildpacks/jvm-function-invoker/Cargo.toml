@@ -6,12 +6,12 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-indoc = "1.0.7"
+indoc = "1"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
-serde = "1.0.148"
-thiserror = "1.0.37"
-toml = "0.5.9"
+serde = "1"
+thiserror = "1"
+toml = "0.5"
 
 [dev-dependencies]
-tempfile = "3.3.0"
+tempfile = "3"
