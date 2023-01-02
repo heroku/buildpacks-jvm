@@ -33,7 +33,7 @@ pub fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
             ", error = error },
         ),
         OpenJdkBuildpackError::NormalizeVersionStringError(NormalizeVersionStringError::UnknownDistribution(distribution)) => log_error(
-            format!("Unsupported distribution: {}", distribution),
+            format!("Unsupported distribution: {distribution}"),
             formatdoc! {"
                     Please check your system.properties file to ensure the java.runtime.version
                     string does not contain an unsupported distribution prefix.
