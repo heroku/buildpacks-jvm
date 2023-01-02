@@ -30,7 +30,7 @@ fn output_from_env(env: &Env) -> HashMap<ExecDProgramOutputKey, String> {
         .is_some();
 
     if has_heroku_metrics_url && !disable_heroku_metrics_agent && !is_one_off_dyno {
-        let prefix = format!("-javaagent:{}", heroku_metrics_agent_path);
+        let prefix = format!("-javaagent:{heroku_metrics_agent_path}");
 
         let suffix = env
             .get("JAVA_TOOL_OPTIONS")
@@ -39,7 +39,7 @@ fn output_from_env(env: &Env) -> HashMap<ExecDProgramOutputKey, String> {
 
         HashMap::from([(
             exec_d_program_output_key!("JAVA_TOOL_OPTIONS"),
-            format!("{}{}", prefix, suffix),
+            format!("{prefix}{suffix}"),
         )])
     } else {
         HashMap::default()
@@ -64,7 +64,7 @@ mod tests {
 
         assert_eq!(
             output.get(&exec_d_program_output_key!("JAVA_TOOL_OPTIONS")),
-            Some(&format!("-javaagent:{} {}", AGENT_PATH, JAVA_TOOL_OPTIONS))
+            Some(&format!("-javaagent:{AGENT_PATH} {JAVA_TOOL_OPTIONS}"))
         );
     }
 
@@ -79,7 +79,7 @@ mod tests {
 
         assert_eq!(
             output.get(&exec_d_program_output_key!("JAVA_TOOL_OPTIONS")),
-            Some(&format!("-javaagent:{}", AGENT_PATH))
+            Some(&format!("-javaagent:{AGENT_PATH}"))
         );
     }
 

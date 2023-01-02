@@ -24,7 +24,7 @@ fn output_from_env(env: &Env) -> HashMap<ExecDProgramOutputKey, String> {
 
     HashMap::from([(
         exec_d_program_output_key!("JAVA_TOOL_OPTIONS"),
-        format!("{}{}", prefix, suffix),
+        format!("{prefix}{suffix}"),
     )])
 }
 

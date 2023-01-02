@@ -47,7 +47,7 @@ fn app_configured_maven_version<P: AsRef<Path>>(
         .map_or_else(
             || Ok(None),
             |system_properties_path| {
-                File::open(&system_properties_path)
+                File::open(system_properties_path)
                     .map_err(SystemPropertiesError::IoError)
                     .and_then(|file| {
                         java_properties::read(file)

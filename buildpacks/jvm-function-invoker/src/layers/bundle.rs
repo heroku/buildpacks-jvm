@@ -87,7 +87,7 @@ fn log_function_metadata(bundle_dir: impl AsRef<Path>) -> Result<(), BundleLayer
     }
 
     let bundle_toml_path = bundle_dir.as_ref().join("function-bundle.toml");
-    let bundle_toml_contents: FunctionBundle = read_toml_file(&bundle_toml_path)
+    let bundle_toml_contents: FunctionBundle = read_toml_file(bundle_toml_path)
         .map_err(BundleLayerError::CouldNotReadFunctionBundleToml)?;
 
     log_header(format!(

@@ -118,7 +118,7 @@ impl Buildpack for MavenBuildpack {
 
                 let maven_wrapper_path = context.app_dir.join("mvnw");
 
-                fs::set_permissions(&maven_wrapper_path, Permissions::from_mode(0o777))
+                fs::set_permissions(maven_wrapper_path, Permissions::from_mode(0o777))
                     .map_err(MavenBuildpackError::CannotSetMavenWrapperExecutableBit)?;
 
                 (

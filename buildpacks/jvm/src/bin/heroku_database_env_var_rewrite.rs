@@ -123,7 +123,7 @@ fn env_vars_for_database_url(
     HashMap::from([
         (
             format!("{}_URL", env_var_prefix.as_ref()),
-            format!("jdbc:{}", url),
+            format!("jdbc:{url}"),
         ),
         (
             format!("{}_USERNAME", env_var_prefix.as_ref()),

@@ -76,7 +76,7 @@ impl Layer for OpenJdkLayer {
 
             fs::rename(
                 &absolute_jdk_cacerts_path,
-                &absolute_jdk_cacerts_path.with_extension("old"),
+                absolute_jdk_cacerts_path.with_extension("old"),
             )
             .map_err(OpenJdkBuildpackError::CannotSymlinkUbuntuCertificates)?;
 
