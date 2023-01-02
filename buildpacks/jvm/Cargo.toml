@@ -6,17 +6,17 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-fs_extra = "1.2.0"
-java-properties = "1.4.1"
+fs_extra = "1"
+indoc = "1"
+java-properties = "1"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
-serde = { version = "1.0.148", features = ["derive"] }
-sha2 = "0.10.6"
-tempfile = "3.3.0"
-toml = "0.5.9"
-url = "2.3.1"
-ureq = "2.5.0"
-indoc = "1.0.7"
+serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
+tempfile = "3"
+toml = "0.5"
+ureq = "2"
+url = "2"
 
 [dev-dependencies]
 libcnb-test.workspace = true
