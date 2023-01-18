@@ -12,8 +12,8 @@ fn test() {
                 context.run_shell_command("java -version").stderr,
                 match builder_name.as_str() {
                     "heroku/buildpacks:18" | "heroku/buildpacks:20" =>
-                        "openjdk version \"1.8.0_352-heroku\"",
-                    _ => "openjdk version \"1.8.0_352\"",
+                        "openjdk version \"1.8.0_362-heroku\"",
+                    _ => "openjdk version \"1.8.0_362\"",
                 }
             );
         },
