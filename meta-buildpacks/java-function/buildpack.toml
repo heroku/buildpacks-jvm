@@ -14,7 +14,7 @@ type = "BSD-3-Clause"
 
 [[order.group]]
 id = "heroku/jvm"
-version = "1.0.5"
+version = "1.0.6"
 
 [[order.group]]
 id = "heroku/maven"
@@ -25,8 +25,6 @@ id = "heroku/jvm-function-invoker"
 version = "0.6.6"
 
 [metadata]
-
 [metadata.release]
-
 [metadata.release.docker]
 repository = "public.ecr.aws/heroku-buildpacks/heroku-java-function-buildpack"
