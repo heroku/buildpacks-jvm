@@ -25,8 +25,8 @@ id = "io.buildpacks.stacks.bionic"
 
 [metadata]
 [metadata.runtime]
-url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.1.2/sf-fx-runtime-java-runtime-1.1.2-jar-with-dependencies.jar"
-sha256 = "2db1aa68ac92c1fe4efa8a07af9511c4508bb5c8c43b1f4606b381e3a584fd0a"
+url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.1.3/sf-fx-runtime-java-runtime-1.1.3-jar-with-dependencies.jar"
+sha256 = "b8e17b6ee9889304cbd07958f86ac067cb58c7f6bdd324a87133d377f670adb5"
 [metadata.release]
 [metadata.release.docker]
 repository = "public.ecr.aws/heroku-buildpacks/heroku-jvm-function-invoker-buildpack"
