@@ -7,7 +7,7 @@ publish.workspace = true
 
 [dependencies]
 fs_extra = "1"
-indoc = "1"
+indoc = "2"
 java-properties = "1"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
