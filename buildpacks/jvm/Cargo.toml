@@ -14,7 +14,7 @@ libherokubuildpack.workspace = true
 serde = { version = "1", features = ["derive"] }
 sha2 = "0.10"
 tempfile = "3"
-toml = "0.5"
+toml = "0.7"
 ureq = "2"
 url = "2"
 
