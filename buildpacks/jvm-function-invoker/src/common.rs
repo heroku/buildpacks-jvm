@@ -1,12 +1,11 @@
 use libcnb::read_toml_file;
 use libherokubuildpack::toml::toml_select_value;
 use std::path::Path;
-use toml::Value;
 
 pub fn project_toml_salesforce_type_is_function(project_toml_path: &Path) -> bool {
     read_toml_file(project_toml_path)
         .ok()
-        .and_then(|table: Value| {
+        .and_then(|table| {
             toml_select_value(vec!["com", "salesforce", "type"], &table)
                 .and_then(toml::Value::as_str)
                 .map(|value| value == "function")
