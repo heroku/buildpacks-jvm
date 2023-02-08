@@ -12,6 +12,7 @@ edition = "2021"
 publish = false
 
 [workspace.dependencies]
-libcnb = "0.11"
-libcnb-test = "0.11"
-libherokubuildpack = "0.11"
+libcnb = "0.11.5"
+libcnb-test = "0.11.5"
+libherokubuildpack = "0.11.5"
+toml = "0.7.1"
