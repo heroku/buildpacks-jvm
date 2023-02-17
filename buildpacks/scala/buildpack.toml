@@ -1,0 +1,27 @@
+api = "0.8"
+
+[buildpack]
+id = "heroku/scala"
+version = "0.0.1"
+name = "Scala"
+clear-env = true
+homepage = "https://github.com/heroku/buildpacks-jvm"
+description = "Official Heroku buildpack for Scala applications."
+keywords = ["java", "scala", "sbt"]
+
+[[buildpack.licenses]]
+type = "BSD-3-Clause"
+
+[[stacks]]
+id = "heroku-18"
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "heroku-22"
+
+[[stacks]]
+id = "*"
+
+

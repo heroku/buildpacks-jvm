@@ -1045,6 +1045,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7b4b9743ed687d4b4bcedf9ff5eaa7398495ae14e61cba0a295704edbc7decde"
 
 [[package]]
+name = "scala"
+version = "0.0.0"
+dependencies = [
+ "indoc",
+ "java-properties",
+ "libcnb",
+ "libcnb-test",
+ "libherokubuildpack",
+ "semver",
+ "serde",
+ "shell-words",
+ "tempfile",
+ "thiserror",
+ "ureq",
+]
+
+[[package]]
 name = "scratch"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
