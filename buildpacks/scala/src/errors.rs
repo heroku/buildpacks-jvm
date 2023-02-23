@@ -1,52 +1,35 @@
 use indoc::formatdoc;
 use libcnb::Error;
 use libherokubuildpack::log::log_error;
+use std::ffi::OsString;
 use std::fmt::Debug;
 use std::process::ExitStatus;
 
-#[derive(thiserror::Error, Debug)]
+#[derive(Debug)]
 pub enum ScalaBuildpackError {
-    #[error("Could not write runtime script to layer: {0}")]
     CouldNotWriteSbtExtrasScript(std::io::Error),
-
-    #[error("Could not set executable bit on runtime script: {0}")]
     CouldNotSetExecutableBitForSbtExtrasScript(std::io::Error),
-
-    #[error("TODO")]
+    CouldNotWriteSbtWrapperScript(std::io::Error),
+    CouldNotSetExecutableBitForSbtWrapperScript(std::io::Error),
     MissingSbtBuildPropertiesFile,
-
-    #[error("TODO")]
     SbtPropertiesFileReadError(std::io::Error),
-
-    #[error("TODO")]
     InvalidSbtPropertiesFile(java_properties::PropertiesError),
-
-    #[error("TODO")]
     MissingDeclaredSbtVersion,
-
-    #[error("TODO")]
     UnsupportedSbtVersion(String),
-
-    #[error("TODO")]
     SbtVersionNotInSemverFormat(String, semver::Error),
-
-    #[error("TODO")]
     SbtBuildIoError(std::io::Error),
-
-    #[error("TODO")]
     SbtBuildUnexpectedExitCode(ExitStatus),
-
-    #[error("TODO")]
     SbtInstallIoError(std::io::Error),
-
-    #[error("TODO")]
     SbtInstallUnexpectedExitCode(ExitStatus),
-
-    #[error("TODO")]
     CouldNotWriteSbtPlugin(std::io::Error),
-
-    #[error("TODO")]
     NoBuildpackPluginAvailable(String),
+    CouldNotParseBooleanFromProperty(String, std::str::ParseBoolError),
+    CouldNotParseBooleanFromEnvironment(String, std::str::ParseBoolError),
+    CouldNotParseListConfigurationFromProperty(String, shell_words::ParseError),
+    CouldNotParseListConfigurationFromEnvironment(String, shell_words::ParseError),
+    CouldNotConvertEnvironmentValueIntoString(String, OsString),
+    MissingStageTask,
+    AlreadyDefinedAsObject,
 }
 
 #[allow(clippy::too_many_lines)]
@@ -99,6 +82,89 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
             ", version = version, error = error },
         ),
 
+        ScalaBuildpackError::NoBuildpackPluginAvailable(version) => log_error(
+            "Failed to install Heroku plugin for sbt",
+            formatdoc! { "
+                No Heroku plugins supporting this version of sbt ({version}).
+            ", version = version },
+        ),
+
+        ScalaBuildpackError::CouldNotParseListConfigurationFromProperty(property_name, error) => log_error(
+            format!("Invalid {property_name} property"),
+            formatdoc! {"
+                Could not parse the value of the `{property_name}` property from the system.properties file into a list of words.
+                Please check the `{property_name}` property for quoting and escaping mistakes and try again.
+
+                Details: {error}
+            ", property_name = property_name, error = error }
+        ),
+
+        ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(variable_name, error) => log_error(
+            format!("Invalid {variable_name} environment variable"),
+            formatdoc! {"
+                Could not parse the value of the {variable_name} environment variable into separate tasks into a list of words.
+                Please check {variable_name} for quoting and escaping mistakes and try again.
+
+                Details: {error}
+            ", variable_name = variable_name, error = error }
+        ),
+
+        ScalaBuildpackError::CouldNotParseBooleanFromProperty(property_name, error) => log_error(
+            format! ("Invalid {property_name} property"),
+            formatdoc! {"
+                Could not parse the value of the `{property_name}` property from the system.properties file into a 'true' or 'false' value.
+                Please check `{property_name}` for mistakes and try again.
+
+                Details: {error}
+            ", property_name = property_name, error = error }
+        ),
+
+        ScalaBuildpackError::CouldNotParseBooleanFromEnvironment(variable_name, error) => log_error(
+            format!("Invalid {variable_name} environment variable"),
+            formatdoc! {"
+                Could not parse the value of {variable_name} environment variable into a 'true' or 'false' value.
+                Please check {variable_name} for mistakes and try again.
+
+                Details: {error}
+            ", variable_name = variable_name, error = error }
+        ),
+
+        ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(variable_name, value) => log_error(
+            format!("Invalid {variable_name} environment variable"),
+            formatdoc! {"
+                Could not convert the value of the environment variable {variable_name} into a string. Please
+                check that the value of {variable_name} only contains Unicode characters and try again.
+
+                Value: {value}
+            ", variable_name = variable_name, value = value.to_string_lossy() }
+        ),
+
+        ScalaBuildpackError::MissingStageTask => log_error(
+            "Failed to run sbt!",
+            formatdoc! {"
+                It looks like your build.sbt does not have a valid 'stage' task. Please read our Dev Center article for
+                information on how to create one:
+                https://devcenter.heroku.com/articles/scala-support#build-behavior
+            "}
+        ),
+
+        ScalaBuildpackError::AlreadyDefinedAsObject => log_error(
+            "Failed to run sbt!",
+            formatdoc! {"
+                We're sorry this build is failing. It looks like you may need to run a clean build to remove any
+                stale SBT caches. You can do this by setting a configuration variable like this:
+
+                $ heroku config:set SBT_CLEAN=true
+
+                Then deploy you application with 'git push' again. If the build succeeds you can remove the variable by running this command:
+
+                $ heroku config:unset SBT_CLEAN
+
+                If this does not resolve the problem, please submit a ticket so we can help:
+                https://help.heroku.com
+            "}
+        ),
+
         ScalaBuildpackError::CouldNotWriteSbtExtrasScript(error) => log_please_try_again_error(
             "Failed to write sbt-extras script",
             "An unexpected error occurred while writing the sbt-extras script.",
@@ -107,7 +173,19 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
 
         ScalaBuildpackError::CouldNotSetExecutableBitForSbtExtrasScript(error) => log_please_try_again_error(
             "Unexpected I/O error",
-            "Failed to set executable permissions for sbt-extras script.",
+            "Failed to set executable permissions for the sbt-extras script.",
+            error
+        ),
+
+        ScalaBuildpackError::CouldNotWriteSbtWrapperScript(error) => log_please_try_again_error(
+            "Failed to write sbt-extras script",
+            "An unexpected error occurred while writing the sbt wrapper script.",
+            error,
+        ),
+
+        ScalaBuildpackError::CouldNotSetExecutableBitForSbtWrapperScript(error) => log_please_try_again_error(
+            "Unexpected I/O error",
+            "Failed to set executable permissions for the sbt wrapper script.",
             error
         ),
 
@@ -143,14 +221,7 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
             "Failed to install Heroku plugin for sbt",
             "An unexpected error occurred while attempting to install the Heroku plugin for sbt.",
             error
-        ),
-
-        ScalaBuildpackError::NoBuildpackPluginAvailable(version) => log_error(
-            "Failed to install Heroku plugin for sbt",
-            formatdoc! { "
-                No Heroku plugins supporting this version of sbt ({version}).
-            ", version = version },
-        ),
+        )
     }
 }
 

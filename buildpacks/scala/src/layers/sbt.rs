@@ -1,8 +1,8 @@
 use crate::errors::ScalaBuildpackError;
 use crate::errors::ScalaBuildpackError::{
-    CouldNotSetExecutableBitForSbtExtrasScript, CouldNotWriteSbtExtrasScript,
-    CouldNotWriteSbtPlugin, NoBuildpackPluginAvailable, SbtInstallIoError,
-    SbtInstallUnexpectedExitCode,
+    CouldNotSetExecutableBitForSbtExtrasScript, CouldNotSetExecutableBitForSbtWrapperScript,
+    CouldNotWriteSbtExtrasScript, CouldNotWriteSbtPlugin, CouldNotWriteSbtWrapperScript,
+    NoBuildpackPluginAvailable, SbtInstallIoError, SbtInstallUnexpectedExitCode,
 };
 use crate::ScalaBuildpack;
 use libcnb::build::BuildContext;
@@ -31,7 +31,7 @@ impl Layer for SbtLayer {
     fn types(&self) -> LayerTypes {
         LayerTypes {
             build: true,
-            launch: true,
+            launch: false,
             cache: true,
         }
     }
@@ -42,11 +42,16 @@ impl Layer for SbtLayer {
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
         log_info(format!("Setting up sbt {}", self.sbt_version));
+
+        write_sbt_extras_to_layer(layer_path)?;
+        write_sbt_wrapper_to_layer(layer_path)?;
+
         let layer_env = create_sbt_layer_env(layer_path);
         let env = layer_env.apply(Scope::Build, &self.env);
-        write_sbt_extras_to_layer(layer_path)?;
+
         install_sbt(&context.app_dir, layer_path, &env)?;
         write_buildpack_plugin(layer_path, &self.sbt_version)?;
+
         LayerResultBuilder::new(SbtLayerMetadata::current(self, context))
             .env(layer_env)
             .build()
@@ -70,7 +75,7 @@ fn install_sbt(
     layer_path: &Path,
     env: &Env,
 ) -> Result<ExitStatus, ScalaBuildpackError> {
-    Command::new(sbt_extras_path(layer_path))
+    Command::new(sbt_path(layer_path))
         .current_dir(app_dir)
         .args(["sbtVersion"])
         .envs(env)
@@ -88,6 +93,29 @@ fn install_sbt(
 
 fn create_sbt_layer_env(layer_path: &Path) -> LayerEnv {
     LayerEnv::new()
+        .chainable_insert(Scope::Build, ModificationBehavior::Delimiter, "PATH", ":")
+        .chainable_insert(
+            Scope::Build,
+            ModificationBehavior::Prepend,
+            "PATH",
+            layer_bin_dir(layer_path),
+        )
+        .chainable_insert(
+            Scope::Build,
+            ModificationBehavior::Delimiter,
+            "JVM_OPTS",
+            " ",
+        )
+        .chainable_insert(
+            Scope::Build,
+            ModificationBehavior::Append,
+            "JVM_OPTS",
+            format!(
+                "-Dsbt.global.base={} -Dsbt.boot.directory={}",
+                sbt_global_dir(layer_path).to_string_lossy(),
+                sbt_boot_dir(layer_path).to_string_lossy()
+            ),
+        )
         .chainable_insert(
             Scope::Build,
             ModificationBehavior::Delimiter,
@@ -98,14 +126,10 @@ fn create_sbt_layer_env(layer_path: &Path) -> LayerEnv {
             Scope::Build,
             ModificationBehavior::Append,
             "SBTX_OPTS",
-            shell_words::join([
-                "-sbt-dir",
-                sbt_global_dir(layer_path).display().to_string().as_str(),
-                "-sbt-boot",
-                sbt_boot_dir(layer_path).display().to_string().as_str(),
-                "-sbt-launch-dir",
-                sbt_launch_dir(layer_path).display().to_string().as_str(),
-            ]),
+            format!(
+                "-sbt-launch-dir {}",
+                sbt_launch_dir(layer_path).to_string_lossy(),
+            ),
         )
 }
 
@@ -116,6 +140,16 @@ fn write_sbt_extras_to_layer(layer_path: &Path) -> Result<(), ScalaBuildpackErro
     write(&sbt_extras_path, contents).map_err(CouldNotWriteSbtExtrasScript)?;
     set_permissions(&sbt_extras_path, Permissions::from_mode(0o755))
         .map_err(CouldNotSetExecutableBitForSbtExtrasScript)?;
+    Ok(())
+}
+
+fn write_sbt_wrapper_to_layer(layer_path: &Path) -> Result<(), ScalaBuildpackError> {
+    let sbt_path = sbt_path(layer_path);
+    let contents = include_bytes!("../../assets/sbt-wrapper.sh");
+    create_dir_all(layer_bin_dir(layer_path)).map_err(CouldNotWriteSbtWrapperScript)?;
+    write(&sbt_path, contents).map_err(CouldNotWriteSbtWrapperScript)?;
+    set_permissions(&sbt_path, Permissions::from_mode(0o755))
+        .map_err(CouldNotSetExecutableBitForSbtWrapperScript)?;
     Ok(())
 }
 
@@ -158,6 +192,10 @@ fn sbt_extras_path(layer_path: &Path) -> PathBuf {
     layer_bin_dir(layer_path).join("sbt-extras")
 }
 
+fn sbt_path(layer_path: &Path) -> PathBuf {
+    layer_bin_dir(layer_path).join("sbt")
+}
+
 fn sbt_boot_dir(layer_path: &Path) -> PathBuf {
     layer_path.join("boot")
 }
@@ -177,12 +215,12 @@ fn sbt_launch_dir(layer_path: &Path) -> PathBuf {
 #[cfg(test)]
 mod sbt_layer_tests {
     use crate::layers::sbt::{
-        create_sbt_layer_env, sbt_boot_dir, sbt_global_dir, sbt_global_plugins_dir, sbt_launch_dir,
-        write_buildpack_plugin, write_sbt_extras_to_layer,
+        create_sbt_layer_env, sbt_global_plugins_dir, write_buildpack_plugin,
+        write_sbt_extras_to_layer,
     };
     use libcnb::layer_env::Scope;
     use semver::Version;
-    use std::ffi::OsString;
+    use std::path::Path;
     use tempfile::tempdir;
 
     #[test]
@@ -195,19 +233,19 @@ mod sbt_layer_tests {
     }
 
     #[test]
-    fn create_sbt_layer_env_sets_ivy_flag_in_sbtx_opts() {
-        let layer_path = tempdir().unwrap();
-        let layer_env = create_sbt_layer_env(layer_path.path());
+    fn create_sbt_layer_env_sets_env_properly() {
+        let layer_path = Path::new("./test_layer");
+        let layer_env = create_sbt_layer_env(layer_path);
         let env = layer_env.apply_to_empty(Scope::Build);
         assert_eq!(
-            env.get("SBTX_OPTS").unwrap(),
-            OsString::from(format!(
-                "-sbt-dir {} -sbt-boot {} -sbt-launch-dir {}",
-                sbt_global_dir(layer_path.path()).to_string_lossy(),
-                sbt_boot_dir(layer_path.path()).to_string_lossy(),
-                sbt_launch_dir(layer_path.path()).to_string_lossy()
-            ))
+            env.get("JVM_OPTS").unwrap(),
+            "-Dsbt.global.base=./test_layer/global -Dsbt.boot.directory=./test_layer/boot"
         );
+        assert_eq!(
+            env.get("SBTX_OPTS").unwrap(),
+            "-sbt-launch-dir ./test_layer/launch"
+        );
+        assert_eq!(env.get("PATH").unwrap(), "./test_layer/bin");
     }
 
     #[test]

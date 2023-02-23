@@ -8,21 +8,48 @@ use std::time::Duration;
 
 #[test]
 #[ignore = "integration test"]
-fn test_minimal_scala_application_can_build_and_start() {
-    test_scala_application("scala-app", |ctx| assert_health_check_responds(&ctx));
+fn test_scala_application_with_ivy() {
+    test_scala_application("scala-app-using-ivy", |ctx| {
+        assert_health_check_responds(&ctx)
+    });
 }
 
 #[test]
 #[ignore = "integration test"]
-fn test_rebuild_uses_cached_sbt_install() {
-    test_scala_application("scala-app", |ctx| {
+fn test_scala_application_with_ivy_uses_cache_on_rebuild() {
+    test_scala_application("scala-app-using-ivy", |ctx| {
         assert_contains!(&ctx.pack_stdout, "Setting up sbt");
         assert_not_contains!(&ctx.pack_stdout, "Reusing sbt");
-        ctx.rebuild(get_build_config("scala-app"), |rebuild_ctx| {
+        ctx.rebuild(get_build_config("scala-app-using-ivy"), |rebuild_ctx| {
             assert_contains!(&rebuild_ctx.pack_stdout, "Reusing sbt");
             assert_not_contains!(&rebuild_ctx.pack_stdout, "Setting up sbt");
             assert_health_check_responds(&rebuild_ctx);
         })
+    })
+}
+
+#[test]
+#[ignore = "integration test"]
+fn test_scala_application_with_coursier() {
+    test_scala_application("scala-app-using-coursier", |ctx| {
+        assert_health_check_responds(&ctx)
+    });
+}
+
+#[test]
+#[ignore = "integration test"]
+fn test_scala_application_with_coursier_uses_cache_on_rebuild() {
+    test_scala_application("scala-app-using-coursier", |ctx| {
+        assert_contains!(&ctx.pack_stdout, "Setting up sbt");
+        assert_not_contains!(&ctx.pack_stdout, "Reusing sbt");
+        ctx.rebuild(
+            get_build_config("scala-app-using-coursier"),
+            |rebuild_ctx| {
+                assert_contains!(&rebuild_ctx.pack_stdout, "Reusing sbt");
+                assert_not_contains!(&rebuild_ctx.pack_stdout, "Setting up sbt");
+                assert_health_check_responds(&rebuild_ctx);
+            },
+        )
     })
 }
 
@@ -36,7 +63,7 @@ fn test_play_support_for_v2_8() {
 
 #[test]
 #[ignore = "integration test"]
-fn test_play_supportfor_v2_7() {
+fn test_play_support_for_v2_7() {
     test_scala_application("scala-play-app-2.7", |ctx| {
         assert_health_check_responds(&ctx);
     })

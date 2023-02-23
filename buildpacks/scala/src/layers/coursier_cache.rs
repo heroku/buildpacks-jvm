@@ -7,9 +7,9 @@ use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
 use std::path::Path;
 
-pub struct IvyCacheLayer;
+pub struct CoursierCacheLayer;
 
-impl Layer for IvyCacheLayer {
+impl Layer for CoursierCacheLayer {
     type Buildpack = ScalaBuildpack;
     type Metadata = GenericMetadata;
 
@@ -27,7 +27,7 @@ impl Layer for IvyCacheLayer {
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
         LayerResultBuilder::new(GenericMetadata::default())
-            .env(create_ivy_layer_env(layer_path))
+            .env(create_coursier_layer_env(layer_path))
             .build()
     }
 
@@ -40,7 +40,7 @@ impl Layer for IvyCacheLayer {
     }
 }
 
-fn create_ivy_layer_env(layer_path: &Path) -> LayerEnv {
+fn create_coursier_layer_env(layer_path: &Path) -> LayerEnv {
     LayerEnv::new()
         .chainable_insert(
             Scope::Build,
@@ -52,21 +52,24 @@ fn create_ivy_layer_env(layer_path: &Path) -> LayerEnv {
             Scope::Build,
             ModificationBehavior::Append,
             "JVM_OPTS",
-            format!("-Dsbt.ivy.home={}", layer_path.to_string_lossy()),
+            format!("-Dsbt.coursier.home={}", layer_path.to_string_lossy()),
         )
 }
 
 #[cfg(test)]
 mod ivy_cache_layer_tests {
-    use crate::layers::ivy_cache::create_ivy_layer_env;
+    use crate::layers::coursier_cache::create_coursier_layer_env;
     use libcnb::layer_env::Scope;
     use std::path::Path;
 
     #[test]
     fn create_ivy_layer_env_sets_ivy_flag_in_sbtx_opts() {
         let layer_path = Path::new("./test_path");
-        let layer_env = create_ivy_layer_env(layer_path);
+        let layer_env = create_coursier_layer_env(layer_path);
         let env = layer_env.apply_to_empty(Scope::Build);
-        assert_eq!(env.get("JVM_OPTS").unwrap(), "-Dsbt.ivy.home=./test_path");
+        assert_eq!(
+            env.get("JVM_OPTS").unwrap(),
+            "-Dsbt.coursier.home=./test_path"
+        );
     }
 }
