@@ -28,6 +28,8 @@ pub enum ScalaBuildpackError {
     CouldNotParseListConfigurationFromProperty(String, shell_words::ParseError),
     CouldNotParseListConfigurationFromEnvironment(String, shell_words::ParseError),
     CouldNotConvertEnvironmentValueIntoString(String, OsString),
+    CouldNotReadSbtOptsFile(std::io::Error),
+    CouldNotParseListConfigurationFromSbtOptsFile(shell_words::ParseError),
     MissingStageTask,
     AlreadyDefinedAsObject,
 }
@@ -102,7 +104,7 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
         ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(variable_name, error) => log_error(
             format!("Invalid {variable_name} environment variable"),
             formatdoc! {"
-                Could not parse the value of the {variable_name} environment variable into separate tasks into a list of words.
+                Could not parse the value of the {variable_name} environment variable into a list of words.
                 Please check {variable_name} for quoting and escaping mistakes and try again.
 
                 Details: {error}
@@ -137,6 +139,16 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
 
                 Value: {value}
             ", variable_name = variable_name, value = value.to_string_lossy() }
+        ),
+
+        ScalaBuildpackError::CouldNotParseListConfigurationFromSbtOptsFile(error) => log_error(
+            "Invalid .sbtopts file",
+            formatdoc! {"
+                Could not read the value of the .sbtopts file into a list of arguments. Please check
+                the file for mistakes and please try again.
+
+                Details: {error}
+            ", error = error }
         ),
 
         ScalaBuildpackError::MissingStageTask => log_error(
@@ -221,7 +233,13 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
             "Failed to install Heroku plugin for sbt",
             "An unexpected error occurred while attempting to install the Heroku plugin for sbt.",
             error
-        )
+        ),
+
+        ScalaBuildpackError::CouldNotReadSbtOptsFile(error) => log_please_try_again_error(
+            "Unexpected I/O error",
+            "Could not read your application's .sbtopts file due to an unexpected I/O error.",
+            error
+        ),
     }
 }
 

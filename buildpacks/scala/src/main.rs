@@ -51,9 +51,9 @@ impl Buildpack for ScalaBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let env = Env::from_current();
         let build_config = create_build_config(&context.app_dir, context.platform.env())?;
 
+        let env = Env::from_current();
         let env = create_coursier_cache_layer(&context, &env)?;
         let env = create_ivy_cache_layer(&context, &env)?;
         let env = create_sbt_layer(&context, &env, &build_config)?;
@@ -101,14 +101,15 @@ fn create_sbt_layer(
     build_config: &BuildConfiguration,
 ) -> Result<Env, Error<ScalaBuildpackError>> {
     log_header("Installing sbt");
-    let sbt_home_layer = context.handle_layer(
+    let sbt_layer = context.handle_layer(
         layer_name!("sbt"),
         SbtLayer {
             sbt_version: build_config.sbt_version.clone(),
+            sbt_opts: build_config.sbt_opts.clone(),
             env: env.clone(),
         },
     )?;
-    Ok(sbt_home_layer.env.apply(Scope::Build, env))
+    Ok(sbt_layer.env.apply(Scope::Build, env))
 }
 
 fn run_sbt_tasks(

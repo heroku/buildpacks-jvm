@@ -22,6 +22,7 @@ use std::process::{Command, ExitStatus};
 pub struct SbtLayer {
     pub sbt_version: Version,
     pub env: Env,
+    pub sbt_opts: Option<Vec<String>>,
 }
 
 impl Layer for SbtLayer {
@@ -46,7 +47,7 @@ impl Layer for SbtLayer {
         write_sbt_extras_to_layer(layer_path)?;
         write_sbt_wrapper_to_layer(layer_path)?;
 
-        let layer_env = create_sbt_layer_env(layer_path);
+        let layer_env = create_sbt_layer_env(layer_path, &self.sbt_opts);
         let env = layer_env.apply(Scope::Build, &self.env);
 
         install_sbt(&context.app_dir, layer_path, &env)?;
@@ -91,8 +92,8 @@ fn install_sbt(
         })
 }
 
-fn create_sbt_layer_env(layer_path: &Path) -> LayerEnv {
-    LayerEnv::new()
+fn create_sbt_layer_env(layer_path: &Path, sbt_opts: &Option<Vec<String>>) -> LayerEnv {
+    let layer_env = LayerEnv::new()
         .chainable_insert(Scope::Build, ModificationBehavior::Delimiter, "PATH", ":")
         .chainable_insert(
             Scope::Build,
@@ -103,34 +104,38 @@ fn create_sbt_layer_env(layer_path: &Path) -> LayerEnv {
         .chainable_insert(
             Scope::Build,
             ModificationBehavior::Delimiter,
-            "JVM_OPTS",
+            "SBTX_OPTS",
             " ",
         )
         .chainable_insert(
             Scope::Build,
             ModificationBehavior::Append,
-            "JVM_OPTS",
+            "SBTX_OPTS",
             format!(
-                "-Dsbt.global.base={} -Dsbt.boot.directory={}",
+                "-sbt-dir {} -sbt-boot {} -sbt-launch-dir {}",
                 sbt_global_dir(layer_path).to_string_lossy(),
-                sbt_boot_dir(layer_path).to_string_lossy()
-            ),
-        )
-        .chainable_insert(
-            Scope::Build,
-            ModificationBehavior::Delimiter,
-            "SBTX_OPTS",
-            " ",
-        )
-        .chainable_insert(
-            Scope::Build,
-            ModificationBehavior::Append,
-            "SBTX_OPTS",
-            format!(
-                "-sbt-launch-dir {}",
+                sbt_boot_dir(layer_path).to_string_lossy(),
                 sbt_launch_dir(layer_path).to_string_lossy(),
             ),
-        )
+        );
+
+    if let Some(opts) = sbt_opts {
+        return layer_env
+            .chainable_insert(
+                Scope::Build,
+                ModificationBehavior::Delimiter,
+                "SBT_OPTS",
+                " ",
+            )
+            .chainable_insert(
+                Scope::Build,
+                ModificationBehavior::Append,
+                "SBT_OPTS",
+                shell_words::join(opts),
+            );
+    }
+
+    layer_env
 }
 
 fn write_sbt_extras_to_layer(layer_path: &Path) -> Result<(), ScalaBuildpackError> {
@@ -235,17 +240,28 @@ mod sbt_layer_tests {
     #[test]
     fn create_sbt_layer_env_sets_env_properly() {
         let layer_path = Path::new("./test_layer");
-        let layer_env = create_sbt_layer_env(layer_path);
+        let layer_env = create_sbt_layer_env(layer_path, &None);
         let env = layer_env.apply_to_empty(Scope::Build);
         assert_eq!(
-            env.get("JVM_OPTS").unwrap(),
-            "-Dsbt.global.base=./test_layer/global -Dsbt.boot.directory=./test_layer/boot"
-        );
-        assert_eq!(
             env.get("SBTX_OPTS").unwrap(),
-            "-sbt-launch-dir ./test_layer/launch"
+            "-sbt-dir ./test_layer/global -sbt-boot ./test_layer/boot -sbt-launch-dir ./test_layer/launch"
         );
         assert_eq!(env.get("PATH").unwrap(), "./test_layer/bin");
+        assert!(!env.contains_key("SBT_OPTS"));
+    }
+
+    #[test]
+    fn create_sbt_layer_env_sets_env_properly_when_sbt_opts_are_present() {
+        let layer_path = Path::new("./test_layer");
+        let sbt_opts = vec!["-J-Xfoo".to_string()];
+        let layer_env = create_sbt_layer_env(layer_path, &Some(sbt_opts));
+        let env = layer_env.apply_to_empty(Scope::Build);
+        assert_eq!(
+            env.get("SBTX_OPTS").unwrap(),
+            "-sbt-dir ./test_layer/global -sbt-boot ./test_layer/boot -sbt-launch-dir ./test_layer/launch"
+        );
+        assert_eq!(env.get("PATH").unwrap(), "./test_layer/bin");
+        assert_eq!(env.get("SBT_OPTS").unwrap(), "-J-Xfoo");
     }
 
     #[test]
