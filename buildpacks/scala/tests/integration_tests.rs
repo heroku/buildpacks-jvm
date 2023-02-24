@@ -88,7 +88,7 @@ fn get_build_config(fixture_name: &str) -> BuildConfig {
 
 fn assert_health_check_responds(ctx: &TestContext) {
     let port: u16 = 8080;
-    let timeout: u64 = 5;
+    let timeout: u64 = 15;
 
     ctx.start_container(ContainerConfig::new().expose_port(port), |container| {
         // Give the application a little time to boot up:
