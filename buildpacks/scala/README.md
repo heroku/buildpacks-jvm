@@ -75,6 +75,16 @@ value of either `true` or `false`. E.g.; setting this value to `true` would caus
 | Java property file | `system.properties` | `sbt.clean` |
 | Environment        |                     | `SBT_CLEAN` |
 
+### Making sbt available at launch
+
+By default, the `sbt` executable as well as its caches are only available during the build process.  If you need
+`sbt` to launch your application you can configure this setting with a value of `true`.
+
+| From               | Path                | Name                      |
+|--------------------|---------------------|---------------------------|
+| Java property file | `system.properties` | `sbt.available-at-launch` |
+| Environment        |                     | `SBT_AVAILABLE_AT_LAUNCH` |
+
 ### Adding custom sbt options
 
 If the `SBT_OPTS` environment variable is defined when sbt starts, its content are passed as command line arguments to

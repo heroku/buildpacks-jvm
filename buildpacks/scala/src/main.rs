@@ -7,6 +7,7 @@
 mod build_configuration;
 mod detection;
 mod errors;
+mod file_tree;
 mod layers;
 mod paths;
 
@@ -16,9 +17,11 @@ use crate::errors::ScalaBuildpackError::{
     AlreadyDefinedAsObject, MissingStageTask, SbtBuildIoError, SbtBuildUnexpectedExitCode,
 };
 use crate::errors::{log_user_errors, ScalaBuildpackError};
+use crate::file_tree::create_file_tree;
 use crate::layers::coursier_cache::CoursierCacheLayer;
 use crate::layers::ivy_cache::IvyCacheLayer;
 use crate::layers::sbt::SbtLayer;
+use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::{BuildPlan, BuildPlanBuilder};
 use libcnb::data::layer_name;
@@ -28,9 +31,9 @@ use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::command::CommandExt;
 use libherokubuildpack::error::on_error as on_buildpack_error;
-use libherokubuildpack::log::{log_header, log_info};
+use libherokubuildpack::log::{log_header, log_info, log_warning};
 use std::io::{stderr, stdout};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 pub struct ScalaBuildpack;
@@ -54,11 +57,13 @@ impl Buildpack for ScalaBuildpack {
         let build_config = create_build_config(&context.app_dir, context.platform.env())?;
 
         let env = Env::from_current();
-        let env = create_coursier_cache_layer(&context, &env)?;
-        let env = create_ivy_cache_layer(&context, &env)?;
+        let env = create_coursier_cache_layer(&context, &env, &build_config)?;
+        let env = create_ivy_cache_layer(&context, &env, &build_config)?;
         let env = create_sbt_layer(&context, &env, &build_config)?;
 
+        cleanup_any_existing_native_packager_directories(&context.app_dir);
         run_sbt_tasks(&context.app_dir, &build_config, &env)?;
+        cleanup_compilation_artifacts(&context.app_dir);
 
         BuildResultBuilder::new().build()
     }
@@ -81,17 +86,28 @@ fn create_scala_build_plan() -> BuildPlan {
 fn create_coursier_cache_layer(
     context: &BuildContext<ScalaBuildpack>,
     env: &Env,
+    build_config: &BuildConfiguration,
 ) -> Result<Env, Error<ScalaBuildpackError>> {
-    let coursier_cache_layer =
-        context.handle_layer(layer_name!("coursier_cache"), CoursierCacheLayer)?;
+    let coursier_cache_layer = context.handle_layer(
+        layer_name!("coursier_cache"),
+        CoursierCacheLayer {
+            available_at_launch: build_config.sbt_available_at_launch,
+        },
+    )?;
     Ok(coursier_cache_layer.env.apply(Scope::Build, env))
 }
 
 fn create_ivy_cache_layer(
     context: &BuildContext<ScalaBuildpack>,
     env: &Env,
+    build_config: &BuildConfiguration,
 ) -> Result<Env, Error<ScalaBuildpackError>> {
-    let ivy_cache_layer = context.handle_layer(layer_name!("ivy_cache"), IvyCacheLayer)?;
+    let ivy_cache_layer = context.handle_layer(
+        layer_name!("ivy_cache"),
+        IvyCacheLayer {
+            available_at_launch: build_config.sbt_available_at_launch,
+        },
+    )?;
     Ok(ivy_cache_layer.env.apply(Scope::Build, env))
 }
 
@@ -106,10 +122,52 @@ fn create_sbt_layer(
         SbtLayer {
             sbt_version: build_config.sbt_version.clone(),
             sbt_opts: build_config.sbt_opts.clone(),
+            available_at_launch: build_config.sbt_available_at_launch,
             env: env.clone(),
         },
     )?;
     Ok(sbt_layer.env.apply(Scope::Build, env))
+}
+
+// the native package plugin produces binaries in the target/universal/stage directory which is not included
+// in the list of directories to clean up at the end of the build since a Procfile may reference this
+// location to provide the entry point for an application. wiping the directory before the application build
+// kicks off will ensure that no leftover artifacts are being carried around between builds.
+fn cleanup_any_existing_native_packager_directories(app_dir: &Path) {
+    let native_package_directory = app_dir.join("target").join("universal").join("stage");
+    if native_package_directory.exists() {
+        let delete_operation = create_file_tree(native_package_directory).delete();
+        if delete_operation.is_err() {
+            log_warning(
+                "Removal of native package directory failed",
+                formatdoc! {"
+                    This error should not affect your built application but it may cause the container image
+                    to be larger than expected.
+                "},
+            );
+        }
+    }
+}
+
+fn cleanup_compilation_artifacts(app_dir: &Path) {
+    log_info("Dropping compilation artifacts from the build");
+    let delete_operation = create_file_tree(app_dir.join("target"))
+        .include("scala-*")
+        .include("streams")
+        .include("resolution-cache")
+        .exclude("resolution-cache/reports")
+        .exclude("resolution-cache/*-compile.xml")
+        .delete();
+
+    if delete_operation.is_err() {
+        log_warning(
+            "Removal of compilation artifacts failed",
+            formatdoc! {"
+                This error should not affect your built application but it may cause the container image
+                to be larger than expected.
+            " },
+        );
+    }
 }
 
 fn run_sbt_tasks(
@@ -250,6 +308,7 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: None,
             sbt_opts: None,
+            sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(get_sbt_build_tasks(&config), vec!["compile", "stage"]);
@@ -263,6 +322,7 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: Some(vec!["task".to_string()]),
             sbt_clean: Some(true),
             sbt_opts: None,
+            sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
@@ -279,6 +339,7 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: Some(true),
             sbt_opts: None,
+            sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
@@ -295,6 +356,7 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: Some(false),
             sbt_opts: None,
+            sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(get_sbt_build_tasks(&config), vec!["compile", "stage"]);
@@ -308,6 +370,7 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: None,
             sbt_opts: None,
+            sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
@@ -324,6 +387,7 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: None,
             sbt_opts: None,
+            sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
@@ -340,6 +404,7 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: Some(true),
             sbt_opts: None,
+            sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(

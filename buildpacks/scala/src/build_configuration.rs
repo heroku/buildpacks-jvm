@@ -21,6 +21,7 @@ pub struct BuildConfiguration {
     pub sbt_tasks: Option<Vec<String>>,
     pub sbt_clean: Option<bool>,
     pub sbt_opts: Option<Vec<String>>,
+    pub sbt_available_at_launch: Option<bool>,
     pub sbt_version: Version,
 }
 
@@ -36,6 +37,12 @@ pub fn create_build_config<P: Into<PathBuf>>(
         sbt_pre_tasks: read_string_list_config("sbt.pre-tasks", &properties, "SBT_PRE_TASKS", env)?,
         sbt_tasks: read_string_list_config("sbt.tasks", &properties, "SBT_TASKS", env)?,
         sbt_clean: read_boolean_config("sbt.clean", &properties, "SBT_CLEAN", env)?,
+        sbt_available_at_launch: read_boolean_config(
+            "sbt.available-at-launch",
+            &properties,
+            "SBT_AVAILABLE_AT_LAUNCH",
+            env,
+        )?,
         sbt_opts: read_sbt_opts(sbt_opts_file, env)?,
         sbt_version: get_declared_sbt_version(&app_dir)?,
     })

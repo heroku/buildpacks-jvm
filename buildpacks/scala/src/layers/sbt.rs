@@ -23,6 +23,7 @@ pub struct SbtLayer {
     pub sbt_version: Version,
     pub env: Env,
     pub sbt_opts: Option<Vec<String>>,
+    pub available_at_launch: Option<bool>,
 }
 
 impl Layer for SbtLayer {
@@ -32,7 +33,7 @@ impl Layer for SbtLayer {
     fn types(&self) -> LayerTypes {
         LayerTypes {
             build: true,
-            launch: false,
+            launch: self.available_at_launch.unwrap_or_default(),
             cache: true,
         }
     }
@@ -47,7 +48,7 @@ impl Layer for SbtLayer {
         write_sbt_extras_to_layer(layer_path)?;
         write_sbt_wrapper_to_layer(layer_path)?;
 
-        let layer_env = create_sbt_layer_env(layer_path, &self.sbt_opts);
+        let layer_env = create_sbt_layer_env(layer_path, &self.sbt_opts, self.available_at_launch);
         let env = layer_env.apply(Scope::Build, &self.env);
 
         install_sbt(&context.app_dir, layer_path, &env)?;
@@ -92,23 +93,45 @@ fn install_sbt(
         })
 }
 
-fn create_sbt_layer_env(layer_path: &Path, sbt_opts: &Option<Vec<String>>) -> LayerEnv {
+fn create_sbt_layer_env(
+    layer_path: &Path,
+    sbt_opts: &Option<Vec<String>>,
+    available_at_launch: Option<bool>,
+) -> LayerEnv {
     let layer_env = LayerEnv::new()
-        .chainable_insert(Scope::Build, ModificationBehavior::Delimiter, "PATH", ":")
         .chainable_insert(
-            Scope::Build,
+            get_layer_env_scope(available_at_launch),
+            ModificationBehavior::Override,
+            "SBT_HOME",
+            layer_path,
+        )
+        .chainable_insert(
+            get_layer_env_scope(available_at_launch),
+            ModificationBehavior::Delimiter,
+            "PATH",
+            ":",
+        )
+        .chainable_insert(
+            get_layer_env_scope(available_at_launch),
             ModificationBehavior::Prepend,
             "PATH",
             layer_bin_dir(layer_path),
         )
+        // XXX: i wanted to pass these through using SBT_OPTS instead of SBTX_OPTS but everytime i
+        //      tried this the settings were not respected. i believe this is a bug in this section
+        //      of the sbt-extras script:
+        //      - https://github.com/dwijnand/sbt-extras/blob/master/sbt#L541-L565
+        //
+        //      the SBTX_OPTS variable works fine though so that's being used to ensure that sbt is pointing
+        //      at all the right folders
         .chainable_insert(
-            Scope::Build,
+            get_layer_env_scope(available_at_launch),
             ModificationBehavior::Delimiter,
             "SBTX_OPTS",
             " ",
         )
         .chainable_insert(
-            Scope::Build,
+            get_layer_env_scope(available_at_launch),
             ModificationBehavior::Append,
             "SBTX_OPTS",
             format!(
@@ -120,15 +143,18 @@ fn create_sbt_layer_env(layer_path: &Path, sbt_opts: &Option<Vec<String>>) -> La
         );
 
     if let Some(opts) = sbt_opts {
+        // XXX: if you read the earlier comments you'll know i have been avoiding using SBT_OPTS to
+        //      setup several key aspects of the running sbt process.  but since the SBT_OPTS is configurable
+        //      by the user this variable is created here to respect what they've set.
         return layer_env
             .chainable_insert(
-                Scope::Build,
+                get_layer_env_scope(available_at_launch),
                 ModificationBehavior::Delimiter,
                 "SBT_OPTS",
                 " ",
             )
             .chainable_insert(
-                Scope::Build,
+                get_layer_env_scope(available_at_launch),
                 ModificationBehavior::Append,
                 "SBT_OPTS",
                 shell_words::join(opts),
@@ -136,6 +162,14 @@ fn create_sbt_layer_env(layer_path: &Path, sbt_opts: &Option<Vec<String>>) -> La
     }
 
     layer_env
+}
+
+fn get_layer_env_scope(available_at_launch: Option<bool>) -> Scope {
+    if available_at_launch.unwrap_or_default() {
+        Scope::All
+    } else {
+        Scope::Build
+    }
 }
 
 fn write_sbt_extras_to_layer(layer_path: &Path) -> Result<(), ScalaBuildpackError> {
@@ -240,7 +274,7 @@ mod sbt_layer_tests {
     #[test]
     fn create_sbt_layer_env_sets_env_properly() {
         let layer_path = Path::new("./test_layer");
-        let layer_env = create_sbt_layer_env(layer_path, &None);
+        let layer_env = create_sbt_layer_env(layer_path, &None, None);
         let env = layer_env.apply_to_empty(Scope::Build);
         assert_eq!(
             env.get("SBTX_OPTS").unwrap(),
@@ -254,7 +288,7 @@ mod sbt_layer_tests {
     fn create_sbt_layer_env_sets_env_properly_when_sbt_opts_are_present() {
         let layer_path = Path::new("./test_layer");
         let sbt_opts = vec!["-J-Xfoo".to_string()];
-        let layer_env = create_sbt_layer_env(layer_path, &Some(sbt_opts));
+        let layer_env = create_sbt_layer_env(layer_path, &Some(sbt_opts), None);
         let env = layer_env.apply_to_empty(Scope::Build);
         assert_eq!(
             env.get("SBTX_OPTS").unwrap(),

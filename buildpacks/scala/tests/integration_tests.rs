@@ -90,21 +90,26 @@ fn assert_health_check_responds(ctx: &TestContext) {
     let port: u16 = 8080;
     let timeout: u64 = 15;
 
-    ctx.start_container(ContainerConfig::new().expose_port(port), |container| {
-        // Give the application a little time to boot up:
-        // https://github.com/heroku/libcnb.rs/issues/280
-        thread::sleep(Duration::from_secs(timeout));
+    ctx.start_container(
+        ContainerConfig::new()
+            .env("PORT", port.to_string())
+            .expose_port(port),
+        |container| {
+            // Give the application a little time to boot up:
+            // https://github.com/heroku/libcnb.rs/issues/280
+            thread::sleep(Duration::from_secs(timeout));
 
-        let addr = container
-            .address_for_port(port)
-            .expect("couldn't get container address");
+            let addr = container
+                .address_for_port(port)
+                .expect("couldn't get container address");
 
-        let res = ureq::get(&format!("http://{addr}"))
-            .call()
-            .expect("request to container failed")
-            .into_string()
-            .expect("response read error");
+            let res = ureq::get(&format!("http://{addr}"))
+                .call()
+                .expect("request to container failed")
+                .into_string()
+                .expect("response read error");
 
-        assert_eq!(res, "Hello from Scala!");
-    })
+            assert_eq!(res, "Hello from Scala!");
+        },
+    )
 }
