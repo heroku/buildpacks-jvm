@@ -2,7 +2,7 @@ use crate::paths::{sbt_project_build_properties_path, sbt_project_path};
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
-pub fn detect_sbt(app_dir: &Path) -> bool {
+pub(crate) fn detect_sbt(app_dir: &Path) -> bool {
     has_sbt_file(app_dir)
         || has_project_scala_file(app_dir)
         || has_hidden_sbt_directory(app_dir)

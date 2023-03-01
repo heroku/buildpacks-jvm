@@ -19,11 +19,11 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 
-pub struct SbtLayer {
-    pub sbt_version: Version,
-    pub env: Env,
-    pub sbt_opts: Option<Vec<String>>,
-    pub available_at_launch: Option<bool>,
+pub(crate) struct SbtLayer {
+    pub(crate) sbt_version: Version,
+    pub(crate) env: Env,
+    pub(crate) sbt_opts: Option<Vec<String>>,
+    pub(crate) available_at_launch: Option<bool>,
 }
 
 impl Layer for SbtLayer {
@@ -320,7 +320,7 @@ mod sbt_layer_tests {
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
-pub struct SbtLayerMetadata {
+pub(crate) struct SbtLayerMetadata {
     sbt_version: Version,
     layer_version: String,
     stack_id: StackId,

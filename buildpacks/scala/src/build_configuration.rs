@@ -15,17 +15,17 @@ use std::fs::{read_to_string, File};
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone)]
-pub struct BuildConfiguration {
-    pub sbt_project: Option<String>,
-    pub sbt_pre_tasks: Option<Vec<String>>,
-    pub sbt_tasks: Option<Vec<String>>,
-    pub sbt_clean: Option<bool>,
-    pub sbt_opts: Option<Vec<String>>,
-    pub sbt_available_at_launch: Option<bool>,
-    pub sbt_version: Version,
+pub(crate) struct BuildConfiguration {
+    pub(crate) sbt_project: Option<String>,
+    pub(crate) sbt_pre_tasks: Option<Vec<String>>,
+    pub(crate) sbt_tasks: Option<Vec<String>>,
+    pub(crate) sbt_clean: Option<bool>,
+    pub(crate) sbt_opts: Option<Vec<String>>,
+    pub(crate) sbt_available_at_launch: Option<bool>,
+    pub(crate) sbt_version: Version,
 }
 
-pub fn create_build_config<P: Into<PathBuf>>(
+pub(crate) fn create_build_config<P: Into<PathBuf>>(
     app_dir: P,
     env: &Env,
 ) -> Result<BuildConfiguration, ScalaBuildpackError> {

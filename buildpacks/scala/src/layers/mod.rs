@@ -1,3 +1,3 @@
-pub mod coursier_cache;
-pub mod ivy_cache;
-pub mod sbt;
+pub(crate) mod coursier_cache;
+pub(crate) mod ivy_cache;
+pub(crate) mod sbt;

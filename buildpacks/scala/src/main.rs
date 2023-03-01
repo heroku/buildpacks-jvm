@@ -36,7 +36,7 @@ use std::io::{stderr, stdout};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
-pub struct ScalaBuildpack;
+pub(crate) struct ScalaBuildpack;
 
 impl Buildpack for ScalaBuildpack {
     type Platform = GenericPlatform;

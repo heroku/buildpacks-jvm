@@ -6,7 +6,7 @@ use std::fmt::Debug;
 use std::process::ExitStatus;
 
 #[derive(Debug)]
-pub enum ScalaBuildpackError {
+pub(crate) enum ScalaBuildpackError {
     CouldNotWriteSbtExtrasScript(std::io::Error),
     CouldNotSetExecutableBitForSbtExtrasScript(std::io::Error),
     CouldNotWriteSbtWrapperScript(std::io::Error),
@@ -35,7 +35,7 @@ pub enum ScalaBuildpackError {
 }
 
 #[allow(clippy::too_many_lines)]
-pub fn log_user_errors(error: ScalaBuildpackError) {
+pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
     match error {
         ScalaBuildpackError::MissingDeclaredSbtVersion |
         ScalaBuildpackError::MissingSbtBuildPropertiesFile => log_error(
@@ -51,21 +51,23 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
             formatdoc! { "
                 You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
                 file. You must use a version of sbt between 0.11.0 and 1.x.
-            ", version = version },
+            " },
         ),
 
         ScalaBuildpackError::SbtBuildIoError(error) => log_error(
-            "Failed to build app with sbt",
+            "Running sbt failed",
             formatdoc! { "
-                We're sorry this build is failing!  If you can't find the issue in application code,
-                please submit a ticket so we can help: https://help.heroku.com/
+                This failure occurred before the executable was invoked. Details are below. If this error persists,
+                try deploying the Heroku Scala Getting Started Guide to a new application as a debugging step:
+
+                https://devcenter.heroku.com/articles/getting-started-with-scala
 
                 Details: {error}
-            ", error = error }
+            " }
         ),
 
         ScalaBuildpackError::SbtBuildUnexpectedExitCode(exit_status) => log_error(
-            "Failed to build app with sbt",
+            "Running sbt failed",
             formatdoc! { "
                 We're sorry this build is failing! If you can't find the issue in application code,
                 please submit a ticket so we can help: https://help.heroku.com/
@@ -81,14 +83,14 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
                 ensure this value is a valid semantic version identifier (see https://semver.org/).
 
                 Details: {error}
-            ", version = version, error = error },
+            " },
         ),
 
         ScalaBuildpackError::NoBuildpackPluginAvailable(version) => log_error(
             "Failed to install Heroku plugin for sbt",
             formatdoc! { "
                 No Heroku plugins supporting this version of sbt ({version}).
-            ", version = version },
+            " },
         ),
 
         ScalaBuildpackError::CouldNotParseListConfigurationFromProperty(property_name, error) => log_error(
@@ -98,7 +100,7 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
                 Please check the `{property_name}` property for quoting and escaping mistakes and try again.
 
                 Details: {error}
-            ", property_name = property_name, error = error }
+            " }
         ),
 
         ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(variable_name, error) => log_error(
@@ -108,7 +110,7 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
                 Please check {variable_name} for quoting and escaping mistakes and try again.
 
                 Details: {error}
-            ", variable_name = variable_name, error = error }
+            " }
         ),
 
         ScalaBuildpackError::CouldNotParseBooleanFromProperty(property_name, error) => log_error(
@@ -118,7 +120,7 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
                 Please check `{property_name}` for mistakes and try again.
 
                 Details: {error}
-            ", property_name = property_name, error = error }
+            " }
         ),
 
         ScalaBuildpackError::CouldNotParseBooleanFromEnvironment(variable_name, error) => log_error(
@@ -128,7 +130,7 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
                 Please check {variable_name} for mistakes and try again.
 
                 Details: {error}
-            ", variable_name = variable_name, error = error }
+            " }
         ),
 
         ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(variable_name, value) => log_error(
@@ -138,7 +140,7 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
                 check that the value of {variable_name} only contains Unicode characters and try again.
 
                 Value: {value}
-            ", variable_name = variable_name, value = value.to_string_lossy() }
+            ", value = value.to_string_lossy() }
         ),
 
         ScalaBuildpackError::CouldNotParseListConfigurationFromSbtOptsFile(error) => log_error(
@@ -148,13 +150,13 @@ pub fn log_user_errors(error: ScalaBuildpackError) {
                 the file for mistakes and please try again.
 
                 Details: {error}
-            ", error = error }
+            " }
         ),
 
         ScalaBuildpackError::MissingStageTask => log_error(
             "Failed to run sbt!",
             formatdoc! {"
-                It looks like your build.sbt does not have a valid 'stage' task. Please read our Dev Center article for
+                It looks like your build.sbt does not have a valid 'stage' task. Please reference our Dev Center article for
                 information on how to create one:
                 https://devcenter.heroku.com/articles/scala-support#build-behavior
             "}

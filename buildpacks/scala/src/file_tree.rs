@@ -5,14 +5,14 @@ use crate::file_tree::FileTreeError::{
 use std::fs;
 use std::path::PathBuf;
 
-pub struct FileTree {
+pub(crate) struct FileTree {
     root: PathBuf,
     includes: Vec<String>,
     excludes: Vec<String>,
 }
 
 #[derive(Debug)]
-pub enum FileTreeError {
+pub(crate) enum FileTreeError {
     CouldNotRetrieveFileList(glob::PatternError),
     InvalidIncludePattern(glob::PatternError),
     InvalidExcludePattern(glob::PatternError),
@@ -21,17 +21,17 @@ pub enum FileTreeError {
 }
 
 impl FileTree {
-    pub fn include<Pattern: Into<String>>(&mut self, pattern: Pattern) -> &mut FileTree {
+    pub(crate) fn include<Pattern: Into<String>>(&mut self, pattern: Pattern) -> &mut FileTree {
         self.includes.push(pattern.into());
         self
     }
 
-    pub fn exclude<Pattern: Into<String>>(&mut self, pattern: Pattern) -> &mut FileTree {
+    pub(crate) fn exclude<Pattern: Into<String>>(&mut self, pattern: Pattern) -> &mut FileTree {
         self.excludes.push(pattern.into());
         self
     }
 
-    pub fn get_files(&self) -> Result<Vec<PathBuf>, FileTreeError> {
+    pub(crate) fn get_files(&self) -> Result<Vec<PathBuf>, FileTreeError> {
         let entries = glob::glob(&self.root.join("**").join("*").to_string_lossy())
             .map_err(CouldNotRetrieveFileList)?;
 
@@ -82,7 +82,7 @@ impl FileTree {
         Ok(filter_files)
     }
 
-    pub fn delete(&self) -> Result<(), FileTreeError> {
+    pub(crate) fn delete(&self) -> Result<(), FileTreeError> {
         let files = self.get_files()?;
         for file in files {
             fs::remove_file(self.root.join(file)).map_err(CouldNotDeleteFile)?;
@@ -91,7 +91,7 @@ impl FileTree {
     }
 }
 
-pub fn create_file_tree(root: PathBuf) -> FileTree {
+pub(crate) fn create_file_tree(root: PathBuf) -> FileTree {
     FileTree {
         root,
         includes: vec![],

@@ -5,10 +5,11 @@ use libcnb::generic::GenericMetadata;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
+use libherokubuildpack::log::log_info;
 use std::path::Path;
 
-pub struct IvyCacheLayer {
-    pub available_at_launch: Option<bool>,
+pub(crate) struct IvyCacheLayer {
+    pub(crate) available_at_launch: Option<bool>,
 }
 
 // Ivy is used as the default library management tool up for sbt < 1.3
@@ -29,6 +30,7 @@ impl Layer for IvyCacheLayer {
         _: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
+        log_info("Creating Ivy cache");
         LayerResultBuilder::new(GenericMetadata::default())
             .env(create_ivy_layer_env(layer_path, self.available_at_launch))
             .build()
@@ -39,6 +41,7 @@ impl Layer for IvyCacheLayer {
         _: &BuildContext<Self::Buildpack>,
         _: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
+        log_info("Using existing Ivy cache");
         Ok(ExistingLayerStrategy::Keep)
     }
 }
