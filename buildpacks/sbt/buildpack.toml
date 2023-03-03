@@ -1,12 +1,12 @@
 api = "0.8"
 
 [buildpack]
-id = "heroku/scala"
+id = "heroku/sbt"
 version = "0.0.1"
-name = "Scala"
+name = "sbt"
 clear-env = true
 homepage = "https://github.com/heroku/buildpacks-jvm"
-description = "Official Heroku buildpack for Scala applications."
+description = "Official Heroku buildpack for sbt in Scala applications."
 keywords = ["java", "scala", "sbt"]
 
 [[buildpack.licenses]]

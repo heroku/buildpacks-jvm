@@ -2,7 +2,7 @@
 members = [
     "buildpacks/jvm",
     "buildpacks/maven",
-    "buildpacks/scala",
+    "buildpacks/sbt",
     "buildpacks/jvm-function-invoker",
 ]
 

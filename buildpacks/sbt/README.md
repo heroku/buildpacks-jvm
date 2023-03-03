@@ -1,11 +1,11 @@
-# Heroku Cloud Native Scala Buildpack
+# Heroku Cloud Native sbt Buildpack
 [![CI](https://github.com/heroku/buildpacks-jvm/actions/workflows/ci.yml/badge.svg)](https://github.com/heroku/buildpacks-jvm/actions/workflows/ci.yml)
 
-Heroku's official Cloud Native Buildpack for [Scala](https://www.scala-lang.org/) applications.
+Heroku's official Cloud Native Buildpack for [sbt](https://www.scala-sbt.org/) usage in [Scala](https://www.scala-lang.org/) applications.
 
 ## How it works
 
-The buildpack will detect if your application requires Scala if any one of the following file patterns match:
+The buildpack will detect if your application requires `sbt` if any one of the following file patterns match:
 - `project/build.properties`
 - `project/*.scala`
 - `*.sbt`
@@ -111,7 +111,7 @@ heroku config:set SBT_OPTS="-J-Xss4m"
 
 * `jdk`: To compile Java sources a JDK is required. It can be provided by the `heroku/jvm` ([Source](/buildpacks/jvm),
 [Readme](/buildpacks/jvm/README.md)) buildpack.
-* `jvm-application`: This is not a strict requirement of the buildpack. Requiring `jvm-application` ensures that this Scala
+* `jvm-application`: This is not a strict requirement of the buildpack. Requiring `jvm-application` ensures that this
 buildpack can be used even when no other buildpack requires `jvm-application`.
 
 ### Provides

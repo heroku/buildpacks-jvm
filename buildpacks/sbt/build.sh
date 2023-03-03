@@ -9,7 +9,7 @@ pushd "${buildpack_dir}"
 cargo libcnb package --release
 
 mkdir -p target
-cp -r ../../target/buildpack/release/heroku_scala/* target/
+cp -r ../../target/buildpack/release/heroku_sbt/* target/
 cp package.toml target/
 
 popd
