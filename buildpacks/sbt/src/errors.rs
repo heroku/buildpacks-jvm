@@ -57,10 +57,8 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
         ScalaBuildpackError::SbtBuildIoError(error) => log_error(
             "Running sbt failed",
             formatdoc! { "
-                This failure occurred before the executable was invoked. Details are below. If this error persists,
-                try deploying the Heroku Scala Getting Started Guide to a new application as a debugging step:
-
-                https://devcenter.heroku.com/articles/getting-started-with-scala
+                We're sorry this build is failing! If you can't find the issue in application code,
+                please submit a ticket so we can help: https://help.heroku.com/
 
                 Details: {error}
             " }
@@ -158,6 +156,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             formatdoc! {"
                 It looks like your build.sbt does not have a valid 'stage' task. Please reference our Dev Center article for
                 information on how to create one:
+
                 https://devcenter.heroku.com/articles/scala-support#build-behavior
             "}
         ),

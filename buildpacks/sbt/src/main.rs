@@ -137,12 +137,14 @@ fn cleanup_any_existing_native_packager_directories(app_dir: &Path) {
     let native_package_directory = app_dir.join("target").join("universal").join("stage");
     if native_package_directory.exists() {
         let delete_operation = create_file_tree(native_package_directory).delete();
-        if delete_operation.is_err() {
+        if let Err(error) = delete_operation {
             log_warning(
                 "Removal of native package directory failed",
                 formatdoc! {"
                     This error should not affect your built application but it may cause the container image
                     to be larger than expected.
+
+                    Details: {error}
                 "},
             );
         }
@@ -159,12 +161,14 @@ fn cleanup_compilation_artifacts(app_dir: &Path) {
         .exclude("resolution-cache/*-compile.xml")
         .delete();
 
-    if delete_operation.is_err() {
+    if let Err(error) = delete_operation {
         log_warning(
             "Removal of compilation artifacts failed",
             formatdoc! {"
                 This error should not affect your built application but it may cause the container image
                 to be larger than expected.
+
+                Details: {error}
             " },
         );
     }
