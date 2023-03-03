@@ -144,7 +144,7 @@ fn cleanup_any_existing_native_packager_directories(app_dir: &Path) {
                     This error should not affect your built application but it may cause the container image
                     to be larger than expected.
 
-                    Details: {error}
+                    Details: {error:?}
                 "},
             );
         }
@@ -168,7 +168,7 @@ fn cleanup_compilation_artifacts(app_dir: &Path) {
                 This error should not affect your built application but it may cause the container image
                 to be larger than expected.
 
-                Details: {error}
+                Details: {error:?}
             " },
         );
     }
