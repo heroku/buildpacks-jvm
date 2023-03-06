@@ -7,7 +7,6 @@ use crate::errors::ScalaBuildpackError::{
     MissingSbtBuildPropertiesFile, SbtPropertiesFileReadError, SbtVersionNotInSemverFormat,
     UnsupportedSbtVersion,
 };
-use crate::paths::{sbt_project_build_properties_path, system_properties_path};
 use libcnb::Env;
 use semver::{Version, VersionReq};
 use std::collections::HashMap;
@@ -49,7 +48,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
 }
 
 fn read_system_properties(app_dir: &Path) -> HashMap<String, String> {
-    File::open(system_properties_path(app_dir))
+    File::open(app_dir.join("system.properties"))
         .map(|file| java_properties::read(file).unwrap_or_default())
         .unwrap_or_default()
 }
@@ -157,7 +156,7 @@ fn read_sbt_opts(
 }
 
 fn get_declared_sbt_version(app_dir: &Path) -> Result<Version, ScalaBuildpackError> {
-    let build_properties_path = sbt_project_build_properties_path(app_dir);
+    let build_properties_path = app_dir.join("project").join("build.properties");
 
     if !build_properties_path.exists() {
         return Err(MissingSbtBuildPropertiesFile);
@@ -201,11 +200,10 @@ fn get_declared_sbt_version(app_dir: &Path) -> Result<Version, ScalaBuildpackErr
 #[cfg(test)]
 mod create_build_config_tests {
     use crate::build_configuration::{
-        create_build_config, system_properties_path, Env, File, HashMap, MissingDeclaredSbtVersion,
+        create_build_config, Env, File, HashMap, MissingDeclaredSbtVersion,
         MissingSbtBuildPropertiesFile, UnsupportedSbtVersion, Version,
     };
     use crate::errors::ScalaBuildpackError;
-    use crate::paths::sbt_project_path;
     use std::ffi::{OsStr, OsString};
     use std::fs::{create_dir, write};
     use std::io::BufWriter;
@@ -222,14 +220,14 @@ mod create_build_config_tests {
     }
 
     fn set_sbt_version(app_dir: &TempDir, version: &str) {
-        let sbt_project_path = sbt_project_path(app_dir.path());
+        let sbt_project_path = app_dir.path().join("project");
         create_dir(&sbt_project_path).unwrap();
         let contents = format!("sbt.version={version}");
         write(sbt_project_path.join("build.properties"), contents).unwrap();
     }
 
     fn set_system_properties(app_dir: &TempDir, properties: HashMap<&str, &str>) {
-        let property_file = File::create(system_properties_path(app_dir.path())).unwrap();
+        let property_file = File::create(app_dir.path().join("system.properties")).unwrap();
         let writer = BufWriter::new(property_file);
         let properties = properties
             .into_iter()
@@ -256,7 +254,7 @@ mod create_build_config_tests {
     ) {
         let app_dir = tempdir().unwrap();
         let env = Env::new();
-        let sbt_project_path = sbt_project_path(app_dir.path());
+        let sbt_project_path = app_dir.path().join("project");
         create_dir(&sbt_project_path).unwrap();
         write(sbt_project_path.join("build.properties"), "").unwrap();
         let error = create_build_config(app_dir.path().to_path_buf(), &env).unwrap_err();
@@ -267,7 +265,7 @@ mod create_build_config_tests {
     fn create_build_config_raises_error_when_sbt_version_property_is_declared_with_empty_value() {
         let app_dir = tempdir().unwrap();
         let env = Env::new();
-        let sbt_project_path = sbt_project_path(app_dir.path());
+        let sbt_project_path = app_dir.path().join("project");
         create_dir(&sbt_project_path).unwrap();
         write(sbt_project_path.join("build.properties"), b"sbt.version=").unwrap();
         let error = create_build_config(app_dir.path().to_path_buf(), &env).unwrap_err();
@@ -278,7 +276,7 @@ mod create_build_config_tests {
     fn create_build_config_with_valid_sbt_version_when_version_has_garbage_whitespace() {
         let app_dir = tempdir().unwrap();
         let env = Env::new();
-        let sbt_project_path = sbt_project_path(app_dir.path());
+        let sbt_project_path = app_dir.path().join("project");
         create_dir(&sbt_project_path).unwrap();
         write(
             sbt_project_path.join("build.properties"),

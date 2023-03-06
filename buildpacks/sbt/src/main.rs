@@ -5,14 +5,11 @@
 #![allow(clippy::module_name_repetitions)]
 
 mod build_configuration;
-mod detection;
 mod errors;
 mod file_tree;
 mod layers;
-mod paths;
 
 use crate::build_configuration::{create_build_config, BuildConfiguration};
-use crate::detection::detect_sbt;
 use crate::errors::ScalaBuildpackError::{
     AlreadyDefinedAsObject, MissingStageTask, SbtBuildIoError, SbtBuildUnexpectedExitCode,
 };
@@ -74,6 +71,17 @@ impl Buildpack for ScalaBuildpack {
 }
 
 buildpack_main!(ScalaBuildpack);
+
+fn detect_sbt(app_dir: &Path) -> bool {
+    !create_file_tree(app_dir.to_path_buf())
+        .include("*.sbt")
+        .include("project/*.scala")
+        .include("project/build.properties")
+        .include(".sbt/*.scala")
+        .get_files()
+        .unwrap_or(vec![])
+        .is_empty()
+}
 
 fn create_scala_build_plan() -> BuildPlan {
     BuildPlanBuilder::new()
@@ -210,6 +218,83 @@ fn handle_sbt_error(output: &Output) -> ScalaBuildpackError {
     SbtBuildUnexpectedExitCode(output.status)
 }
 
+fn get_sbt_build_tasks(build_config: &BuildConfiguration) -> Vec<String> {
+    let mut tasks: Vec<String> = Vec::new();
+
+    if let Some(true) = &build_config.sbt_clean {
+        tasks.push(String::from("clean"));
+    }
+
+    if let Some(sbt_pre_tasks) = &build_config.sbt_pre_tasks {
+        sbt_pre_tasks
+            .iter()
+            .for_each(|task| tasks.push(task.to_string()));
+    }
+
+    if let Some(sbt_tasks) = &build_config.sbt_tasks {
+        sbt_tasks
+            .iter()
+            .for_each(|task| tasks.push(task.to_string()));
+    } else {
+        let default_tasks = vec![String::from("compile"), String::from("stage")];
+        for default_task in &default_tasks {
+            tasks.push(match &build_config.sbt_project {
+                Some(project) => format!("{project}/{default_task}"),
+                None => default_task.to_string(),
+            });
+        }
+    }
+
+    tasks
+}
+
+#[cfg(test)]
+mod detect_sbt_tests {
+    use crate::detect_sbt;
+    use std::fs::{create_dir, write};
+    use tempfile::tempdir;
+
+    #[test]
+    fn detect_sbt_fails_when_no_sbt_files_in_application_directory() {
+        let app_dir = tempdir().unwrap();
+        assert!(!detect_sbt(app_dir.path()));
+    }
+
+    #[test]
+    fn detect_sbt_passes_when_an_sbt_file_is_found_in_application_directory() {
+        let app_dir = tempdir().unwrap();
+        write(app_dir.path().join("build.sbt"), "").unwrap();
+        assert!(detect_sbt(app_dir.path()));
+    }
+
+    #[test]
+    fn detect_sbt_passes_when_a_scala_file_is_found_in_the_sbt_project_directory() {
+        let app_dir = tempdir().unwrap();
+        let sbt_project_path = app_dir.path().join("project");
+        create_dir(&sbt_project_path).unwrap();
+        write(sbt_project_path.join("some-file.scala"), "").unwrap();
+        assert!(detect_sbt(app_dir.path()));
+    }
+
+    #[test]
+    fn detect_sbt_passes_when_hidden_sbt_directory_is_found_in_application_directory() {
+        let app_dir = tempdir().unwrap();
+        let dot_sbt = app_dir.path().join(".sbt");
+        create_dir(&dot_sbt).unwrap();
+        write(dot_sbt.join("some-file.scala"), "").unwrap();
+        assert!(detect_sbt(app_dir.path()));
+    }
+
+    #[test]
+    fn detect_sbt_passes_when_build_properties_file_is_found_in_the_sbt_project_directory() {
+        let app_dir = tempdir().unwrap();
+        let sbt_project_path = app_dir.path().join("project");
+        create_dir(&sbt_project_path).unwrap();
+        write(sbt_project_path.join("build.properties"), "").unwrap();
+        assert!(detect_sbt(app_dir.path()));
+    }
+}
+
 #[cfg(test)]
 mod handle_sbt_error_tests {
     use crate::errors::ScalaBuildpackError;
@@ -266,36 +351,6 @@ mod handle_sbt_error_tests {
             _ => panic!("expected MissingStageTask error"),
         }
     }
-}
-
-fn get_sbt_build_tasks(build_config: &BuildConfiguration) -> Vec<String> {
-    let mut tasks: Vec<String> = Vec::new();
-
-    if let Some(true) = &build_config.sbt_clean {
-        tasks.push(String::from("clean"));
-    }
-
-    if let Some(sbt_pre_tasks) = &build_config.sbt_pre_tasks {
-        sbt_pre_tasks
-            .iter()
-            .for_each(|task| tasks.push(task.to_string()));
-    }
-
-    if let Some(sbt_tasks) = &build_config.sbt_tasks {
-        sbt_tasks
-            .iter()
-            .for_each(|task| tasks.push(task.to_string()));
-    } else {
-        let default_tasks = vec![String::from("compile"), String::from("stage")];
-        for default_task in &default_tasks {
-            tasks.push(match &build_config.sbt_project {
-                Some(project) => format!("{project}/{default_task}"),
-                None => default_task.to_string(),
-            });
-        }
-    }
-
-    tasks
 }
 
 #[cfg(test)]
