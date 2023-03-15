@@ -1,7 +1,7 @@
 use indoc::formatdoc;
 use libherokubuildpack::log::log_warning;
 
-pub fn log_unused_maven_wrapper_warning(version: &str) {
+pub(crate) fn log_unused_maven_wrapper_warning(version: &str) {
     log_warning(
         "Unused Maven wrapper",
         formatdoc! {"
@@ -12,7 +12,7 @@ pub fn log_unused_maven_wrapper_warning(version: &str) {
     );
 }
 
-pub fn log_default_maven_version_warning(version: &str) {
+pub(crate) fn log_default_maven_version_warning(version: &str) {
     log_warning(
         "Using default version",
         formatdoc! {"

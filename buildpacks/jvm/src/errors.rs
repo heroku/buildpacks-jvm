@@ -7,7 +7,7 @@ use libherokubuildpack::log::log_error;
 use std::fmt::Debug;
 
 #[allow(clippy::too_many_lines)]
-pub fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
+pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
     match error {
         // This mimics the classic behaviour of using download errors as indication for unsupported
         // versions. We want to move off of this mechanism by maintaining a static list of supported

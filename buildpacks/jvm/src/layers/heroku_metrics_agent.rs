@@ -9,10 +9,10 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::path::Path;
 
-pub struct HerokuMetricsAgentLayer;
+pub(crate) struct HerokuMetricsAgentLayer;
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct HerokuMetricsAgentLayerMetadata {
+pub(crate) struct HerokuMetricsAgentLayerMetadata {
     source: HerokuMetricsAgentMetadata,
 }
 

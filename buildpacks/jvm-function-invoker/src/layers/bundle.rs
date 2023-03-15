@@ -12,8 +12,8 @@ use std::path::Path;
 use std::process::Command;
 use thiserror::Error;
 
-pub struct BundleLayer {
-    pub env: Env,
+pub(crate) struct BundleLayer {
+    pub(crate) env: Env,
 }
 
 impl Layer for BundleLayer {
@@ -109,7 +109,7 @@ fn log_function_metadata(bundle_dir: impl AsRef<Path>) -> Result<(), BundleLayer
 }
 
 #[derive(Error, Debug)]
-pub enum BundleLayerError {
+pub(crate) enum BundleLayerError {
     #[error("Project does not contain any valid functions")]
     NoFunctionsFound,
     #[error("Project contains multiple functions")]
@@ -126,4 +126,4 @@ pub enum BundleLayerError {
     CouldNotReadFunctionBundleToml(TomlFileError),
 }
 
-pub const FUNCTION_BUNDLE_DIR_ENV_VAR_NAME: &str = "JVM_FUNCTION_BUNDLE_DIR";
+pub(crate) const FUNCTION_BUNDLE_DIR_ENV_VAR_NAME: &str = "JVM_FUNCTION_BUNDLE_DIR";

@@ -8,12 +8,12 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::path::Path;
 
-pub struct MavenLayer {
-    pub tarball: Tarball,
+pub(crate) struct MavenLayer {
+    pub(crate) tarball: Tarball,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MavenLayerMetadata {
+pub(crate) struct MavenLayerMetadata {
     tarball: Tarball,
 }
 

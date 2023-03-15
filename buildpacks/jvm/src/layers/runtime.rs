@@ -6,7 +6,7 @@ use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
 use libcnb::{additional_buildpack_binary_path, Buildpack};
 use std::path::Path;
 
-pub struct RuntimeLayer;
+pub(crate) struct RuntimeLayer;
 
 impl Layer for RuntimeLayer {
     type Buildpack = OpenJdkBuildpack;

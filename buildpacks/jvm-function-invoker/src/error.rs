@@ -7,7 +7,7 @@ use crate::layers::runtime::RuntimeLayerError;
 use libherokubuildpack::log::log_error;
 
 #[derive(thiserror::Error, Debug)]
-pub enum JvmFunctionInvokerBuildpackError {
+pub(crate) enum JvmFunctionInvokerBuildpackError {
     #[error("Opt layer error: {0}")]
     OptLayerError(#[from] OptLayerError),
 
@@ -27,7 +27,7 @@ impl From<JvmFunctionInvokerBuildpackError> for Error<JvmFunctionInvokerBuildpac
     }
 }
 
-pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) {
+pub(crate) fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) {
     match error {
         JvmFunctionInvokerBuildpackError::OptLayerError(inner) => match inner {
             OptLayerError::CouldNotWriteRuntimeScript(io_error)

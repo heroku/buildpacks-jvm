@@ -28,15 +28,15 @@ mod common;
 mod error;
 mod layers;
 
-pub struct JvmFunctionInvokerBuildpack;
+pub(crate) struct JvmFunctionInvokerBuildpack;
 
 #[derive(Deserialize, Debug)]
-pub struct JvmFunctionInvokerBuildpackMetadata {
+pub(crate) struct JvmFunctionInvokerBuildpackMetadata {
     runtime: JvmFunctionInvokerBuildpackRuntimeMetadata,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct JvmFunctionInvokerBuildpackRuntimeMetadata {
+pub(crate) struct JvmFunctionInvokerBuildpackRuntimeMetadata {
     url: String,
     sha256: String,
 }
