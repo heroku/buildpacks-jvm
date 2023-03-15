@@ -16,7 +16,9 @@ use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::util::ValidateSha256Error;
 use crate::version::{NormalizeVersionStringError, ReadVersionStringError};
-pub(crate) use constants::*;
+pub(crate) use constants::{
+    JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
+};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
