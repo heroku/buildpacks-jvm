@@ -1,5 +1,5 @@
 use indoc::{formatdoc, indoc};
-use libcnb::{Error, TomlFileError};
+use libcnb::Error;
 
 use crate::layers::bundle::BundleLayerError;
 use crate::layers::opt::OptLayerError;
@@ -7,7 +7,7 @@ use crate::layers::runtime::RuntimeLayerError;
 use libherokubuildpack::log::log_error;
 
 #[derive(thiserror::Error, Debug)]
-pub enum JvmFunctionInvokerBuildpackError {
+pub(crate) enum JvmFunctionInvokerBuildpackError {
     #[error("Opt layer error: {0}")]
     OptLayerError(#[from] OptLayerError),
 
@@ -16,9 +16,6 @@ pub enum JvmFunctionInvokerBuildpackError {
 
     #[error("Bundle layer error: {0}")]
     BundleLayerError(#[from] BundleLayerError),
-
-    #[error("Could not write launch.toml: {0}")]
-    CouldNotWriteLaunchToml(TomlFileError),
 }
 
 impl From<JvmFunctionInvokerBuildpackError> for Error<JvmFunctionInvokerBuildpackError> {
@@ -27,7 +24,7 @@ impl From<JvmFunctionInvokerBuildpackError> for Error<JvmFunctionInvokerBuildpac
     }
 }
 
-pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) {
+pub(crate) fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) {
     match error {
         JvmFunctionInvokerBuildpackError::OptLayerError(inner) => match inner {
             OptLayerError::CouldNotWriteRuntimeScript(io_error)
@@ -115,11 +112,5 @@ pub fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) {
                 "},
             ),
         },
-        JvmFunctionInvokerBuildpackError::CouldNotWriteLaunchToml(toml_error) => log_error(
-            "Could not write launch.toml",
-            formatdoc! {"
-                        Could not not write launch.toml: {toml_error}
-                    ", toml_error = toml_error},
-        ),
     };
 }

@@ -16,7 +16,9 @@ use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::util::ValidateSha256Error;
 use crate::version::{NormalizeVersionStringError, ReadVersionStringError};
-pub use constants::*;
+pub(crate) use constants::{
+    JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
+};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -27,10 +29,10 @@ use libcnb::Buildpack;
 use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
 
-pub struct OpenJdkBuildpack;
+pub(crate) struct OpenJdkBuildpack;
 
 #[derive(Debug)]
-pub enum OpenJdkBuildpackError {
+pub(crate) enum OpenJdkBuildpackError {
     OpenJdkDownloadError(DownloadError),
     MetricsAgentDownloadError(DownloadError),
     MetricsAgentSha256ValidationError(ValidateSha256Error),
@@ -94,13 +96,13 @@ impl Buildpack for OpenJdkBuildpack {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct OpenJdkBuildpackMetadata {
+pub(crate) struct OpenJdkBuildpackMetadata {
     #[serde(rename = "heroku-metrics-agent")]
     heroku_metrics_agent: HerokuMetricsAgentMetadata,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub struct HerokuMetricsAgentMetadata {
+pub(crate) struct HerokuMetricsAgentMetadata {
     url: String,
     sha256: String,
 }

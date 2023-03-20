@@ -1,2 +1,2 @@
-pub mod maven;
-pub mod maven_repo;
+pub(crate) mod maven;
+pub(crate) mod maven_repo;

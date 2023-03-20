@@ -4,12 +4,12 @@ use libcnb::data::process_type;
 use std::path::Path;
 
 #[derive(Copy, Clone)]
-pub enum Framework {
+pub(crate) enum Framework {
     SpringBoot,
     WildflySwarm,
 }
 
-pub fn detect_framework<P: AsRef<Path>>(
+pub(crate) fn detect_framework<P: AsRef<Path>>(
     app_dir: P,
 ) -> Result<Option<Framework>, DetectFrameworkError> {
     let dependency_list_string =
@@ -36,7 +36,7 @@ pub fn detect_framework<P: AsRef<Path>>(
     Ok(framework)
 }
 
-pub fn default_app_process<P: AsRef<Path>>(
+pub(crate) fn default_app_process<P: AsRef<Path>>(
     app_dir: P,
 ) -> Result<Option<Process>, DefaultAppProcessError> {
     let framework =
@@ -93,13 +93,13 @@ pub fn default_app_process<P: AsRef<Path>>(
 }
 
 #[derive(Debug)]
-pub enum DefaultAppProcessError {
+pub(crate) enum DefaultAppProcessError {
     DetectFrameworkError(DetectFrameworkError),
     IoError(std::io::Error),
 }
 
 #[derive(Debug)]
-pub enum DetectFrameworkError {
+pub(crate) enum DetectFrameworkError {
     IoError(std::io::Error),
     RegexError(regex::Error),
 }
