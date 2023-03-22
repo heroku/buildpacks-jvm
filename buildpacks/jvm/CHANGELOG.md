@@ -4,6 +4,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Support for Java 20. ([#000](https://github.com/heroku/buildpacks-jvm/pull/000))
+
 ## [1.0.6] 2023/01/18
 
 * Default version for **OpenJDK 8** is now `1.8.0_362`. ([#413](https://github.com/heroku/buildpacks-jvm/pull/413))
