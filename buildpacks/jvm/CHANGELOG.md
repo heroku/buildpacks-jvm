@@ -4,6 +4,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.7] 2023/03/23
+
 ### Added
 
 * Support for Java 20. ([#437](https://github.com/heroku/buildpacks-jvm/pull/437))
