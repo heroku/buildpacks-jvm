@@ -2,7 +2,7 @@ api = "0.8"
 
 [buildpack]
 id = "heroku/java-function"
-version = "0.3.41"
+version = "0.3.42"
 name = "Java Function"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 keywords = ["java", "function"]
