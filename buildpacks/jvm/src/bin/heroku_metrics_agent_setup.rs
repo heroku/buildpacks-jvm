@@ -17,8 +17,7 @@ pub(crate) fn main() {
 fn output_from_env(env: &Env) -> HashMap<ExecDProgramOutputKey, String> {
     let heroku_metrics_agent_path = env
         .get("HEROKU_METRICS_AGENT_PATH")
-        .map(|value| value.to_string_lossy().to_string())
-        .expect("HEROKU_METRICS_AGENT_PATH environment variable is not set!");
+        .map(|value| value.to_string_lossy().to_string());
 
     let has_heroku_metrics_url = env.get("HEROKU_METRICS_URL").is_some();
 
@@ -29,21 +28,25 @@ fn output_from_env(env: &Env) -> HashMap<ExecDProgramOutputKey, String> {
         .filter(|name| name.to_string_lossy().starts_with("run."))
         .is_some();
 
-    if has_heroku_metrics_url && !disable_heroku_metrics_agent && !is_one_off_dyno {
-        let prefix = format!("-javaagent:{heroku_metrics_agent_path}");
+    let mut result = HashMap::default();
 
-        let suffix = env
-            .get("JAVA_TOOL_OPTIONS")
-            .map(|value| format!(" {}", value.to_string_lossy()))
-            .unwrap_or_default();
+    if let Some(heroku_metrics_agent_path) = heroku_metrics_agent_path {
+        if has_heroku_metrics_url && !disable_heroku_metrics_agent && !is_one_off_dyno {
+            let prefix = format!("-javaagent:{heroku_metrics_agent_path}");
 
-        HashMap::from([(
-            exec_d_program_output_key!("JAVA_TOOL_OPTIONS"),
-            format!("{prefix}{suffix}"),
-        )])
-    } else {
-        HashMap::default()
+            let suffix = env
+                .get("JAVA_TOOL_OPTIONS")
+                .map(|value| format!(" {}", value.to_string_lossy()))
+                .unwrap_or_default();
+
+            result.insert(
+                exec_d_program_output_key!("JAVA_TOOL_OPTIONS"),
+                format!("{prefix}{suffix}"),
+            );
+        }
     }
+
+    result
 }
 
 #[cfg(test)]
@@ -105,14 +108,13 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn missing_agent_path() {
         let mut env = Env::new();
         env.insert("JAVA_TOOL_OPTIONS", JAVA_TOOL_OPTIONS);
         env.insert("DYNO", "web.1");
         env.insert("HEROKU_METRICS_URL", "https://example.com/metrics");
 
-        output_from_env(&env);
+        assert!(output_from_env(&env).is_empty());
     }
 
     #[test]
