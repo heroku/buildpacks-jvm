@@ -10,22 +10,23 @@ mod layers;
 mod util;
 mod version;
 
+use crate::constants::SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME;
 use crate::errors::on_error_jvm_buildpack;
 use crate::layers::heroku_metrics_agent::HerokuMetricsAgentLayer;
 use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
-use crate::util::ValidateSha256Error;
+use crate::util::{boolean_buildpack_config_env_var, ValidateSha256Error};
 use crate::version::{NormalizeVersionStringError, ReadVersionStringError};
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
-use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::Buildpack;
+use libcnb::{buildpack_main, Platform};
 use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
 
@@ -84,7 +85,19 @@ impl Buildpack for OpenJdkBuildpack {
             },
         )?;
 
-        context.handle_layer(layer_name!("heroku_metrics_agent"), HerokuMetricsAgentLayer)?;
+        libherokubuildpack::log::log_header("Installing Heroku JVM metrics agent");
+
+        if boolean_buildpack_config_env_var(
+            context.platform.env(),
+            SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME,
+        ) {
+            libherokubuildpack::log::log_info(format!(
+                "Skipping agent installation, {SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME} environment variable is set to a truthy value."
+            ));
+        } else {
+            context.handle_layer(layer_name!("heroku_metrics_agent"), HerokuMetricsAgentLayer)?;
+        }
+
         context.handle_layer(layer_name!("runtime"), RuntimeLayer)?;
 
         BuildResultBuilder::new().build()

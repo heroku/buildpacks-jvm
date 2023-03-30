@@ -1,3 +1,5 @@
+use libcnb::Env;
+use std::ffi::OsStr;
 use std::fs::DirEntry;
 use std::path::{Path, PathBuf};
 
@@ -31,4 +33,35 @@ pub(crate) fn list_directory_contents<P: AsRef<Path>>(path: P) -> std::io::Resul
     std::fs::read_dir(path.as_ref())
         .and_then(Iterator::collect::<std::io::Result<Vec<DirEntry>>>)
         .map(|dir_entries| dir_entries.iter().map(DirEntry::path).collect())
+}
+
+pub(crate) fn boolean_buildpack_config_env_var(env: &Env, key: impl AsRef<OsStr>) -> bool {
+    env.get(key.as_ref())
+        .map(|value| value != "0" && value != "false" && value != "no")
+        .unwrap_or_default()
+}
+
+#[cfg(test)]
+mod test {
+    use crate::util::boolean_buildpack_config_env_var;
+    use libcnb::Env;
+
+    #[test]
+    #[allow(clippy::bool_assert_comparison)]
+    fn test() {
+        let mut env = Env::new();
+        env.insert("FOO", "1");
+        env.insert("BAR", "0");
+        env.insert("BAZ", "false");
+        env.insert("BLAH", "true");
+        env.insert("BLUBB", "yes");
+        env.insert("BLIPP", "no");
+
+        assert_eq!(boolean_buildpack_config_env_var(&env, "FOO"), true);
+        assert_eq!(boolean_buildpack_config_env_var(&env, "BAR"), false);
+        assert_eq!(boolean_buildpack_config_env_var(&env, "BAZ"), false);
+        assert_eq!(boolean_buildpack_config_env_var(&env, "BLAH"), true);
+        assert_eq!(boolean_buildpack_config_env_var(&env, "BLUBB"), true);
+        assert_eq!(boolean_buildpack_config_env_var(&env, "BLIPP"), false);
+    }
 }
