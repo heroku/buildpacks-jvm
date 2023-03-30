@@ -5,6 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * Add support for `SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION` environment variable. When set to `true`, the installation of the [Heroku JVM metrics agent](https://github.com/heroku/heroku-java-metrics-agent) will be skipped. ([#444](https://github.com/heroku/buildpacks-jvm/pull/444))
+* Update [Heroku JVM metrics agent](https://github.com/heroku/heroku-java-metrics-agent) to the most recent version, `4.0.1`. This is a backwards compatible version bump. ([#445](https://github.com/heroku/buildpacks-jvm/pull/445))
 
 ## [1.0.7] 2023/03/23
 
