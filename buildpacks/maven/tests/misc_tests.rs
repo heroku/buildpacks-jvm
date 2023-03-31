@@ -67,6 +67,7 @@ fn no_unexpected_files_in_app_dir() {
                 /workspace/pom.xml
                 /workspace/src/main/java/com/heroku/App.java
                 /workspace/src/test/java/com/heroku/AppTest.java
+                /workspace/system.properties
                 /workspace/target/classes/com/heroku/App$1.class
                 /workspace/target/classes/com/heroku/App.class
                 /workspace/target/dependency/checker-qual-3.5.0.jar
@@ -80,7 +81,7 @@ fn no_unexpected_files_in_app_dir() {
                 /workspace/target/dependency/jsr305-3.0.2.jar
                 /workspace/target/dependency/junit-4.13.1.jar
                 /workspace/target/dependency/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar
-                /workspace/target/dependency/undertow-core-2.2.15.Final.jar
+                /workspace/target/dependency/undertow-core-2.3.5.Final.jar
                 /workspace/target/dependency/wildfly-client-config-1.0.1.Final.jar
                 /workspace/target/dependency/wildfly-common-1.5.4.Final.jar
                 /workspace/target/dependency/xnio-api-3.8.8.Final.jar
