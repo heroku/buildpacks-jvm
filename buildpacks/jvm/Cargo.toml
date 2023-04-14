@@ -1,11 +1,12 @@
 [package]
-name = "heroku-openjdk"
+name = "buildpack-heroku-jvm"
 version.workspace = true
 rust-version.workspace = true
 edition.workspace = true
 publish.workspace = true
 
 [dependencies]
+buildpacks-jvm-shared.workspace = true
 fs_extra = "1"
 indoc = "2"
 java-properties = "1"
