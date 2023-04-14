@@ -2,7 +2,7 @@ use std::fs::File;
 use std::path::Path;
 
 #[derive(Debug)]
-pub enum Mode {
+pub(crate) enum Mode {
     UseWrapper,
     InstallVersion {
         version: String,
@@ -11,7 +11,7 @@ pub enum Mode {
     },
 }
 
-pub fn determine_mode<P: AsRef<Path>, S: Into<String>>(
+pub(crate) fn determine_mode<P: AsRef<Path>, S: Into<String>>(
     app_dir: P,
     default_version: S,
 ) -> Result<Mode, SystemPropertiesError> {
@@ -59,7 +59,7 @@ fn app_configured_maven_version<P: AsRef<Path>>(
 }
 
 #[derive(Debug)]
-pub enum SystemPropertiesError {
+pub(crate) enum SystemPropertiesError {
     IoError(std::io::Error),
     PropertiesError(java_properties::PropertiesError),
 }

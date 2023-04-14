@@ -2,7 +2,7 @@ use libcnb::data::buildpack::StackId;
 use std::fs::File;
 use std::path::Path;
 
-pub fn normalize_version_string<S: Into<String>>(
+pub(crate) fn normalize_version_string<S: Into<String>>(
     stack_id: &StackId,
     user_version_string: S,
 ) -> Result<(OpenJDKDistribution, String), NormalizeVersionStringError> {
@@ -30,6 +30,7 @@ pub fn normalize_version_string<S: Into<String>>(
         "17" => "17.0.6",
         "18" => "18.0.2.1",
         "19" => "19.0.2",
+        "20" => "20.0.0",
         other => other,
     };
 
@@ -52,11 +53,11 @@ fn default_distribution(stack_id: &StackId) -> OpenJDKDistribution {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum NormalizeVersionStringError {
+pub(crate) enum NormalizeVersionStringError {
     UnknownDistribution(String),
 }
 
-pub fn resolve_openjdk_url<V: Into<String>>(
+pub(crate) fn resolve_openjdk_url<V: Into<String>>(
     stack_id: &StackId,
     distribution: OpenJDKDistribution,
     version_string: V,
@@ -73,12 +74,12 @@ pub fn resolve_openjdk_url<V: Into<String>>(
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum OpenJDKDistribution {
+pub(crate) enum OpenJDKDistribution {
     Heroku,
     AzulZulu,
 }
 
-pub fn read_version_string_from_app_dir<P: AsRef<Path>>(
+pub(crate) fn read_version_string_from_app_dir<P: AsRef<Path>>(
     app_dir: P,
 ) -> Result<Option<String>, ReadVersionStringError> {
     let system_properties_path = app_dir.as_ref().join("system.properties");
@@ -96,7 +97,7 @@ pub fn read_version_string_from_app_dir<P: AsRef<Path>>(
 }
 
 #[derive(Debug)]
-pub enum ReadVersionStringError {
+pub(crate) enum ReadVersionStringError {
     CannotReadSystemProperties(std::io::Error),
     InvalidPropertiesFile(java_properties::PropertiesError),
 }

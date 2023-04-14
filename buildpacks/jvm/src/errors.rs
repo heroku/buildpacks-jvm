@@ -1,13 +1,13 @@
 use crate::{
     NormalizeVersionStringError, OpenJdkBuildpackError, ReadVersionStringError, ValidateSha256Error,
 };
+use buildpacks_jvm_shared::log_please_try_again_error;
 use indoc::formatdoc;
 use libherokubuildpack::download::DownloadError;
 use libherokubuildpack::log::log_error;
-use std::fmt::Debug;
 
 #[allow(clippy::too_many_lines)]
-pub fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
+pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
     match error {
         // This mimics the classic behaviour of using download errors as indication for unsupported
         // versions. We want to move off of this mechanism by maintaining a static list of supported
@@ -140,22 +140,4 @@ pub fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
             error,
         ),
     }
-}
-
-fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Debug>(
-    header: H,
-    message: M,
-    error: E,
-) {
-    log_error(
-        header,
-        formatdoc! {"
-            {message}
-
-            Please try again. If this error persists, please contact us:
-            https://help.heroku.com/
-
-            Details: {error:?}
-        ", message = message.as_ref(), error = error },
-    );
 }

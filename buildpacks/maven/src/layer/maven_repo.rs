@@ -7,7 +7,7 @@ use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
 use std::path::Path;
 
-pub struct MavenRepositoryLayer;
+pub(crate) struct MavenRepositoryLayer;
 
 impl Layer for MavenRepositoryLayer {
     type Buildpack = MavenBuildpack;

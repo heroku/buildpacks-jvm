@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use url::Url;
 
 #[allow(clippy::missing_panics_doc)]
-pub fn main() {
+pub(crate) fn main() {
     write_exec_d_program_output(
         jvm_env_vars_for_env(&std::env::vars().collect())
             .into_iter()

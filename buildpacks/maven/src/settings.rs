@@ -3,7 +3,7 @@ use libherokubuildpack::download::DownloadError;
 use std::env::temp_dir;
 use std::path::{Path, PathBuf};
 
-pub fn resolve_settings_xml_path<P: AsRef<Path>>(
+pub(crate) fn resolve_settings_xml_path<P: AsRef<Path>>(
     app_dir: P,
     env: &Env,
 ) -> Result<Option<PathBuf>, SettingsError> {
@@ -14,7 +14,7 @@ pub fn resolve_settings_xml_path<P: AsRef<Path>>(
 }
 
 #[derive(Debug)]
-pub enum SettingsError {
+pub(crate) enum SettingsError {
     InvalidMavenSettingsPath(PathBuf),
     DownloadError(String, DownloadError),
 }

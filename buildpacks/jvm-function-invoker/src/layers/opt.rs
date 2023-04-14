@@ -10,7 +10,7 @@ use std::path::Path;
 use crate::error::JvmFunctionInvokerBuildpackError;
 use crate::JvmFunctionInvokerBuildpack;
 
-pub struct OptLayer;
+pub(crate) struct OptLayer;
 
 impl Layer for OptLayer {
     type Buildpack = JvmFunctionInvokerBuildpack;
@@ -45,11 +45,11 @@ impl Layer for OptLayer {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum OptLayerError {
+pub(crate) enum OptLayerError {
     #[error("Could not write runtime script to layer: {0}")]
     CouldNotWriteRuntimeScript(std::io::Error),
     #[error("Could not set executable bit on runtime script: {0}")]
     CouldNotSetExecutableBitForRuntimeScript(std::io::Error),
 }
 
-pub const JVM_RUNTIME_SCRIPT_NAME: &str = "jvm-runtime.sh";
+pub(crate) const JVM_RUNTIME_SCRIPT_NAME: &str = "jvm-runtime.sh";

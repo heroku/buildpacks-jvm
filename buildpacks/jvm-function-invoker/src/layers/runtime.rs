@@ -11,10 +11,10 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 use thiserror::Error;
 
-pub struct RuntimeLayer;
+pub(crate) struct RuntimeLayer;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct RuntimeLayerMetadata {
+pub(crate) struct RuntimeLayerMetadata {
     installed_runtime_sha256: String,
 }
 
@@ -87,7 +87,7 @@ impl Layer for RuntimeLayer {
 }
 
 #[derive(Error, Debug)]
-pub enum RuntimeLayerError {
+pub(crate) enum RuntimeLayerError {
     #[error("Could not download runtime JAR: {0}")]
     DownloadFailed(DownloadError),
 
@@ -98,4 +98,4 @@ pub enum RuntimeLayerError {
     ChecksumMismatch(String),
 }
 
-pub const RUNTIME_JAR_PATH_ENV_VAR_NAME: &str = "JVM_FUNCTION_RUNTIME_JAR_PATH";
+pub(crate) const RUNTIME_JAR_PATH_ENV_VAR_NAME: &str = "JVM_FUNCTION_RUNTIME_JAR_PATH";

@@ -5,6 +5,7 @@
 #![warn(clippy::pedantic)]
 // Re-disable pedantic lints that are too noisy/unwanted.
 #![allow(clippy::module_name_repetitions)]
+#![allow(clippy::enum_variant_names)]
 
 use crate::common::project_toml_salesforce_type_is_function;
 use crate::error::{handle_buildpack_error, JvmFunctionInvokerBuildpackError};
@@ -28,15 +29,15 @@ mod common;
 mod error;
 mod layers;
 
-pub struct JvmFunctionInvokerBuildpack;
+pub(crate) struct JvmFunctionInvokerBuildpack;
 
 #[derive(Deserialize, Debug)]
-pub struct JvmFunctionInvokerBuildpackMetadata {
+pub(crate) struct JvmFunctionInvokerBuildpackMetadata {
     runtime: JvmFunctionInvokerBuildpackRuntimeMetadata,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct JvmFunctionInvokerBuildpackRuntimeMetadata {
+pub(crate) struct JvmFunctionInvokerBuildpackRuntimeMetadata {
     url: String,
     sha256: String,
 }

@@ -14,12 +14,12 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use tempfile::tempdir;
 
-pub struct OpenJdkLayer {
-    pub tarball_url: String,
+pub(crate) struct OpenJdkLayer {
+    pub(crate) tarball_url: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct OpenJdkLayerMetadata {
+pub(crate) struct OpenJdkLayerMetadata {
     jdk_overlay_applied: bool,
     source_tarball_url: String,
 }

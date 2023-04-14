@@ -2,7 +2,7 @@ use libcnb::read_toml_file;
 use libherokubuildpack::toml::toml_select_value;
 use std::path::Path;
 
-pub fn project_toml_salesforce_type_is_function(project_toml_path: &Path) -> bool {
+pub(crate) fn project_toml_salesforce_type_is_function(project_toml_path: &Path) -> bool {
     read_toml_file(project_toml_path)
         .ok()
         .and_then(|table| {

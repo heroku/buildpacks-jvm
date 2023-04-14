@@ -9,10 +9,10 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::path::Path;
 
-pub struct HerokuMetricsAgentLayer;
+pub(crate) struct HerokuMetricsAgentLayer;
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct HerokuMetricsAgentLayerMetadata {
+pub(crate) struct HerokuMetricsAgentLayerMetadata {
     source: HerokuMetricsAgentMetadata,
 }
 
@@ -33,8 +33,6 @@ impl Layer for HerokuMetricsAgentLayer {
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
-        libherokubuildpack::log::log_header("Installing Heroku JVM metrics agent");
-
         let agent_jar_path = layer_path.join("heroku-metrics-agent.jar");
 
         let metrics_agent_metadata = &context.buildpack_descriptor.metadata.heroku_metrics_agent;

@@ -1,11 +1,12 @@
 [package]
-name = "maven"
+name = "buildpack-heroku-maven"
 version.workspace = true
 rust-version.workspace = true
 edition.workspace = true
 publish.workspace = true
 
 [dependencies]
+buildpacks-jvm-shared.workspace = true
 indoc = "2"
 java-properties = "1"
 libcnb.workspace = true
