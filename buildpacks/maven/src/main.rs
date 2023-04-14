@@ -1,4 +1,6 @@
 // Enable rustc and Clippy lints that are disabled by default.
+// https://doc.rust-lang.org/rustc/lints/listing/allowed-by-default.html#unused-crate-dependencies
+#![warn(unused_crate_dependencies)]
 // https://rust-lang.github.io/rust-clippy/stable/index.html
 #![warn(clippy::pedantic)]
 // This lint is too noisy and enforces a style that reduces readability in many cases.
@@ -19,6 +21,8 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
+#[cfg(test)]
+use libcnb_test as _;
 use libherokubuildpack::download::DownloadError;
 use libherokubuildpack::log::{log_header, log_info};
 use serde::{Deserialize, Serialize};
@@ -28,6 +32,8 @@ use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
+#[cfg(test)]
+use ureq as _;
 
 mod errors;
 mod framework;

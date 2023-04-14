@@ -125,9 +125,7 @@ dependencies = [
  "libcnb-test",
  "libherokubuildpack",
  "serde",
- "sha2",
  "tempfile",
- "toml",
  "ureq",
  "url",
 ]

@@ -13,9 +13,7 @@ java-properties = "1"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
 serde = { version = "1", features = ["derive"] }
-sha2 = "0.10"
 tempfile = "3"
-toml.workspace = true
 ureq = "2"
 url = "2"
 
