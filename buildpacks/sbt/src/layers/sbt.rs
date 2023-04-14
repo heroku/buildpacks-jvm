@@ -322,6 +322,7 @@ mod sbt_layer_tests {
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct SbtLayerMetadata {
     sbt_version: Version,
+    sbt_opts: Option<Vec<String>>,
     layer_version: String,
     stack_id: StackId,
 }
@@ -334,6 +335,7 @@ impl SbtLayerMetadata {
             sbt_version: layer.sbt_version.clone(),
             stack_id: context.stack_id.clone(),
             layer_version: String::from(LAYER_VERSION),
+            sbt_opts: layer.sbt_opts.clone(),
         }
     }
 }
