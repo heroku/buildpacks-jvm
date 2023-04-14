@@ -1,4 +1,6 @@
 // Enable rustc and Clippy lints that are disabled by default.
+// https://doc.rust-lang.org/rustc/lints/listing/allowed-by-default.html#unused-crate-dependencies
+#![warn(unused_crate_dependencies)]
 // https://rust-lang.github.io/rust-clippy/stable/index.html
 #![warn(clippy::pedantic)]
 // This lint is too noisy and enforces a style that reduces readability in many cases.
@@ -27,8 +29,12 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::Buildpack;
 use libcnb::{buildpack_main, Platform};
+#[cfg(test)]
+use libcnb_test as _;
 use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
+// Work around unused_crate_dependencies. url is used in heroku_database_env_var_rewrite.
+use url as _;
 
 pub(crate) struct OpenJdkBuildpack;
 

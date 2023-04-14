@@ -114,6 +114,61 @@ dependencies = [
 ]
 
 [[package]]
+name = "buildpack-heroku-jvm"
+version = "0.0.0"
+dependencies = [
+ "buildpacks-jvm-shared",
+ "fs_extra",
+ "indoc",
+ "java-properties",
+ "libcnb",
+ "libcnb-test",
+ "libherokubuildpack",
+ "serde",
+ "tempfile",
+ "ureq",
+ "url",
+]
+
+[[package]]
+name = "buildpack-heroku-jvm-function-invoker"
+version = "0.0.0"
+dependencies = [
+ "indoc",
+ "libcnb",
+ "libherokubuildpack",
+ "serde",
+ "tempfile",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
+name = "buildpack-heroku-maven"
+version = "0.0.0"
+dependencies = [
+ "buildpacks-jvm-shared",
+ "indoc",
+ "java-properties",
+ "libcnb",
+ "libcnb-test",
+ "libherokubuildpack",
+ "regex",
+ "serde",
+ "shell-words",
+ "tempfile",
+ "ureq",
+]
+
+[[package]]
+name = "buildpacks-jvm-shared"
+version = "0.0.0"
+dependencies = [
+ "indoc",
+ "libherokubuildpack",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -539,24 +594,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "heroku-openjdk"
-version = "0.0.0"
-dependencies = [
- "fs_extra",
- "indoc",
- "java-properties",
- "libcnb",
- "libcnb-test",
- "libherokubuildpack",
- "serde",
- "sha2",
- "tempfile",
- "toml",
- "ureq",
- "url",
-]
-
-[[package]]
 name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -730,19 +767,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "jvm-function-invoker-buildpack"
-version = "0.0.0"
-dependencies = [
- "indoc",
- "libcnb",
- "libherokubuildpack",
- "serde",
- "tempfile",
- "thiserror",
- "toml",
-]
-
-[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -862,22 +886,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "maven"
-version = "0.0.0"
-dependencies = [
- "indoc",
- "java-properties",
- "libcnb",
- "libcnb-test",
- "libherokubuildpack",
- "regex",
- "serde",
- "shell-words",
- "tempfile",
- "ureq",
 ]
 
 [[package]]
