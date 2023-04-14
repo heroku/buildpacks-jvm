@@ -17,4 +17,4 @@ libcnb = "0.11"
 libcnb-test = "0.11"
 libherokubuildpack = "0.11"
 toml = "0.7"
-buildpacks-jvm-shared = { version = "0.0.0", path = "buildpacks-jvm-shared" }
+buildpacks-jvm-shared = { path = "buildpacks-jvm-shared" }
