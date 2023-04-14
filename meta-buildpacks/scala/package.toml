@@ -1,0 +1,11 @@
+[buildpack]
+uri = "."
+
+[[dependencies]]
+uri = "docker://public.ecr.aws/heroku-buildpacks/heroku-jvm-buildpack@sha256:bc58cd36e77a1b16709218782fd865df63d3f3c2d25785c8e4a36b381c83a435"
+
+[[dependencies]]
+#uri = "docker://public.ecr.aws/heroku-buildpacks/heroku-sbt-buildpack@sha256:[NEED TO PUBLISH SBT BUILDPACK FIRST]"
+
+[[dependencies]]
+uri = "docker://docker.io/heroku/procfile-cnb:2.0.0"

@@ -1,0 +1,22 @@
+[package]
+name = "sbt"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+libcnb.workspace = true
+libherokubuildpack.workspace = true
+indoc = "2"
+java-properties = "1"
+serde = { version = "1", features = ["derive"] }
+tempfile = "3"
+thiserror = "1"
+semver="1"
+shell-words = "1"
+glob = "0.3"
+
+[dev-dependencies]
+libcnb-test.workspace = true
+ureq = "2"

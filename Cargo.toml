@@ -4,6 +4,7 @@ members = [
     "buildpacks/jvm",
     "buildpacks/jvm-function-invoker",
     "buildpacks/maven",
+    "buildpacks/sbt",
 ]
 
 [workspace.package]
