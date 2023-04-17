@@ -5,11 +5,13 @@
 #![allow(clippy::module_name_repetitions)]
 
 mod build_configuration;
+mod detect;
 mod errors;
 mod file_tree;
 mod layers;
 
 use crate::build_configuration::{create_build_config, BuildConfiguration};
+use crate::detect::is_sbt_project_directory;
 use crate::errors::ScalaBuildpackError::{
     AlreadyDefinedAsObject, MissingStageTask, SbtBuildIoError, SbtBuildUnexpectedExitCode,
 };
@@ -20,7 +22,7 @@ use crate::layers::ivy_cache::IvyCacheLayer;
 use crate::layers::sbt::SbtLayer;
 use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
-use libcnb::data::build_plan::{BuildPlan, BuildPlanBuilder};
+use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
@@ -41,19 +43,22 @@ impl Buildpack for ScalaBuildpack {
     type Error = ScalaBuildpackError;
 
     fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
-        if !detect_sbt(&context.app_dir) {
-            return DetectResultBuilder::fail().build();
-        }
+        let is_sbt_project = is_sbt_project_directory(&context.app_dir)
+            .map_err(ScalaBuildpackError::DetectPhaseIoError)?;
 
-        DetectResultBuilder::pass()
-            .build_plan(
-                BuildPlanBuilder::new()
-                    .requires("jdk")
-                    .provides("jvm-application")
-                    .requires("jvm-application")
-                    .build(),
-            )
-            .build()
+        if is_sbt_project {
+            DetectResultBuilder::pass()
+                .build_plan(
+                    BuildPlanBuilder::new()
+                        .requires("jdk")
+                        .provides("jvm-application")
+                        .requires("jvm-application")
+                        .build(),
+                )
+                .build()
+        } else {
+            DetectResultBuilder::fail().build()
+        }
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
@@ -77,17 +82,6 @@ impl Buildpack for ScalaBuildpack {
 }
 
 buildpack_main!(ScalaBuildpack);
-
-fn detect_sbt(app_dir: &Path) -> bool {
-    !create_file_tree(app_dir.to_path_buf())
-        .include("*.sbt")
-        .include("project/*.scala")
-        .include("project/build.properties")
-        .include(".sbt/*.scala")
-        .get_files()
-        .unwrap_or(vec![])
-        .is_empty()
-}
 
 fn create_coursier_cache_layer(
     context: &BuildContext<ScalaBuildpack>,
@@ -244,53 +238,6 @@ fn get_sbt_build_tasks(build_config: &BuildConfiguration) -> Vec<String> {
     }
 
     tasks
-}
-
-#[cfg(test)]
-mod detect_sbt_tests {
-    use crate::detect_sbt;
-    use std::fs::{create_dir, write};
-    use tempfile::tempdir;
-
-    #[test]
-    fn detect_sbt_fails_when_no_sbt_files_in_application_directory() {
-        let app_dir = tempdir().unwrap();
-        assert!(!detect_sbt(app_dir.path()));
-    }
-
-    #[test]
-    fn detect_sbt_passes_when_an_sbt_file_is_found_in_application_directory() {
-        let app_dir = tempdir().unwrap();
-        write(app_dir.path().join("build.sbt"), "").unwrap();
-        assert!(detect_sbt(app_dir.path()));
-    }
-
-    #[test]
-    fn detect_sbt_passes_when_a_scala_file_is_found_in_the_sbt_project_directory() {
-        let app_dir = tempdir().unwrap();
-        let sbt_project_path = app_dir.path().join("project");
-        create_dir(&sbt_project_path).unwrap();
-        write(sbt_project_path.join("some-file.scala"), "").unwrap();
-        assert!(detect_sbt(app_dir.path()));
-    }
-
-    #[test]
-    fn detect_sbt_passes_when_hidden_sbt_directory_is_found_in_application_directory() {
-        let app_dir = tempdir().unwrap();
-        let dot_sbt = app_dir.path().join(".sbt");
-        create_dir(&dot_sbt).unwrap();
-        write(dot_sbt.join("some-file.scala"), "").unwrap();
-        assert!(detect_sbt(app_dir.path()));
-    }
-
-    #[test]
-    fn detect_sbt_passes_when_build_properties_file_is_found_in_the_sbt_project_directory() {
-        let app_dir = tempdir().unwrap();
-        let sbt_project_path = app_dir.path().join("project");
-        create_dir(&sbt_project_path).unwrap();
-        write(sbt_project_path.join("build.properties"), "").unwrap();
-        assert!(detect_sbt(app_dir.path()));
-    }
 }
 
 #[cfg(test)]

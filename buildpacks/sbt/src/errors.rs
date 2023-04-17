@@ -7,6 +7,7 @@ use std::process::ExitStatus;
 
 #[derive(Debug)]
 pub(crate) enum ScalaBuildpackError {
+    DetectPhaseIoError(std::io::Error),
     CouldNotWriteSbtExtrasScript(std::io::Error),
     CouldNotSetExecutableBitForSbtExtrasScript(std::io::Error),
     CouldNotWriteSbtWrapperScript(std::io::Error),
@@ -228,6 +229,11 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
         ScalaBuildpackError::CouldNotReadSbtOptsFile(error) => log_please_try_again_error(
             "Unexpected I/O error",
             "Could not read your application's .sbtopts file due to an unexpected I/O error.",
+            error
+        ),
+        ScalaBuildpackError::DetectPhaseIoError(error) => log_please_try_again_error(
+            "Unexpected I/O error",
+            "An unexpected error occurred during the detect phase.",
             error
         ),
     }
