@@ -46,7 +46,13 @@ impl Buildpack for ScalaBuildpack {
         }
 
         DetectResultBuilder::pass()
-            .build_plan(create_scala_build_plan())
+            .build_plan(
+                BuildPlanBuilder::new()
+                    .requires("jdk")
+                    .provides("jvm-application")
+                    .requires("jvm-application")
+                    .build(),
+            )
             .build()
     }
 
@@ -81,14 +87,6 @@ fn detect_sbt(app_dir: &Path) -> bool {
         .get_files()
         .unwrap_or(vec![])
         .is_empty()
-}
-
-fn create_scala_build_plan() -> BuildPlan {
-    BuildPlanBuilder::new()
-        .requires("jdk")
-        .provides("jvm-application")
-        .requires("jvm-application")
-        .build()
 }
 
 fn create_coursier_cache_layer(
