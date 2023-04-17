@@ -20,6 +20,7 @@ use crate::file_tree::create_file_tree;
 use crate::layers::coursier_cache::CoursierCacheLayer;
 use crate::layers::ivy_cache::IvyCacheLayer;
 use crate::layers::sbt::SbtLayer;
+use buildpacks_jvm_shared::default_on_not_found;
 use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -31,6 +32,7 @@ use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::command::CommandExt;
 use libherokubuildpack::error::on_error as on_buildpack_error;
 use libherokubuildpack::log::{log_header, log_info, log_warning};
+use std::fs;
 use std::io::{stderr, stdout};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
@@ -134,20 +136,18 @@ fn create_sbt_layer(
 // location to provide the entry point for an application. wiping the directory before the application build
 // kicks off will ensure that no leftover artifacts are being carried around between builds.
 fn cleanup_any_existing_native_packager_directories(app_dir: &Path) {
-    let native_package_directory = app_dir.join("target").join("universal").join("stage");
-    if native_package_directory.exists() {
-        let delete_operation = create_file_tree(native_package_directory).delete();
-        if let Err(error) = delete_operation {
-            log_warning(
-                "Removal of native package directory failed",
-                formatdoc! {"
+    if let Err(error) = default_on_not_found(fs::remove_dir_all(
+        app_dir.join("target").join("universal").join("stage"),
+    )) {
+        log_warning(
+            "Removal of native package directory failed",
+            formatdoc! {"
                     This error should not affect your built application but it may cause the container image
                     to be larger than expected.
 
                     Details: {error:?}
                 "},
-            );
-        }
+        );
     }
 }
 
