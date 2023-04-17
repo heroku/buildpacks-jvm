@@ -1,3 +1,4 @@
+use buildpacks_jvm_shared::log_please_try_again_error;
 use indoc::formatdoc;
 use libcnb::Error;
 use libherokubuildpack::log::log_error;
@@ -230,24 +231,6 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             error
         ),
     }
-}
-
-fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Debug>(
-    header: H,
-    message: M,
-    error: E,
-) {
-    log_error(
-        header,
-        formatdoc! {"
-            {message}
-
-            Please try again. If this error persists, please contact us:
-            https://help.heroku.com/
-
-            Details: {error:?}
-        ", message = message.as_ref(), error = error },
-    );
 }
 
 fn get_exit_code(exit_status: ExitStatus) -> String {
