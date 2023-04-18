@@ -15,9 +15,6 @@ use crate::cleanup::{
     cleanup_any_existing_native_packager_directories, cleanup_compilation_artifacts,
 };
 use crate::detect::is_sbt_project_directory;
-use crate::errors::ScalaBuildpackError::{
-    AlreadyDefinedAsObject, MissingStageTask, SbtBuildIoError, SbtBuildUnexpectedExitCode,
-};
 use crate::errors::{log_user_errors, ScalaBuildpackError};
 use crate::layers::coursier_cache::CoursierCacheLayer;
 use crate::layers::ivy_cache::IvyCacheLayer;
@@ -169,7 +166,7 @@ fn run_sbt_tasks(
         .args(tasks)
         .envs(env)
         .output_and_write_streams(stdout(), stderr())
-        .map_err(SbtBuildIoError)?;
+        .map_err(ScalaBuildpackError::SbtBuildIoError)?;
 
     if output.status.success() {
         Ok(())
@@ -181,13 +178,14 @@ fn run_sbt_tasks(
 fn handle_sbt_error(output: &Output) -> ScalaBuildpackError {
     if let Ok(stdout) = std::str::from_utf8(&output.stdout) {
         if stdout.contains("Not a valid key: stage") {
-            return MissingStageTask;
+            return ScalaBuildpackError::MissingStageTask;
         }
         if stdout.contains("is already defined as object") {
-            return AlreadyDefinedAsObject;
+            return ScalaBuildpackError::AlreadyDefinedAsObject;
         }
     }
-    SbtBuildUnexpectedExitCode(output.status)
+
+    ScalaBuildpackError::SbtBuildUnexpectedExitCode(output.status)
 }
 
 fn get_sbt_build_tasks(build_config: &BuildConfiguration) -> Vec<String> {
