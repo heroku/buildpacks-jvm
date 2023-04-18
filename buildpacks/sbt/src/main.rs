@@ -10,7 +10,7 @@ mod detect;
 mod errors;
 mod layers;
 
-use crate::build_configuration::{create_build_config, BuildConfiguration};
+use crate::build_configuration::{create_build_config, SbtBuildpackConfiguration};
 use crate::cleanup::{
     cleanup_any_existing_native_packager_directories, cleanup_compilation_artifacts,
 };
@@ -108,7 +108,7 @@ buildpack_main!(ScalaBuildpack);
 fn create_coursier_cache_layer(
     context: &BuildContext<ScalaBuildpack>,
     env: &Env,
-    build_config: &BuildConfiguration,
+    build_config: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<ScalaBuildpackError>> {
     let coursier_cache_layer = context.handle_layer(
         layer_name!("coursier_cache"),
@@ -122,7 +122,7 @@ fn create_coursier_cache_layer(
 fn create_ivy_cache_layer(
     context: &BuildContext<ScalaBuildpack>,
     env: &Env,
-    build_config: &BuildConfiguration,
+    build_config: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<ScalaBuildpackError>> {
     let ivy_cache_layer = context.handle_layer(
         layer_name!("ivy_cache"),
@@ -136,7 +136,7 @@ fn create_ivy_cache_layer(
 fn create_sbt_layer(
     context: &BuildContext<ScalaBuildpack>,
     env: &Env,
-    build_config: &BuildConfiguration,
+    build_config: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<ScalaBuildpackError>> {
     log_header("Installing sbt");
     let sbt_layer = context.handle_layer(
@@ -153,7 +153,7 @@ fn create_sbt_layer(
 
 fn run_sbt_tasks(
     app_dir: &PathBuf,
-    build_config: &BuildConfiguration,
+    build_config: &SbtBuildpackConfiguration,
     env: &Env,
 ) -> Result<(), ScalaBuildpackError> {
     log_header("Building Scala project");
@@ -187,7 +187,7 @@ fn extract_error_from_sbt_output(stdout: &[u8]) -> Option<ScalaBuildpackError> {
     }
 }
 
-fn get_sbt_build_tasks(build_config: &BuildConfiguration) -> Vec<String> {
+fn get_sbt_build_tasks(build_config: &SbtBuildpackConfiguration) -> Vec<String> {
     let mut tasks: Vec<String> = Vec::new();
 
     if let Some(true) = &build_config.sbt_clean {
@@ -262,13 +262,13 @@ mod handle_sbt_error_tests {
 
 #[cfg(test)]
 mod get_sbt_build_tasks_tests {
-    use crate::build_configuration::BuildConfiguration;
+    use crate::build_configuration::SbtBuildpackConfiguration;
     use crate::get_sbt_build_tasks;
     use semver::Version;
 
     #[test]
     fn get_sbt_build_tasks_with_no_configured_options() {
-        let config = BuildConfiguration {
+        let config = SbtBuildpackConfiguration {
             sbt_project: None,
             sbt_pre_tasks: None,
             sbt_tasks: None,
@@ -282,7 +282,7 @@ mod get_sbt_build_tasks_tests {
 
     #[test]
     fn get_sbt_build_tasks_with_all_configured_options() {
-        let config = BuildConfiguration {
+        let config = SbtBuildpackConfiguration {
             sbt_project: Some("projectName".to_string()),
             sbt_pre_tasks: Some(vec!["preTask".to_string()]),
             sbt_tasks: Some(vec!["task".to_string()]),
@@ -299,7 +299,7 @@ mod get_sbt_build_tasks_tests {
 
     #[test]
     fn get_sbt_build_tasks_with_clean_set_to_true() {
-        let config = BuildConfiguration {
+        let config = SbtBuildpackConfiguration {
             sbt_project: None,
             sbt_pre_tasks: None,
             sbt_tasks: None,
@@ -316,7 +316,7 @@ mod get_sbt_build_tasks_tests {
 
     #[test]
     fn get_sbt_build_tasks_with_clean_set_to_false() {
-        let config = BuildConfiguration {
+        let config = SbtBuildpackConfiguration {
             sbt_project: None,
             sbt_pre_tasks: None,
             sbt_tasks: None,
@@ -330,7 +330,7 @@ mod get_sbt_build_tasks_tests {
 
     #[test]
     fn get_sbt_build_tasks_with_project_set() {
-        let config = BuildConfiguration {
+        let config = SbtBuildpackConfiguration {
             sbt_project: Some("projectName".to_string()),
             sbt_pre_tasks: None,
             sbt_tasks: None,
@@ -347,7 +347,7 @@ mod get_sbt_build_tasks_tests {
 
     #[test]
     fn get_sbt_build_tasks_with_project_and_pre_tasks_set() {
-        let config = BuildConfiguration {
+        let config = SbtBuildpackConfiguration {
             sbt_project: Some("projectName".to_string()),
             sbt_pre_tasks: Some(vec!["preTask".to_string()]),
             sbt_tasks: None,
@@ -364,7 +364,7 @@ mod get_sbt_build_tasks_tests {
 
     #[test]
     fn get_sbt_build_tasks_with_project_and_clean_set() {
-        let config = BuildConfiguration {
+        let config = SbtBuildpackConfiguration {
             sbt_project: Some("projectName".to_string()),
             sbt_pre_tasks: None,
             sbt_tasks: None,
