@@ -1,6 +1,4 @@
 use buildpacks_jvm_shared::{default_on_not_found, list_directory_contents};
-use indoc::formatdoc;
-use libherokubuildpack::log::log_warning;
 use std::ffi::OsStr;
 use std::fs;
 use std::path::Path;
@@ -9,20 +7,12 @@ use std::path::Path;
 // in the list of directories to clean up at the end of the build since a Procfile may reference this
 // location to provide the entry point for an application. wiping the directory before the application build
 // kicks off will ensure that no leftover artifacts are being carried around between builds.
-pub(crate) fn cleanup_any_existing_native_packager_directories(app_dir: &Path) {
-    if let Err(error) = default_on_not_found(fs::remove_dir_all(
+pub(crate) fn cleanup_any_existing_native_packager_directories(
+    app_dir: &Path,
+) -> std::io::Result<()> {
+    default_on_not_found(fs::remove_dir_all(
         app_dir.join("target").join("universal").join("stage"),
-    )) {
-        log_warning(
-            "Removal of native package directory failed",
-            formatdoc! {"
-                    This error should not affect your built application but it may cause the container image
-                    to be larger than expected.
-
-                    Details: {error:?}
-                "},
-        );
-    }
+    ))
 }
 
 pub(crate) fn cleanup_compilation_artifacts(app_dir: &Path) -> std::io::Result<()> {

@@ -71,7 +71,18 @@ impl Buildpack for ScalaBuildpack {
         let env = create_ivy_cache_layer(&context, &env, &build_config)?;
         let env = create_sbt_layer(&context, &env, &build_config)?;
 
-        cleanup_any_existing_native_packager_directories(&context.app_dir);
+        if let Err(error) = cleanup_any_existing_native_packager_directories(&context.app_dir) {
+            log_warning(
+                "Removal of native package directory failed",
+                formatdoc! {"
+                    This error should not affect your built application but it may cause the container image
+                    to be larger than expected.
+
+                    Details: {error:?}
+                "},
+            );
+        }
+
         run_sbt_tasks(&context.app_dir, &build_config, &env)?;
 
         log_info("Dropping compilation artifacts from the build");
