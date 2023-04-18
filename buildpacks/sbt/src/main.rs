@@ -7,7 +7,6 @@
 mod build_configuration;
 mod detect;
 mod errors;
-mod file_tree;
 mod layers;
 
 use crate::build_configuration::{create_build_config, BuildConfiguration};
@@ -16,11 +15,10 @@ use crate::errors::ScalaBuildpackError::{
     AlreadyDefinedAsObject, MissingStageTask, SbtBuildIoError, SbtBuildUnexpectedExitCode,
 };
 use crate::errors::{log_user_errors, ScalaBuildpackError};
-use crate::file_tree::create_file_tree;
 use crate::layers::coursier_cache::CoursierCacheLayer;
 use crate::layers::ivy_cache::IvyCacheLayer;
 use crate::layers::sbt::SbtLayer;
-use buildpacks_jvm_shared::default_on_not_found;
+use buildpacks_jvm_shared::{default_on_not_found, list_directory_contents};
 use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -32,6 +30,7 @@ use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::command::CommandExt;
 use libherokubuildpack::error::on_error as on_buildpack_error;
 use libherokubuildpack::log::{log_header, log_info, log_warning};
+use std::ffi::OsStr;
 use std::fs;
 use std::io::{stderr, stdout};
 use std::path::{Path, PathBuf};
@@ -73,7 +72,19 @@ impl Buildpack for ScalaBuildpack {
 
         cleanup_any_existing_native_packager_directories(&context.app_dir);
         run_sbt_tasks(&context.app_dir, &build_config, &env)?;
-        cleanup_compilation_artifacts(&context.app_dir);
+
+        log_info("Dropping compilation artifacts from the build");
+        if let Err(error) = cleanup_compilation_artifacts(&context.app_dir) {
+            log_warning(
+                "Removal of compilation artifacts failed",
+                formatdoc! {"
+                This error should not affect your built application but it may cause the container image
+                to be larger than expected.
+
+                Details: {error:?}
+            " },
+            );
+        }
 
         BuildResultBuilder::new().build()
     }
@@ -151,27 +162,41 @@ fn cleanup_any_existing_native_packager_directories(app_dir: &Path) {
     }
 }
 
-fn cleanup_compilation_artifacts(app_dir: &Path) {
-    log_info("Dropping compilation artifacts from the build");
-    let delete_operation = create_file_tree(app_dir.join("target"))
-        .include("scala-*")
-        .include("streams")
-        .include("resolution-cache")
-        .exclude("resolution-cache/reports")
-        .exclude("resolution-cache/*-compile.xml")
-        .delete();
+fn cleanup_compilation_artifacts(app_dir: &Path) -> std::io::Result<()> {
+    let target_dir = app_dir.join("target");
 
-    if let Err(error) = delete_operation {
-        log_warning(
-            "Removal of compilation artifacts failed",
-            formatdoc! {"
-                This error should not affect your built application but it may cause the container image
-                to be larger than expected.
+    let target_dir_files = list_directory_contents(&target_dir)?
+        .filter(|path| match path.file_name().and_then(OsStr::to_str) {
+            Some(file_name) => file_name.starts_with("scala-") || file_name == "streams",
+            None => false,
+        })
+        .collect::<Vec<_>>();
 
-                Details: {error:?}
-            " },
-        );
-    }
+    let resolution_cache_files = default_on_not_found(
+        list_directory_contents(target_dir.join("resolution-cache")).map(|directory_contents| {
+            directory_contents
+                .filter(|path| match path.file_name().and_then(OsStr::to_str) {
+                    Some(file_name) => {
+                        !(file_name.ends_with("-compile.xml") || file_name == "reports")
+                    }
+                    None => true,
+                })
+                .collect::<Vec<_>>()
+        }),
+    )?;
+
+    [target_dir_files, resolution_cache_files]
+        .into_iter()
+        .flatten()
+        .map(|path| {
+            if path.is_dir() {
+                fs::remove_dir_all(path)
+            } else {
+                fs::remove_file(path)
+            }
+        })
+        .collect::<Result<Vec<_>, _>>()
+        .map(|_| ())
 }
 
 fn run_sbt_tasks(
