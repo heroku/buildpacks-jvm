@@ -32,7 +32,7 @@ use libherokubuildpack::error::on_error as on_buildpack_error;
 use libherokubuildpack::log::{log_header, log_info, log_warning};
 use std::io::{stderr, stdout};
 use std::path::PathBuf;
-use std::process::{Command, Output};
+use std::process::Command;
 
 pub(crate) struct ScalaBuildpack;
 
