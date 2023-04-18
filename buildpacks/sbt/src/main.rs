@@ -168,24 +168,23 @@ fn run_sbt_tasks(
         .output_and_write_streams(stdout(), stderr())
         .map_err(ScalaBuildpackError::SbtBuildIoError)?;
 
-    if output.status.success() {
-        Ok(())
-    } else {
-        Err(handle_sbt_error(&output))
-    }
+    output.status.success().then_some(()).ok_or(
+        extract_error_from_sbt_output(&output.stdout).unwrap_or(
+            ScalaBuildpackError::SbtBuildUnexpectedExitCode(output.status),
+        ),
+    )
 }
 
-fn handle_sbt_error(output: &Output) -> ScalaBuildpackError {
-    if let Ok(stdout) = std::str::from_utf8(&output.stdout) {
-        if stdout.contains("Not a valid key: stage") {
-            return ScalaBuildpackError::MissingStageTask;
-        }
-        if stdout.contains("is already defined as object") {
-            return ScalaBuildpackError::AlreadyDefinedAsObject;
-        }
-    }
+fn extract_error_from_sbt_output(stdout: &[u8]) -> Option<ScalaBuildpackError> {
+    let stdout = String::from_utf8_lossy(stdout);
 
-    ScalaBuildpackError::SbtBuildUnexpectedExitCode(output.status)
+    if stdout.contains("Not a valid key: stage") {
+        Some(ScalaBuildpackError::MissingStageTask)
+    } else if stdout.contains("is already defined as object") {
+        Some(ScalaBuildpackError::AlreadyDefinedAsObject)
+    } else {
+        None
+    }
 }
 
 fn get_sbt_build_tasks(build_config: &BuildConfiguration) -> Vec<String> {
@@ -221,11 +220,8 @@ fn get_sbt_build_tasks(build_config: &BuildConfiguration) -> Vec<String> {
 #[cfg(test)]
 mod handle_sbt_error_tests {
     use crate::errors::ScalaBuildpackError;
-    use crate::errors::ScalaBuildpackError::MissingStageTask;
-    use crate::handle_sbt_error;
+    use crate::extract_error_from_sbt_output;
     use indoc::formatdoc;
-    use std::os::unix::process::ExitStatusExt;
-    use std::process::{ExitStatus, Output};
 
     #[test]
     fn check_missing_stage_error_is_reported() {
@@ -240,16 +236,10 @@ mod handle_sbt_error_tests {
         "}
         .into_bytes();
 
-        let output = Output {
-            stdout,
-            stderr: vec![],
-            status: ExitStatus::from_raw(0),
+        match extract_error_from_sbt_output(&stdout) {
+            Some(ScalaBuildpackError::MissingStageTask) => {}
+            _ => panic!("expected ScalaBuildpackError::MissingStageTask"),
         };
-        let err = handle_sbt_error(&output);
-        match err {
-            MissingStageTask => {}
-            _ => panic!("expected MissingStageTask error"),
-        }
     }
 
     #[test]
@@ -263,16 +253,10 @@ mod handle_sbt_error_tests {
         "}
         .into_bytes();
 
-        let output = Output {
-            stdout,
-            stderr: vec![],
-            status: ExitStatus::from_raw(0),
+        match extract_error_from_sbt_output(&stdout) {
+            Some(ScalaBuildpackError::AlreadyDefinedAsObject) => {}
+            _ => panic!("expected ScalaBuildpackError::AlreadyDefinedAsObject"),
         };
-        let err = handle_sbt_error(&output);
-        match err {
-            ScalaBuildpackError::AlreadyDefinedAsObject => {}
-            _ => panic!("expected MissingStageTask error"),
-        }
     }
 }
 
