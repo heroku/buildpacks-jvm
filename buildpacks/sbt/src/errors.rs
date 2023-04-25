@@ -1,8 +1,7 @@
+use crate::build_configuration::SbtBuildpackConfigurationError;
 use buildpacks_jvm_shared::log_please_try_again_error;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
-use semver::Version;
-use std::ffi::OsString;
 use std::fmt::Debug;
 use std::process::ExitStatus;
 
@@ -13,46 +12,145 @@ pub(crate) enum ScalaBuildpackError {
     CouldNotSetExecutableBitForSbtExtrasScript(std::io::Error),
     CouldNotWriteSbtWrapperScript(std::io::Error),
     CouldNotSetExecutableBitForSbtWrapperScript(std::io::Error),
-    SbtPropertiesFileReadError(std::io::Error),
-    InvalidSbtPropertiesFile(java_properties::PropertiesError),
-    MissingDeclaredSbtVersion,
-    UnsupportedSbtVersion(Version),
-    SbtVersionNotInSemverFormat(String, semver::Error),
     SbtBuildIoError(std::io::Error),
     SbtBuildUnexpectedExitCode(ExitStatus),
     SbtInstallIoError(std::io::Error),
     SbtInstallUnexpectedExitCode(ExitStatus),
     CouldNotWriteSbtPlugin(std::io::Error),
     NoBuildpackPluginAvailable(String),
-    CouldNotParseBooleanFromProperty(String, std::str::ParseBoolError),
-    CouldNotParseBooleanFromEnvironment(String, std::str::ParseBoolError),
-    CouldNotParseListConfigurationFromProperty(String, shell_words::ParseError),
-    CouldNotParseListConfigurationFromEnvironment(String, shell_words::ParseError),
-    CouldNotConvertEnvironmentValueIntoString(String, OsString),
-    CouldNotReadSbtOptsFile(std::io::Error),
-    CouldNotParseListConfigurationFromSbtOptsFile(shell_words::ParseError),
     MissingStageTask,
     AlreadyDefinedAsObject,
+    SbtBuildpackConfigurationError(SbtBuildpackConfigurationError),
 }
 
 #[allow(clippy::too_many_lines)]
 pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
     match error {
-        ScalaBuildpackError::MissingDeclaredSbtVersion => log_error(
-            "No sbt version defined",
-            formatdoc! { "
+        ScalaBuildpackError::SbtBuildpackConfigurationError(error) => match error {
+
+            SbtBuildpackConfigurationError::CouldNotReadSbtOptsFile(error) => log_please_try_again_error(
+                "Unexpected I/O error",
+                "Could not read your application's .sbtopts file due to an unexpected I/O error.",
+                error,
+            ),
+
+            SbtBuildpackConfigurationError::SbtPropertiesFileReadError(error) => log_please_try_again_error(
+                "Unexpected I/O error",
+                "Could not read your application's system.properties file due to an unexpected I/O error.",
+                error
+            ),
+
+            SbtBuildpackConfigurationError::InvalidSbtPropertiesFile(error) => log_please_try_again_error(
+                "Unexpected I/O error",
+                "Could not read your application's project/build.properties file due to an unexpected I/O error.",
+                error
+            ),
+
+            SbtBuildpackConfigurationError::MissingDeclaredSbtVersion => log_error(
+                "No sbt version defined",
+                formatdoc! { "
                 Your scala project must include project/build.properties and define a value for
                 the `sbt.version` property.
             " },
-        ),
+            ),
 
-        ScalaBuildpackError::UnsupportedSbtVersion(version) => log_error(
-            "Unsupported sbt version",
-            formatdoc! { "
+            SbtBuildpackConfigurationError::UnsupportedSbtVersion(version) => log_error(
+                "Unsupported sbt version",
+                formatdoc! { "
                 You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
                 file. You must use a version of sbt between 0.11.0 and 1.x.
             " },
-        ),
+            ),
+            SbtBuildpackConfigurationError::SbtVersionNotInSemverFormat(version, error) => {
+                log_error(
+                    "Unexpected version parse error",
+                    formatdoc! { "
+                Failed to read the `sbt.version` ({version}) declared in project/build.properties. Please
+                ensure this value is a valid semantic version identifier (see https://semver.org/).
+
+                Details: {error}
+            " },
+                );
+            }
+
+            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromProperty(
+                property_name,
+                error,
+            ) => log_error(
+                format!("Invalid {property_name} property"),
+                formatdoc! {"
+                Could not parse the value of the `{property_name}` property from the system.properties file into a list of words.
+                Please check the `{property_name}` property for quoting and escaping mistakes and try again.
+
+                Details: {error}
+            " },
+            ),
+
+            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(
+                variable_name,
+                error,
+            ) => log_error(
+                format!("Invalid {variable_name} environment variable"),
+                formatdoc! {"
+                Could not parse the value of the {variable_name} environment variable into a list of words.
+                Please check {variable_name} for quoting and escaping mistakes and try again.
+
+                Details: {error}
+            " },
+            ),
+
+            SbtBuildpackConfigurationError::CouldNotParseBooleanFromProperty(
+                property_name,
+                error,
+            ) => log_error(
+                format!("Invalid {property_name} property"),
+                formatdoc! {"
+                Could not parse the value of the `{property_name}` property from the system.properties file into a 'true' or 'false' value.
+                Please check `{property_name}` for mistakes and try again.
+
+                Details: {error}
+            " },
+            ),
+
+            SbtBuildpackConfigurationError::CouldNotParseBooleanFromEnvironment(
+                variable_name,
+                error,
+            ) => log_error(
+                format!("Invalid {variable_name} environment variable"),
+                formatdoc! {"
+                Could not parse the value of {variable_name} environment variable into a 'true' or 'false' value.
+                Please check {variable_name} for mistakes and try again.
+
+                Details: {error}
+            " },
+            ),
+
+            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
+                variable_name,
+                value,
+            ) => log_error(
+                format!("Invalid {variable_name} environment variable"),
+                formatdoc! {"
+                Could not convert the value of the environment variable {variable_name} into a string. Please
+                check that the value of {variable_name} only contains Unicode characters and try again.
+
+                Value: {value}
+            ", value = value.to_string_lossy() },
+            ),
+
+            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromSbtOptsFile(
+                error,
+            ) => log_error(
+                "Invalid .sbtopts file",
+                formatdoc! {"
+                Could not read the value of the .sbtopts file into a list of arguments. Please check
+                the file for mistakes and please try again.
+
+                Details: {error}
+            " },
+            ),
+
+        },
 
         ScalaBuildpackError::SbtBuildIoError(error) => log_error(
             "Running sbt failed",
@@ -61,7 +159,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 please submit a ticket so we can help: https://help.heroku.com/
 
                 Details: {error}
-            " }
+            " },
         ),
 
         ScalaBuildpackError::SbtBuildUnexpectedExitCode(exit_status) => log_error(
@@ -71,17 +169,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 please submit a ticket so we can help: https://help.heroku.com/
 
                 sbt exit code was: {exit_code}
-            ", exit_code = exit_code_string(exit_status) }
-        ),
-
-        ScalaBuildpackError::SbtVersionNotInSemverFormat(version, error) => log_error(
-            "Unexpected version parse error",
-            formatdoc! { "
-                Failed to read the `sbt.version` ({version}) declared in project/build.properties. Please
-                ensure this value is a valid semantic version identifier (see https://semver.org/).
-
-                Details: {error}
-            " },
+            ", exit_code = exit_code_string(exit_status) },
         ),
 
         ScalaBuildpackError::NoBuildpackPluginAvailable(version) => log_error(
@@ -91,66 +179,6 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             " },
         ),
 
-        ScalaBuildpackError::CouldNotParseListConfigurationFromProperty(property_name, error) => log_error(
-            format!("Invalid {property_name} property"),
-            formatdoc! {"
-                Could not parse the value of the `{property_name}` property from the system.properties file into a list of words.
-                Please check the `{property_name}` property for quoting and escaping mistakes and try again.
-
-                Details: {error}
-            " }
-        ),
-
-        ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(variable_name, error) => log_error(
-            format!("Invalid {variable_name} environment variable"),
-            formatdoc! {"
-                Could not parse the value of the {variable_name} environment variable into a list of words.
-                Please check {variable_name} for quoting and escaping mistakes and try again.
-
-                Details: {error}
-            " }
-        ),
-
-        ScalaBuildpackError::CouldNotParseBooleanFromProperty(property_name, error) => log_error(
-            format! ("Invalid {property_name} property"),
-            formatdoc! {"
-                Could not parse the value of the `{property_name}` property from the system.properties file into a 'true' or 'false' value.
-                Please check `{property_name}` for mistakes and try again.
-
-                Details: {error}
-            " }
-        ),
-
-        ScalaBuildpackError::CouldNotParseBooleanFromEnvironment(variable_name, error) => log_error(
-            format!("Invalid {variable_name} environment variable"),
-            formatdoc! {"
-                Could not parse the value of {variable_name} environment variable into a 'true' or 'false' value.
-                Please check {variable_name} for mistakes and try again.
-
-                Details: {error}
-            " }
-        ),
-
-        ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(variable_name, value) => log_error(
-            format!("Invalid {variable_name} environment variable"),
-            formatdoc! {"
-                Could not convert the value of the environment variable {variable_name} into a string. Please
-                check that the value of {variable_name} only contains Unicode characters and try again.
-
-                Value: {value}
-            ", value = value.to_string_lossy() }
-        ),
-
-        ScalaBuildpackError::CouldNotParseListConfigurationFromSbtOptsFile(error) => log_error(
-            "Invalid .sbtopts file",
-            formatdoc! {"
-                Could not read the value of the .sbtopts file into a list of arguments. Please check
-                the file for mistakes and please try again.
-
-                Details: {error}
-            " }
-        ),
-
         ScalaBuildpackError::MissingStageTask => log_error(
             "Failed to run sbt!",
             formatdoc! {"
@@ -158,7 +186,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 information on how to create one:
 
                 https://devcenter.heroku.com/articles/scala-support#build-behavior
-            "}
+            "},
         ),
 
         ScalaBuildpackError::AlreadyDefinedAsObject => log_error(
@@ -175,7 +203,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
 
                 If this does not resolve the problem, please submit a ticket so we can help:
                 https://help.heroku.com
-            "}
+            "},
         ),
 
         ScalaBuildpackError::CouldNotWriteSbtExtrasScript(error) => log_please_try_again_error(
@@ -184,11 +212,13 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             error,
         ),
 
-        ScalaBuildpackError::CouldNotSetExecutableBitForSbtExtrasScript(error) => log_please_try_again_error(
-            "Unexpected I/O error",
-            "Failed to set executable permissions for the sbt-extras script.",
-            error
-        ),
+        ScalaBuildpackError::CouldNotSetExecutableBitForSbtExtrasScript(error) => {
+            log_please_try_again_error(
+                "Unexpected I/O error",
+                "Failed to set executable permissions for the sbt-extras script.",
+                error,
+            );
+        }
 
         ScalaBuildpackError::CouldNotWriteSbtWrapperScript(error) => log_please_try_again_error(
             "Failed to write sbt-extras script",
@@ -196,55 +226,43 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             error,
         ),
 
-        ScalaBuildpackError::CouldNotSetExecutableBitForSbtWrapperScript(error) => log_please_try_again_error(
-            "Unexpected I/O error",
-            "Failed to set executable permissions for the sbt wrapper script.",
-            error
-        ),
-
-        ScalaBuildpackError::SbtPropertiesFileReadError(error) => log_please_try_again_error(
-            "Unexpected I/O error",
-            "Could not read your application's system.properties file due to an unexpected I/O error.",
-            error
-        ),
-
-        ScalaBuildpackError::InvalidSbtPropertiesFile(error) => log_please_try_again_error(
-            "Unexpected I/O error",
-            "Could not read your application's project/build.properties file due to an unexpected I/O error.",
-            error
-        ),
+        ScalaBuildpackError::CouldNotSetExecutableBitForSbtWrapperScript(error) => {
+            log_please_try_again_error(
+                "Unexpected I/O error",
+                "Failed to set executable permissions for the sbt wrapper script.",
+                error,
+            );
+        }
 
         ScalaBuildpackError::SbtInstallIoError(error) => log_please_try_again_error(
             "Failed to install sbt",
             "An unexpected error occurred while attempting to install sbt.",
-            error
+            error,
         ),
 
-        ScalaBuildpackError::SbtInstallUnexpectedExitCode(exit_status) => log_please_try_again_error(
-            "Failed to install sbt",
-            formatdoc! { "
+        ScalaBuildpackError::SbtInstallUnexpectedExitCode(exit_status) => {
+            log_please_try_again_error(
+                "Failed to install sbt",
+                formatdoc! { "
               An unexpected exit code was reported while attempting to install sbt.
 
               sbt exit code was: {exit_code}
             ", exit_code = exit_code_string(exit_status) },
-            error
-        ),
+                error,
+            );
+        }
 
         ScalaBuildpackError::CouldNotWriteSbtPlugin(error) => log_please_try_again_error(
             "Failed to install Heroku plugin for sbt",
             "An unexpected error occurred while attempting to install the Heroku plugin for sbt.",
-            error
+            error,
         ),
 
-        ScalaBuildpackError::CouldNotReadSbtOptsFile(error) => log_please_try_again_error(
-            "Unexpected I/O error",
-            "Could not read your application's .sbtopts file due to an unexpected I/O error.",
-            error
-        ),
+
         ScalaBuildpackError::DetectPhaseIoError(error) => log_please_try_again_error(
             "Unexpected I/O error",
             "An unexpected error occurred during the detect phase.",
-            error
+            error,
         ),
     }
 }

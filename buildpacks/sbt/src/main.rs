@@ -61,7 +61,8 @@ impl Buildpack for ScalaBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let build_config = create_build_config(&context.app_dir, context.platform.env())?;
+        let build_config = create_build_config(&context.app_dir, context.platform.env())
+            .map_err(ScalaBuildpackError::SbtBuildpackConfigurationError)?;
 
         let env = Env::from_current();
         let env = create_coursier_cache_layer(&context, &env, &build_config)?;

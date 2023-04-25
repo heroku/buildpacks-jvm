@@ -1,11 +1,12 @@
-use crate::errors::ScalaBuildpackError;
 use libcnb::Env;
 use semver::{Version, VersionReq};
 use std::collections::HashMap;
+use std::ffi::OsString;
 use std::fs::{read_to_string, File};
 use std::path::{Path, PathBuf};
+use std::str::ParseBoolError;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub(crate) struct SbtBuildpackConfiguration {
     pub(crate) sbt_project: Option<String>,
     pub(crate) sbt_pre_tasks: Option<Vec<String>>,
@@ -16,10 +17,26 @@ pub(crate) struct SbtBuildpackConfiguration {
     pub(crate) sbt_version: Version,
 }
 
+#[derive(Debug)]
+pub(crate) enum SbtBuildpackConfigurationError {
+    UnsupportedSbtVersion(Version),
+    CouldNotConvertEnvironmentValueIntoString(String, OsString),
+    CouldNotParseBooleanFromProperty(String, ParseBoolError),
+    CouldNotParseBooleanFromEnvironment(String, ParseBoolError),
+    CouldNotParseListConfigurationFromProperty(String, shell_words::ParseError),
+    CouldNotParseListConfigurationFromEnvironment(String, shell_words::ParseError),
+    CouldNotReadSbtOptsFile(std::io::Error),
+    CouldNotParseListConfigurationFromSbtOptsFile(shell_words::ParseError),
+    InvalidSbtPropertiesFile(java_properties::PropertiesError),
+    SbtPropertiesFileReadError(std::io::Error),
+    MissingDeclaredSbtVersion,
+    SbtVersionNotInSemverFormat(String, semver::Error),
+}
+
 pub(crate) fn create_build_config<P: Into<PathBuf>>(
     app_dir: P,
     env: &Env,
-) -> Result<SbtBuildpackConfiguration, ScalaBuildpackError> {
+) -> Result<SbtBuildpackConfiguration, SbtBuildpackConfigurationError> {
     let app_dir = app_dir.into();
     let sbt_opts_file = app_dir.join(".sbtopts");
     let properties = read_system_properties(&app_dir);
@@ -38,7 +55,9 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
         sbt_version: read_sbt_version_from_sbt_build_properties(&app_dir).and_then(|version| {
             is_supported_sbt_version(&version)
                 .then_some(version.clone())
-                .ok_or(ScalaBuildpackError::UnsupportedSbtVersion(version))
+                .ok_or(SbtBuildpackConfigurationError::UnsupportedSbtVersion(
+                    version,
+                ))
         })?,
     })
 }
@@ -54,14 +73,14 @@ fn read_string_config(
     system_properties: &HashMap<String, String>,
     environment_variable_name: &str,
     env: &Env,
-) -> Result<Option<String>, ScalaBuildpackError> {
+) -> Result<Option<String>, SbtBuildpackConfigurationError> {
     if let Some(value) = system_properties.get(property_name) {
         return Ok(Some(value.clone()));
     }
 
     if let Some(value) = env.get(environment_variable_name) {
         let value = value.into_string().map_err(|e| {
-            ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(
+            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
                 environment_variable_name.to_string(),
                 e,
             )
@@ -77,22 +96,25 @@ fn read_boolean_config(
     system_properties: &HashMap<String, String>,
     environment_variable_name: &str,
     env: &Env,
-) -> Result<Option<bool>, ScalaBuildpackError> {
+) -> Result<Option<bool>, SbtBuildpackConfigurationError> {
     if let Some(value) = system_properties.get(property_name) {
         return value.parse::<bool>().map(Some).map_err(|e| {
-            ScalaBuildpackError::CouldNotParseBooleanFromProperty(property_name.to_string(), e)
+            SbtBuildpackConfigurationError::CouldNotParseBooleanFromProperty(
+                property_name.to_string(),
+                e,
+            )
         });
     }
 
     if let Some(value) = env.get(environment_variable_name) {
         let value = value.into_string().map_err(|e| {
-            ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(
+            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
                 environment_variable_name.to_string(),
                 e,
             )
         })?;
         return value.parse::<bool>().map(Some).map_err(|e| {
-            ScalaBuildpackError::CouldNotParseBooleanFromEnvironment(
+            SbtBuildpackConfigurationError::CouldNotParseBooleanFromEnvironment(
                 environment_variable_name.to_string(),
                 e,
             )
@@ -107,10 +129,10 @@ fn read_string_list_config(
     system_properties: &HashMap<String, String>,
     environment_variable_name: &str,
     env: &Env,
-) -> Result<Option<Vec<String>>, ScalaBuildpackError> {
+) -> Result<Option<Vec<String>>, SbtBuildpackConfigurationError> {
     if let Some(value) = system_properties.get(property_name) {
         return shell_words::split(value).map(Some).map_err(|e| {
-            ScalaBuildpackError::CouldNotParseListConfigurationFromProperty(
+            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromProperty(
                 property_name.to_string(),
                 e,
             )
@@ -119,13 +141,13 @@ fn read_string_list_config(
 
     if let Some(value) = env.get(environment_variable_name) {
         let value = value.into_string().map_err(|e| {
-            ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(
+            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
                 environment_variable_name.to_string(),
                 e,
             )
         })?;
         return shell_words::split(&value).map(Some).map_err(|e| {
-            ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(
+            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(
                 environment_variable_name.to_string(),
                 e,
             )
@@ -138,28 +160,29 @@ fn read_string_list_config(
 fn read_sbt_opts(
     opts_file: PathBuf,
     env: &Env,
-) -> Result<Option<Vec<String>>, ScalaBuildpackError> {
+) -> Result<Option<Vec<String>>, SbtBuildpackConfigurationError> {
     let mut sbt_opts: Vec<String> = vec![];
     let mut configured = false;
 
     if opts_file.exists() {
-        let contents =
-            read_to_string(opts_file).map_err(ScalaBuildpackError::CouldNotReadSbtOptsFile)?;
-        let mut opts = shell_words::split(&contents)
-            .map_err(ScalaBuildpackError::CouldNotParseListConfigurationFromSbtOptsFile)?;
+        let contents = read_to_string(opts_file)
+            .map_err(SbtBuildpackConfigurationError::CouldNotReadSbtOptsFile)?;
+        let mut opts = shell_words::split(&contents).map_err(
+            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromSbtOptsFile,
+        )?;
         sbt_opts.append(&mut opts);
         configured = true;
     }
 
     if let Some(value) = env.get("SBT_OPTS") {
         let value = value.into_string().map_err(|e| {
-            ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(
+            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
                 "SBT_OPTS".to_string(),
                 e,
             )
         })?;
         let mut opts = shell_words::split(&value).map_err(|e| {
-            ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(
+            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(
                 "SBT_OPTS".to_string(),
                 e,
             )
@@ -177,24 +200,25 @@ fn read_sbt_opts(
 
 fn read_sbt_version_from_sbt_build_properties(
     app_dir: &Path,
-) -> Result<Version, ScalaBuildpackError> {
+) -> Result<Version, SbtBuildpackConfigurationError> {
     File::open(app_dir.join("project").join("build.properties"))
-        .map_err(ScalaBuildpackError::SbtPropertiesFileReadError)
+        .map_err(SbtBuildpackConfigurationError::SbtPropertiesFileReadError)
         .and_then(|file| {
-            java_properties::read(file).map_err(ScalaBuildpackError::InvalidSbtPropertiesFile)
+            java_properties::read(file)
+                .map_err(SbtBuildpackConfigurationError::InvalidSbtPropertiesFile)
         })
         .and_then(|properties| {
             properties
                 .get("sbt.version")
                 .filter(|value| !value.is_empty())
-                .ok_or(ScalaBuildpackError::MissingDeclaredSbtVersion)
+                .ok_or(SbtBuildpackConfigurationError::MissingDeclaredSbtVersion)
                 .cloned()
         })
         .and_then(|version_string| {
             // While sbt didn't officially adopt semver until the 1.x version, all the published
             // versions before 1.x followed semver coincidentally.
             Version::parse(&version_string).map_err(|error| {
-                ScalaBuildpackError::SbtVersionNotInSemverFormat(version_string, error)
+                SbtBuildpackConfigurationError::SbtVersionNotInSemverFormat(version_string, error)
             })
         })
 }
@@ -213,7 +237,7 @@ fn is_supported_sbt_version(version: &Version) -> bool {
 #[cfg(test)]
 mod create_build_config_tests {
     use super::create_build_config;
-    use crate::errors::ScalaBuildpackError;
+    use super::SbtBuildpackConfigurationError;
     use libcnb::Env;
     use semver::Version;
     use std::collections::HashMap;
@@ -260,7 +284,7 @@ mod create_build_config_tests {
         let app_dir = tempdir().unwrap();
         let env = Env::new();
         let error = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(error, ScalaBuildpackError::MissingSbtBuildPropertiesFile);
+        assert_err!(error, SbtBuildpackConfigurationError::MissingSbtBuildPropertiesFile);
     }
      */
 
@@ -273,7 +297,10 @@ mod create_build_config_tests {
         create_dir(&sbt_project_path).unwrap();
         write(sbt_project_path.join("build.properties"), "").unwrap();
         let error = create_build_config(app_dir.path().to_path_buf(), &env).unwrap_err();
-        assert_err!(error, ScalaBuildpackError::MissingDeclaredSbtVersion);
+        assert_err!(
+            error,
+            SbtBuildpackConfigurationError::MissingDeclaredSbtVersion
+        );
     }
 
     #[test]
@@ -284,7 +311,10 @@ mod create_build_config_tests {
         create_dir(&sbt_project_path).unwrap();
         write(sbt_project_path.join("build.properties"), b"sbt.version=").unwrap();
         let error = create_build_config(app_dir.path().to_path_buf(), &env).unwrap_err();
-        assert_err!(error, ScalaBuildpackError::MissingDeclaredSbtVersion);
+        assert_err!(
+            error,
+            SbtBuildpackConfigurationError::MissingDeclaredSbtVersion
+        );
     }
 
     #[test]
@@ -309,7 +339,7 @@ mod create_build_config_tests {
         let env = Env::new();
         set_sbt_version(&app_dir, "0.10.99");
         let error = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(error, ScalaBuildpackError::UnsupportedSbtVersion(version) if version == "0.10.99".parse().unwrap());
+        assert_err!(error, SbtBuildpackConfigurationError::UnsupportedSbtVersion(version) if version == "0.10.99".parse().unwrap());
     }
 
     #[test]
@@ -337,7 +367,7 @@ mod create_build_config_tests {
         let env = Env::new();
         set_sbt_version(&app_dir, "0.14.0");
         let error = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(error, ScalaBuildpackError::UnsupportedSbtVersion(version) if version == "0.14.0".parse().unwrap());
+        assert_err!(error, SbtBuildpackConfigurationError::UnsupportedSbtVersion(version) if version == "0.14.0".parse().unwrap());
     }
 
     #[test]
@@ -365,7 +395,7 @@ mod create_build_config_tests {
         let env = Env::new();
         set_sbt_version(&app_dir, "2.0.0");
         let error = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(error, ScalaBuildpackError::UnsupportedSbtVersion(version) if version == "2.0.0".parse().unwrap());
+        assert_err!(error, SbtBuildpackConfigurationError::UnsupportedSbtVersion(version) if version == "2.0.0".parse().unwrap());
     }
 
     #[test]
@@ -408,7 +438,7 @@ mod create_build_config_tests {
         set_sbt_version(&app_dir, "1.8.2");
         env.insert("SBT_PROJECT", invalid_unicode_os_string());
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_PROJECT");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_PROJECT");
     }
 
     #[test]
@@ -464,7 +494,7 @@ mod create_build_config_tests {
         );
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotParseListConfigurationFromProperty(name, _) if name == "sbt.pre-tasks");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromProperty(name, _) if name == "sbt.pre-tasks");
     }
 
     #[test]
@@ -474,7 +504,7 @@ mod create_build_config_tests {
         env.insert("SBT_PRE_TASKS", OsString::from("task1\" task2"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_PRE_TASKS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_PRE_TASKS");
     }
 
     #[test]
@@ -485,7 +515,7 @@ mod create_build_config_tests {
         env.insert("SBT_PRE_TASKS", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_PRE_TASKS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_PRE_TASKS");
     }
 
     #[test]
@@ -515,7 +545,7 @@ mod create_build_config_tests {
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.clean", "")]));
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotParseBooleanFromProperty(name, _) if name == "sbt.clean");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBooleanFromProperty(name, _) if name == "sbt.clean");
     }
 
     #[test]
@@ -536,7 +566,7 @@ mod create_build_config_tests {
         env.insert("SBT_CLEAN", OsString::from("blah"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotParseBooleanFromEnvironment(name, _) if name == "SBT_CLEAN");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBooleanFromEnvironment(name, _) if name == "SBT_CLEAN");
     }
 
     #[test]
@@ -547,7 +577,7 @@ mod create_build_config_tests {
         env.insert("SBT_CLEAN", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_CLEAN");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_CLEAN");
     }
 
     #[test]
@@ -611,7 +641,7 @@ mod create_build_config_tests {
         set_system_properties(&app_dir, HashMap::from([("sbt.tasks", "task1\" task2")]));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotParseListConfigurationFromProperty(name, _) if name == "sbt.tasks");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromProperty(name, _) if name == "sbt.tasks");
     }
 
     #[test]
@@ -621,7 +651,7 @@ mod create_build_config_tests {
         env.insert("SBT_TASKS", OsString::from("task1\" task2"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_TASKS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_TASKS");
     }
 
     #[test]
@@ -632,7 +662,7 @@ mod create_build_config_tests {
         env.insert("SBT_TASKS", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_TASKS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_TASKS");
     }
 
     #[test]
@@ -692,7 +722,7 @@ mod create_build_config_tests {
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
         assert_err!(
             err,
-            ScalaBuildpackError::CouldNotParseListConfigurationFromSbtOptsFile(_)
+            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromSbtOptsFile(_)
         );
     }
 
@@ -703,7 +733,7 @@ mod create_build_config_tests {
         env.insert("SBT_OPTS", OsString::from("-J-Xfoo\" -J-Xbar"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_OPTS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_OPTS");
     }
 
     #[test]
@@ -714,6 +744,6 @@ mod create_build_config_tests {
         env.insert("SBT_OPTS", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_OPTS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_OPTS");
     }
 }
