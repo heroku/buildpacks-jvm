@@ -1,6 +1,5 @@
 use buildpacks_jvm_shared::log_please_try_again_error;
 use indoc::formatdoc;
-use libcnb::Error;
 use libherokubuildpack::log::log_error;
 use semver::Version;
 use std::ffi::OsString;
@@ -256,8 +255,8 @@ fn exit_code_string(exit_status: ExitStatus) -> String {
         .map_or(String::from("<unknown>"), |code| code.to_string())
 }
 
-impl From<ScalaBuildpackError> for Error<ScalaBuildpackError> {
+impl From<ScalaBuildpackError> for libcnb::Error<ScalaBuildpackError> {
     fn from(value: ScalaBuildpackError) -> Self {
-        Error::BuildpackError(value)
+        libcnb::Error::BuildpackError(value)
     }
 }
