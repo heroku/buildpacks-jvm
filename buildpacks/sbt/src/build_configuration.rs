@@ -185,7 +185,7 @@ fn is_supported_sbt_version(version: &Version) -> bool {
 }
 
 #[cfg(test)]
-mod create_build_config_tests {
+mod tests {
     use super::create_build_config;
     use super::SbtBuildpackConfigurationError;
     use libcnb::Env;
