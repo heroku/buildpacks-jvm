@@ -21,10 +21,8 @@ pub(crate) struct SbtBuildpackConfiguration {
 pub(crate) enum SbtBuildpackConfigurationError {
     UnsupportedSbtVersion(Version),
     CouldNotConvertEnvironmentValueIntoString(String, OsString),
-    CouldNotParseBooleanFromProperty(String, ParseBoolError),
-    CouldNotParseBooleanFromEnvironment(String, ParseBoolError),
-    CouldNotParseListConfigurationFromProperty(String, shell_words::ParseError),
-    CouldNotParseListConfigurationFromEnvironment(String, shell_words::ParseError),
+    CouldNotParseBoolean(ParseBoolError),
+    CouldNotParseList(shell_words::ParseError),
     CouldNotReadSbtOptsFile(std::io::Error),
     CouldNotParseListConfigurationFromSbtOptsFile(shell_words::ParseError),
     InvalidSbtPropertiesFile(java_properties::PropertiesError),
@@ -41,7 +39,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
     let sbt_opts_file = app_dir.join(".sbtopts");
     let properties = read_system_properties(&app_dir);
     Ok(SbtBuildpackConfiguration {
-        sbt_project: read_string_config("sbt.project", &properties, "SBT_PROJECT", env)?,
+        sbt_project: read_string_config("sbt.project", &properties, "SBT_PROJECT", env),
         sbt_pre_tasks: read_string_list_config("sbt.pre-tasks", &properties, "SBT_PRE_TASKS", env)?,
         sbt_tasks: read_string_list_config("sbt.tasks", &properties, "SBT_TASKS", env)?,
         sbt_clean: read_boolean_config("sbt.clean", &properties, "SBT_CLEAN", env)?,
@@ -73,22 +71,10 @@ fn read_string_config(
     system_properties: &HashMap<String, String>,
     environment_variable_name: &str,
     env: &Env,
-) -> Result<Option<String>, SbtBuildpackConfigurationError> {
-    if let Some(value) = system_properties.get(property_name) {
-        return Ok(Some(value.clone()));
-    }
-
-    if let Some(value) = env.get(environment_variable_name) {
-        let value = value.into_string().map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
-                environment_variable_name.to_string(),
-                e,
-            )
-        })?;
-        return Ok(Some(value));
-    }
-
-    Ok(None)
+) -> Option<String> {
+    system_properties.get(property_name).cloned().or(env
+        .get(environment_variable_name)
+        .map(|os_string| os_string.to_string_lossy().to_string()))
 }
 
 fn read_boolean_config(
@@ -97,31 +83,15 @@ fn read_boolean_config(
     environment_variable_name: &str,
     env: &Env,
 ) -> Result<Option<bool>, SbtBuildpackConfigurationError> {
-    if let Some(value) = system_properties.get(property_name) {
-        return value.parse::<bool>().map(Some).map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotParseBooleanFromProperty(
-                property_name.to_string(),
-                e,
-            )
-        });
-    }
-
-    if let Some(value) = env.get(environment_variable_name) {
-        let value = value.into_string().map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
-                environment_variable_name.to_string(),
-                e,
-            )
-        })?;
-        return value.parse::<bool>().map(Some).map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotParseBooleanFromEnvironment(
-                environment_variable_name.to_string(),
-                e,
-            )
-        });
-    }
-
-    Ok(None)
+    read_string_config(
+        property_name,
+        system_properties,
+        environment_variable_name,
+        env,
+    )
+    .map(|string| string.parse::<bool>())
+    .transpose()
+    .map_err(SbtBuildpackConfigurationError::CouldNotParseBoolean)
 }
 
 fn read_string_list_config(
@@ -130,31 +100,15 @@ fn read_string_list_config(
     environment_variable_name: &str,
     env: &Env,
 ) -> Result<Option<Vec<String>>, SbtBuildpackConfigurationError> {
-    if let Some(value) = system_properties.get(property_name) {
-        return shell_words::split(value).map(Some).map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromProperty(
-                property_name.to_string(),
-                e,
-            )
-        });
-    }
-
-    if let Some(value) = env.get(environment_variable_name) {
-        let value = value.into_string().map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
-                environment_variable_name.to_string(),
-                e,
-            )
-        })?;
-        return shell_words::split(&value).map(Some).map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(
-                environment_variable_name.to_string(),
-                e,
-            )
-        });
-    }
-
-    Ok(None)
+    read_string_config(
+        property_name,
+        system_properties,
+        environment_variable_name,
+        env,
+    )
+    .map(|string| shell_words::split(&string))
+    .transpose()
+    .map_err(SbtBuildpackConfigurationError::CouldNotParseList)
 }
 
 fn read_sbt_opts(
@@ -181,12 +135,8 @@ fn read_sbt_opts(
                 e,
             )
         })?;
-        let mut opts = shell_words::split(&value).map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(
-                "SBT_OPTS".to_string(),
-                e,
-            )
-        })?;
+        let mut opts = shell_words::split(&value)
+            .map_err(SbtBuildpackConfigurationError::CouldNotParseList)?;
         sbt_opts.append(&mut opts);
         configured = true;
     }
@@ -437,8 +387,13 @@ mod create_build_config_tests {
         let mut env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
         env.insert("SBT_PROJECT", invalid_unicode_os_string());
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_PROJECT");
+
+        assert_eq!(
+            create_build_config(app_dir.path(), &env)
+                .unwrap()
+                .sbt_project,
+            Some(invalid_unicode_os_string().to_string_lossy().to_string())
+        );
     }
 
     #[test]
@@ -494,7 +449,7 @@ mod create_build_config_tests {
         );
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromProperty(name, _) if name == "sbt.pre-tasks");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
     }
 
     #[test]
@@ -504,7 +459,7 @@ mod create_build_config_tests {
         env.insert("SBT_PRE_TASKS", OsString::from("task1\" task2"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_PRE_TASKS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
     }
 
     #[test]
@@ -514,8 +469,14 @@ mod create_build_config_tests {
         let mut env = Env::new();
         env.insert("SBT_PRE_TASKS", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_PRE_TASKS");
+        assert_eq!(
+            create_build_config(app_dir.path(), &env)
+                .unwrap()
+                .sbt_pre_tasks,
+            Some(vec![invalid_unicode_os_string()
+                .to_string_lossy()
+                .to_string()])
+        );
     }
 
     #[test]
@@ -545,7 +506,7 @@ mod create_build_config_tests {
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.clean", "")]));
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBooleanFromProperty(name, _) if name == "sbt.clean");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBoolean(_));
     }
 
     #[test]
@@ -566,7 +527,7 @@ mod create_build_config_tests {
         env.insert("SBT_CLEAN", OsString::from("blah"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBooleanFromEnvironment(name, _) if name == "SBT_CLEAN");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBoolean(_));
     }
 
     #[test]
@@ -577,7 +538,7 @@ mod create_build_config_tests {
         env.insert("SBT_CLEAN", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_CLEAN");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBoolean(_));
     }
 
     #[test]
@@ -641,7 +602,7 @@ mod create_build_config_tests {
         set_system_properties(&app_dir, HashMap::from([("sbt.tasks", "task1\" task2")]));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromProperty(name, _) if name == "sbt.tasks");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
     }
 
     #[test]
@@ -651,7 +612,7 @@ mod create_build_config_tests {
         env.insert("SBT_TASKS", OsString::from("task1\" task2"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_TASKS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
     }
 
     #[test]
@@ -661,8 +622,12 @@ mod create_build_config_tests {
         let mut env = Env::new();
         env.insert("SBT_TASKS", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_TASKS");
+        assert_eq!(
+            create_build_config(app_dir.path(), &env).unwrap().sbt_tasks,
+            Some(vec![invalid_unicode_os_string()
+                .to_string_lossy()
+                .to_string()])
+        );
     }
 
     #[test]
@@ -733,7 +698,7 @@ mod create_build_config_tests {
         env.insert("SBT_OPTS", OsString::from("-J-Xfoo\" -J-Xbar"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(name, _) if name == "SBT_OPTS");
+        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
     }
 
     #[test]

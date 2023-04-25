@@ -73,53 +73,25 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 );
             }
 
-            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromProperty(
-                property_name,
+            SbtBuildpackConfigurationError::CouldNotParseList(
                 error,
             ) => log_error(
-                format!("Invalid {property_name} property"),
+                "Could not parse list",
                 formatdoc! {"
-                Could not parse the value of the `{property_name}` property from the system.properties file into a list of words.
-                Please check the `{property_name}` property for quoting and escaping mistakes and try again.
+                Could not parse a value into a list of words.
+                Please check for quoting and escaping mistakes and try again.
 
                 Details: {error}
             " },
             ),
 
-            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromEnvironment(
-                variable_name,
+            SbtBuildpackConfigurationError::CouldNotParseBoolean(
                 error,
             ) => log_error(
-                format!("Invalid {variable_name} environment variable"),
+                "Could not parse boolean",
                 formatdoc! {"
-                Could not parse the value of the {variable_name} environment variable into a list of words.
-                Please check {variable_name} for quoting and escaping mistakes and try again.
-
-                Details: {error}
-            " },
-            ),
-
-            SbtBuildpackConfigurationError::CouldNotParseBooleanFromProperty(
-                property_name,
-                error,
-            ) => log_error(
-                format!("Invalid {property_name} property"),
-                formatdoc! {"
-                Could not parse the value of the `{property_name}` property from the system.properties file into a 'true' or 'false' value.
-                Please check `{property_name}` for mistakes and try again.
-
-                Details: {error}
-            " },
-            ),
-
-            SbtBuildpackConfigurationError::CouldNotParseBooleanFromEnvironment(
-                variable_name,
-                error,
-            ) => log_error(
-                format!("Invalid {variable_name} environment variable"),
-                formatdoc! {"
-                Could not parse the value of {variable_name} environment variable into a 'true' or 'false' value.
-                Please check {variable_name} for mistakes and try again.
+                Could not parse a value into a 'true' or 'false' value.
+                Please check for mistakes and try again.
 
                 Details: {error}
             " },
