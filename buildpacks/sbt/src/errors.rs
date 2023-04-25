@@ -72,7 +72,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 please submit a ticket so we can help: https://help.heroku.com/
 
                 sbt exit code was: {exit_code}
-            ", exit_code = get_exit_code(exit_status) }
+            ", exit_code = exit_code_string(exit_status) }
         ),
 
         ScalaBuildpackError::SbtVersionNotInSemverFormat(version, error) => log_error(
@@ -227,7 +227,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
               An unexpected exit code was reported while attempting to install sbt.
 
               sbt exit code was: {exit_code}
-            ", exit_code = get_exit_code(exit_status) },
+            ", exit_code = exit_code_string(exit_status) },
             error
         ),
 
@@ -250,10 +250,10 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
     }
 }
 
-fn get_exit_code(exit_status: ExitStatus) -> String {
+fn exit_code_string(exit_status: ExitStatus) -> String {
     exit_status
         .code()
-        .map_or_else(|| String::from("<unknown>"), |code| code.to_string())
+        .map_or(String::from("<unknown>"), |code| code.to_string())
 }
 
 impl From<ScalaBuildpackError> for Error<ScalaBuildpackError> {
