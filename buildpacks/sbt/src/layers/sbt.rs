@@ -1,5 +1,5 @@
 use crate::errors::SbtBuildpackError;
-use crate::ScalaBuildpack;
+use crate::SbtBuildpack;
 use libcnb::build::BuildContext;
 use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
@@ -21,7 +21,7 @@ pub(crate) struct SbtLayer {
 }
 
 impl Layer for SbtLayer {
-    type Buildpack = ScalaBuildpack;
+    type Buildpack = SbtBuildpack;
     type Metadata = SbtLayerMetadata;
 
     fn types(&self) -> LayerTypes {
@@ -300,7 +300,7 @@ pub(crate) struct SbtLayerMetadata {
 const LAYER_VERSION: &str = "v1";
 
 impl SbtLayerMetadata {
-    fn current(layer: &SbtLayer, context: &BuildContext<ScalaBuildpack>) -> Self {
+    fn current(layer: &SbtLayer, context: &BuildContext<SbtBuildpack>) -> Self {
         SbtLayerMetadata {
             sbt_version: layer.sbt_version.clone(),
             stack_id: context.stack_id.clone(),

@@ -1,4 +1,4 @@
-use crate::ScalaBuildpack;
+use crate::SbtBuildpack;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::generic::GenericMetadata;
@@ -14,7 +14,7 @@ pub(crate) struct IvyCacheLayer {
 
 // Ivy is used as the default library management tool up for sbt < 1.3
 impl Layer for IvyCacheLayer {
-    type Buildpack = ScalaBuildpack;
+    type Buildpack = SbtBuildpack;
     type Metadata = GenericMetadata;
 
     fn types(&self) -> LayerTypes {

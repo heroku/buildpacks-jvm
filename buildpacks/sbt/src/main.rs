@@ -37,9 +37,9 @@ use std::io::{stderr, stdout};
 use std::path::PathBuf;
 use std::process::Command;
 
-pub(crate) struct ScalaBuildpack;
+pub(crate) struct SbtBuildpack;
 
-impl Buildpack for ScalaBuildpack {
+impl Buildpack for SbtBuildpack {
     type Platform = GenericPlatform;
     type Metadata = GenericMetadata;
     type Error = SbtBuildpackError;
@@ -120,10 +120,10 @@ impl Buildpack for ScalaBuildpack {
     }
 }
 
-buildpack_main!(ScalaBuildpack);
+buildpack_main!(SbtBuildpack);
 
 fn create_coursier_cache_layer(
-    context: &BuildContext<ScalaBuildpack>,
+    context: &BuildContext<SbtBuildpack>,
     env: &Env,
     build_config: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<SbtBuildpackError>> {
@@ -137,7 +137,7 @@ fn create_coursier_cache_layer(
 }
 
 fn create_ivy_cache_layer(
-    context: &BuildContext<ScalaBuildpack>,
+    context: &BuildContext<SbtBuildpack>,
     env: &Env,
     build_config: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<SbtBuildpackError>> {
@@ -151,7 +151,7 @@ fn create_ivy_cache_layer(
 }
 
 fn create_sbt_layer(
-    context: &BuildContext<ScalaBuildpack>,
+    context: &BuildContext<SbtBuildpack>,
     env: &Env,
     sbt_version: Version,
     build_config: &SbtBuildpackConfiguration,

@@ -1,4 +1,4 @@
-use crate::ScalaBuildpack;
+use crate::SbtBuildpack;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::generic::GenericMetadata;
@@ -15,7 +15,7 @@ pub(crate) struct CoursierCacheLayer {
 // Coursier is used instead of Ivy for library management starting with sbt >= 1.3
 // https://www.scala-sbt.org/1.x/docs/sbt-1.3-Release-Notes.html
 impl Layer for CoursierCacheLayer {
-    type Buildpack = ScalaBuildpack;
+    type Buildpack = SbtBuildpack;
     type Metadata = GenericMetadata;
 
     fn types(&self) -> LayerTypes {
