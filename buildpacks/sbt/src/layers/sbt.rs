@@ -1,5 +1,5 @@
-use crate::errors::ScalaBuildpackError;
-use crate::errors::ScalaBuildpackError::{
+use crate::errors::SbtBuildpackError;
+use crate::errors::SbtBuildpackError::{
     CouldNotSetExecutableBitForSbtExtrasScript, CouldNotSetExecutableBitForSbtWrapperScript,
     CouldNotWriteSbtExtrasScript, CouldNotWriteSbtPlugin, CouldNotWriteSbtWrapperScript,
     NoBuildpackPluginAvailable, SbtInstallIoError, SbtInstallUnexpectedExitCode,
@@ -75,7 +75,7 @@ fn install_sbt(
     app_dir: &PathBuf,
     layer_path: &Path,
     env: &Env,
-) -> Result<ExitStatus, ScalaBuildpackError> {
+) -> Result<ExitStatus, SbtBuildpackError> {
     Command::new(sbt_path(layer_path))
         .current_dir(app_dir)
         .args(["sbtVersion"])
@@ -146,7 +146,7 @@ fn get_layer_env_scope(available_at_launch: Option<bool>) -> Scope {
     }
 }
 
-fn write_sbt_extras_to_layer(layer_path: &Path) -> Result<(), ScalaBuildpackError> {
+fn write_sbt_extras_to_layer(layer_path: &Path) -> Result<(), SbtBuildpackError> {
     let sbt_extras_path = sbt_extras_path(layer_path);
     let contents = include_bytes!("../../assets/sbt-extras.sh");
     create_dir_all(layer_bin_dir(layer_path)).map_err(CouldNotWriteSbtExtrasScript)?;
@@ -156,7 +156,7 @@ fn write_sbt_extras_to_layer(layer_path: &Path) -> Result<(), ScalaBuildpackErro
     Ok(())
 }
 
-fn write_sbt_wrapper_to_layer(layer_path: &Path) -> Result<(), ScalaBuildpackError> {
+fn write_sbt_wrapper_to_layer(layer_path: &Path) -> Result<(), SbtBuildpackError> {
     let sbt_path = sbt_path(layer_path);
     let contents = include_bytes!("../../assets/sbt-wrapper.sh");
     create_dir_all(layer_bin_dir(layer_path)).map_err(CouldNotWriteSbtWrapperScript)?;
@@ -169,7 +169,7 @@ fn write_sbt_wrapper_to_layer(layer_path: &Path) -> Result<(), ScalaBuildpackErr
 fn write_buildpack_plugin(
     layer_path: &Path,
     sbt_version: &Version,
-) -> Result<(), ScalaBuildpackError> {
+) -> Result<(), SbtBuildpackError> {
     let plugin_directory = sbt_global_plugins_dir(layer_path);
     create_dir_all(&plugin_directory).map_err(CouldNotWriteSbtPlugin)?;
 
@@ -185,7 +185,7 @@ fn write_buildpack_plugin(
 
 fn get_buildpack_plugin_contents(
     sbt_version: &Version,
-) -> Result<&'static [u8], ScalaBuildpackError> {
+) -> Result<&'static [u8], SbtBuildpackError> {
     match sbt_version {
         Version { major: 0, .. } => Ok(include_bytes!(
             "../../assets/heroku_buildpack_plugin_sbt_v0.scala"

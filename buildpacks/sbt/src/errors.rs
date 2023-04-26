@@ -8,7 +8,7 @@ use std::fmt::Debug;
 use std::process::ExitStatus;
 
 #[derive(Debug)]
-pub(crate) enum ScalaBuildpackError {
+pub(crate) enum SbtBuildpackError {
     ReadSbtVersionError(ReadSbtVersionError),
     UnsupportedSbtVersion(Version),
     DetectPhaseIoError(std::io::Error),
@@ -28,9 +28,9 @@ pub(crate) enum ScalaBuildpackError {
 }
 
 #[allow(clippy::too_many_lines)]
-pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
+pub(crate) fn log_user_errors(error: SbtBuildpackError) {
     match error {
-        ScalaBuildpackError::ReadSbtVersionError(error) => match error {
+        SbtBuildpackError::ReadSbtVersionError(error) => match error {
             ReadSbtVersionError::CouldNotReadBuildProperties(error) => log_please_try_again_error(
                 "Unexpected I/O error",
                 "Could not read your application's system.properties file due to an unexpected I/O error.",
@@ -63,7 +63,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 );
             }
         },
-        ScalaBuildpackError::UnsupportedSbtVersion(version) => log_error(
+        SbtBuildpackError::UnsupportedSbtVersion(version) => log_error(
             "Unsupported sbt version",
             formatdoc! { "
                 You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
@@ -71,7 +71,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             " },
         ),
 
-        ScalaBuildpackError::SbtBuildpackConfigurationError(error) => match error {
+        SbtBuildpackError::SbtBuildpackConfigurationError(error) => match error {
 
             SbtBuildpackConfigurationError::InvalidTaskList(error)
             | SbtBuildpackConfigurationError::InvalidPreTaskList(error) => log_error(
@@ -96,7 +96,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             ),
         },
 
-        ScalaBuildpackError::SbtBuildIoError(error) => log_error(
+        SbtBuildpackError::SbtBuildIoError(error) => log_error(
             "Running sbt failed",
             formatdoc! { "
                 We're sorry this build is failing! If you can't find the issue in application code,
@@ -106,7 +106,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             " },
         ),
 
-        ScalaBuildpackError::SbtBuildUnexpectedExitCode(exit_status) => log_error(
+        SbtBuildpackError::SbtBuildUnexpectedExitCode(exit_status) => log_error(
             "Running sbt failed",
             formatdoc! { "
                 We're sorry this build is failing! If you can't find the issue in application code,
@@ -116,14 +116,14 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             ", exit_code = exit_code_string(exit_status) },
         ),
 
-        ScalaBuildpackError::NoBuildpackPluginAvailable(version) => log_error(
+        SbtBuildpackError::NoBuildpackPluginAvailable(version) => log_error(
             "Failed to install Heroku plugin for sbt",
             formatdoc! { "
                 No Heroku plugins supporting this version of sbt ({version}).
             " },
         ),
 
-        ScalaBuildpackError::MissingStageTask => log_error(
+        SbtBuildpackError::MissingStageTask => log_error(
             "Failed to run sbt!",
             formatdoc! {"
                 It looks like your build.sbt does not have a valid 'stage' task. Please reference our Dev Center article for
@@ -133,7 +133,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             "},
         ),
 
-        ScalaBuildpackError::AlreadyDefinedAsObject => log_error(
+        SbtBuildpackError::AlreadyDefinedAsObject => log_error(
             "Failed to run sbt!",
             formatdoc! {"
                 We're sorry this build is failing. It looks like you may need to run a clean build to remove any
@@ -150,13 +150,13 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             "},
         ),
 
-        ScalaBuildpackError::CouldNotWriteSbtExtrasScript(error) => log_please_try_again_error(
+        SbtBuildpackError::CouldNotWriteSbtExtrasScript(error) => log_please_try_again_error(
             "Failed to write sbt-extras script",
             "An unexpected error occurred while writing the sbt-extras script.",
             error,
         ),
 
-        ScalaBuildpackError::CouldNotSetExecutableBitForSbtExtrasScript(error) => {
+        SbtBuildpackError::CouldNotSetExecutableBitForSbtExtrasScript(error) => {
             log_please_try_again_error(
                 "Unexpected I/O error",
                 "Failed to set executable permissions for the sbt-extras script.",
@@ -164,13 +164,13 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             );
         }
 
-        ScalaBuildpackError::CouldNotWriteSbtWrapperScript(error) => log_please_try_again_error(
+        SbtBuildpackError::CouldNotWriteSbtWrapperScript(error) => log_please_try_again_error(
             "Failed to write sbt-extras script",
             "An unexpected error occurred while writing the sbt wrapper script.",
             error,
         ),
 
-        ScalaBuildpackError::CouldNotSetExecutableBitForSbtWrapperScript(error) => {
+        SbtBuildpackError::CouldNotSetExecutableBitForSbtWrapperScript(error) => {
             log_please_try_again_error(
                 "Unexpected I/O error",
                 "Failed to set executable permissions for the sbt wrapper script.",
@@ -178,13 +178,13 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             );
         }
 
-        ScalaBuildpackError::SbtInstallIoError(error) => log_please_try_again_error(
+        SbtBuildpackError::SbtInstallIoError(error) => log_please_try_again_error(
             "Failed to install sbt",
             "An unexpected error occurred while attempting to install sbt.",
             error,
         ),
 
-        ScalaBuildpackError::SbtInstallUnexpectedExitCode(exit_status) => {
+        SbtBuildpackError::SbtInstallUnexpectedExitCode(exit_status) => {
             log_please_try_again_error(
                 "Failed to install sbt",
                 formatdoc! { "
@@ -196,13 +196,13 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             );
         }
 
-        ScalaBuildpackError::CouldNotWriteSbtPlugin(error) => log_please_try_again_error(
+        SbtBuildpackError::CouldNotWriteSbtPlugin(error) => log_please_try_again_error(
             "Failed to install Heroku plugin for sbt",
             "An unexpected error occurred while attempting to install the Heroku plugin for sbt.",
             error,
         ),
 
-        ScalaBuildpackError::DetectPhaseIoError(error) => log_please_try_again_error(
+        SbtBuildpackError::DetectPhaseIoError(error) => log_please_try_again_error(
             "Unexpected I/O error",
             "An unexpected error occurred during the detect phase.",
             error,
@@ -216,8 +216,8 @@ fn exit_code_string(exit_status: ExitStatus) -> String {
         .map_or(String::from("<unknown>"), |code| code.to_string())
 }
 
-impl From<ScalaBuildpackError> for libcnb::Error<ScalaBuildpackError> {
-    fn from(value: ScalaBuildpackError) -> Self {
+impl From<SbtBuildpackError> for libcnb::Error<SbtBuildpackError> {
+    fn from(value: SbtBuildpackError) -> Self {
         libcnb::Error::BuildpackError(value)
     }
 }

@@ -16,7 +16,7 @@ use crate::cleanup::{
     cleanup_any_existing_native_packager_directories, cleanup_compilation_artifacts,
 };
 use crate::detect::is_sbt_project_directory;
-use crate::errors::{log_user_errors, ScalaBuildpackError};
+use crate::errors::{log_user_errors, SbtBuildpackError};
 use crate::layers::coursier_cache::CoursierCacheLayer;
 use crate::layers::ivy_cache::IvyCacheLayer;
 use crate::layers::sbt::SbtLayer;
@@ -42,11 +42,11 @@ pub(crate) struct ScalaBuildpack;
 impl Buildpack for ScalaBuildpack {
     type Platform = GenericPlatform;
     type Metadata = GenericMetadata;
-    type Error = ScalaBuildpackError;
+    type Error = SbtBuildpackError;
 
     fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
         let is_sbt_project = is_sbt_project_directory(&context.app_dir)
-            .map_err(ScalaBuildpackError::DetectPhaseIoError)?;
+            .map_err(SbtBuildpackError::DetectPhaseIoError)?;
 
         if is_sbt_project {
             DetectResultBuilder::pass()
@@ -65,13 +65,13 @@ impl Buildpack for ScalaBuildpack {
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
         let build_config = create_build_config(&context.app_dir, context.platform.env())
-            .map_err(ScalaBuildpackError::SbtBuildpackConfigurationError)?;
+            .map_err(SbtBuildpackError::SbtBuildpackConfigurationError)?;
 
         let sbt_version =
-            read_sbt_version(&context.app_dir).map_err(ScalaBuildpackError::ReadSbtVersionError)?;
+            read_sbt_version(&context.app_dir).map_err(SbtBuildpackError::ReadSbtVersionError)?;
 
         if !is_supported_sbt_version(&sbt_version) {
-            Err(ScalaBuildpackError::UnsupportedSbtVersion(
+            Err(SbtBuildpackError::UnsupportedSbtVersion(
                 sbt_version.clone(),
             ))?;
         }
@@ -122,7 +122,7 @@ fn create_coursier_cache_layer(
     context: &BuildContext<ScalaBuildpack>,
     env: &Env,
     build_config: &SbtBuildpackConfiguration,
-) -> Result<Env, Error<ScalaBuildpackError>> {
+) -> Result<Env, Error<SbtBuildpackError>> {
     let coursier_cache_layer = context.handle_layer(
         layer_name!("coursier_cache"),
         CoursierCacheLayer {
@@ -136,7 +136,7 @@ fn create_ivy_cache_layer(
     context: &BuildContext<ScalaBuildpack>,
     env: &Env,
     build_config: &SbtBuildpackConfiguration,
-) -> Result<Env, Error<ScalaBuildpackError>> {
+) -> Result<Env, Error<SbtBuildpackError>> {
     let ivy_cache_layer = context.handle_layer(
         layer_name!("ivy_cache"),
         IvyCacheLayer {
@@ -151,7 +151,7 @@ fn create_sbt_layer(
     env: &Env,
     sbt_version: Version,
     build_config: &SbtBuildpackConfiguration,
-) -> Result<Env, Error<ScalaBuildpackError>> {
+) -> Result<Env, Error<SbtBuildpackError>> {
     log_header("Installing sbt");
     let sbt_layer = context.handle_layer(
         layer_name!("sbt"),
@@ -168,7 +168,7 @@ fn run_sbt_tasks(
     app_dir: &PathBuf,
     build_config: &SbtBuildpackConfiguration,
     env: &Env,
-) -> Result<(), ScalaBuildpackError> {
+) -> Result<(), SbtBuildpackError> {
     log_header("Building Scala project");
 
     let tasks = get_sbt_build_tasks(build_config);
@@ -179,22 +179,21 @@ fn run_sbt_tasks(
         .args(tasks)
         .envs(env)
         .output_and_write_streams(stdout(), stderr())
-        .map_err(ScalaBuildpackError::SbtBuildIoError)?;
+        .map_err(SbtBuildpackError::SbtBuildIoError)?;
 
     output.status.success().then_some(()).ok_or(
-        extract_error_from_sbt_output(&output.stdout).unwrap_or(
-            ScalaBuildpackError::SbtBuildUnexpectedExitCode(output.status),
-        ),
+        extract_error_from_sbt_output(&output.stdout)
+            .unwrap_or(SbtBuildpackError::SbtBuildUnexpectedExitCode(output.status)),
     )
 }
 
-fn extract_error_from_sbt_output(stdout: &[u8]) -> Option<ScalaBuildpackError> {
+fn extract_error_from_sbt_output(stdout: &[u8]) -> Option<SbtBuildpackError> {
     let stdout = String::from_utf8_lossy(stdout);
 
     if stdout.contains("Not a valid key: stage") {
-        Some(ScalaBuildpackError::MissingStageTask)
+        Some(SbtBuildpackError::MissingStageTask)
     } else if stdout.contains("is already defined as object") {
-        Some(ScalaBuildpackError::AlreadyDefinedAsObject)
+        Some(SbtBuildpackError::AlreadyDefinedAsObject)
     } else {
         None
     }
@@ -232,7 +231,7 @@ fn get_sbt_build_tasks(build_config: &SbtBuildpackConfiguration) -> Vec<String> 
 
 #[cfg(test)]
 mod handle_sbt_error_tests {
-    use crate::errors::ScalaBuildpackError;
+    use crate::errors::SbtBuildpackError;
     use crate::extract_error_from_sbt_output;
     use indoc::formatdoc;
 
@@ -250,7 +249,7 @@ mod handle_sbt_error_tests {
         .into_bytes();
 
         match extract_error_from_sbt_output(&stdout) {
-            Some(ScalaBuildpackError::MissingStageTask) => {}
+            Some(SbtBuildpackError::MissingStageTask) => {}
             _ => panic!("expected ScalaBuildpackError::MissingStageTask"),
         };
     }
@@ -267,7 +266,7 @@ mod handle_sbt_error_tests {
         .into_bytes();
 
         match extract_error_from_sbt_output(&stdout) {
-            Some(ScalaBuildpackError::AlreadyDefinedAsObject) => {}
+            Some(SbtBuildpackError::AlreadyDefinedAsObject) => {}
             _ => panic!("expected ScalaBuildpackError::AlreadyDefinedAsObject"),
         };
     }
