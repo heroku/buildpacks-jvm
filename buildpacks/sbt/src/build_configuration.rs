@@ -38,17 +38,47 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
     let app_dir = app_dir.into();
     let sbt_opts_file = app_dir.join(".sbtopts");
     let properties = read_system_properties(&app_dir);
+
     Ok(SbtBuildpackConfiguration {
-        sbt_project: read_string_config("sbt.project", &properties, "SBT_PROJECT", env),
-        sbt_pre_tasks: read_string_list_config("sbt.pre-tasks", &properties, "SBT_PRE_TASKS", env)?,
-        sbt_tasks: read_string_list_config("sbt.tasks", &properties, "SBT_TASKS", env)?,
-        sbt_clean: read_boolean_config("sbt.clean", &properties, "SBT_CLEAN", env)?,
-        sbt_available_at_launch: read_boolean_config(
-            "sbt.available-at-launch",
-            &properties,
-            "SBT_AVAILABLE_AT_LAUNCH",
-            env,
-        )?,
+        sbt_project: properties.get("sbt.project").cloned().or(env
+            .get("SBT_PROJECT")
+            .map(|os_string| os_string.to_string_lossy().to_string())),
+        sbt_pre_tasks: properties
+            .get("sbt.pre-tasks")
+            .cloned()
+            .or(env
+                .get("SBT_PRE_TASKS")
+                .map(|os_string| os_string.to_string_lossy().to_string()))
+            .map(|string| shell_words::split(&string))
+            .transpose()
+            .map_err(SbtBuildpackConfigurationError::CouldNotParseList)?,
+        sbt_tasks: properties
+            .get("sbt.tasks")
+            .cloned()
+            .or(env
+                .get("SBT_TASKS")
+                .map(|os_string| os_string.to_string_lossy().to_string()))
+            .map(|string| shell_words::split(&string))
+            .transpose()
+            .map_err(SbtBuildpackConfigurationError::CouldNotParseList)?,
+        sbt_clean: properties
+            .get("sbt.clean")
+            .cloned()
+            .or(env
+                .get("SBT_CLEAN")
+                .map(|os_string| os_string.to_string_lossy().to_string()))
+            .map(|string| string.parse())
+            .transpose()
+            .map_err(SbtBuildpackConfigurationError::CouldNotParseBoolean)?,
+        sbt_available_at_launch: properties
+            .get("sbt.available-at-launch")
+            .cloned()
+            .or(env
+                .get("SBT_AVAILABLE_AT_LAUNCH")
+                .map(|os_string| os_string.to_string_lossy().to_string()))
+            .map(|string| string.parse())
+            .transpose()
+            .map_err(SbtBuildpackConfigurationError::CouldNotParseBoolean)?,
         sbt_opts: read_sbt_opts(sbt_opts_file, env)?,
         sbt_version: read_sbt_version_from_sbt_build_properties(&app_dir).and_then(|version| {
             is_supported_sbt_version(&version)
@@ -64,51 +94,6 @@ fn read_system_properties(app_dir: &Path) -> HashMap<String, String> {
     File::open(app_dir.join("system.properties"))
         .map(|file| java_properties::read(file).unwrap_or_default())
         .unwrap_or_default()
-}
-
-fn read_string_config(
-    property_name: &str,
-    system_properties: &HashMap<String, String>,
-    environment_variable_name: &str,
-    env: &Env,
-) -> Option<String> {
-    system_properties.get(property_name).cloned().or(env
-        .get(environment_variable_name)
-        .map(|os_string| os_string.to_string_lossy().to_string()))
-}
-
-fn read_boolean_config(
-    property_name: &str,
-    system_properties: &HashMap<String, String>,
-    environment_variable_name: &str,
-    env: &Env,
-) -> Result<Option<bool>, SbtBuildpackConfigurationError> {
-    read_string_config(
-        property_name,
-        system_properties,
-        environment_variable_name,
-        env,
-    )
-    .map(|string| string.parse::<bool>())
-    .transpose()
-    .map_err(SbtBuildpackConfigurationError::CouldNotParseBoolean)
-}
-
-fn read_string_list_config(
-    property_name: &str,
-    system_properties: &HashMap<String, String>,
-    environment_variable_name: &str,
-    env: &Env,
-) -> Result<Option<Vec<String>>, SbtBuildpackConfigurationError> {
-    read_string_config(
-        property_name,
-        system_properties,
-        environment_variable_name,
-        env,
-    )
-    .map(|string| shell_words::split(&string))
-    .transpose()
-    .map_err(SbtBuildpackConfigurationError::CouldNotParseList)
 }
 
 fn read_sbt_opts(
