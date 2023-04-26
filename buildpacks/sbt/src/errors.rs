@@ -12,6 +12,7 @@ use std::process::ExitStatus;
 pub(crate) enum SbtBuildpackError {
     ReadSbtVersionError(ReadSbtVersionError),
     UnsupportedSbtVersion(Version),
+    UnknownSbtVersion,
     DetectPhaseIoError(std::io::Error),
     CouldNotWriteSbtExtrasScript(std::io::Error),
     CouldNotSetExecutableBitForSbtExtrasScript(std::io::Error),
@@ -70,6 +71,14 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             formatdoc! { "
                 You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
                 file. You must use a version of sbt between 0.11.0 and 1.x.
+            " },
+        ),
+
+        SbtBuildpackError::UnknownSbtVersion => log_error(
+            "Unknown sbt version",
+            formatdoc! { "
+                The buildpack could not determine the sbt version of this project.
+                You must have a `sbt.version` key in the project/build.properties file.
             " },
         ),
 

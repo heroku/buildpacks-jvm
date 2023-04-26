@@ -71,8 +71,9 @@ impl Buildpack for SbtBuildpack {
                     .map_err(SbtBuildpackError::ReadSbtBuildpackConfigurationError)
             })?;
 
-        let sbt_version =
-            read_sbt_version(&context.app_dir).map_err(SbtBuildpackError::ReadSbtVersionError)?;
+        let sbt_version = read_sbt_version(&context.app_dir)
+            .map_err(SbtBuildpackError::ReadSbtVersionError)
+            .and_then(|version| version.ok_or(SbtBuildpackError::UnknownSbtVersion))?;
 
         if !is_supported_sbt_version(&sbt_version) {
             Err(SbtBuildpackError::UnsupportedSbtVersion(
