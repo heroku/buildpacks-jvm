@@ -94,6 +94,24 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 Details: {error}
             " },
             ),
+
+            ReadSbtBuildpackConfigurationError::CouldNotReadSystemProperties(error) => log_please_try_again_error(
+                "Failed to read system.properties",
+                "An unexpected error occurred while reading the system.properties file.",
+                error,
+            ),
+
+            ReadSbtBuildpackConfigurationError::CouldNotParseSystemProperties(error) => {
+                log_error(
+                    "Invalid system.properties file",
+                    formatdoc! {"
+                            Your system.properties file could not be parsed.
+                            Please ensure it is properly formatted and try again.
+
+                            Details: {error}
+                        "}
+                );
+            }
         },
 
         SbtBuildpackError::SbtBuildIoError(error) => log_error(

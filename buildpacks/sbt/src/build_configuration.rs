@@ -1,6 +1,6 @@
+use buildpacks_jvm_shared::default_on_not_found;
 use libcnb::Env;
-use std::collections::HashMap;
-use std::fs::File;
+use std::fs;
 use std::path::Path;
 use std::str::ParseBoolError;
 
@@ -16,6 +16,8 @@ pub(crate) struct SbtBuildpackConfiguration {
 #[derive(Debug)]
 #[allow(clippy::enum_variant_names)]
 pub(crate) enum ReadSbtBuildpackConfigurationError {
+    CouldNotReadSystemProperties(std::io::Error),
+    CouldNotParseSystemProperties(java_properties::PropertiesError),
     InvalidPreTaskList(shell_words::ParseError),
     InvalidTaskList(shell_words::ParseError),
     InvalidSbtClean(ParseBoolError),
@@ -26,13 +28,18 @@ pub(crate) fn read_sbt_buildpack_configuration(
     app_dir: &Path,
     env: &Env,
 ) -> Result<SbtBuildpackConfiguration, ReadSbtBuildpackConfigurationError> {
-    let properties = read_system_properties(app_dir);
+    let system_properties = default_on_not_found(fs::read(app_dir.join("system.properties")))
+        .map_err(ReadSbtBuildpackConfigurationError::CouldNotReadSystemProperties)
+        .and_then(|file_contents| {
+            java_properties::read(&file_contents[..])
+                .map_err(ReadSbtBuildpackConfigurationError::CouldNotParseSystemProperties)
+        })?;
 
     Ok(SbtBuildpackConfiguration {
-        sbt_project: properties.get("sbt.project").cloned().or(env
+        sbt_project: system_properties.get("sbt.project").cloned().or(env
             .get("SBT_PROJECT")
             .map(|os_string| os_string.to_string_lossy().to_string())),
-        sbt_pre_tasks: properties
+        sbt_pre_tasks: system_properties
             .get("sbt.pre-tasks")
             .cloned()
             .or(env
@@ -41,7 +48,7 @@ pub(crate) fn read_sbt_buildpack_configuration(
             .map(|string| shell_words::split(&string))
             .transpose()
             .map_err(ReadSbtBuildpackConfigurationError::InvalidPreTaskList)?,
-        sbt_tasks: properties
+        sbt_tasks: system_properties
             .get("sbt.tasks")
             .cloned()
             .or(env
@@ -50,7 +57,7 @@ pub(crate) fn read_sbt_buildpack_configuration(
             .map(|string| shell_words::split(&string))
             .transpose()
             .map_err(ReadSbtBuildpackConfigurationError::InvalidTaskList)?,
-        sbt_clean: properties
+        sbt_clean: system_properties
             .get("sbt.clean")
             .cloned()
             .or(env
@@ -59,7 +66,7 @@ pub(crate) fn read_sbt_buildpack_configuration(
             .map(|string| string.parse())
             .transpose()
             .map_err(ReadSbtBuildpackConfigurationError::InvalidSbtClean)?,
-        sbt_available_at_launch: properties
+        sbt_available_at_launch: system_properties
             .get("sbt.available-at-launch")
             .cloned()
             .or(env
@@ -69,12 +76,6 @@ pub(crate) fn read_sbt_buildpack_configuration(
             .transpose()
             .map_err(ReadSbtBuildpackConfigurationError::InvalidAvailableAtLaunch)?,
     })
-}
-
-fn read_system_properties(app_dir: &Path) -> HashMap<String, String> {
-    File::open(app_dir.join("system.properties"))
-        .map(|file| java_properties::read(file).unwrap_or_default())
-        .unwrap_or_default()
 }
 
 #[cfg(test)]
