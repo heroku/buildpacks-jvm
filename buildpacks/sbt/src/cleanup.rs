@@ -7,9 +7,7 @@ use std::path::Path;
 // in the list of directories to clean up at the end of the build since a Procfile may reference this
 // location to provide the entry point for an application. wiping the directory before the application build
 // kicks off will ensure that no leftover artifacts are being carried around between builds.
-pub(crate) fn cleanup_any_existing_native_packager_directories(
-    app_dir: &Path,
-) -> std::io::Result<()> {
+pub(crate) fn cleanup_native_packager_directories(app_dir: &Path) -> std::io::Result<()> {
     default_on_not_found(fs::remove_dir_all(
         app_dir.join("target").join("universal").join("stage"),
     ))

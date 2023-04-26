@@ -13,9 +13,7 @@ mod sbt_version;
 mod system_properties;
 
 use crate::build_configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfiguration};
-use crate::cleanup::{
-    cleanup_any_existing_native_packager_directories, cleanup_compilation_artifacts,
-};
+use crate::cleanup::{cleanup_compilation_artifacts, cleanup_native_packager_directories};
 use crate::detect::is_sbt_project_directory;
 use crate::errors::{log_user_errors, SbtBuildpackError};
 use crate::layers::coursier_cache::CoursierCacheLayer;
@@ -87,7 +85,7 @@ impl Buildpack for ScalaBuildpack {
         let env = create_ivy_cache_layer(&context, &env, &build_config)?;
         let env = create_sbt_layer(&context, &env, sbt_version, &build_config)?;
 
-        if let Err(error) = cleanup_any_existing_native_packager_directories(&context.app_dir) {
+        if let Err(error) = cleanup_native_packager_directories(&context.app_dir) {
             log_warning(
                 "Removal of native package directory failed",
                 formatdoc! {"
