@@ -11,7 +11,7 @@ mod errors;
 mod layers;
 mod sbt_version;
 
-use crate::build_configuration::{create_build_config, SbtBuildpackConfiguration};
+use crate::build_configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfiguration};
 use crate::cleanup::{
     cleanup_any_existing_native_packager_directories, cleanup_compilation_artifacts,
 };
@@ -64,8 +64,9 @@ impl Buildpack for ScalaBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let build_config = create_build_config(&context.app_dir, context.platform.env())
-            .map_err(SbtBuildpackError::SbtBuildpackConfigurationError)?;
+        let build_config =
+            read_sbt_buildpack_configuration(&context.app_dir, context.platform.env())
+                .map_err(SbtBuildpackError::ReadSbtBuildpackConfigurationError)?;
 
         let sbt_version =
             read_sbt_version(&context.app_dir).map_err(SbtBuildpackError::ReadSbtVersionError)?;

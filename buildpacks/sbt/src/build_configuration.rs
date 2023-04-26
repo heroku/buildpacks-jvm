@@ -1,7 +1,7 @@
 use libcnb::Env;
 use std::collections::HashMap;
 use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::str::ParseBoolError;
 
 #[derive(Debug)]
@@ -15,19 +15,18 @@ pub(crate) struct SbtBuildpackConfiguration {
 
 #[derive(Debug)]
 #[allow(clippy::enum_variant_names)]
-pub(crate) enum SbtBuildpackConfigurationError {
+pub(crate) enum ReadSbtBuildpackConfigurationError {
     InvalidPreTaskList(shell_words::ParseError),
     InvalidTaskList(shell_words::ParseError),
     InvalidSbtClean(ParseBoolError),
     InvalidAvailableAtLaunch(ParseBoolError),
 }
 
-pub(crate) fn create_build_config<P: Into<PathBuf>>(
-    app_dir: P,
+pub(crate) fn read_sbt_buildpack_configuration(
+    app_dir: &Path,
     env: &Env,
-) -> Result<SbtBuildpackConfiguration, SbtBuildpackConfigurationError> {
-    let app_dir = app_dir.into();
-    let properties = read_system_properties(&app_dir);
+) -> Result<SbtBuildpackConfiguration, ReadSbtBuildpackConfigurationError> {
+    let properties = read_system_properties(app_dir);
 
     Ok(SbtBuildpackConfiguration {
         sbt_project: properties.get("sbt.project").cloned().or(env
@@ -41,7 +40,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
                 .map(|os_string| os_string.to_string_lossy().to_string()))
             .map(|string| shell_words::split(&string))
             .transpose()
-            .map_err(SbtBuildpackConfigurationError::InvalidPreTaskList)?,
+            .map_err(ReadSbtBuildpackConfigurationError::InvalidPreTaskList)?,
         sbt_tasks: properties
             .get("sbt.tasks")
             .cloned()
@@ -50,7 +49,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
                 .map(|os_string| os_string.to_string_lossy().to_string()))
             .map(|string| shell_words::split(&string))
             .transpose()
-            .map_err(SbtBuildpackConfigurationError::InvalidTaskList)?,
+            .map_err(ReadSbtBuildpackConfigurationError::InvalidTaskList)?,
         sbt_clean: properties
             .get("sbt.clean")
             .cloned()
@@ -59,7 +58,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
                 .map(|os_string| os_string.to_string_lossy().to_string()))
             .map(|string| string.parse())
             .transpose()
-            .map_err(SbtBuildpackConfigurationError::InvalidSbtClean)?,
+            .map_err(ReadSbtBuildpackConfigurationError::InvalidSbtClean)?,
         sbt_available_at_launch: properties
             .get("sbt.available-at-launch")
             .cloned()
@@ -68,7 +67,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
                 .map(|os_string| os_string.to_string_lossy().to_string()))
             .map(|string| string.parse())
             .transpose()
-            .map_err(SbtBuildpackConfigurationError::InvalidAvailableAtLaunch)?,
+            .map_err(ReadSbtBuildpackConfigurationError::InvalidAvailableAtLaunch)?,
     })
 }
 
@@ -80,8 +79,8 @@ fn read_system_properties(app_dir: &Path) -> HashMap<String, String> {
 
 #[cfg(test)]
 mod test {
-    use super::create_build_config;
-    use super::SbtBuildpackConfigurationError;
+    use super::read_sbt_buildpack_configuration;
+    use super::ReadSbtBuildpackConfigurationError;
     use libcnb::Env;
     use std::collections::HashMap;
     use std::ffi::{OsStr, OsString};
@@ -126,7 +125,7 @@ mod test {
         let app_dir = tempdir().unwrap();
         let env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_project, None);
     }
 
@@ -139,7 +138,7 @@ mod test {
             &app_dir,
             HashMap::from([("sbt.project", "testProjectName")]),
         );
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_project, Some(String::from("testProjectName")));
     }
 
@@ -149,7 +148,7 @@ mod test {
         let mut env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
         env.insert("SBT_PROJECT", "testProjectName");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_project, Some(String::from("testProjectName")));
     }
 
@@ -162,7 +161,7 @@ mod test {
         env.insert("SBT_PROJECT", invalid_unicode_os_string());
 
         assert_eq!(
-            create_build_config(app_dir.path(), &env)
+            read_sbt_buildpack_configuration(app_dir.path(), &env)
                 .unwrap()
                 .sbt_project,
             Some(invalid_unicode_os_string().to_string_lossy().to_string())
@@ -174,7 +173,7 @@ mod test {
         let app_dir = tempdir().unwrap();
         let env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_pre_tasks, None);
     }
 
@@ -184,7 +183,7 @@ mod test {
         let env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.pre-tasks", "task1 task2")]));
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         let expected_tasks: Vec<String> = vec![String::from("task1"), String::from("task2")];
         assert_eq!(config.sbt_pre_tasks, Some(expected_tasks));
     }
@@ -195,7 +194,7 @@ mod test {
         let mut env = Env::new();
         env.insert("SBT_PRE_TASKS", OsString::from("task1 task2"));
         set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         let expected_tasks: Vec<String> = vec![String::from("task1"), String::from("task2")];
         assert_eq!(config.sbt_pre_tasks, Some(expected_tasks));
     }
@@ -207,7 +206,7 @@ mod test {
         env.insert("SBT_PRE_TASKS", OsString::from("task1 task2"));
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.pre-tasks", "task3 task4")]));
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         let expected_tasks: Vec<String> = vec![String::from("task3"), String::from("task4")];
         assert_eq!(config.sbt_pre_tasks, Some(expected_tasks));
     }
@@ -221,8 +220,11 @@ mod test {
             HashMap::from([("sbt.pre-tasks", "task1\" task2")]),
         );
         set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::InvalidPreTaskList(_));
+        let err = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap_err();
+        assert_err!(
+            err,
+            ReadSbtBuildpackConfigurationError::InvalidPreTaskList(_)
+        );
     }
 
     #[test]
@@ -231,8 +233,11 @@ mod test {
         let mut env = Env::new();
         env.insert("SBT_PRE_TASKS", OsString::from("task1\" task2"));
         set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::InvalidPreTaskList(_));
+        let err = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap_err();
+        assert_err!(
+            err,
+            ReadSbtBuildpackConfigurationError::InvalidPreTaskList(_)
+        );
     }
 
     #[test]
@@ -243,7 +248,7 @@ mod test {
         env.insert("SBT_PRE_TASKS", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
         assert_eq!(
-            create_build_config(app_dir.path(), &env)
+            read_sbt_buildpack_configuration(app_dir.path(), &env)
                 .unwrap()
                 .sbt_pre_tasks,
             Some(vec![invalid_unicode_os_string()
@@ -257,7 +262,7 @@ mod test {
         let app_dir = tempdir().unwrap();
         let env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_clean, None);
     }
 
@@ -267,7 +272,7 @@ mod test {
         let env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.clean", "true")]));
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_clean, Some(true));
     }
 
@@ -278,8 +283,8 @@ mod test {
         let env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.clean", "")]));
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::InvalidSbtClean(_));
+        let err = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap_err();
+        assert_err!(err, ReadSbtBuildpackConfigurationError::InvalidSbtClean(_));
     }
 
     #[test]
@@ -288,7 +293,7 @@ mod test {
         let mut env = Env::new();
         env.insert("SBT_CLEAN", OsString::from("true"));
         set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_clean, Some(true));
     }
 
@@ -299,8 +304,8 @@ mod test {
         let mut env = Env::new();
         env.insert("SBT_CLEAN", OsString::from("blah"));
         set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::InvalidSbtClean(_));
+        let err = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap_err();
+        assert_err!(err, ReadSbtBuildpackConfigurationError::InvalidSbtClean(_));
     }
 
     #[test]
@@ -310,8 +315,8 @@ mod test {
         let mut env = Env::new();
         env.insert("SBT_CLEAN", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::InvalidSbtClean(_));
+        let err = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap_err();
+        assert_err!(err, ReadSbtBuildpackConfigurationError::InvalidSbtClean(_));
     }
 
     #[test]
@@ -321,7 +326,7 @@ mod test {
         env.insert("SBT_CLEAN", OsString::from("false"));
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.clean", "true")]));
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_clean, Some(true));
     }
 
@@ -330,7 +335,7 @@ mod test {
         let app_dir = tempdir().unwrap();
         let env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         assert_eq!(config.sbt_tasks, None);
     }
 
@@ -340,7 +345,7 @@ mod test {
         let env = Env::new();
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.tasks", "task1 task2")]));
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         let expected_tasks: Vec<String> = vec![String::from("task1"), String::from("task2")];
         assert_eq!(config.sbt_tasks, Some(expected_tasks));
     }
@@ -351,7 +356,7 @@ mod test {
         let mut env = Env::new();
         env.insert("SBT_TASKS", OsString::from("task1 task2"));
         set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         let expected_tasks: Vec<String> = vec![String::from("task1"), String::from("task2")];
         assert_eq!(config.sbt_tasks, Some(expected_tasks));
     }
@@ -363,7 +368,7 @@ mod test {
         env.insert("SBT_TASKS", OsString::from("task1 task2"));
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.tasks", "task3 task4")]));
-        let config = create_build_config(app_dir.path(), &env).unwrap();
+        let config = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap();
         let expected_tasks: Vec<String> = vec![String::from("task3"), String::from("task4")];
         assert_eq!(config.sbt_tasks, Some(expected_tasks));
     }
@@ -374,8 +379,8 @@ mod test {
         let env = Env::new();
         set_system_properties(&app_dir, HashMap::from([("sbt.tasks", "task1\" task2")]));
         set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::InvalidTaskList(_));
+        let err = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap_err();
+        assert_err!(err, ReadSbtBuildpackConfigurationError::InvalidTaskList(_));
     }
 
     #[test]
@@ -384,8 +389,8 @@ mod test {
         let mut env = Env::new();
         env.insert("SBT_TASKS", OsString::from("task1\" task2"));
         set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::InvalidTaskList(_));
+        let err = read_sbt_buildpack_configuration(app_dir.path(), &env).unwrap_err();
+        assert_err!(err, ReadSbtBuildpackConfigurationError::InvalidTaskList(_));
     }
 
     #[test]
@@ -396,7 +401,9 @@ mod test {
         env.insert("SBT_TASKS", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
         assert_eq!(
-            create_build_config(app_dir.path(), &env).unwrap().sbt_tasks,
+            read_sbt_buildpack_configuration(app_dir.path(), &env)
+                .unwrap()
+                .sbt_tasks,
             Some(vec![invalid_unicode_os_string()
                 .to_string_lossy()
                 .to_string()])

@@ -1,4 +1,4 @@
-use crate::build_configuration::SbtBuildpackConfigurationError;
+use crate::build_configuration::ReadSbtBuildpackConfigurationError;
 use crate::sbt_version::ReadSbtVersionError;
 use buildpacks_jvm_shared::log_please_try_again_error;
 use indoc::formatdoc;
@@ -24,7 +24,7 @@ pub(crate) enum SbtBuildpackError {
     NoBuildpackPluginAvailable(String),
     MissingStageTask,
     AlreadyDefinedAsObject,
-    SbtBuildpackConfigurationError(SbtBuildpackConfigurationError),
+    ReadSbtBuildpackConfigurationError(ReadSbtBuildpackConfigurationError),
 }
 
 #[allow(clippy::too_many_lines)]
@@ -71,10 +71,10 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             " },
         ),
 
-        SbtBuildpackError::SbtBuildpackConfigurationError(error) => match error {
+        SbtBuildpackError::ReadSbtBuildpackConfigurationError(error) => match error {
 
-            SbtBuildpackConfigurationError::InvalidTaskList(error)
-            | SbtBuildpackConfigurationError::InvalidPreTaskList(error) => log_error(
+            ReadSbtBuildpackConfigurationError::InvalidTaskList(error)
+            | ReadSbtBuildpackConfigurationError::InvalidPreTaskList(error) => log_error(
                 "Could not parse list",
                 formatdoc! {"
                 Could not parse a value into a list of words.
@@ -84,8 +84,8 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             " },
             ),
 
-            SbtBuildpackConfigurationError::InvalidSbtClean(error)
-            | SbtBuildpackConfigurationError::InvalidAvailableAtLaunch(error) => log_error(
+            ReadSbtBuildpackConfigurationError::InvalidSbtClean(error)
+            | ReadSbtBuildpackConfigurationError::InvalidAvailableAtLaunch(error) => log_error(
                 "Could not parse boolean",
                 formatdoc! {"
                 Could not parse a value into a 'true' or 'false' value.
