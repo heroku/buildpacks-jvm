@@ -75,7 +75,11 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
 
             SbtBuildpackConfigurationError::CouldNotParseList(
                 error,
-            ) => log_error(
+            ) | SbtBuildpackConfigurationError::InvalidTaskList(
+                error,
+            ) | SbtBuildpackConfigurationError::InvalidPreTaskList(
+                error,
+            )=> log_error(
                 "Could not parse list",
                 formatdoc! {"
                 Could not parse a value into a list of words.
@@ -85,7 +89,10 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             " },
             ),
 
-            SbtBuildpackConfigurationError::CouldNotParseBoolean(
+
+            SbtBuildpackConfigurationError::InvalidSbtClean(
+                error,
+            ) |  SbtBuildpackConfigurationError::InvalidAvailableAtLaunch(
                 error,
             ) => log_error(
                 "Could not parse boolean",
@@ -96,6 +103,8 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 Details: {error}
             " },
             ),
+
+
 
             SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
                 variable_name,

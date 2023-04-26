@@ -21,7 +21,6 @@ pub(crate) struct SbtBuildpackConfiguration {
 pub(crate) enum SbtBuildpackConfigurationError {
     UnsupportedSbtVersion(Version),
     CouldNotConvertEnvironmentValueIntoString(String, OsString),
-    CouldNotParseBoolean(ParseBoolError),
     CouldNotParseList(shell_words::ParseError),
     CouldNotReadSbtOptsFile(std::io::Error),
     CouldNotParseListConfigurationFromSbtOptsFile(shell_words::ParseError),
@@ -29,6 +28,10 @@ pub(crate) enum SbtBuildpackConfigurationError {
     SbtPropertiesFileReadError(std::io::Error),
     MissingDeclaredSbtVersion,
     SbtVersionNotInSemverFormat(String, semver::Error),
+    InvalidPreTaskList(shell_words::ParseError),
+    InvalidTaskList(shell_words::ParseError),
+    InvalidSbtClean(ParseBoolError),
+    InvalidAvailableAtLaunch(ParseBoolError),
 }
 
 pub(crate) fn create_build_config<P: Into<PathBuf>>(
@@ -51,7 +54,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
                 .map(|os_string| os_string.to_string_lossy().to_string()))
             .map(|string| shell_words::split(&string))
             .transpose()
-            .map_err(SbtBuildpackConfigurationError::CouldNotParseList)?,
+            .map_err(SbtBuildpackConfigurationError::InvalidPreTaskList)?,
         sbt_tasks: properties
             .get("sbt.tasks")
             .cloned()
@@ -60,7 +63,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
                 .map(|os_string| os_string.to_string_lossy().to_string()))
             .map(|string| shell_words::split(&string))
             .transpose()
-            .map_err(SbtBuildpackConfigurationError::CouldNotParseList)?,
+            .map_err(SbtBuildpackConfigurationError::InvalidTaskList)?,
         sbt_clean: properties
             .get("sbt.clean")
             .cloned()
@@ -69,7 +72,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
                 .map(|os_string| os_string.to_string_lossy().to_string()))
             .map(|string| string.parse())
             .transpose()
-            .map_err(SbtBuildpackConfigurationError::CouldNotParseBoolean)?,
+            .map_err(SbtBuildpackConfigurationError::InvalidSbtClean)?,
         sbt_available_at_launch: properties
             .get("sbt.available-at-launch")
             .cloned()
@@ -78,7 +81,7 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
                 .map(|os_string| os_string.to_string_lossy().to_string()))
             .map(|string| string.parse())
             .transpose()
-            .map_err(SbtBuildpackConfigurationError::CouldNotParseBoolean)?,
+            .map_err(SbtBuildpackConfigurationError::InvalidAvailableAtLaunch)?,
         sbt_opts: read_sbt_opts(sbt_opts_file, env)?,
         sbt_version: read_sbt_version_from_sbt_build_properties(&app_dir).and_then(|version| {
             is_supported_sbt_version(&version)
@@ -434,7 +437,7 @@ mod tests {
         );
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
+        assert_err!(err, SbtBuildpackConfigurationError::InvalidPreTaskList(_));
     }
 
     #[test]
@@ -444,7 +447,7 @@ mod tests {
         env.insert("SBT_PRE_TASKS", OsString::from("task1\" task2"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
+        assert_err!(err, SbtBuildpackConfigurationError::InvalidPreTaskList(_));
     }
 
     #[test]
@@ -491,7 +494,7 @@ mod tests {
         set_sbt_version(&app_dir, "1.8.2");
         set_system_properties(&app_dir, HashMap::from([("sbt.clean", "")]));
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBoolean(_));
+        assert_err!(err, SbtBuildpackConfigurationError::InvalidSbtClean(_));
     }
 
     #[test]
@@ -512,7 +515,7 @@ mod tests {
         env.insert("SBT_CLEAN", OsString::from("blah"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBoolean(_));
+        assert_err!(err, SbtBuildpackConfigurationError::InvalidSbtClean(_));
     }
 
     #[test]
@@ -523,7 +526,7 @@ mod tests {
         env.insert("SBT_CLEAN", invalid_unicode_os_string());
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseBoolean(_));
+        assert_err!(err, SbtBuildpackConfigurationError::InvalidSbtClean(_));
     }
 
     #[test]
@@ -587,7 +590,7 @@ mod tests {
         set_system_properties(&app_dir, HashMap::from([("sbt.tasks", "task1\" task2")]));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
+        assert_err!(err, SbtBuildpackConfigurationError::InvalidTaskList(_));
     }
 
     #[test]
@@ -597,7 +600,7 @@ mod tests {
         env.insert("SBT_TASKS", OsString::from("task1\" task2"));
         set_sbt_version(&app_dir, "1.8.2");
         let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
+        assert_err!(err, SbtBuildpackConfigurationError::InvalidTaskList(_));
     }
 
     #[test]
