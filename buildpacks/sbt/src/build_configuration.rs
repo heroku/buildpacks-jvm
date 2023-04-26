@@ -79,7 +79,7 @@ fn read_system_properties(app_dir: &Path) -> HashMap<String, String> {
 }
 
 #[cfg(test)]
-mod tests {
+mod test {
     use super::create_build_config;
     use super::SbtBuildpackConfigurationError;
     use libcnb::Env;

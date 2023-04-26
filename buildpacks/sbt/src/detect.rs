@@ -35,7 +35,7 @@ fn has_sbt_extension(path: PathBuf) -> bool {
 }
 
 #[cfg(test)]
-mod tests {
+mod test {
     use super::is_sbt_project_directory;
     use std::fs::{create_dir, write};
     use tempfile::tempdir;

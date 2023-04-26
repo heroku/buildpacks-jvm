@@ -84,7 +84,7 @@ fn get_layer_env_scope(available_at_launch: Option<bool>) -> Scope {
 }
 
 #[cfg(test)]
-mod ivy_cache_layer_tests {
+mod test {
     use crate::layers::coursier_cache::create_coursier_layer_env;
     use libcnb::layer_env::Scope;
     use std::path::Path;

@@ -230,9 +230,11 @@ fn get_sbt_build_tasks(build_config: &SbtBuildpackConfiguration) -> Vec<String> 
 }
 
 #[cfg(test)]
-mod handle_sbt_error_tests {
+mod test {
+    use crate::build_configuration::SbtBuildpackConfiguration;
     use crate::errors::SbtBuildpackError;
     use crate::extract_error_from_sbt_output;
+    use crate::get_sbt_build_tasks;
     use indoc::formatdoc;
 
     #[test]
@@ -270,12 +272,6 @@ mod handle_sbt_error_tests {
             _ => panic!("expected ScalaBuildpackError::AlreadyDefinedAsObject"),
         };
     }
-}
-
-#[cfg(test)]
-mod get_sbt_build_tasks_tests {
-    use crate::build_configuration::SbtBuildpackConfiguration;
-    use crate::get_sbt_build_tasks;
 
     #[test]
     fn get_sbt_build_tasks_with_no_configured_options() {

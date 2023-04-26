@@ -226,7 +226,7 @@ fn sbt_launch_dir(layer_path: &Path) -> PathBuf {
 }
 
 #[cfg(test)]
-mod sbt_layer_tests {
+mod test {
     use crate::layers::sbt::{
         sbt_global_plugins_dir, write_buildpack_plugin, write_sbt_extras_to_layer,
     };
