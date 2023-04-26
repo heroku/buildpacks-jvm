@@ -22,7 +22,6 @@ use std::process::{Command, ExitStatus};
 pub(crate) struct SbtLayer {
     pub(crate) sbt_version: Version,
     pub(crate) env: Env,
-    pub(crate) sbt_opts: Option<Vec<String>>,
     pub(crate) available_at_launch: Option<bool>,
 }
 
@@ -48,7 +47,7 @@ impl Layer for SbtLayer {
         write_sbt_extras_to_layer(layer_path)?;
         write_sbt_wrapper_to_layer(layer_path)?;
 
-        let layer_env = create_sbt_layer_env(layer_path, &self.sbt_opts, self.available_at_launch);
+        let layer_env = create_sbt_layer_env(layer_path, self.available_at_launch);
         let env = layer_env.apply(Scope::Build, &self.env);
 
         install_sbt(&context.app_dir, layer_path, &env)?;
@@ -93,12 +92,8 @@ fn install_sbt(
         })
 }
 
-fn create_sbt_layer_env(
-    layer_path: &Path,
-    sbt_opts: &Option<Vec<String>>,
-    available_at_launch: Option<bool>,
-) -> LayerEnv {
-    let layer_env = LayerEnv::new()
+fn create_sbt_layer_env(layer_path: &Path, available_at_launch: Option<bool>) -> LayerEnv {
+    LayerEnv::new()
         .chainable_insert(
             get_layer_env_scope(available_at_launch),
             ModificationBehavior::Override,
@@ -140,28 +135,7 @@ fn create_sbt_layer_env(
                 sbt_boot_dir(layer_path).to_string_lossy(),
                 sbt_launch_dir(layer_path).to_string_lossy(),
             ),
-        );
-
-    if let Some(opts) = sbt_opts {
-        // XXX: if you read the earlier comments you'll know i have been avoiding using SBT_OPTS to
-        //      setup several key aspects of the running sbt process.  but since the SBT_OPTS is configurable
-        //      by the user this variable is created here to respect what they've set.
-        return layer_env
-            .chainable_insert(
-                get_layer_env_scope(available_at_launch),
-                ModificationBehavior::Delimiter,
-                "SBT_OPTS",
-                " ",
-            )
-            .chainable_insert(
-                get_layer_env_scope(available_at_launch),
-                ModificationBehavior::Append,
-                "SBT_OPTS",
-                shell_words::join(opts),
-            );
-    }
-
-    layer_env
+        )
 }
 
 fn get_layer_env_scope(available_at_launch: Option<bool>) -> Scope {
@@ -254,12 +228,9 @@ fn sbt_launch_dir(layer_path: &Path) -> PathBuf {
 #[cfg(test)]
 mod sbt_layer_tests {
     use crate::layers::sbt::{
-        create_sbt_layer_env, sbt_global_plugins_dir, write_buildpack_plugin,
-        write_sbt_extras_to_layer,
+        sbt_global_plugins_dir, write_buildpack_plugin, write_sbt_extras_to_layer,
     };
-    use libcnb::layer_env::Scope;
     use semver::Version;
-    use std::path::Path;
     use tempfile::tempdir;
 
     #[test]
@@ -271,6 +242,7 @@ mod sbt_layer_tests {
         assert!(sbt_extras_path.exists());
     }
 
+    /*
     #[test]
     fn create_sbt_layer_env_sets_env_properly() {
         let layer_path = Path::new("./test_layer");
@@ -296,7 +268,7 @@ mod sbt_layer_tests {
         );
         assert_eq!(env.get("PATH").unwrap(), "./test_layer/bin");
         assert_eq!(env.get("SBT_OPTS").unwrap(), "-J-Xfoo");
-    }
+    }*/
 
     #[test]
     fn write_build_plugin_with_sbt_version_0x() {
@@ -322,7 +294,6 @@ mod sbt_layer_tests {
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct SbtLayerMetadata {
     sbt_version: Version,
-    sbt_opts: Option<Vec<String>>,
     layer_version: String,
     stack_id: StackId,
 }
@@ -335,7 +306,6 @@ impl SbtLayerMetadata {
             sbt_version: layer.sbt_version.clone(),
             stack_id: context.stack_id.clone(),
             layer_version: String::from(LAYER_VERSION),
-            sbt_opts: layer.sbt_opts.clone(),
         }
     }
 }

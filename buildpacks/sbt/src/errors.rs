@@ -28,11 +28,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
     match error {
         ScalaBuildpackError::SbtBuildpackConfigurationError(error) => match error {
 
-            SbtBuildpackConfigurationError::CouldNotReadSbtOptsFile(error) => log_please_try_again_error(
-                "Unexpected I/O error",
-                "Could not read your application's .sbtopts file due to an unexpected I/O error.",
-                error,
-            ),
+
 
             SbtBuildpackConfigurationError::SbtPropertiesFileReadError(error) => log_please_try_again_error(
                 "Unexpected I/O error",
@@ -73,9 +69,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 );
             }
 
-            SbtBuildpackConfigurationError::CouldNotParseList(
-                error,
-            ) | SbtBuildpackConfigurationError::InvalidTaskList(
+            SbtBuildpackConfigurationError::InvalidTaskList(
                 error,
             ) | SbtBuildpackConfigurationError::InvalidPreTaskList(
                 error,
@@ -104,32 +98,6 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             " },
             ),
 
-
-
-            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
-                variable_name,
-                value,
-            ) => log_error(
-                format!("Invalid {variable_name} environment variable"),
-                formatdoc! {"
-                Could not convert the value of the environment variable {variable_name} into a string. Please
-                check that the value of {variable_name} only contains Unicode characters and try again.
-
-                Value: {value}
-            ", value = value.to_string_lossy() },
-            ),
-
-            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromSbtOptsFile(
-                error,
-            ) => log_error(
-                "Invalid .sbtopts file",
-                formatdoc! {"
-                Could not read the value of the .sbtopts file into a list of arguments. Please check
-                the file for mistakes and please try again.
-
-                Details: {error}
-            " },
-            ),
 
         },
 

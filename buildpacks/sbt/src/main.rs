@@ -144,7 +144,6 @@ fn create_sbt_layer(
         layer_name!("sbt"),
         SbtLayer {
             sbt_version: build_config.sbt_version.clone(),
-            sbt_opts: build_config.sbt_opts.clone(),
             available_at_launch: build_config.sbt_available_at_launch,
             env: env.clone(),
         },
@@ -274,7 +273,6 @@ mod get_sbt_build_tasks_tests {
             sbt_pre_tasks: None,
             sbt_tasks: None,
             sbt_clean: None,
-            sbt_opts: None,
             sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
@@ -288,7 +286,6 @@ mod get_sbt_build_tasks_tests {
             sbt_pre_tasks: Some(vec!["preTask".to_string()]),
             sbt_tasks: Some(vec!["task".to_string()]),
             sbt_clean: Some(true),
-            sbt_opts: None,
             sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
@@ -305,7 +302,6 @@ mod get_sbt_build_tasks_tests {
             sbt_pre_tasks: None,
             sbt_tasks: None,
             sbt_clean: Some(true),
-            sbt_opts: None,
             sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
@@ -322,7 +318,6 @@ mod get_sbt_build_tasks_tests {
             sbt_pre_tasks: None,
             sbt_tasks: None,
             sbt_clean: Some(false),
-            sbt_opts: None,
             sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
@@ -336,7 +331,6 @@ mod get_sbt_build_tasks_tests {
             sbt_pre_tasks: None,
             sbt_tasks: None,
             sbt_clean: None,
-            sbt_opts: None,
             sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
@@ -353,7 +347,6 @@ mod get_sbt_build_tasks_tests {
             sbt_pre_tasks: Some(vec!["preTask".to_string()]),
             sbt_tasks: None,
             sbt_clean: None,
-            sbt_opts: None,
             sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };
@@ -370,7 +363,6 @@ mod get_sbt_build_tasks_tests {
             sbt_pre_tasks: None,
             sbt_tasks: None,
             sbt_clean: Some(true),
-            sbt_opts: None,
             sbt_available_at_launch: None,
             sbt_version: Version::new(0, 0, 0),
         };

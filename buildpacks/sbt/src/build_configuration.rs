@@ -1,8 +1,7 @@
 use libcnb::Env;
 use semver::{Version, VersionReq};
 use std::collections::HashMap;
-use std::ffi::OsString;
-use std::fs::{read_to_string, File};
+use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::str::ParseBoolError;
 
@@ -12,7 +11,6 @@ pub(crate) struct SbtBuildpackConfiguration {
     pub(crate) sbt_pre_tasks: Option<Vec<String>>,
     pub(crate) sbt_tasks: Option<Vec<String>>,
     pub(crate) sbt_clean: Option<bool>,
-    pub(crate) sbt_opts: Option<Vec<String>>,
     pub(crate) sbt_available_at_launch: Option<bool>,
     pub(crate) sbt_version: Version,
 }
@@ -20,10 +18,6 @@ pub(crate) struct SbtBuildpackConfiguration {
 #[derive(Debug)]
 pub(crate) enum SbtBuildpackConfigurationError {
     UnsupportedSbtVersion(Version),
-    CouldNotConvertEnvironmentValueIntoString(String, OsString),
-    CouldNotParseList(shell_words::ParseError),
-    CouldNotReadSbtOptsFile(std::io::Error),
-    CouldNotParseListConfigurationFromSbtOptsFile(shell_words::ParseError),
     InvalidSbtPropertiesFile(java_properties::PropertiesError),
     SbtPropertiesFileReadError(std::io::Error),
     MissingDeclaredSbtVersion,
@@ -39,7 +33,6 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
     env: &Env,
 ) -> Result<SbtBuildpackConfiguration, SbtBuildpackConfigurationError> {
     let app_dir = app_dir.into();
-    let sbt_opts_file = app_dir.join(".sbtopts");
     let properties = read_system_properties(&app_dir);
 
     Ok(SbtBuildpackConfiguration {
@@ -82,7 +75,6 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
             .map(|string| string.parse())
             .transpose()
             .map_err(SbtBuildpackConfigurationError::InvalidAvailableAtLaunch)?,
-        sbt_opts: read_sbt_opts(sbt_opts_file, env)?,
         sbt_version: read_sbt_version_from_sbt_build_properties(&app_dir).and_then(|version| {
             is_supported_sbt_version(&version)
                 .then_some(version.clone())
@@ -97,43 +89,6 @@ fn read_system_properties(app_dir: &Path) -> HashMap<String, String> {
     File::open(app_dir.join("system.properties"))
         .map(|file| java_properties::read(file).unwrap_or_default())
         .unwrap_or_default()
-}
-
-fn read_sbt_opts(
-    opts_file: PathBuf,
-    env: &Env,
-) -> Result<Option<Vec<String>>, SbtBuildpackConfigurationError> {
-    let mut sbt_opts: Vec<String> = vec![];
-    let mut configured = false;
-
-    if opts_file.exists() {
-        let contents = read_to_string(opts_file)
-            .map_err(SbtBuildpackConfigurationError::CouldNotReadSbtOptsFile)?;
-        let mut opts = shell_words::split(&contents).map_err(
-            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromSbtOptsFile,
-        )?;
-        sbt_opts.append(&mut opts);
-        configured = true;
-    }
-
-    if let Some(value) = env.get("SBT_OPTS") {
-        let value = value.into_string().map_err(|e| {
-            SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(
-                "SBT_OPTS".to_string(),
-                e,
-            )
-        })?;
-        let mut opts = shell_words::split(&value)
-            .map_err(SbtBuildpackConfigurationError::CouldNotParseList)?;
-        sbt_opts.append(&mut opts);
-        configured = true;
-    }
-
-    if configured {
-        Ok(Some(sbt_opts))
-    } else {
-        Ok(None)
-    }
 }
 
 fn read_sbt_version_from_sbt_build_properties(
@@ -616,87 +571,5 @@ mod tests {
                 .to_string_lossy()
                 .to_string()])
         );
-    }
-
-    #[test]
-    fn create_build_config_when_sbt_opts_is_not_configured() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        assert_eq!(config.sbt_opts, None);
-    }
-
-    #[test]
-    fn create_build_config_when_sbt_opts_is_configured_from_env() {
-        let app_dir = tempdir().unwrap();
-        let mut env = Env::new();
-        env.insert("SBT_OPTS", OsString::from("-J-Xfoo -J-Xbar"));
-        set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        let expected_opts: Vec<String> = vec![String::from("-J-Xfoo"), String::from("-J-Xbar")];
-        assert_eq!(config.sbt_opts, Some(expected_opts));
-    }
-
-    #[test]
-    fn create_build_config_when_sbt_opts_is_configured_from_sbtopts_file() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        write(app_dir.path().join(".sbtopts"), "-J-Xzip -J-Xzap").unwrap();
-        set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        let expected_opts: Vec<String> = vec![String::from("-J-Xzip"), String::from("-J-Xzap")];
-        assert_eq!(config.sbt_opts, Some(expected_opts));
-    }
-
-    #[test]
-    fn create_build_config_when_sbt_opts_is_configured_from_both_env_and_sbtopts_file() {
-        let app_dir = tempdir().unwrap();
-        let mut env = Env::new();
-        env.insert("SBT_OPTS", OsString::from("-J-Xfoo -J-Xbar"));
-        write(app_dir.path().join(".sbtopts"), "-J-Xzip -J-Xzap").unwrap();
-        set_sbt_version(&app_dir, "1.8.2");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        let expected_opts: Vec<String> = vec![
-            String::from("-J-Xzip"),
-            String::from("-J-Xzap"),
-            String::from("-J-Xfoo"),
-            String::from("-J-Xbar"),
-        ];
-        assert_eq!(config.sbt_opts, Some(expected_opts));
-    }
-
-    #[test]
-    fn create_build_config_raises_error_when_sbtopts_file_values_cannot_be_split() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        write(app_dir.path().join(".sbtopts"), "-J-Xzip\" -J-Xzap").unwrap();
-        set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(
-            err,
-            SbtBuildpackConfigurationError::CouldNotParseListConfigurationFromSbtOptsFile(_)
-        );
-    }
-
-    #[test]
-    fn create_build_config_raises_error_when_sbt_opts_environment_variable_cannot_be_split() {
-        let app_dir = tempdir().unwrap();
-        let mut env = Env::new();
-        env.insert("SBT_OPTS", OsString::from("-J-Xfoo\" -J-Xbar"));
-        set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotParseList(_));
-    }
-
-    #[test]
-    fn create_build_config_raises_error_when_sbt_opts_environment_variable_contains_non_unicode_bytes(
-    ) {
-        let app_dir = tempdir().unwrap();
-        let mut env = Env::new();
-        env.insert("SBT_OPTS", invalid_unicode_os_string());
-        set_sbt_version(&app_dir, "1.8.2");
-        let err = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(err, SbtBuildpackConfigurationError::CouldNotConvertEnvironmentValueIntoString(name, _) if name == "SBT_OPTS");
     }
 }
