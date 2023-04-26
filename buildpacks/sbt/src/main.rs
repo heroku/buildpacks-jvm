@@ -10,6 +10,7 @@ mod detect;
 mod errors;
 mod layers;
 mod sbt_version;
+mod system_properties;
 
 use crate::build_configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfiguration};
 use crate::cleanup::{
@@ -21,6 +22,7 @@ use crate::layers::coursier_cache::CoursierCacheLayer;
 use crate::layers::ivy_cache::IvyCacheLayer;
 use crate::layers::sbt::SbtLayer;
 use crate::sbt_version::{is_supported_sbt_version, read_sbt_version};
+use crate::system_properties::read_system_properties;
 use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -64,9 +66,12 @@ impl Buildpack for ScalaBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let build_config =
-            read_sbt_buildpack_configuration(&context.app_dir, context.platform.env())
-                .map_err(SbtBuildpackError::ReadSbtBuildpackConfigurationError)?;
+        let build_config = read_system_properties(&context.app_dir)
+            .map_err(SbtBuildpackError::ReadSystemPropertiesError)
+            .and_then(|system_properties| {
+                read_sbt_buildpack_configuration(&system_properties, context.platform.env())
+                    .map_err(SbtBuildpackError::ReadSbtBuildpackConfigurationError)
+            })?;
 
         let sbt_version =
             read_sbt_version(&context.app_dir).map_err(SbtBuildpackError::ReadSbtVersionError)?;

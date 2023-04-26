@@ -1,5 +1,6 @@
 use crate::build_configuration::ReadSbtBuildpackConfigurationError;
 use crate::sbt_version::ReadSbtVersionError;
+use crate::system_properties::ReadSystemPropertiesError;
 use buildpacks_jvm_shared::log_please_try_again_error;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
@@ -25,6 +26,7 @@ pub(crate) enum SbtBuildpackError {
     MissingStageTask,
     AlreadyDefinedAsObject,
     ReadSbtBuildpackConfigurationError(ReadSbtBuildpackConfigurationError),
+    ReadSystemPropertiesError(ReadSystemPropertiesError),
 }
 
 #[allow(clippy::too_many_lines)]
@@ -94,25 +96,29 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 Details: {error}
             " },
             ),
+        },
 
-            ReadSbtBuildpackConfigurationError::CouldNotReadSystemProperties(error) => log_please_try_again_error(
-                "Failed to read system.properties",
-                "An unexpected error occurred while reading the system.properties file.",
-                error,
-            ),
+        SbtBuildpackError::ReadSystemPropertiesError(error) => {
+            match error {
+                ReadSystemPropertiesError::IoError(error) => log_please_try_again_error(
+                    "Failed to read system.properties",
+                    "An unexpected error occurred while reading the system.properties file.",
+                    error,
+                ),
 
-            ReadSbtBuildpackConfigurationError::CouldNotParseSystemProperties(error) => {
-                log_error(
-                    "Invalid system.properties file",
-                    formatdoc! {"
+                ReadSystemPropertiesError::ParseError(error) => {
+                    log_error(
+                        "Invalid system.properties file",
+                        formatdoc! {"
                             Your system.properties file could not be parsed.
                             Please ensure it is properly formatted and try again.
 
                             Details: {error}
                         "}
-                );
+                    );
+                }
             }
-        },
+        }
 
         SbtBuildpackError::SbtBuildIoError(error) => log_error(
             "Running sbt failed",
