@@ -1,9 +1,4 @@
 use crate::errors::SbtBuildpackError;
-use crate::errors::SbtBuildpackError::{
-    CouldNotSetExecutableBitForSbtExtrasScript, CouldNotSetExecutableBitForSbtWrapperScript,
-    CouldNotWriteSbtExtrasScript, CouldNotWriteSbtPlugin, CouldNotWriteSbtWrapperScript,
-    NoBuildpackPluginAvailable, SbtInstallIoError, SbtInstallUnexpectedExitCode,
-};
 use crate::ScalaBuildpack;
 use libcnb::build::BuildContext;
 use libcnb::data::buildpack::StackId;
@@ -82,12 +77,12 @@ fn install_sbt(
         .envs(env)
         .spawn()
         .and_then(|mut child| child.wait())
-        .map_err(SbtInstallIoError)
+        .map_err(SbtBuildpackError::SbtInstallIoError)
         .and_then(|exit_status| {
             if exit_status.success() {
                 Ok(exit_status)
             } else {
-                Err(SbtInstallUnexpectedExitCode(exit_status))
+                Err(SbtBuildpackError::SbtInstallUnexpectedExitCode(exit_status))
             }
         })
 }
@@ -149,20 +144,22 @@ fn get_layer_env_scope(available_at_launch: Option<bool>) -> Scope {
 fn write_sbt_extras_to_layer(layer_path: &Path) -> Result<(), SbtBuildpackError> {
     let sbt_extras_path = sbt_extras_path(layer_path);
     let contents = include_bytes!("../../assets/sbt-extras.sh");
-    create_dir_all(layer_bin_dir(layer_path)).map_err(CouldNotWriteSbtExtrasScript)?;
-    write(&sbt_extras_path, contents).map_err(CouldNotWriteSbtExtrasScript)?;
+    create_dir_all(layer_bin_dir(layer_path))
+        .map_err(SbtBuildpackError::CouldNotWriteSbtExtrasScript)?;
+    write(&sbt_extras_path, contents).map_err(SbtBuildpackError::CouldNotWriteSbtExtrasScript)?;
     set_permissions(&sbt_extras_path, Permissions::from_mode(0o755))
-        .map_err(CouldNotSetExecutableBitForSbtExtrasScript)?;
+        .map_err(SbtBuildpackError::CouldNotSetExecutableBitForSbtExtrasScript)?;
     Ok(())
 }
 
 fn write_sbt_wrapper_to_layer(layer_path: &Path) -> Result<(), SbtBuildpackError> {
     let sbt_path = sbt_path(layer_path);
     let contents = include_bytes!("../../assets/sbt-wrapper.sh");
-    create_dir_all(layer_bin_dir(layer_path)).map_err(CouldNotWriteSbtWrapperScript)?;
-    write(&sbt_path, contents).map_err(CouldNotWriteSbtWrapperScript)?;
+    create_dir_all(layer_bin_dir(layer_path))
+        .map_err(SbtBuildpackError::CouldNotWriteSbtWrapperScript)?;
+    write(&sbt_path, contents).map_err(SbtBuildpackError::CouldNotWriteSbtWrapperScript)?;
     set_permissions(&sbt_path, Permissions::from_mode(0o755))
-        .map_err(CouldNotSetExecutableBitForSbtWrapperScript)?;
+        .map_err(SbtBuildpackError::CouldNotSetExecutableBitForSbtWrapperScript)?;
     Ok(())
 }
 
@@ -171,14 +168,14 @@ fn write_buildpack_plugin(
     sbt_version: &Version,
 ) -> Result<(), SbtBuildpackError> {
     let plugin_directory = sbt_global_plugins_dir(layer_path);
-    create_dir_all(&plugin_directory).map_err(CouldNotWriteSbtPlugin)?;
+    create_dir_all(&plugin_directory).map_err(SbtBuildpackError::CouldNotWriteSbtPlugin)?;
 
     let contents = get_buildpack_plugin_contents(sbt_version)?;
     write(
         plugin_directory.join("HerokuBuildpackPlugin.scala"),
         contents,
     )
-    .map_err(CouldNotWriteSbtPlugin)?;
+    .map_err(SbtBuildpackError::CouldNotWriteSbtPlugin)?;
 
     Ok(())
 }
@@ -193,7 +190,9 @@ fn get_buildpack_plugin_contents(
         Version { major: 1, .. } => Ok(include_bytes!(
             "../../assets/heroku_buildpack_plugin_sbt_v1.scala"
         )),
-        _ => Err(NoBuildpackPluginAvailable(sbt_version.to_string())),
+        _ => Err(SbtBuildpackError::NoBuildpackPluginAvailable(
+            sbt_version.to_string(),
+        )),
     }
 }
 
