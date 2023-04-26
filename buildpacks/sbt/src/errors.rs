@@ -1,12 +1,16 @@
 use crate::build_configuration::SbtBuildpackConfigurationError;
+use crate::sbt_version::ReadSbtVersionError;
 use buildpacks_jvm_shared::log_please_try_again_error;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
+use semver::Version;
 use std::fmt::Debug;
 use std::process::ExitStatus;
 
 #[derive(Debug)]
 pub(crate) enum ScalaBuildpackError {
+    ReadSbtVersionError(ReadSbtVersionError),
+    UnsupportedSbtVersion(Version),
     DetectPhaseIoError(std::io::Error),
     CouldNotWriteSbtExtrasScript(std::io::Error),
     CouldNotSetExecutableBitForSbtExtrasScript(std::io::Error),
@@ -26,23 +30,20 @@ pub(crate) enum ScalaBuildpackError {
 #[allow(clippy::too_many_lines)]
 pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
     match error {
-        ScalaBuildpackError::SbtBuildpackConfigurationError(error) => match error {
-
-
-
-            SbtBuildpackConfigurationError::SbtPropertiesFileReadError(error) => log_please_try_again_error(
+        ScalaBuildpackError::ReadSbtVersionError(error) => match error {
+            ReadSbtVersionError::CouldNotReadBuildProperties(error) => log_please_try_again_error(
                 "Unexpected I/O error",
                 "Could not read your application's system.properties file due to an unexpected I/O error.",
                 error
             ),
 
-            SbtBuildpackConfigurationError::InvalidSbtPropertiesFile(error) => log_please_try_again_error(
+            ReadSbtVersionError::CouldNotParseBuildProperties(error) => log_please_try_again_error(
                 "Unexpected I/O error",
                 "Could not read your application's project/build.properties file due to an unexpected I/O error.",
                 error
             ),
 
-            SbtBuildpackConfigurationError::MissingDeclaredSbtVersion => log_error(
+            ReadSbtVersionError::MissingVersionProperty => log_error(
                 "No sbt version defined",
                 formatdoc! { "
                 Your scala project must include project/build.properties and define a value for
@@ -50,14 +51,7 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             " },
             ),
 
-            SbtBuildpackConfigurationError::UnsupportedSbtVersion(version) => log_error(
-                "Unsupported sbt version",
-                formatdoc! { "
-                You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
-                file. You must use a version of sbt between 0.11.0 and 1.x.
-            " },
-            ),
-            SbtBuildpackConfigurationError::SbtVersionNotInSemverFormat(version, error) => {
+            ReadSbtVersionError::CouldNotParseVersion(version, error) => {
                 log_error(
                     "Unexpected version parse error",
                     formatdoc! { "
@@ -68,12 +62,19 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             " },
                 );
             }
+        },
+        ScalaBuildpackError::UnsupportedSbtVersion(version) => log_error(
+            "Unsupported sbt version",
+            formatdoc! { "
+                You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
+                file. You must use a version of sbt between 0.11.0 and 1.x.
+            " },
+        ),
 
-            SbtBuildpackConfigurationError::InvalidTaskList(
-                error,
-            ) | SbtBuildpackConfigurationError::InvalidPreTaskList(
-                error,
-            )=> log_error(
+        ScalaBuildpackError::SbtBuildpackConfigurationError(error) => match error {
+
+            SbtBuildpackConfigurationError::InvalidTaskList(error)
+            | SbtBuildpackConfigurationError::InvalidPreTaskList(error) => log_error(
                 "Could not parse list",
                 formatdoc! {"
                 Could not parse a value into a list of words.
@@ -83,12 +84,8 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             " },
             ),
 
-
-            SbtBuildpackConfigurationError::InvalidSbtClean(
-                error,
-            ) |  SbtBuildpackConfigurationError::InvalidAvailableAtLaunch(
-                error,
-            ) => log_error(
+            SbtBuildpackConfigurationError::InvalidSbtClean(error)
+            | SbtBuildpackConfigurationError::InvalidAvailableAtLaunch(error) => log_error(
                 "Could not parse boolean",
                 formatdoc! {"
                 Could not parse a value into a 'true' or 'false' value.
@@ -97,8 +94,6 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
                 Details: {error}
             " },
             ),
-
-
         },
 
         ScalaBuildpackError::SbtBuildIoError(error) => log_error(
@@ -206,7 +201,6 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
             "An unexpected error occurred while attempting to install the Heroku plugin for sbt.",
             error,
         ),
-
 
         ScalaBuildpackError::DetectPhaseIoError(error) => log_please_try_again_error(
             "Unexpected I/O error",

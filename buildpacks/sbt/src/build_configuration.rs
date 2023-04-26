@@ -1,5 +1,4 @@
 use libcnb::Env;
-use semver::{Version, VersionReq};
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::{Path, PathBuf};
@@ -12,16 +11,10 @@ pub(crate) struct SbtBuildpackConfiguration {
     pub(crate) sbt_tasks: Option<Vec<String>>,
     pub(crate) sbt_clean: Option<bool>,
     pub(crate) sbt_available_at_launch: Option<bool>,
-    pub(crate) sbt_version: Version,
 }
 
 #[derive(Debug)]
 pub(crate) enum SbtBuildpackConfigurationError {
-    UnsupportedSbtVersion(Version),
-    InvalidSbtPropertiesFile(java_properties::PropertiesError),
-    SbtPropertiesFileReadError(std::io::Error),
-    MissingDeclaredSbtVersion,
-    SbtVersionNotInSemverFormat(String, semver::Error),
     InvalidPreTaskList(shell_words::ParseError),
     InvalidTaskList(shell_words::ParseError),
     InvalidSbtClean(ParseBoolError),
@@ -75,13 +68,6 @@ pub(crate) fn create_build_config<P: Into<PathBuf>>(
             .map(|string| string.parse())
             .transpose()
             .map_err(SbtBuildpackConfigurationError::InvalidAvailableAtLaunch)?,
-        sbt_version: read_sbt_version_from_sbt_build_properties(&app_dir).and_then(|version| {
-            is_supported_sbt_version(&version)
-                .then_some(version.clone())
-                .ok_or(SbtBuildpackConfigurationError::UnsupportedSbtVersion(
-                    version,
-                ))
-        })?,
     })
 }
 
@@ -91,48 +77,11 @@ fn read_system_properties(app_dir: &Path) -> HashMap<String, String> {
         .unwrap_or_default()
 }
 
-fn read_sbt_version_from_sbt_build_properties(
-    app_dir: &Path,
-) -> Result<Version, SbtBuildpackConfigurationError> {
-    File::open(app_dir.join("project").join("build.properties"))
-        .map_err(SbtBuildpackConfigurationError::SbtPropertiesFileReadError)
-        .and_then(|file| {
-            java_properties::read(file)
-                .map_err(SbtBuildpackConfigurationError::InvalidSbtPropertiesFile)
-        })
-        .and_then(|properties| {
-            properties
-                .get("sbt.version")
-                .filter(|value| !value.is_empty())
-                .ok_or(SbtBuildpackConfigurationError::MissingDeclaredSbtVersion)
-                .cloned()
-        })
-        .and_then(|version_string| {
-            // While sbt didn't officially adopt semver until the 1.x version, all the published
-            // versions before 1.x followed semver coincidentally.
-            Version::parse(&version_string).map_err(|error| {
-                SbtBuildpackConfigurationError::SbtVersionNotInSemverFormat(version_string, error)
-            })
-        })
-}
-
-fn is_supported_sbt_version(version: &Version) -> bool {
-    // sbt versions outside of the 1.x series aren't supported by the upstream project anymore.
-    // However, we supported 0.11.x through 0.13.x before and can continue supporting them for now.
-    [">=0.11, <=0.13", ">=1, <2"]
-        .into_iter()
-        .map(|version_req_string| {
-            VersionReq::parse(version_req_string).expect("valid semver version requirement")
-        })
-        .any(|version_req| version_req.matches(version))
-}
-
 #[cfg(test)]
 mod tests {
     use super::create_build_config;
     use super::SbtBuildpackConfigurationError;
     use libcnb::Env;
-    use semver::Version;
     use std::collections::HashMap;
     use std::ffi::{OsStr, OsString};
     use std::fs::{create_dir, write, File};
@@ -169,126 +118,6 @@ mod tests {
     fn invalid_unicode_os_string() -> OsString {
         let invalid_unicode_sequence = [0x66, 0x6f, 0x80, 0x6f];
         OsStr::from_bytes(&invalid_unicode_sequence[..]).to_os_string()
-    }
-
-    /*
-    #[test]
-    fn create_build_config_raises_error_if_project_is_missing_the_sbt_build_properties_file() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        let error = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(error, SbtBuildpackConfigurationError::MissingSbtBuildPropertiesFile);
-    }
-     */
-
-    #[test]
-    fn create_build_config_raises_error_when_sbt_version_property_is_missing_from_the_sbt_build_properties_file(
-    ) {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        let sbt_project_path = app_dir.path().join("project");
-        create_dir(&sbt_project_path).unwrap();
-        write(sbt_project_path.join("build.properties"), "").unwrap();
-        let error = create_build_config(app_dir.path().to_path_buf(), &env).unwrap_err();
-        assert_err!(
-            error,
-            SbtBuildpackConfigurationError::MissingDeclaredSbtVersion
-        );
-    }
-
-    #[test]
-    fn create_build_config_raises_error_when_sbt_version_property_is_declared_with_empty_value() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        let sbt_project_path = app_dir.path().join("project");
-        create_dir(&sbt_project_path).unwrap();
-        write(sbt_project_path.join("build.properties"), b"sbt.version=").unwrap();
-        let error = create_build_config(app_dir.path().to_path_buf(), &env).unwrap_err();
-        assert_err!(
-            error,
-            SbtBuildpackConfigurationError::MissingDeclaredSbtVersion
-        );
-    }
-
-    #[test]
-    fn create_build_config_with_valid_sbt_version_when_version_has_garbage_whitespace() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        let sbt_project_path = app_dir.path().join("project");
-        create_dir(&sbt_project_path).unwrap();
-        write(
-            sbt_project_path.join("build.properties"),
-            b"   sbt.version   =  1.8.2\n\n",
-        )
-        .unwrap();
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        assert_eq!(config.sbt_version, Version::parse("1.8.2").unwrap());
-    }
-
-    #[test]
-    fn create_build_config_raises_error_when_sbt_version_outside_the_lower_bound_of_the_required_v0_range(
-    ) {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        set_sbt_version(&app_dir, "0.10.99");
-        let error = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(error, SbtBuildpackConfigurationError::UnsupportedSbtVersion(version) if version == "0.10.99".parse().unwrap());
-    }
-
-    #[test]
-    fn create_build_config_with_sbt_version_within_the_lower_bound_of_the_required_v0_range() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        set_sbt_version(&app_dir, "0.11.0");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        assert_eq!(config.sbt_version, Version::parse("0.11.0").unwrap());
-    }
-
-    #[test]
-    fn create_build_config_with_sbt_version_within_the_upper_bound_of_the_required_v0_range() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        set_sbt_version(&app_dir, "0.13.99");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        assert_eq!(config.sbt_version, Version::parse("0.13.99").unwrap());
-    }
-
-    #[test]
-    fn create_build_config_raises_error_when_sbt_version_outside_the_upper_bound_of_the_required_v0_range(
-    ) {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        set_sbt_version(&app_dir, "0.14.0");
-        let error = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(error, SbtBuildpackConfigurationError::UnsupportedSbtVersion(version) if version == "0.14.0".parse().unwrap());
-    }
-
-    #[test]
-    fn create_build_config_with_sbt_version_within_the_lower_bound_of_the_required_v1_range() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        set_sbt_version(&app_dir, "1.0.0");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        assert_eq!(config.sbt_version, Version::parse("1.0.0").unwrap());
-    }
-
-    #[test]
-    fn create_build_config_with_sbt_version_within_the_upper_bound_of_the_required_v1_range() {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        set_sbt_version(&app_dir, "1.99.99");
-        let config = create_build_config(app_dir.path(), &env).unwrap();
-        assert_eq!(config.sbt_version, Version::parse("1.99.99").unwrap());
-    }
-
-    #[test]
-    fn create_build_config_raises_error_when_sbt_version_outside_the_upper_bound_of_the_required_v1_range(
-    ) {
-        let app_dir = tempdir().unwrap();
-        let env = Env::new();
-        set_sbt_version(&app_dir, "2.0.0");
-        let error = create_build_config(app_dir.path(), &env).unwrap_err();
-        assert_err!(error, SbtBuildpackConfigurationError::UnsupportedSbtVersion(version) if version == "2.0.0".parse().unwrap());
     }
 
     #[test]

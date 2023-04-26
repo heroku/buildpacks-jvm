@@ -9,6 +9,7 @@ mod cleanup;
 mod detect;
 mod errors;
 mod layers;
+mod sbt_version;
 
 use crate::build_configuration::{create_build_config, SbtBuildpackConfiguration};
 use crate::cleanup::{
@@ -19,6 +20,7 @@ use crate::errors::{log_user_errors, ScalaBuildpackError};
 use crate::layers::coursier_cache::CoursierCacheLayer;
 use crate::layers::ivy_cache::IvyCacheLayer;
 use crate::layers::sbt::SbtLayer;
+use crate::sbt_version::{is_supported_sbt_version, read_sbt_version};
 use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -30,6 +32,7 @@ use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::command::CommandExt;
 use libherokubuildpack::error::on_error as on_buildpack_error;
 use libherokubuildpack::log::{log_header, log_info, log_warning};
+use semver::Version;
 use std::io::{stderr, stdout};
 use std::path::PathBuf;
 use std::process::Command;
@@ -64,10 +67,19 @@ impl Buildpack for ScalaBuildpack {
         let build_config = create_build_config(&context.app_dir, context.platform.env())
             .map_err(ScalaBuildpackError::SbtBuildpackConfigurationError)?;
 
+        let sbt_version =
+            read_sbt_version(&context.app_dir).map_err(ScalaBuildpackError::ReadSbtVersionError)?;
+
+        if !is_supported_sbt_version(&sbt_version) {
+            Err(ScalaBuildpackError::UnsupportedSbtVersion(
+                sbt_version.clone(),
+            ))?;
+        }
+
         let env = Env::from_current();
         let env = create_coursier_cache_layer(&context, &env, &build_config)?;
         let env = create_ivy_cache_layer(&context, &env, &build_config)?;
-        let env = create_sbt_layer(&context, &env, &build_config)?;
+        let env = create_sbt_layer(&context, &env, sbt_version, &build_config)?;
 
         if let Err(error) = cleanup_any_existing_native_packager_directories(&context.app_dir) {
             log_warning(
@@ -137,14 +149,15 @@ fn create_ivy_cache_layer(
 fn create_sbt_layer(
     context: &BuildContext<ScalaBuildpack>,
     env: &Env,
+    sbt_version: Version,
     build_config: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<ScalaBuildpackError>> {
     log_header("Installing sbt");
     let sbt_layer = context.handle_layer(
         layer_name!("sbt"),
         SbtLayer {
-            sbt_version: build_config.sbt_version.clone(),
             available_at_launch: build_config.sbt_available_at_launch,
+            sbt_version,
             env: env.clone(),
         },
     )?;
@@ -264,7 +277,6 @@ mod handle_sbt_error_tests {
 mod get_sbt_build_tasks_tests {
     use crate::build_configuration::SbtBuildpackConfiguration;
     use crate::get_sbt_build_tasks;
-    use semver::Version;
 
     #[test]
     fn get_sbt_build_tasks_with_no_configured_options() {
@@ -274,7 +286,6 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: None,
             sbt_available_at_launch: None,
-            sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(get_sbt_build_tasks(&config), vec!["compile", "stage"]);
     }
@@ -287,7 +298,6 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: Some(vec!["task".to_string()]),
             sbt_clean: Some(true),
             sbt_available_at_launch: None,
-            sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
             get_sbt_build_tasks(&config),
@@ -303,7 +313,6 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: Some(true),
             sbt_available_at_launch: None,
-            sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
             get_sbt_build_tasks(&config),
@@ -319,7 +328,6 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: Some(false),
             sbt_available_at_launch: None,
-            sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(get_sbt_build_tasks(&config), vec!["compile", "stage"]);
     }
@@ -332,7 +340,6 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: None,
             sbt_available_at_launch: None,
-            sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
             get_sbt_build_tasks(&config),
@@ -348,7 +355,6 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: None,
             sbt_available_at_launch: None,
-            sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
             get_sbt_build_tasks(&config),
@@ -364,7 +370,6 @@ mod get_sbt_build_tasks_tests {
             sbt_tasks: None,
             sbt_clean: Some(true),
             sbt_available_at_launch: None,
-            sbt_version: Version::new(0, 0, 0),
         };
         assert_eq!(
             get_sbt_build_tasks(&config),
