@@ -64,7 +64,7 @@ impl Buildpack for SbtBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let build_config = read_system_properties(&context.app_dir)
+        let buildpack_configuration = read_system_properties(&context.app_dir)
             .map_err(SbtBuildpackError::ReadSystemPropertiesError)
             .and_then(|system_properties| {
                 read_sbt_buildpack_configuration(&system_properties, context.platform.env())
@@ -82,9 +82,9 @@ impl Buildpack for SbtBuildpack {
         }
 
         let env = Env::from_current();
-        let env = create_coursier_cache_layer(&context, &env, &build_config)?;
-        let env = create_ivy_cache_layer(&context, &env, &build_config)?;
-        let env = create_sbt_layer(&context, &env, sbt_version, &build_config)?;
+        let env = create_coursier_cache_layer(&context, &env, &buildpack_configuration)?;
+        let env = create_ivy_cache_layer(&context, &env, &buildpack_configuration)?;
+        let env = create_sbt_layer(&context, &env, sbt_version, &buildpack_configuration)?;
 
         if let Err(error) = cleanup_native_packager_directories(&context.app_dir) {
             log_warning(
@@ -98,7 +98,7 @@ impl Buildpack for SbtBuildpack {
             );
         }
 
-        run_sbt_tasks(&context.app_dir, &build_config, &env)?;
+        run_sbt_tasks(&context.app_dir, &buildpack_configuration, &env)?;
 
         log_info("Dropping compilation artifacts from the build");
         if let Err(error) = cleanup_compilation_artifacts(&context.app_dir) {
@@ -126,12 +126,12 @@ buildpack_main!(SbtBuildpack);
 fn create_coursier_cache_layer(
     context: &BuildContext<SbtBuildpack>,
     env: &Env,
-    build_config: &SbtBuildpackConfiguration,
+    buildpack_configuration: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<SbtBuildpackError>> {
     let coursier_cache_layer = context.handle_layer(
         layer_name!("coursier_cache"),
         CoursierCacheLayer {
-            available_at_launch: build_config.sbt_available_at_launch,
+            available_at_launch: buildpack_configuration.sbt_available_at_launch,
         },
     )?;
     Ok(coursier_cache_layer.env.apply(Scope::Build, env))
@@ -140,12 +140,12 @@ fn create_coursier_cache_layer(
 fn create_ivy_cache_layer(
     context: &BuildContext<SbtBuildpack>,
     env: &Env,
-    build_config: &SbtBuildpackConfiguration,
+    buildpack_configuration: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<SbtBuildpackError>> {
     let ivy_cache_layer = context.handle_layer(
         layer_name!("ivy_cache"),
         IvyCacheLayer {
-            available_at_launch: build_config.sbt_available_at_launch,
+            available_at_launch: buildpack_configuration.sbt_available_at_launch,
         },
     )?;
     Ok(ivy_cache_layer.env.apply(Scope::Build, env))
@@ -155,13 +155,13 @@ fn create_sbt_layer(
     context: &BuildContext<SbtBuildpack>,
     env: &Env,
     sbt_version: Version,
-    build_config: &SbtBuildpackConfiguration,
+    buildpack_configuration: &SbtBuildpackConfiguration,
 ) -> Result<Env, Error<SbtBuildpackError>> {
     log_header("Installing sbt");
     let sbt_layer = context.handle_layer(
         layer_name!("sbt"),
         SbtLayer {
-            available_at_launch: build_config.sbt_available_at_launch,
+            available_at_launch: buildpack_configuration.sbt_available_at_launch,
             sbt_version,
             env: env.clone(),
         },
@@ -171,12 +171,12 @@ fn create_sbt_layer(
 
 fn run_sbt_tasks(
     app_dir: &PathBuf,
-    build_config: &SbtBuildpackConfiguration,
+    buildpack_configuration: &SbtBuildpackConfiguration,
     env: &Env,
 ) -> Result<(), SbtBuildpackError> {
     log_header("Building Scala project");
 
-    let tasks = get_sbt_build_tasks(build_config);
+    let tasks = get_sbt_build_tasks(buildpack_configuration);
     log_info(format!("Running: sbt {}", shell_words::join(&tasks)));
 
     let output = Command::new("sbt")
