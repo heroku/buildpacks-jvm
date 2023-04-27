@@ -70,7 +70,7 @@ pub(crate) fn read_sbt_buildpack_configuration(
 #[cfg(test)]
 mod test {
     use super::read_sbt_buildpack_configuration;
-    use crate::build_configuration::ReadSbtBuildpackConfigurationError;
+    use crate::configuration::ReadSbtBuildpackConfigurationError;
     use libcnb::Env;
     use std::collections::HashMap;
     use std::ffi::OsString;

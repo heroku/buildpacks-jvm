@@ -1,4 +1,4 @@
-use crate::build_configuration::ReadSbtBuildpackConfigurationError;
+use crate::configuration::ReadSbtBuildpackConfigurationError;
 use crate::layers::sbt_extras::SbtExtrasLayerError;
 use crate::sbt_version::ReadSbtVersionError;
 use crate::system_properties::ReadSystemPropertiesError;

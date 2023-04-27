@@ -4,16 +4,16 @@
 // This lint is too noisy and enforces a style that reduces readability in many cases.
 #![allow(clippy::module_name_repetitions)]
 
-mod build_configuration;
 mod cleanup;
+mod configuration;
 mod detect;
 mod errors;
 mod layers;
 mod sbt_version;
 mod system_properties;
 
-use crate::build_configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfiguration};
 use crate::cleanup::{cleanup_compilation_artifacts, cleanup_native_packager_directories};
+use crate::configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfiguration};
 use crate::detect::is_sbt_project_directory;
 use crate::errors::{log_user_errors, SbtBuildpackError};
 use crate::layers::dependency_resolver_home::{DependencyResolver, DependencyResolverHomeLayer};
@@ -244,7 +244,7 @@ fn get_sbt_build_tasks(build_config: &SbtBuildpackConfiguration) -> Vec<String> 
 
 #[cfg(test)]
 mod test {
-    use crate::build_configuration::SbtBuildpackConfiguration;
+    use crate::configuration::SbtBuildpackConfiguration;
     use crate::errors::SbtBuildpackError;
     use crate::extract_error_from_sbt_output;
     use crate::get_sbt_build_tasks;
