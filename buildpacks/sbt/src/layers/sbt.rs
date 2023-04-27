@@ -40,12 +40,6 @@ impl Layer for SbtLayer {
                 LayerEnv::new()
                     .chainable_insert(
                         get_layer_env_scope(self.available_at_launch),
-                        ModificationBehavior::Override,
-                        "SBT_HOME",
-                        layer_path,
-                    )
-                    .chainable_insert(
-                        get_layer_env_scope(self.available_at_launch),
                         ModificationBehavior::Delimiter,
                         "SBT_OPTS",
                         " ",
