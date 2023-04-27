@@ -16,7 +16,7 @@ use std::process::{Command, ExitStatus};
 pub(crate) struct SbtLayer {
     pub(crate) sbt_version: Version,
     pub(crate) env: Env,
-    pub(crate) available_at_launch: Option<bool>,
+    pub(crate) available_at_launch: bool,
 }
 
 impl Layer for SbtLayer {
@@ -26,7 +26,7 @@ impl Layer for SbtLayer {
     fn types(&self) -> LayerTypes {
         LayerTypes {
             build: true,
-            launch: self.available_at_launch.unwrap_or_default(),
+            launch: self.available_at_launch,
             cache: true,
         }
     }
@@ -78,7 +78,7 @@ fn install_sbt(app_dir: &PathBuf, env: &Env) -> Result<ExitStatus, SbtBuildpackE
         })
 }
 
-fn create_sbt_layer_env(layer_path: &Path, available_at_launch: Option<bool>) -> LayerEnv {
+fn create_sbt_layer_env(layer_path: &Path, available_at_launch: bool) -> LayerEnv {
     LayerEnv::new()
         .chainable_insert(
             get_layer_env_scope(available_at_launch),
@@ -124,8 +124,8 @@ fn create_sbt_layer_env(layer_path: &Path, available_at_launch: Option<bool>) ->
         )
 }
 
-fn get_layer_env_scope(available_at_launch: Option<bool>) -> Scope {
-    if available_at_launch.unwrap_or_default() {
+fn get_layer_env_scope(available_at_launch: bool) -> Scope {
+    if available_at_launch {
         Scope::All
     } else {
         Scope::Build

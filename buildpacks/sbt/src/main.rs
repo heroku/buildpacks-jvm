@@ -171,7 +171,9 @@ fn create_sbt_layer(
     let sbt_layer = context.handle_layer(
         layer_name!("sbt"),
         SbtLayer {
-            available_at_launch: buildpack_configuration.sbt_available_at_launch,
+            available_at_launch: buildpack_configuration
+                .sbt_available_at_launch
+                .unwrap_or_default(),
             sbt_version,
             env: env.clone(),
         },
