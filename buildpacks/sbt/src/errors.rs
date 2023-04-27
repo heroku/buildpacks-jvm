@@ -31,19 +31,11 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
     match error {
         SbtBuildpackError::SbtExtrasLayerError(error) => {
             match error {
-                SbtExtrasLayerError::CouldNotWriteScript(error) => log_please_try_again_error(
-                    "Failed to write sbt-extras script",
-                    "An unexpected error occurred while writing the sbt-extras script.",
+                SbtExtrasLayerError::CouldNotWriteScript(error) | SbtExtrasLayerError::CouldNotSetPermissions(error) | SbtExtrasLayerError::CouldNotCreateLaunchersDir(error) => log_please_try_again_error(
+                    "Unexpected I/O error",
+                    "An unexpected I/O error occurred while setting up sbt-extras.",
                     error,
                 ),
-
-                SbtExtrasLayerError::CouldNotSetPermissions(error) => {
-                    log_please_try_again_error(
-                        "Unexpected I/O error",
-                        "Failed to set file permissions for the sbt-extras script.",
-                        error,
-                    );
-                }
             }
         }
 

@@ -55,10 +55,9 @@ impl Layer for SbtLayer {
                         ModificationBehavior::Append,
                         "SBT_OPTS",
                         format!(
-                            "-sbt-dir {} -sbt-boot {} -sbt-launch-dir {}",
+                            "-sbt-dir {} -sbt-boot {}",
                             sbt_global_dir(layer_path).to_string_lossy(),
                             sbt_boot_dir(layer_path).to_string_lossy(),
-                            sbt_launch_dir(layer_path).to_string_lossy(),
                         ),
                     ),
             )
@@ -132,10 +131,6 @@ fn sbt_global_dir(layer_path: &Path) -> PathBuf {
 
 fn sbt_global_plugins_dir(layer_path: &Path) -> PathBuf {
     sbt_global_dir(layer_path).join("plugins")
-}
-
-fn sbt_launch_dir(layer_path: &Path) -> PathBuf {
-    layer_path.join("launch")
 }
 
 #[cfg(test)]
