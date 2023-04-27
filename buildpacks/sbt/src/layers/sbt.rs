@@ -71,11 +71,10 @@ fn install_sbt(app_dir: &PathBuf, env: &Env) -> Result<ExitStatus, SbtBuildpackE
         .and_then(|mut child| child.wait())
         .map_err(SbtBuildpackError::SbtInstallIoError)
         .and_then(|exit_status| {
-            if exit_status.success() {
-                Ok(exit_status)
-            } else {
-                Err(SbtBuildpackError::SbtInstallUnexpectedExitCode(exit_status))
-            }
+            exit_status
+                .success()
+                .then_some(exit_status)
+                .ok_or(SbtBuildpackError::SbtInstallUnexpectedExitCode(exit_status))
         })
 }
 
