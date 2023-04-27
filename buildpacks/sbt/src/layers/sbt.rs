@@ -54,8 +54,9 @@ impl Layer for SbtLayer {
                         get_layer_env_scope(self.available_at_launch),
                         ModificationBehavior::Append,
                         "SBT_OPTS",
+                        // See: https://www.scala-sbt.org/1.x/docs/Command-Line-Reference.html
                         format!(
-                            "-sbt-dir {} -sbt-boot {}",
+                            "-Dsbt.global.base={} -Dsbt.boot.directory={}",
                             sbt_global_dir(layer_path).to_string_lossy(),
                             sbt_boot_dir(layer_path).to_string_lossy(),
                         ),
