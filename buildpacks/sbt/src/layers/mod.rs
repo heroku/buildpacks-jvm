@@ -1,4 +1,3 @@
-pub(crate) mod coursier_cache;
-pub(crate) mod ivy_cache;
+pub(crate) mod dependency_resolver_home;
 pub(crate) mod sbt;
 pub(crate) mod sbt_extras;

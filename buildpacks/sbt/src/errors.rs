@@ -18,8 +18,6 @@ pub(crate) enum SbtBuildpackError {
     DetectPhaseIoError(std::io::Error),
     SbtBuildIoError(std::io::Error),
     SbtBuildUnexpectedExitCode(ExitStatus),
-    SbtInstallIoError(std::io::Error),
-    SbtInstallUnexpectedExitCode(ExitStatus),
     CouldNotWriteSbtPlugin(std::io::Error),
     NoBuildpackPluginAvailable(String),
     MissingStageTask,
@@ -198,24 +196,6 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 https://help.heroku.com
             "},
         ),
-
-        SbtBuildpackError::SbtInstallIoError(error) => log_please_try_again_error(
-            "Failed to install sbt",
-            "An unexpected error occurred while attempting to install sbt.",
-            error,
-        ),
-
-        SbtBuildpackError::SbtInstallUnexpectedExitCode(exit_status) => {
-            log_please_try_again_error(
-                "Failed to install sbt",
-                formatdoc! { "
-              An unexpected exit code was reported while attempting to install sbt.
-
-              sbt exit code was: {exit_code}
-            ", exit_code = exit_code_string(exit_status) },
-                error,
-            );
-        }
 
         SbtBuildpackError::CouldNotWriteSbtPlugin(error) => log_please_try_again_error(
             "Failed to install Heroku plugin for sbt",

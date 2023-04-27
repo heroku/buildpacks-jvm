@@ -5,17 +5,14 @@ use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::{Buildpack, Env};
-use libherokubuildpack::log::log_info;
+use libcnb::Buildpack;
 use semver::Version;
 use serde::{Deserialize, Serialize};
 use std::fs::{create_dir_all, write};
 use std::path::{Path, PathBuf};
-use std::process::{Command, ExitStatus};
 
 pub(crate) struct SbtLayer {
     pub(crate) sbt_version: Version,
-    pub(crate) env: Env,
     pub(crate) available_at_launch: bool,
 }
 
@@ -36,16 +33,35 @@ impl Layer for SbtLayer {
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
-        log_info(format!("Setting up sbt {}", self.sbt_version));
-
-        let layer_env = create_sbt_layer_env(layer_path, self.available_at_launch);
-        let env = layer_env.apply(Scope::Build, &self.env);
-
-        install_sbt(&context.app_dir, &env)?;
         write_buildpack_plugin(layer_path, &self.sbt_version)?;
 
         LayerResultBuilder::new(SbtLayerMetadata::current(self, context))
-            .env(layer_env)
+            .env(
+                LayerEnv::new()
+                    .chainable_insert(
+                        get_layer_env_scope(self.available_at_launch),
+                        ModificationBehavior::Override,
+                        "SBT_HOME",
+                        layer_path,
+                    )
+                    .chainable_insert(
+                        get_layer_env_scope(self.available_at_launch),
+                        ModificationBehavior::Delimiter,
+                        "SBT_OPTS",
+                        " ",
+                    )
+                    .chainable_insert(
+                        get_layer_env_scope(self.available_at_launch),
+                        ModificationBehavior::Append,
+                        "SBT_OPTS",
+                        format!(
+                            "-sbt-dir {} -sbt-boot {} -sbt-launch-dir {}",
+                            sbt_global_dir(layer_path).to_string_lossy(),
+                            sbt_boot_dir(layer_path).to_string_lossy(),
+                            sbt_launch_dir(layer_path).to_string_lossy(),
+                        ),
+                    ),
+            )
             .build()
     }
 
@@ -54,74 +70,15 @@ impl Layer for SbtLayer {
         context: &BuildContext<Self::Buildpack>,
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
-        if layer_data.content_metadata.metadata == SbtLayerMetadata::current(self, context) {
-            log_info(format!("Reusing sbt {}", self.sbt_version));
-            return Ok(ExistingLayerStrategy::Keep);
-        }
-        Ok(ExistingLayerStrategy::Recreate)
+        let strategy =
+            if layer_data.content_metadata.metadata == SbtLayerMetadata::current(self, context) {
+                ExistingLayerStrategy::Keep
+            } else {
+                ExistingLayerStrategy::Recreate
+            };
+
+        Ok(strategy)
     }
-}
-
-fn install_sbt(app_dir: &PathBuf, env: &Env) -> Result<ExitStatus, SbtBuildpackError> {
-    Command::new("sbt")
-        .current_dir(app_dir)
-        .args(["sbtVersion"])
-        .envs(env)
-        .spawn()
-        .and_then(|mut child| child.wait())
-        .map_err(SbtBuildpackError::SbtInstallIoError)
-        .and_then(|exit_status| {
-            exit_status
-                .success()
-                .then_some(exit_status)
-                .ok_or(SbtBuildpackError::SbtInstallUnexpectedExitCode(exit_status))
-        })
-}
-
-fn create_sbt_layer_env(layer_path: &Path, available_at_launch: bool) -> LayerEnv {
-    LayerEnv::new()
-        .chainable_insert(
-            get_layer_env_scope(available_at_launch),
-            ModificationBehavior::Override,
-            "SBT_HOME",
-            layer_path,
-        )
-        .chainable_insert(
-            get_layer_env_scope(available_at_launch),
-            ModificationBehavior::Delimiter,
-            "PATH",
-            ":",
-        )
-        .chainable_insert(
-            get_layer_env_scope(available_at_launch),
-            ModificationBehavior::Prepend,
-            "PATH",
-            layer_bin_dir(layer_path),
-        )
-        // XXX: i wanted to pass these through using SBT_OPTS instead of SBTX_OPTS but everytime i
-        //      tried this the settings were not respected. i believe this is a bug in this section
-        //      of the sbt-extras script:
-        //      - https://github.com/dwijnand/sbt-extras/blob/master/sbt#L541-L565
-        //
-        //      the SBTX_OPTS variable works fine though so that's being used to ensure that sbt is pointing
-        //      at all the right folders
-        .chainable_insert(
-            get_layer_env_scope(available_at_launch),
-            ModificationBehavior::Delimiter,
-            "SBTX_OPTS",
-            " ",
-        )
-        .chainable_insert(
-            get_layer_env_scope(available_at_launch),
-            ModificationBehavior::Append,
-            "SBTX_OPTS",
-            format!(
-                "-sbt-dir {} -sbt-boot {} -sbt-launch-dir {}",
-                sbt_global_dir(layer_path).to_string_lossy(),
-                sbt_boot_dir(layer_path).to_string_lossy(),
-                sbt_launch_dir(layer_path).to_string_lossy(),
-            ),
-        )
 }
 
 fn get_layer_env_scope(available_at_launch: bool) -> Scope {
@@ -165,10 +122,6 @@ fn get_buildpack_plugin_contents(
     }
 }
 
-fn layer_bin_dir(layer_path: &Path) -> PathBuf {
-    layer_path.join("bin")
-}
-
 fn sbt_boot_dir(layer_path: &Path) -> PathBuf {
     layer_path.join("boot")
 }
@@ -190,34 +143,6 @@ mod test {
     use crate::layers::sbt::{sbt_global_plugins_dir, write_buildpack_plugin};
     use semver::Version;
     use tempfile::tempdir;
-
-    /*
-    #[test]
-    fn create_sbt_layer_env_sets_env_properly() {
-        let layer_path = Path::new("./test_layer");
-        let layer_env = create_sbt_layer_env(layer_path, &None, None);
-        let env = layer_env.apply_to_empty(Scope::Build);
-        assert_eq!(
-            env.get("SBTX_OPTS").unwrap(),
-            "-sbt-dir ./test_layer/global -sbt-boot ./test_layer/boot -sbt-launch-dir ./test_layer/launch"
-        );
-        assert_eq!(env.get("PATH").unwrap(), "./test_layer/bin");
-        assert!(!env.contains_key("SBT_OPTS"));
-    }
-
-    #[test]
-    fn create_sbt_layer_env_sets_env_properly_when_sbt_opts_are_present() {
-        let layer_path = Path::new("./test_layer");
-        let sbt_opts = vec!["-J-Xfoo".to_string()];
-        let layer_env = create_sbt_layer_env(layer_path, &Some(sbt_opts), None);
-        let env = layer_env.apply_to_empty(Scope::Build);
-        assert_eq!(
-            env.get("SBTX_OPTS").unwrap(),
-            "-sbt-dir ./test_layer/global -sbt-boot ./test_layer/boot -sbt-launch-dir ./test_layer/launch"
-        );
-        assert_eq!(env.get("PATH").unwrap(), "./test_layer/bin");
-        assert_eq!(env.get("SBT_OPTS").unwrap(), "-J-Xfoo");
-    }*/
 
     #[test]
     fn write_build_plugin_with_sbt_version_0x() {

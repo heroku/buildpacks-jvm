@@ -16,8 +16,7 @@ use crate::build_configuration::{read_sbt_buildpack_configuration, SbtBuildpackC
 use crate::cleanup::{cleanup_compilation_artifacts, cleanup_native_packager_directories};
 use crate::detect::is_sbt_project_directory;
 use crate::errors::{log_user_errors, SbtBuildpackError};
-use crate::layers::coursier_cache::CoursierCacheLayer;
-use crate::layers::ivy_cache::IvyCacheLayer;
+use crate::layers::dependency_resolver_home::{DependencyResolver, DependencyResolverHomeLayer};
 use crate::layers::sbt::SbtLayer;
 use crate::layers::sbt_extras::SbtExtrasLayer;
 use crate::sbt_version::{is_supported_sbt_version, read_sbt_version};
@@ -83,16 +82,42 @@ impl Buildpack for SbtBuildpack {
         }
 
         let env = Env::from_current();
-        let env = create_coursier_cache_layer(&context, &env, &buildpack_configuration)?;
-        let env = create_ivy_cache_layer(&context, &env, &buildpack_configuration)?;
 
-        let sbt_extras_layer_data = context.handle_layer(
-            layer_name!("sbt-extras"),
-            SbtExtrasLayer {
-                available_at_launch: true,
-            },
-        )?;
-        let env = sbt_extras_layer_data.env.apply(Scope::Build, &env);
+        let env = context
+            .handle_layer(
+                layer_name!("ivy-home"),
+                DependencyResolverHomeLayer {
+                    available_at_launch: buildpack_configuration
+                        .sbt_available_at_launch
+                        .unwrap_or_default(),
+                    dependency_resolver: DependencyResolver::Ivy,
+                },
+            )?
+            .env
+            .apply(Scope::Build, &env);
+
+        let env = context
+            .handle_layer(
+                layer_name!("coursier-home"),
+                DependencyResolverHomeLayer {
+                    available_at_launch: buildpack_configuration
+                        .sbt_available_at_launch
+                        .unwrap_or_default(),
+                    dependency_resolver: DependencyResolver::Coursier,
+                },
+            )?
+            .env
+            .apply(Scope::Build, &env);
+
+        let env = context
+            .handle_layer(
+                layer_name!("sbt-extras"),
+                SbtExtrasLayer {
+                    available_at_launch: true,
+                },
+            )?
+            .env
+            .apply(Scope::Build, &env);
 
         let env = create_sbt_layer(&context, &env, sbt_version, &buildpack_configuration)?;
 
@@ -133,34 +158,6 @@ impl Buildpack for SbtBuildpack {
 
 buildpack_main!(SbtBuildpack);
 
-fn create_coursier_cache_layer(
-    context: &BuildContext<SbtBuildpack>,
-    env: &Env,
-    buildpack_configuration: &SbtBuildpackConfiguration,
-) -> Result<Env, Error<SbtBuildpackError>> {
-    let coursier_cache_layer = context.handle_layer(
-        layer_name!("coursier_cache"),
-        CoursierCacheLayer {
-            available_at_launch: buildpack_configuration.sbt_available_at_launch,
-        },
-    )?;
-    Ok(coursier_cache_layer.env.apply(Scope::Build, env))
-}
-
-fn create_ivy_cache_layer(
-    context: &BuildContext<SbtBuildpack>,
-    env: &Env,
-    buildpack_configuration: &SbtBuildpackConfiguration,
-) -> Result<Env, Error<SbtBuildpackError>> {
-    let ivy_cache_layer = context.handle_layer(
-        layer_name!("ivy_cache"),
-        IvyCacheLayer {
-            available_at_launch: buildpack_configuration.sbt_available_at_launch,
-        },
-    )?;
-    Ok(ivy_cache_layer.env.apply(Scope::Build, env))
-}
-
 fn create_sbt_layer(
     context: &BuildContext<SbtBuildpack>,
     env: &Env,
@@ -169,13 +166,12 @@ fn create_sbt_layer(
 ) -> Result<Env, Error<SbtBuildpackError>> {
     log_header("Installing sbt");
     let sbt_layer = context.handle_layer(
-        layer_name!("sbt"),
+        layer_name!("sbt_home"),
         SbtLayer {
             available_at_launch: buildpack_configuration
                 .sbt_available_at_launch
                 .unwrap_or_default(),
             sbt_version,
-            env: env.clone(),
         },
     )?;
     Ok(sbt_layer.env.apply(Scope::Build, env))
