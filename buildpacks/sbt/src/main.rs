@@ -19,6 +19,7 @@ use crate::errors::{log_user_errors, SbtBuildpackError};
 use crate::layers::coursier_cache::CoursierCacheLayer;
 use crate::layers::ivy_cache::IvyCacheLayer;
 use crate::layers::sbt::SbtLayer;
+use crate::layers::sbt_extras::SbtExtrasLayer;
 use crate::sbt_version::{is_supported_sbt_version, read_sbt_version};
 use crate::system_properties::read_system_properties;
 use indoc::formatdoc;
@@ -84,6 +85,15 @@ impl Buildpack for SbtBuildpack {
         let env = Env::from_current();
         let env = create_coursier_cache_layer(&context, &env, &buildpack_configuration)?;
         let env = create_ivy_cache_layer(&context, &env, &buildpack_configuration)?;
+
+        let sbt_extras_layer_data = context.handle_layer(
+            layer_name!("sbt-extras"),
+            SbtExtrasLayer {
+                available_at_launch: true,
+            },
+        )?;
+        let env = sbt_extras_layer_data.env.apply(Scope::Build, &env);
+
         let env = create_sbt_layer(&context, &env, sbt_version, &buildpack_configuration)?;
 
         if let Err(error) = cleanup_native_packager_directories(&context.app_dir) {

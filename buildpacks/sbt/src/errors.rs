@@ -1,4 +1,5 @@
 use crate::build_configuration::ReadSbtBuildpackConfigurationError;
+use crate::layers::sbt_extras::SbtExtrasLayerError;
 use crate::sbt_version::ReadSbtVersionError;
 use crate::system_properties::ReadSystemPropertiesError;
 use buildpacks_jvm_shared::log_please_try_again_error;
@@ -10,14 +11,11 @@ use std::process::ExitStatus;
 
 #[derive(Debug)]
 pub(crate) enum SbtBuildpackError {
+    SbtExtrasLayerError(SbtExtrasLayerError),
     ReadSbtVersionError(ReadSbtVersionError),
     UnsupportedSbtVersion(Version),
     UnknownSbtVersion,
     DetectPhaseIoError(std::io::Error),
-    CouldNotWriteSbtExtrasScript(std::io::Error),
-    CouldNotSetExecutableBitForSbtExtrasScript(std::io::Error),
-    CouldNotWriteSbtWrapperScript(std::io::Error),
-    CouldNotSetExecutableBitForSbtWrapperScript(std::io::Error),
     SbtBuildIoError(std::io::Error),
     SbtBuildUnexpectedExitCode(ExitStatus),
     SbtInstallIoError(std::io::Error),
@@ -33,6 +31,24 @@ pub(crate) enum SbtBuildpackError {
 #[allow(clippy::too_many_lines)]
 pub(crate) fn log_user_errors(error: SbtBuildpackError) {
     match error {
+        SbtBuildpackError::SbtExtrasLayerError(error) => {
+            match error {
+                SbtExtrasLayerError::CouldNotWriteScript(error) => log_please_try_again_error(
+                    "Failed to write sbt-extras script",
+                    "An unexpected error occurred while writing the sbt-extras script.",
+                    error,
+                ),
+
+                SbtExtrasLayerError::CouldNotSetPermissions(error) => {
+                    log_please_try_again_error(
+                        "Unexpected I/O error",
+                        "Failed to set file permissions for the sbt-extras script.",
+                        error,
+                    );
+                }
+            }
+        }
+
         SbtBuildpackError::ReadSbtVersionError(error) => match error {
             ReadSbtVersionError::CouldNotReadBuildProperties(error) => log_please_try_again_error(
                 "Unexpected I/O error",
@@ -182,34 +198,6 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 https://help.heroku.com
             "},
         ),
-
-        SbtBuildpackError::CouldNotWriteSbtExtrasScript(error) => log_please_try_again_error(
-            "Failed to write sbt-extras script",
-            "An unexpected error occurred while writing the sbt-extras script.",
-            error,
-        ),
-
-        SbtBuildpackError::CouldNotSetExecutableBitForSbtExtrasScript(error) => {
-            log_please_try_again_error(
-                "Unexpected I/O error",
-                "Failed to set executable permissions for the sbt-extras script.",
-                error,
-            );
-        }
-
-        SbtBuildpackError::CouldNotWriteSbtWrapperScript(error) => log_please_try_again_error(
-            "Failed to write sbt-extras script",
-            "An unexpected error occurred while writing the sbt wrapper script.",
-            error,
-        ),
-
-        SbtBuildpackError::CouldNotSetExecutableBitForSbtWrapperScript(error) => {
-            log_please_try_again_error(
-                "Unexpected I/O error",
-                "Failed to set executable permissions for the sbt wrapper script.",
-                error,
-            );
-        }
 
         SbtBuildpackError::SbtInstallIoError(error) => log_please_try_again_error(
             "Failed to install sbt",

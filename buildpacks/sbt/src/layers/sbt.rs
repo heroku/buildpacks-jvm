@@ -9,8 +9,7 @@ use libcnb::{Buildpack, Env};
 use libherokubuildpack::log::log_info;
 use semver::Version;
 use serde::{Deserialize, Serialize};
-use std::fs::{create_dir_all, set_permissions, write, Permissions};
-use std::os::unix::fs::PermissionsExt;
+use std::fs::{create_dir_all, write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 
@@ -39,13 +38,10 @@ impl Layer for SbtLayer {
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
         log_info(format!("Setting up sbt {}", self.sbt_version));
 
-        write_sbt_extras_to_layer(layer_path)?;
-        write_sbt_wrapper_to_layer(layer_path)?;
-
         let layer_env = create_sbt_layer_env(layer_path, self.available_at_launch);
         let env = layer_env.apply(Scope::Build, &self.env);
 
-        install_sbt(&context.app_dir, layer_path, &env)?;
+        install_sbt(&context.app_dir, &env)?;
         write_buildpack_plugin(layer_path, &self.sbt_version)?;
 
         LayerResultBuilder::new(SbtLayerMetadata::current(self, context))
@@ -66,12 +62,8 @@ impl Layer for SbtLayer {
     }
 }
 
-fn install_sbt(
-    app_dir: &PathBuf,
-    layer_path: &Path,
-    env: &Env,
-) -> Result<ExitStatus, SbtBuildpackError> {
-    Command::new(sbt_path(layer_path))
+fn install_sbt(app_dir: &PathBuf, env: &Env) -> Result<ExitStatus, SbtBuildpackError> {
+    Command::new("sbt")
         .current_dir(app_dir)
         .args(["sbtVersion"])
         .envs(env)
@@ -141,28 +133,6 @@ fn get_layer_env_scope(available_at_launch: Option<bool>) -> Scope {
     }
 }
 
-fn write_sbt_extras_to_layer(layer_path: &Path) -> Result<(), SbtBuildpackError> {
-    let sbt_extras_path = sbt_extras_path(layer_path);
-    let contents = include_bytes!("../../assets/sbt-extras.sh");
-    create_dir_all(layer_bin_dir(layer_path))
-        .map_err(SbtBuildpackError::CouldNotWriteSbtExtrasScript)?;
-    write(&sbt_extras_path, contents).map_err(SbtBuildpackError::CouldNotWriteSbtExtrasScript)?;
-    set_permissions(&sbt_extras_path, Permissions::from_mode(0o755))
-        .map_err(SbtBuildpackError::CouldNotSetExecutableBitForSbtExtrasScript)?;
-    Ok(())
-}
-
-fn write_sbt_wrapper_to_layer(layer_path: &Path) -> Result<(), SbtBuildpackError> {
-    let sbt_path = sbt_path(layer_path);
-    let contents = include_bytes!("../../assets/sbt-wrapper.sh");
-    create_dir_all(layer_bin_dir(layer_path))
-        .map_err(SbtBuildpackError::CouldNotWriteSbtWrapperScript)?;
-    write(&sbt_path, contents).map_err(SbtBuildpackError::CouldNotWriteSbtWrapperScript)?;
-    set_permissions(&sbt_path, Permissions::from_mode(0o755))
-        .map_err(SbtBuildpackError::CouldNotSetExecutableBitForSbtWrapperScript)?;
-    Ok(())
-}
-
 fn write_buildpack_plugin(
     layer_path: &Path,
     sbt_version: &Version,
@@ -200,14 +170,6 @@ fn layer_bin_dir(layer_path: &Path) -> PathBuf {
     layer_path.join("bin")
 }
 
-fn sbt_extras_path(layer_path: &Path) -> PathBuf {
-    layer_bin_dir(layer_path).join("sbt-extras")
-}
-
-fn sbt_path(layer_path: &Path) -> PathBuf {
-    layer_bin_dir(layer_path).join("sbt")
-}
-
 fn sbt_boot_dir(layer_path: &Path) -> PathBuf {
     layer_path.join("boot")
 }
@@ -226,20 +188,9 @@ fn sbt_launch_dir(layer_path: &Path) -> PathBuf {
 
 #[cfg(test)]
 mod test {
-    use crate::layers::sbt::{
-        sbt_global_plugins_dir, write_buildpack_plugin, write_sbt_extras_to_layer,
-    };
+    use crate::layers::sbt::{sbt_global_plugins_dir, write_buildpack_plugin};
     use semver::Version;
     use tempfile::tempdir;
-
-    #[test]
-    fn test_sbt_extras_is_added_to_layer() {
-        let tmp = tempdir().unwrap();
-        let layer_path = tmp.path();
-        let sbt_extras_path = layer_path.join("bin/sbt-extras");
-        write_sbt_extras_to_layer(layer_path).unwrap();
-        assert!(sbt_extras_path.exists());
-    }
 
     /*
     #[test]
