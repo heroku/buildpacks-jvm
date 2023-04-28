@@ -25,42 +25,35 @@ pub(crate) fn read_sbt_buildpack_configuration(
     env: &Env,
 ) -> Result<SbtBuildpackConfiguration, ReadSbtBuildpackConfigurationError> {
     Ok(SbtBuildpackConfiguration {
-        sbt_project: system_properties.get("sbt.project").cloned().or(env
-            .get("SBT_PROJECT")
-            .map(|os_string| os_string.to_string_lossy().to_string())),
+        sbt_project: system_properties
+            .get("sbt.project")
+            .cloned()
+            .or(env.get_string_lossy("SBT_PROJECT")),
         sbt_pre_tasks: system_properties
             .get("sbt.pre-tasks")
             .cloned()
-            .or(env
-                .get("SBT_PRE_TASKS")
-                .map(|os_string| os_string.to_string_lossy().to_string()))
+            .or(env.get_string_lossy("SBT_PRE_TASKS"))
             .map(|string| shell_words::split(&string))
             .transpose()
             .map_err(ReadSbtBuildpackConfigurationError::InvalidPreTaskList)?,
         sbt_tasks: system_properties
             .get("sbt.tasks")
             .cloned()
-            .or(env
-                .get("SBT_TASKS")
-                .map(|os_string| os_string.to_string_lossy().to_string()))
+            .or(env.get_string_lossy("SBT_TASKS"))
             .map(|string| shell_words::split(&string))
             .transpose()
             .map_err(ReadSbtBuildpackConfigurationError::InvalidTaskList)?,
         sbt_clean: system_properties
             .get("sbt.clean")
             .cloned()
-            .or(env
-                .get("SBT_CLEAN")
-                .map(|os_string| os_string.to_string_lossy().to_string()))
+            .or(env.get_string_lossy("SBT_CLEAN"))
             .map(|string| string.parse())
             .transpose()
             .map_err(ReadSbtBuildpackConfigurationError::InvalidSbtClean)?,
         sbt_available_at_launch: system_properties
             .get("sbt.available-at-launch")
             .cloned()
-            .or(env
-                .get("SBT_AVAILABLE_AT_LAUNCH")
-                .map(|os_string| os_string.to_string_lossy().to_string()))
+            .or(env.get_string_lossy("SBT_AVAILABLE_AT_LAUNCH"))
             .map(|string| string.parse())
             .transpose()
             .map_err(ReadSbtBuildpackConfigurationError::InvalidAvailableAtLaunch)?,
