@@ -39,13 +39,11 @@ pub(crate) fn cleanup_compilation_artifacts(app_dir: &Path) -> std::io::Result<(
     [target_dir_files, resolution_cache_files]
         .into_iter()
         .flatten()
-        .map(|path| {
+        .try_for_each(|path| {
             if path.is_dir() {
                 fs::remove_dir_all(path)
             } else {
                 fs::remove_file(path)
             }
         })
-        .collect::<Result<Vec<_>, _>>()
-        .map(|_| ())
 }
