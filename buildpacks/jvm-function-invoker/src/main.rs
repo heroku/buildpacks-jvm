@@ -87,7 +87,7 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
                     .process(
                         ProcessBuilder::new(
                             process_type!("web"),
-                            layers::opt::JVM_RUNTIME_SCRIPT_NAME,
+                            ["bash", layers::opt::JVM_RUNTIME_SCRIPT_NAME],
                         )
                         .default(true)
                         .build(),

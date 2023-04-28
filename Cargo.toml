@@ -14,8 +14,8 @@ edition = "2021"
 publish = false
 
 [workspace.dependencies]
-libcnb = "0.11"
-libcnb-test = "0.11"
-libherokubuildpack = "0.11"
+libcnb = "0.12"
+libcnb-test = "0.12"
+libherokubuildpack = "0.12"
 toml = "0.7"
 buildpacks-jvm-shared = { path = "buildpacks-jvm-shared" }

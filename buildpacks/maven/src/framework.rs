@@ -65,24 +65,30 @@ pub(crate) fn default_app_process<P: AsRef<Path>>(
         (Some(Framework::SpringBoot), Some(main_jar_file_path)) => Some(
             ProcessBuilder::new(
                 process_type!("web"),
-                format!(
-                    "java -Dserver.port=$PORT $JAVA_OPTS -jar {}",
-                    main_jar_file_path.to_string_lossy()
-                ),
+                [
+                    "bash",
+                    "-c",
+                    &format!(
+                        "java -Dserver.port=$PORT $JAVA_OPTS -jar {}",
+                        main_jar_file_path.to_string_lossy()
+                    ),
+                ],
             )
-            .direct(false)
             .default(true)
             .build(),
         ),
         (Some(Framework::WildflySwarm), Some(main_jar_file_path)) => Some(
             ProcessBuilder::new(
                 process_type!("web"),
-                format!(
-                    "java -Dswarm.http.port=$PORT $JAVA_OPTS -jar {}",
-                    main_jar_file_path.to_string_lossy()
-                ),
+                [
+                    "bash",
+                    "-c",
+                    &format!(
+                        "java -Dswarm.http.port=$PORT $JAVA_OPTS -jar {}",
+                        main_jar_file_path.to_string_lossy()
+                    ),
+                ],
             )
-            .direct(false)
             .default(true)
             .build(),
         ),
