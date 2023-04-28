@@ -8,3 +8,4 @@ publish.workspace = true
 [dependencies]
 indoc = "2.0.1"
 libherokubuildpack.workspace = true
+libcnb.workspace = true

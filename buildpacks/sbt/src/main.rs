@@ -17,22 +17,22 @@ use crate::configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfigu
 use crate::detect::is_sbt_project_directory;
 use crate::errors::{log_user_errors, SbtBuildpackError};
 use crate::layers::dependency_resolver_home::{DependencyResolver, DependencyResolverHomeLayer};
-use crate::layers::sbt::SbtLayer;
+use crate::layers::sbt_boot::SbtBootLayer;
 use crate::layers::sbt_extras::SbtExtrasLayer;
+use crate::layers::sbt_global::SbtGlobalLayer;
 use crate::sbt_version::{is_supported_sbt_version, read_sbt_version};
 use crate::system_properties::read_system_properties;
+use buildpacks_jvm_shared::extend_build_env;
 use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
-use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::command::CommandExt;
 use libherokubuildpack::error::on_error as on_buildpack_error;
 use libherokubuildpack::log::{log_header, log_info, log_warning};
-use semver::Version;
 use std::io::{stderr, stdout};
 use std::path::PathBuf;
 use std::process::Command;
@@ -81,45 +81,65 @@ impl Buildpack for SbtBuildpack {
             ))?;
         }
 
-        let env = Env::from_current();
+        let mut env = Env::from_current();
 
-        let env = context
-            .handle_layer(
+        let sbt_available_at_launch = buildpack_configuration
+            .sbt_available_at_launch
+            .unwrap_or_default();
+
+        extend_build_env(
+            context.handle_layer(
                 layer_name!("ivy-home"),
                 DependencyResolverHomeLayer {
-                    available_at_launch: buildpack_configuration
-                        .sbt_available_at_launch
-                        .unwrap_or_default(),
+                    available_at_launch: sbt_available_at_launch,
                     dependency_resolver: DependencyResolver::Ivy,
                 },
-            )?
-            .env
-            .apply(Scope::Build, &env);
+            )?,
+            &mut env,
+        );
 
-        let env = context
-            .handle_layer(
+        extend_build_env(
+            context.handle_layer(
                 layer_name!("coursier-home"),
                 DependencyResolverHomeLayer {
-                    available_at_launch: buildpack_configuration
-                        .sbt_available_at_launch
-                        .unwrap_or_default(),
+                    available_at_launch: sbt_available_at_launch,
                     dependency_resolver: DependencyResolver::Coursier,
                 },
-            )?
-            .env
-            .apply(Scope::Build, &env);
+            )?,
+            &mut env,
+        );
 
-        let env = context
-            .handle_layer(
+        extend_build_env(
+            context.handle_layer(
                 layer_name!("sbt-extras"),
                 SbtExtrasLayer {
-                    available_at_launch: true,
+                    available_at_launch: sbt_available_at_launch,
                 },
-            )?
-            .env
-            .apply(Scope::Build, &env);
+            )?,
+            &mut env,
+        );
 
-        let env = create_sbt_layer(&context, &env, sbt_version, &buildpack_configuration)?;
+        extend_build_env(
+            context.handle_layer(
+                layer_name!("sbt-boot"),
+                SbtBootLayer {
+                    available_at_launch: sbt_available_at_launch,
+                    for_sbt_version: sbt_version.clone(),
+                },
+            )?,
+            &mut env,
+        );
+
+        extend_build_env(
+            context.handle_layer(
+                layer_name!("sbt-global"),
+                SbtGlobalLayer {
+                    available_at_launch: sbt_available_at_launch,
+                    for_sbt_version: sbt_version,
+                },
+            )?,
+            &mut env,
+        );
 
         if let Err(error) = cleanup_native_packager_directories(&context.app_dir) {
             log_warning(
@@ -157,25 +177,6 @@ impl Buildpack for SbtBuildpack {
 }
 
 buildpack_main!(SbtBuildpack);
-
-fn create_sbt_layer(
-    context: &BuildContext<SbtBuildpack>,
-    env: &Env,
-    sbt_version: Version,
-    buildpack_configuration: &SbtBuildpackConfiguration,
-) -> Result<Env, Error<SbtBuildpackError>> {
-    log_header("Installing sbt");
-    let sbt_layer = context.handle_layer(
-        layer_name!("sbt_home"),
-        SbtLayer {
-            available_at_launch: buildpack_configuration
-                .sbt_available_at_launch
-                .unwrap_or_default(),
-            sbt_version,
-        },
-    )?;
-    Ok(sbt_layer.env.apply(Scope::Build, env))
-}
 
 fn run_sbt_tasks(
     app_dir: &PathBuf,

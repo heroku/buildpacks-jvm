@@ -1,5 +1,6 @@
 use crate::configuration::ReadSbtBuildpackConfigurationError;
 use crate::layers::sbt_extras::SbtExtrasLayerError;
+use crate::layers::sbt_global::SbtGlobalLayerError;
 use crate::sbt_version::ReadSbtVersionError;
 use crate::system_properties::ReadSystemPropertiesError;
 use buildpacks_jvm_shared::log_please_try_again_error;
@@ -12,14 +13,13 @@ use std::process::ExitStatus;
 #[derive(Debug)]
 pub(crate) enum SbtBuildpackError {
     SbtExtrasLayerError(SbtExtrasLayerError),
+    SbtGlobalLayerError(SbtGlobalLayerError),
     ReadSbtVersionError(ReadSbtVersionError),
-    UnsupportedSbtVersion(Version),
     UnknownSbtVersion,
+    UnsupportedSbtVersion(Version),
     DetectPhaseIoError(std::io::Error),
     SbtBuildIoError(std::io::Error),
     SbtBuildUnexpectedExitCode(ExitStatus),
-    CouldNotWriteSbtPlugin(std::io::Error),
-    NoBuildpackPluginAvailable(String),
     MissingStageTask,
     AlreadyDefinedAsObject,
     ReadSbtBuildpackConfigurationError(ReadSbtBuildpackConfigurationError),
@@ -29,6 +29,14 @@ pub(crate) enum SbtBuildpackError {
 #[allow(clippy::too_many_lines)]
 pub(crate) fn log_user_errors(error: SbtBuildpackError) {
     match error {
+        SbtBuildpackError::SbtGlobalLayerError(SbtGlobalLayerError::CouldNotWritePlugin(error)) => {
+                    log_please_try_again_error(
+                            "Unexpected I/O error",
+                            "An unexpected error occurred while attempting write the Heroku plugin for sbt.",
+                            error,
+                        );
+        }
+
         SbtBuildpackError::SbtExtrasLayerError(error) => {
             match error {
                 SbtExtrasLayerError::CouldNotWriteScript(error) | SbtExtrasLayerError::CouldNotSetPermissions(error) | SbtExtrasLayerError::CouldNotCreateLaunchersDir(error) => log_please_try_again_error(
@@ -155,13 +163,6 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             ", exit_code = exit_code_string(exit_status) },
         ),
 
-        SbtBuildpackError::NoBuildpackPluginAvailable(version) => log_error(
-            "Failed to install Heroku plugin for sbt",
-            formatdoc! { "
-                No Heroku plugins supporting this version of sbt ({version}).
-            " },
-        ),
-
         SbtBuildpackError::MissingStageTask => log_error(
             "Failed to run sbt!",
             formatdoc! {"
@@ -187,12 +188,6 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 If this does not resolve the problem, please submit a ticket so we can help:
                 https://help.heroku.com
             "},
-        ),
-
-        SbtBuildpackError::CouldNotWriteSbtPlugin(error) => log_please_try_again_error(
-            "Failed to install Heroku plugin for sbt",
-            "An unexpected error occurred while attempting to install the Heroku plugin for sbt.",
-            error,
         ),
 
         SbtBuildpackError::DetectPhaseIoError(error) => log_please_try_again_error(

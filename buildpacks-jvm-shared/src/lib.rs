@@ -7,6 +7,9 @@
 #![allow(clippy::module_name_repetitions)]
 
 use indoc::formatdoc;
+use libcnb::layer::LayerData;
+use libcnb::layer_env::Scope;
+use libcnb::Env;
 use libherokubuildpack::log::log_error;
 use std::fmt::Debug;
 use std::path::{Path, PathBuf};
@@ -73,4 +76,9 @@ pub fn none_on_not_found<T>(
 #[must_use]
 pub fn is_not_found_error_kind(error: &std::io::Error) -> bool {
     matches!(error.kind(), std::io::ErrorKind::NotFound)
+}
+
+pub fn extend_build_env<T>(value: LayerData<T>, env: &mut Env) -> LayerData<T> {
+    *env = value.env.apply(Scope::Build, env);
+    value
 }
