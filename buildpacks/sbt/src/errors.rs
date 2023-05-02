@@ -1,7 +1,6 @@
 use indoc::formatdoc;
 use libcnb::Error;
 use libherokubuildpack::log::log_error;
-use std::ffi::OsString;
 use std::fmt::Debug;
 use std::process::ExitStatus;
 
@@ -27,7 +26,6 @@ pub(crate) enum ScalaBuildpackError {
     CouldNotParseBooleanFromEnvironment(String, std::str::ParseBoolError),
     CouldNotParseListConfigurationFromProperty(String, shell_words::ParseError),
     CouldNotParseListConfigurationFromEnvironment(String, shell_words::ParseError),
-    CouldNotConvertEnvironmentValueIntoString(String, OsString),
     CouldNotReadSbtOptsFile(std::io::Error),
     CouldNotParseListConfigurationFromSbtOptsFile(shell_words::ParseError),
     MissingStageTask,
@@ -129,16 +127,6 @@ pub(crate) fn log_user_errors(error: ScalaBuildpackError) {
 
                 Details: {error}
             " }
-        ),
-
-        ScalaBuildpackError::CouldNotConvertEnvironmentValueIntoString(variable_name, value) => log_error(
-            format!("Invalid {variable_name} environment variable"),
-            formatdoc! {"
-                Could not convert the value of the environment variable {variable_name} into a string. Please
-                check that the value of {variable_name} only contains Unicode characters and try again.
-
-                Value: {value}
-            ", value = value.to_string_lossy() }
         ),
 
         ScalaBuildpackError::CouldNotParseListConfigurationFromSbtOptsFile(error) => log_error(
