@@ -1,4 +1,6 @@
-use libcnb_test::{BuildConfig, BuildpackReference, ContainerConfig, TestContext, TestRunner};
+use libcnb_test::{
+    assert_not_contains, BuildConfig, BuildpackReference, ContainerConfig, TestContext, TestRunner,
+};
 use std::path::Path;
 use std::thread;
 use std::time::Duration;
@@ -56,6 +58,17 @@ fn test_play_support_for_v2_7() {
     test_scala_application("scala-play-app-2.7", |ctx| {
         assert_health_check_responds(&ctx);
     })
+}
+
+#[test]
+#[ignore = "integration test"]
+fn test_batch_mode_warning_suppression() {
+    test_scala_application("scala-app-using-coursier", |ctx| {
+        assert_not_contains!(
+            ctx.pack_stdout,
+            "Executing in batch mode. For better performance use sbt's shell"
+        );
+    });
 }
 
 fn test_scala_application(fixture_name: &str, test_body: fn(TestContext)) {
