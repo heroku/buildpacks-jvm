@@ -9,3 +9,4 @@ publish.workspace = true
 indoc = "2.0.1"
 libherokubuildpack.workspace = true
 libcnb.workspace = true
+java-properties = "1.4.1"

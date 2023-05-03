@@ -120,7 +120,6 @@ dependencies = [
  "buildpacks-jvm-shared",
  "fs_extra",
  "indoc",
- "java-properties",
  "libcnb",
  "libcnb-test",
  "libherokubuildpack",
@@ -165,6 +164,7 @@ name = "buildpacks-jvm-shared"
 version = "0.0.0"
 dependencies = [
  "indoc",
+ "java-properties",
  "libcnb",
  "libherokubuildpack",
 ]

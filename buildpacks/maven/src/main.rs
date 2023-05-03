@@ -10,9 +10,12 @@ use crate::errors::on_error_maven_buildpack;
 use crate::framework::DefaultAppProcessError;
 use crate::layer::maven::MavenLayer;
 use crate::layer::maven_repo::MavenRepositoryLayer;
-use crate::mode::{determine_mode, Mode, SystemPropertiesError};
+use crate::mode::{determine_mode, Mode};
 use crate::settings::{resolve_settings_xml_path, SettingsError};
 use crate::warnings::{log_default_maven_version_warning, log_unused_maven_wrapper_warning};
+use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
+#[cfg(test)]
+use java_properties as _;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{LaunchBuilder, ProcessBuilder};
@@ -58,7 +61,7 @@ pub(crate) enum MavenBuildpackError {
     MavenTarballNormalizationError(std::io::Error),
     CannotSplitMavenCustomOpts(shell_words::ParseError),
     CannotSplitMavenCustomGoals(shell_words::ParseError),
-    DetermineModeError(SystemPropertiesError),
+    DetermineModeError(ReadSystemPropertiesError),
     SettingsError(SettingsError),
     MavenBuildUnexpectedExitCode(ExitStatus),
     MavenBuildIoError(std::io::Error),

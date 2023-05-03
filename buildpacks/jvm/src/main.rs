@@ -18,7 +18,7 @@ use crate::layers::heroku_metrics_agent::HerokuMetricsAgentLayer;
 use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::util::{boolean_buildpack_config_env_var, ValidateSha256Error};
-use crate::version::{NormalizeVersionStringError, ReadVersionStringError};
+use crate::version::NormalizeVersionStringError;
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
@@ -34,6 +34,7 @@ use libcnb_test as _;
 use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
 // Work around unused_crate_dependencies. url is used in heroku_database_env_var_rewrite.
+use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
 use url as _;
 
 pub(crate) struct OpenJdkBuildpack;
@@ -46,7 +47,7 @@ pub(crate) enum OpenJdkBuildpackError {
     CannotCreateOpenJdkTempDir(std::io::Error),
     CannotOpenOpenJdkTarball(std::io::Error),
     CannotDecompressOpenJdkTarball(std::io::Error),
-    ReadVersionStringError(ReadVersionStringError),
+    ReadVersionStringError(ReadSystemPropertiesError),
     NormalizeVersionStringError(NormalizeVersionStringError),
     MissingJdkCertificatesFile,
     CannotSymlinkUbuntuCertificates(std::io::Error),
@@ -71,7 +72,8 @@ impl Buildpack for OpenJdkBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let app_dir_version_string = version::read_version_string_from_app_dir(&context.app_dir)
+        let app_dir_version_string = read_system_properties(&context.app_dir)
+            .map(|properties| properties.get("java.runtime.version").cloned())
             .map_err(OpenJdkBuildpackError::ReadVersionStringError)?;
 
         let normalized_version = version::normalize_version_string(

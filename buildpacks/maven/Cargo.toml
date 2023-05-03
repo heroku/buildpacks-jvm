@@ -8,7 +8,6 @@ publish.workspace = true
 [dependencies]
 buildpacks-jvm-shared.workspace = true
 indoc = "2"
-java-properties = "1"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
 regex = "1"
@@ -18,4 +17,5 @@ tempfile = "3"
 
 [dev-dependencies]
 libcnb-test.workspace = true
+java-properties = "1"
 ureq = "2"
