@@ -133,13 +133,16 @@ dependencies = [
 name = "buildpack-heroku-jvm-function-invoker"
 version = "0.0.0"
 dependencies = [
+ "base64 0.21.0",
  "indoc",
  "libcnb",
+ "libcnb-test",
  "libherokubuildpack",
  "serde",
  "tempfile",
  "thiserror",
  "toml",
+ "ureq",
 ]
 
 [[package]]
