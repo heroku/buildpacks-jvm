@@ -1,4 +1,4 @@
-use buildpacks_jvm_shared::none_on_not_found;
+use crate::none_on_not_found;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -7,7 +7,8 @@ use std::path::Path;
 ///
 /// A missing `system.properties` file is not considered an error. The resulting `HashMap`
 /// will be empty instead.
-pub(crate) fn read_system_properties(
+#[allow(clippy::missing_errors_doc)]
+pub fn read_system_properties(
     app_dir: &Path,
 ) -> Result<HashMap<String, String>, ReadSystemPropertiesError> {
     none_on_not_found(fs::File::open(app_dir.join("system.properties")))
@@ -22,7 +23,7 @@ pub(crate) fn read_system_properties(
 }
 
 #[derive(Debug)]
-pub(crate) enum ReadSystemPropertiesError {
+pub enum ReadSystemPropertiesError {
     IoError(std::io::Error),
     ParseError(java_properties::PropertiesError),
 }

@@ -10,7 +10,6 @@ mod detect;
 mod errors;
 mod layers;
 mod sbt_version;
-mod system_properties;
 
 use crate::cleanup::{cleanup_compilation_artifacts, cleanup_native_packager_directories};
 use crate::configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfiguration};
@@ -21,8 +20,8 @@ use crate::layers::sbt_boot::SbtBootLayer;
 use crate::layers::sbt_extras::SbtExtrasLayer;
 use crate::layers::sbt_global::SbtGlobalLayer;
 use crate::sbt_version::{is_supported_sbt_version, read_sbt_version};
-use crate::system_properties::read_system_properties;
 use buildpacks_jvm_shared::extend_build_env;
+use buildpacks_jvm_shared::system_properties::read_system_properties;
 use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;

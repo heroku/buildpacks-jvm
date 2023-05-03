@@ -14,6 +14,8 @@ use libherokubuildpack::log::log_error;
 use std::fmt::Debug;
 use std::path::{Path, PathBuf};
 
+pub mod system_properties;
+
 pub fn log_please_try_again_error<H: AsRef<str>, M: AsRef<str>, E: Debug>(
     header: H,
     message: M,
