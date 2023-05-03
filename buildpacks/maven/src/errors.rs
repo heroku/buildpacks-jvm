@@ -1,12 +1,13 @@
-use crate::{MavenBuildpackError, SettingsError, SystemPropertiesError};
+use crate::{MavenBuildpackError, SettingsError};
 use buildpacks_jvm_shared::log_please_try_again_error;
+use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
 
 #[allow(clippy::too_many_lines)]
 pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
     match error {
-        MavenBuildpackError::DetermineModeError(SystemPropertiesError::IoError(error)) => log_please_try_again_error(
+        MavenBuildpackError::DetermineModeError(ReadSystemPropertiesError::IoError(error)) => log_please_try_again_error(
             "Unexpected IO error",
             "Could not read your application's system.properties file due to an unexpected I/O error.",
             error,
@@ -128,7 +129,7 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
             ", error = error },
         ),
         MavenBuildpackError::DetermineModeError(
-            SystemPropertiesError::PropertiesError(error),
+            ReadSystemPropertiesError::ParseError(error),
         ) => log_error(
             "Invalid system.properties file",
             formatdoc! {"
