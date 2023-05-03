@@ -67,15 +67,9 @@ pub fn none_on_not_found<T>(
     result: Result<T, std::io::Error>,
 ) -> Result<Option<T>, std::io::Error> {
     match result {
-        Err(io_error) if is_not_found_error_kind(&io_error) => Ok(None),
+        Err(io_error) if io_error.kind() == std::io::ErrorKind::NotFound => Ok(None),
         other => other.map(Some),
     }
-}
-
-/// Checks if the error kind of the given [`std::io::Error`]  is [`std::io::ErrorKind::NotFound`].
-#[must_use]
-pub fn is_not_found_error_kind(error: &std::io::Error) -> bool {
-    matches!(error.kind(), std::io::ErrorKind::NotFound)
 }
 
 pub fn extend_build_env<T>(value: LayerData<T>, env: &mut Env) -> LayerData<T> {
