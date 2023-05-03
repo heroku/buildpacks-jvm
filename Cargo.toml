@@ -1,10 +1,10 @@
 [workspace]
 members = [
-    "buildpacks-jvm-shared",
     "buildpacks/jvm",
     "buildpacks/jvm-function-invoker",
     "buildpacks/maven",
     "buildpacks/sbt",
+    "shared",
 ]
 
 [workspace.package]
@@ -18,4 +18,4 @@ libcnb = "0.12"
 libcnb-test = "0.12"
 libherokubuildpack = "0.12"
 toml = "0.7"
-buildpacks-jvm-shared = { path = "buildpacks-jvm-shared" }
+buildpacks-jvm-shared = { path = "shared" }
