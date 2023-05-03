@@ -9,7 +9,6 @@ publish.workspace = true
 buildpacks-jvm-shared.workspace = true
 fs_extra = "1"
 indoc = "2"
-java-properties = "1"
 libcnb.workspace = true
 libherokubuildpack.workspace = true
 serde = { version = "1", features = ["derive"] }

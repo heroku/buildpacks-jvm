@@ -1,7 +1,6 @@
-use crate::{
-    NormalizeVersionStringError, OpenJdkBuildpackError, ReadVersionStringError, ValidateSha256Error,
-};
+use crate::{NormalizeVersionStringError, OpenJdkBuildpackError, ValidateSha256Error};
 use buildpacks_jvm_shared::log_please_try_again_error;
+use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::download::DownloadError;
 use libherokubuildpack::log::log_error;
@@ -87,7 +86,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
             error,
         ),
         OpenJdkBuildpackError::ReadVersionStringError(
-            ReadVersionStringError::InvalidPropertiesFile(error),
+            ReadSystemPropertiesError::ParseError(error),
         ) => log_error(
             "Invalid system.properties file",
             formatdoc! {"
@@ -98,7 +97,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
             ", error = error },
         ),
         OpenJdkBuildpackError::ReadVersionStringError(
-            ReadVersionStringError::CannotReadSystemProperties(error),
+            ReadSystemPropertiesError::IoError(error),
         ) => log_please_try_again_error(
             "Unexpected IO error",
             "Could not read your application's system.properties file due to an unexpected I/O error.",
