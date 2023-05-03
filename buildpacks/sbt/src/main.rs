@@ -20,7 +20,7 @@ use crate::layers::sbt_boot::SbtBootLayer;
 use crate::layers::sbt_extras::SbtExtrasLayer;
 use crate::layers::sbt_global::SbtGlobalLayer;
 use crate::sbt_version::{is_supported_sbt_version, read_sbt_version};
-use buildpacks_jvm_shared::extend_build_env;
+use buildpacks_jvm_shared::env::extend_build_env;
 use buildpacks_jvm_shared::system_properties::read_system_properties;
 use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};

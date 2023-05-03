@@ -1,5 +1,5 @@
 use crate::{MavenBuildpackError, SettingsError};
-use buildpacks_jvm_shared::log_please_try_again_error;
+use buildpacks_jvm_shared::log::log_please_try_again_error;
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;

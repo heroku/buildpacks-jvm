@@ -1,4 +1,4 @@
-use buildpacks_jvm_shared::none_on_not_found;
+use buildpacks_jvm_shared::result::none_on_not_found;
 use std::fs;
 use std::path::Path;
 
