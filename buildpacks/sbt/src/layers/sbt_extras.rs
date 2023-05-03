@@ -41,7 +41,7 @@ impl Layer for SbtExtrasLayer {
 
         fs::write(
             &sbt_extras_script_path,
-            include_bytes!("../../assets/sbt-extras.sh"),
+            include_bytes!("../../sbt-extras/sbt"),
         )
         .map_err(SbtExtrasLayerError::CouldNotWriteScript)?;
 

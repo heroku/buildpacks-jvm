@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Update Rust toolchain
         run: rustup update
       - name: Rust Cache
@@ -32,6 +34,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Update Rust toolchain
         run: rustup update
       - name: Rust Cache
@@ -50,6 +54,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Install musl-tools
         run: sudo apt-get install musl-tools --no-install-recommends
       - name: Update Rust toolchain
@@ -76,6 +82,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Install musl-tools
         run: sudo apt-get install musl-tools --no-install-recommends
       - name: Update Rust toolchain
