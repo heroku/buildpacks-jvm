@@ -1,0 +1,4 @@
+[submodule "buildpacks/sbt/sbt-extras"]
+	path = buildpacks/sbt/sbt-extras
+	url = https://github.com/dwijnand/sbt-extras.git
+
