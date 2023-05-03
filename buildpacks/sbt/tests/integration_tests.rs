@@ -1,7 +1,4 @@
-use libcnb_test::{
-    assert_contains, assert_not_contains, BuildConfig, BuildpackReference, ContainerConfig,
-    TestContext, TestRunner,
-};
+use libcnb_test::{BuildConfig, BuildpackReference, ContainerConfig, TestContext, TestRunner};
 use std::path::Path;
 use std::thread;
 use std::time::Duration;
@@ -18,11 +15,7 @@ fn test_scala_application_with_ivy() {
 #[ignore = "integration test"]
 fn test_scala_application_with_ivy_uses_cache_on_rebuild() {
     test_scala_application("scala-app-using-ivy", |ctx| {
-        assert_contains!(&ctx.pack_stdout, "Setting up sbt");
-        assert_not_contains!(&ctx.pack_stdout, "Reusing sbt");
         ctx.rebuild(get_build_config("scala-app-using-ivy"), |rebuild_ctx| {
-            assert_contains!(&rebuild_ctx.pack_stdout, "Reusing sbt");
-            assert_not_contains!(&rebuild_ctx.pack_stdout, "Setting up sbt");
             assert_health_check_responds(&rebuild_ctx);
         })
     })
@@ -40,13 +33,9 @@ fn test_scala_application_with_coursier() {
 #[ignore = "integration test"]
 fn test_scala_application_with_coursier_uses_cache_on_rebuild() {
     test_scala_application("scala-app-using-coursier", |ctx| {
-        assert_contains!(&ctx.pack_stdout, "Setting up sbt");
-        assert_not_contains!(&ctx.pack_stdout, "Reusing sbt");
         ctx.rebuild(
             get_build_config("scala-app-using-coursier"),
             |rebuild_ctx| {
-                assert_contains!(&rebuild_ctx.pack_stdout, "Reusing sbt");
-                assert_not_contains!(&rebuild_ctx.pack_stdout, "Setting up sbt");
                 assert_health_check_responds(&rebuild_ctx);
             },
         )

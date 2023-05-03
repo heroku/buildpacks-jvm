@@ -6,7 +6,7 @@ version = "0.0.1"
 name = "sbt"
 clear-env = true
 homepage = "https://github.com/heroku/buildpacks-jvm"
-description = "Official Heroku buildpack for sbt in Scala applications."
+description = "Official Heroku buildpack for sbt applications."
 keywords = ["java", "scala", "sbt"]
 
 [[buildpack.licenses]]

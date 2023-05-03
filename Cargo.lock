@@ -165,6 +165,7 @@ name = "buildpacks-jvm-shared"
 version = "0.0.0"
 dependencies = [
  "indoc",
+ "libcnb",
  "libherokubuildpack",
 ]
 
@@ -558,12 +559,6 @@ dependencies = [
  "typenum",
  "version_check",
 ]
-
-[[package]]
-name = "glob"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 
 [[package]]
 name = "h2"
@@ -1104,7 +1099,7 @@ checksum = "7b4b9743ed687d4b4bcedf9ff5eaa7398495ae14e61cba0a295704edbc7decde"
 name = "sbt"
 version = "0.0.0"
 dependencies = [
- "glob",
+ "buildpacks-jvm-shared",
  "indoc",
  "java-properties",
  "libcnb",
