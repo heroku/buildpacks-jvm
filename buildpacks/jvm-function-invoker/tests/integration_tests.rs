@@ -8,7 +8,7 @@ fn test() {
     let builder_name = std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap();
 
     TestRunner::default().build(
-        BuildConfig::new(builder_name, "../../test-fixtures/simple-function").buildpacks([
+        BuildConfig::new(builder_name, "test-apps/simple-function").buildpacks([
             BuildpackReference::Other(String::from("heroku/jvm")),
             BuildpackReference::Other(String::from("heroku/maven")),
             BuildpackReference::Crate,

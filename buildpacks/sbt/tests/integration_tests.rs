@@ -76,7 +76,7 @@ fn test_scala_application(fixture_name: &str, test_body: fn(TestContext)) {
 }
 
 fn get_build_config(fixture_name: &str) -> BuildConfig {
-    let app_dir = Path::new("../../test-fixtures").join(fixture_name);
+    let app_dir = Path::new("test-apps").join(fixture_name);
     let builder_name =
         std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap_or("heroku/builder:22".into());
     BuildConfig::new(builder_name, app_dir)

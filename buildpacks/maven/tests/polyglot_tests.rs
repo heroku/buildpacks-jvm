@@ -6,7 +6,7 @@ fn polyglot_maven_app() {
     TestRunner::default().build(
         BuildConfig::new(
             std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
-            "../../test-fixtures/simple-http-service-groovy-polyglot",
+            "test-apps/simple-http-service-groovy-polyglot",
         )
         .buildpacks(vec![
             BuildpackReference::Other(String::from("heroku/jvm")),
