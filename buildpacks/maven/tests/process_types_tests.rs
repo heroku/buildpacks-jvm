@@ -8,7 +8,7 @@ fn spring_boot_process_type() {
     TestRunner::default().build(
         BuildConfig::new(
             std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
-            "../../test-fixtures/buildpack-java-spring-boot-test",
+            "test-apps/buildpack-java-spring-boot-test",
         )
         .buildpacks(vec![
             BuildpackReference::Other(String::from("heroku/jvm")),

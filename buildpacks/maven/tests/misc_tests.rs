@@ -128,7 +128,7 @@ fn cache_dependencies_between_builds() {
 #[test]
 #[ignore = "integration test"]
 fn descriptive_error_message_on_failed_build() {
-    TestRunner::default().build(default_config().app_dir("../../test-fixtures/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
+    TestRunner::default().build(default_config().app_dir("test-apps/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
             assert_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
 
             assert_contains!(
@@ -146,7 +146,7 @@ fn descriptive_error_message_on_failed_build() {
 fn default_config() -> BuildConfig {
     BuildConfig::new(
         std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
-        "../../test-fixtures/simple-http-service",
+        "test-apps/simple-http-service",
     )
     .buildpacks(vec![
         BuildpackReference::Other(String::from("heroku/jvm")),

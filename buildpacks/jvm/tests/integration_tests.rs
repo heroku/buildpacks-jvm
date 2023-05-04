@@ -6,7 +6,7 @@ fn test() {
     let builder_name = std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap();
 
     TestRunner::default().build(
-        BuildConfig::new(&builder_name, "../../test-fixtures/java-8-app"),
+        BuildConfig::new(&builder_name, "test-apps/java-8-app"),
         |context| {
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
