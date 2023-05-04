@@ -1,4 +1,5 @@
-use buildpacks_jvm_shared::{default_on_not_found, list_directory_contents};
+use buildpacks_jvm_shared::fs::list_directory_contents;
+use buildpacks_jvm_shared::result::default_on_not_found;
 use std::ffi::OsStr;
 use std::fs;
 use std::path::Path;
