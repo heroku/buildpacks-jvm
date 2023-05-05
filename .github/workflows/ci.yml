@@ -47,7 +47,7 @@ jobs:
 
   integration-test:
     name: Integration Tests (${{ matrix.buildpack-directory }})
-    runs-on: ubuntu-22.04
+    runs-on: pub-hk-ubuntu-22.04-large
     needs: gather-repo-metadata
     strategy:
       fail-fast: false
@@ -73,7 +73,7 @@ jobs:
       - name: Run integration tests
         working-directory: ${{ matrix.buildpack-directory }}
         # Runs only tests annotated with the `ignore` attribute (which in this repo, are the integration tests).
-        run: cargo test --locked -- --ignored --test-threads 5
+        run: cargo test --locked -- --ignored --test-threads 16
 
   gather-repo-metadata:
     name: "Gather Repository Metadata"
