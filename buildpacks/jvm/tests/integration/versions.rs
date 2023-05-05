@@ -2,7 +2,7 @@ use libcnb_test::{assert_contains, BuildConfig, TestRunner};
 
 #[test]
 #[ignore = "integration test"]
-fn test() {
+fn test_openjdk_8_distribution() {
     let builder_name = std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap();
 
     TestRunner::default().build(
