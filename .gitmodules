@@ -2,3 +2,6 @@
 	path = buildpacks/sbt/sbt-extras
 	url = https://github.com/dwijnand/sbt-extras.git
 
+[submodule "buildpacks/sbt/test-apps/heroku-scala-getting-started"]
+	path = buildpacks/sbt/test-apps/heroku-scala-getting-started
+	url = git@github.com:heroku/scala-getting-started.git

@@ -1,0 +1,1 @@
+web: target/universal/stage/bin/play-framework-2-8-19 -Dhttp.port=${PORT}
