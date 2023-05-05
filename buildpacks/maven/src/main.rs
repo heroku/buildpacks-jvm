@@ -14,8 +14,6 @@ use crate::mode::{determine_mode, Mode};
 use crate::settings::{resolve_settings_xml_path, SettingsError};
 use crate::warnings::{log_default_maven_version_warning, log_unused_maven_wrapper_warning};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
-#[cfg(test)]
-use java_properties as _;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{LaunchBuilder, ProcessBuilder};
@@ -24,8 +22,6 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
-#[cfg(test)]
-use libcnb_test as _;
 use libherokubuildpack::download::DownloadError;
 use libherokubuildpack::log::{log_header, log_info};
 use serde::{Deserialize, Serialize};
@@ -35,8 +31,13 @@ use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
+
 #[cfg(test)]
-use ureq as _;
+use buildpacks_jvm_shared_test as _;
+#[cfg(test)]
+use java_properties as _;
+#[cfg(test)]
+use libcnb_test as _;
 
 mod errors;
 mod framework;

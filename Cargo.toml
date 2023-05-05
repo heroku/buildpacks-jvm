@@ -5,6 +5,7 @@ members = [
     "buildpacks/maven",
     "buildpacks/sbt",
     "shared",
+    "shared-test"
 ]
 
 [workspace.package]
@@ -19,3 +20,4 @@ libcnb-test = "0.12"
 libherokubuildpack = "0.12"
 toml = "0.7"
 buildpacks-jvm-shared = { path = "shared" }
+buildpacks-jvm-shared-test = { path = "shared-test" }
