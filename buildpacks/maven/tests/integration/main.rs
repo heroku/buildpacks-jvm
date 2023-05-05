@@ -10,4 +10,5 @@ mod misc_tests;
 mod polyglot_tests;
 mod process_types_tests;
 mod settings_xml_tests;
+mod smoke;
 mod version_handling_tests;
