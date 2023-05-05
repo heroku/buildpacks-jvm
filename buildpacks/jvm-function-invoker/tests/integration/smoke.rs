@@ -4,7 +4,7 @@ use std::time::Duration;
 
 #[test]
 #[ignore = "integration test"]
-fn test() {
+fn smoke_test_simple_function() {
     let builder_name = std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap();
 
     TestRunner::default().build(

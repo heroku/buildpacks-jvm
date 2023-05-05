@@ -1,0 +1,11 @@
+[package]
+name = "buildpacks-jvm-shared-test"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+ureq = "2"
+exponential-backoff = "1.2.0"
+libcnb-test.workspace = true

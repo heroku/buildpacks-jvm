@@ -5,11 +5,9 @@
 //!
 //! These tests are strictly happy-path tests and do not assert any output of the buildpack.
 
-use libcnb_test::{
-    assert_contains, BuildConfig, BuildpackReference, ContainerConfig, TestContext, TestRunner,
-};
+use buildpacks_jvm_shared_test::start_container_assert_basic_http_response;
+use libcnb_test::{BuildConfig, BuildpackReference, TestRunner};
 use std::path::Path;
-use std::time::Duration;
 
 #[test]
 #[ignore = "integration test"]
@@ -74,41 +72,13 @@ where
         .to_owned();
 
     TestRunner::default().build(&build_config, |context| {
-        start_container_assert_http_response_body_contains(
-            &context,
-            expected_http_response_body_contains,
-        );
+        start_container_assert_basic_http_response(&context, expected_http_response_body_contains);
 
         context.rebuild(&build_config, |context| {
-            start_container_assert_http_response_body_contains(
+            start_container_assert_basic_http_response(
                 &context,
                 expected_http_response_body_contains,
             );
         });
     });
-}
-
-fn start_container_assert_http_response_body_contains(
-    context: &TestContext,
-    expected_http_response_body_contains: &str,
-) {
-    context.start_container(
-        ContainerConfig::default()
-            .expose_port(8080)
-            .env("PORT", "8080"),
-        |context| {
-            std::thread::sleep(Duration::from_secs(15));
-
-            let response_body = ureq::get(&format!(
-                "http://{}",
-                context.address_for_port(8080).unwrap()
-            ))
-            .call()
-            .expect("request to container failed")
-            .into_string()
-            .expect("response read error");
-
-            assert_contains!(response_body, expected_http_response_body_contains);
-        },
-    );
 }
