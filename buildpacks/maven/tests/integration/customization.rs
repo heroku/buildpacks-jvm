@@ -1,5 +1,6 @@
+use crate::default_config;
 use indoc::indoc;
-use libcnb_test::{assert_contains, BuildConfig, BuildpackReference, TestRunner};
+use libcnb_test::{assert_contains, TestRunner};
 
 #[test]
 #[ignore = "integration test"]
@@ -53,16 +54,4 @@ pub(crate) fn maven_custom_opts() {
             "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0"
         );
     });
-}
-
-fn default_config() -> BuildConfig {
-    BuildConfig::new(
-        std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
-        "test-apps/simple-http-service",
-    )
-    .buildpacks(vec![
-        BuildpackReference::Other(String::from("heroku/jvm")),
-        BuildpackReference::Crate,
-    ])
-    .clone()
 }

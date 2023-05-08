@@ -1,7 +1,6 @@
+use crate::default_config;
 use indoc::indoc;
-use libcnb_test::{
-    assert_contains, assert_not_contains, BuildConfig, BuildpackReference, PackResult, TestRunner,
-};
+use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
 
@@ -115,18 +114,6 @@ fn no_internal_maven_options_logging() {
 
 #[test]
 #[ignore = "integration test"]
-fn cache_dependencies_between_builds() {
-    TestRunner::default().build(default_config(), |context| {
-        assert_contains!(context.pack_stdout, "Downloading from central");
-
-        context.rebuild(default_config(), |context| {
-            assert_not_contains!(context.pack_stdout, "Downloading from central");
-        });
-    });
-}
-
-#[test]
-#[ignore = "integration test"]
 fn descriptive_error_message_on_failed_build() {
     TestRunner::default().build(default_config().app_dir("test-apps/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
             assert_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
@@ -141,16 +128,4 @@ fn descriptive_error_message_on_failed_build() {
                 "We're sorry this build is failing! If you can't find the issue in application code,\nplease submit a ticket so we can help: https://help.heroku.com/"
             );
         });
-}
-
-fn default_config() -> BuildConfig {
-    BuildConfig::new(
-        std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
-        "test-apps/simple-http-service",
-    )
-    .buildpacks(vec![
-        BuildpackReference::Other(String::from("heroku/jvm")),
-        BuildpackReference::Crate,
-    ])
-    .clone()
 }

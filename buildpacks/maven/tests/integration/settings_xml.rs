@@ -1,7 +1,6 @@
+use crate::default_config;
 use indoc::formatdoc;
-use libcnb_test::{
-    assert_contains, assert_not_contains, BuildConfig, BuildpackReference, PackResult, TestRunner,
-};
+use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
 use std::fs;
 use std::path::PathBuf;
 
@@ -159,18 +158,6 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_url() {
             );
         },
     );
-}
-
-fn default_config() -> BuildConfig {
-    BuildConfig::new(
-        std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
-        "test-apps/simple-http-service",
-    )
-    .buildpacks(vec![
-        BuildpackReference::Other(String::from("heroku/jvm")),
-        BuildpackReference::Crate,
-    ])
-    .clone()
 }
 
 fn write_settings_xml(path: PathBuf, test_value: &str) {

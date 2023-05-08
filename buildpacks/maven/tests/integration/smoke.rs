@@ -5,40 +5,16 @@
 //!
 //! These tests are strictly happy-path tests and do not assert any output of the buildpack.
 
-use buildpacks_jvm_shared_test::start_container_assert_basic_http_response;
-use libcnb_test::{BuildConfig, BuildpackReference, TestRunner};
-use std::path::Path;
+use crate::default_buildpacks;
+use buildpacks_jvm_shared_test::{smoke_test, DEFAULT_INTEGRATION_TEST_BUILDER};
 
 #[test]
 #[ignore = "integration test"]
 fn smoke_test_getting_started_guide() {
     smoke_test(
-        "heroku/builder:22",
+        DEFAULT_INTEGRATION_TEST_BUILDER,
         "test-apps/heroku-java-getting-started",
+        default_buildpacks(),
         "Getting Started with Java on Heroku",
     );
-}
-
-fn smoke_test<P>(builder_name: &str, app_dir: P, expected_http_response_body_contains: &str)
-where
-    P: AsRef<Path>,
-{
-    let build_config = BuildConfig::new(builder_name, app_dir)
-        .buildpacks(vec![
-            BuildpackReference::Other(String::from("heroku/jvm")),
-            BuildpackReference::Crate,
-            BuildpackReference::Other(String::from("heroku/procfile")),
-        ])
-        .to_owned();
-
-    TestRunner::default().build(&build_config, |context| {
-        start_container_assert_basic_http_response(&context, expected_http_response_body_contains);
-
-        context.rebuild(&build_config, |context| {
-            start_container_assert_basic_http_response(
-                &context,
-                expected_http_response_body_contains,
-            );
-        });
-    });
 }

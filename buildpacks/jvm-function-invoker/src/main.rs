@@ -12,8 +12,6 @@ use crate::error::{handle_buildpack_error, JvmFunctionInvokerBuildpackError};
 use crate::layers::bundle::BundleLayer;
 use crate::layers::opt::OptLayer;
 use crate::layers::runtime::RuntimeLayer;
-#[cfg(test)]
-use base64 as _;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -23,11 +21,16 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{Buildpack, Env};
-#[cfg(test)]
-use libcnb_test as _;
 use libherokubuildpack::error::on_error;
 use libherokubuildpack::log::{log_header, log_info};
 use serde::Deserialize;
+
+#[cfg(test)]
+use base64 as _;
+#[cfg(test)]
+use buildpacks_jvm_shared_test as _;
+#[cfg(test)]
+use libcnb_test as _;
 #[cfg(test)]
 use ureq as _;
 

@@ -1,22 +1,18 @@
 //! Tests that ensure subsequent builds use cached dependencies of various kinds, speeding up
 //! builds.
 
-use libcnb_test::{
-    assert_contains, assert_not_contains, BuildConfig, BuildpackReference, TestRunner,
-};
+use crate::default_buildpacks;
+use buildpacks_jvm_shared_test::DEFAULT_INTEGRATION_TEST_BUILDER;
+use libcnb_test::{assert_contains, assert_not_contains, BuildConfig, TestRunner};
 
 #[test]
 #[ignore = "integration test"]
 fn test_caching_sbt_1_8_2_coursier() {
     let build_config = BuildConfig::new(
-        "heroku/builder:22",
+        DEFAULT_INTEGRATION_TEST_BUILDER,
         "test-apps/sbt-1.8.2-coursier-scala-2.13.10",
     )
-    .buildpacks(vec![
-        BuildpackReference::Other(String::from("heroku/jvm")),
-        BuildpackReference::Crate,
-        BuildpackReference::Other(String::from("heroku/procfile")),
-    ])
+    .buildpacks(default_buildpacks())
     .to_owned();
 
     TestRunner::default().build(&build_config, |context| {
@@ -63,14 +59,12 @@ fn test_caching_sbt_1_8_2_coursier() {
 #[test]
 #[ignore = "integration test"]
 fn test_caching_sbt_1_8_2_ivy() {
-    let build_config =
-        BuildConfig::new("heroku/builder:22", "test-apps/sbt-1.8.2-ivy-scala-2.13.10")
-            .buildpacks(vec![
-                BuildpackReference::Other(String::from("heroku/jvm")),
-                BuildpackReference::Crate,
-                BuildpackReference::Other(String::from("heroku/procfile")),
-            ])
-            .to_owned();
+    let build_config = BuildConfig::new(
+        DEFAULT_INTEGRATION_TEST_BUILDER,
+        "test-apps/sbt-1.8.2-ivy-scala-2.13.10",
+    )
+    .buildpacks(default_buildpacks())
+    .to_owned();
 
     let dependency_download_lines = [
         "[info] downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.10/scala-library-2.13.10.jar ...",
@@ -133,13 +127,12 @@ fn test_caching_sbt_1_8_2_ivy() {
 #[test]
 #[ignore = "integration test"]
 fn test_caching_sbt_0_13_16() {
-    let build_config = BuildConfig::new("heroku/builder:22", "test-apps/sbt-0.13.16-scala-2.13.10")
-        .buildpacks(vec![
-            BuildpackReference::Other(String::from("heroku/jvm")),
-            BuildpackReference::Crate,
-            BuildpackReference::Other(String::from("heroku/procfile")),
-        ])
-        .to_owned();
+    let build_config = BuildConfig::new(
+        DEFAULT_INTEGRATION_TEST_BUILDER,
+        "test-apps/sbt-0.13.16-scala-2.13.10",
+    )
+    .buildpacks(default_buildpacks())
+    .to_owned();
 
     let dependency_download_lines = [
         "[info] downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.10/scala-library-2.13.10.jar ...",

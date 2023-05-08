@@ -6,7 +6,10 @@
 // This lint is too noisy and enforces a style that reduces readability in many cases.
 #![allow(clippy::module_name_repetitions)]
 
-use libcnb_test::{assert_contains, ContainerConfig, TestContext};
+use libcnb_test::{
+    assert_contains, BuildConfig, BuildpackReference, ContainerConfig, TestContext, TestRunner,
+};
+use std::path::Path;
 use std::time::Duration;
 
 /// Extremely opinionated helper for testing containers that expose a HTTP interface.
@@ -63,5 +66,39 @@ pub fn start_container_assert_basic_http_response(
         },
     );
 }
+
+/// Opinionated helper for smoke-testing JVM buildpacks.
+///
+/// Builds the app with the given buildpacks, asserts that the build finished successfully and
+/// builds the app again to ensure that any caching logic does not break subsequent builds. After
+/// each build, an HTTP request is made to the resulting container, asserting that the given string
+/// is present in the response.
+#[allow(clippy::missing_panics_doc)]
+pub fn smoke_test<P, B>(
+    builder_name: &str,
+    app_dir: P,
+    buildpacks: B,
+    expected_http_response_body_contains: &str,
+) where
+    P: AsRef<Path>,
+    B: Into<Vec<BuildpackReference>>,
+{
+    let build_config = BuildConfig::new(builder_name, app_dir)
+        .buildpacks(buildpacks.into())
+        .clone();
+
+    TestRunner::default().build(&build_config, |context| {
+        start_container_assert_basic_http_response(&context, expected_http_response_body_contains);
+
+        context.rebuild(&build_config, |context| {
+            start_container_assert_basic_http_response(
+                &context,
+                expected_http_response_body_contains,
+            );
+        });
+    });
+}
+
+pub const DEFAULT_INTEGRATION_TEST_BUILDER: &str = "heroku/builder:22";
 
 const PORT: u16 = 8080;
