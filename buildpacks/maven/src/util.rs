@@ -1,5 +1,5 @@
-use std::fs::DirEntry;
-use std::path::{Path, PathBuf};
+use buildpacks_jvm_shared::fs::list_directory_contents;
+use std::path::Path;
 use std::process::{Command, ExitStatus};
 
 pub(crate) fn move_directory_contents<P: AsRef<Path>, Q: AsRef<Path>>(
@@ -16,12 +16,6 @@ pub(crate) fn move_directory_contents<P: AsRef<Path>, Q: AsRef<Path>>(
     }
 
     Ok(())
-}
-
-pub(crate) fn list_directory_contents<P: AsRef<Path>>(path: P) -> std::io::Result<Vec<PathBuf>> {
-    std::fs::read_dir(path.as_ref())
-        .and_then(Iterator::collect::<std::io::Result<Vec<DirEntry>>>)
-        .map(|dir_entries| dir_entries.iter().map(DirEntry::path).collect())
 }
 
 pub(crate) fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(ExitStatus) -> E>(
