@@ -10,7 +10,7 @@ mod errors;
 mod layers;
 mod sbt;
 
-use crate::configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfiguration};
+use crate::configuration::read_sbt_buildpack_configuration;
 use crate::detect::is_sbt_project_directory;
 use crate::errors::{log_user_errors, SbtBuildpackError};
 use crate::layers::dependency_resolver_home::{DependencyResolver, DependencyResolverHomeLayer};
@@ -29,7 +29,6 @@ use libherokubuildpack::command::CommandExt;
 use libherokubuildpack::error::on_error as on_buildpack_error;
 use libherokubuildpack::log::{log_header, log_info};
 use std::io::{stderr, stdout};
-use std::path::PathBuf;
 use std::process::Command;
 
 pub(crate) struct SbtBuildpack;
@@ -136,7 +135,24 @@ impl Buildpack for SbtBuildpack {
             &mut env,
         );
 
-        run_sbt_tasks(&context.app_dir, &buildpack_configuration, &env)?;
+        log_header("Building Scala project");
+
+        let tasks = sbt::tasks::from_config(&buildpack_configuration);
+        log_info(format!("Running: sbt {}", shell_words::join(&tasks)));
+
+        let output = Command::new("sbt")
+            .current_dir(&context.app_dir)
+            .args(tasks)
+            .envs(&env)
+            .output_and_write_streams(stdout(), stderr())
+            .map_err(SbtBuildpackError::SbtBuildIoError)?;
+
+        output.status.success().then_some(()).ok_or(
+            sbt::output::parse_errors(&output.stdout).map_or_else(
+                || SbtBuildpackError::SbtBuildUnexpectedExitCode(output.status),
+                SbtBuildpackError::SbtBuildError,
+            ),
+        )?;
 
         BuildResultBuilder::new().build()
     }
@@ -147,28 +163,3 @@ impl Buildpack for SbtBuildpack {
 }
 
 buildpack_main!(SbtBuildpack);
-
-fn run_sbt_tasks(
-    app_dir: &PathBuf,
-    buildpack_configuration: &SbtBuildpackConfiguration,
-    env: &Env,
-) -> Result<(), SbtBuildpackError> {
-    log_header("Building Scala project");
-
-    let tasks = sbt::tasks::from_config(buildpack_configuration);
-    log_info(format!("Running: sbt {}", shell_words::join(&tasks)));
-
-    let output = Command::new("sbt")
-        .current_dir(app_dir)
-        .args(tasks)
-        .envs(env)
-        .output_and_write_streams(stdout(), stderr())
-        .map_err(SbtBuildpackError::SbtBuildIoError)?;
-
-    output.status.success().then_some(()).ok_or(
-        sbt::output::parse_errors(&output.stdout).map_or_else(
-            || SbtBuildpackError::SbtBuildUnexpectedExitCode(output.status),
-            SbtBuildpackError::SbtError,
-        ),
-    )
-}

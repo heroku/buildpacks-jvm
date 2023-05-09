@@ -21,7 +21,7 @@ pub(crate) enum SbtBuildpackError {
     DetectPhaseIoError(std::io::Error),
     SbtBuildIoError(std::io::Error),
     SbtBuildUnexpectedExitCode(ExitStatus),
-    SbtError(SbtError),
+    SbtBuildError(SbtError),
     ReadSbtBuildpackConfigurationError(ReadSbtBuildpackConfigurationError),
     ReadSystemPropertiesError(ReadSystemPropertiesError),
 }
@@ -163,30 +163,13 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             ", exit_code = exit_code_string(exit_status) },
         ),
 
-        SbtBuildpackError::SbtError(SbtError::MissingTask(task_name)) => log_error(
+        SbtBuildpackError::SbtBuildError(SbtError::MissingTask(task_name)) => log_error(
             "Failed to run sbt!",
             formatdoc! {"
                 It looks like your build.sbt does not have a valid '{task_name}' task. Please reference our Dev Center article for
                 information on how to create one:
 
                 https://devcenter.heroku.com/articles/scala-support#build-behavior
-            "},
-        ),
-
-        SbtBuildpackError::SbtError(SbtError::AlreadyDefinedAsObject) => log_error(
-            "Failed to run sbt!",
-            formatdoc! {"
-                We're sorry this build is failing. It looks like you may need to run a clean build to remove any
-                stale SBT caches. You can do this by setting a configuration variable like this:
-
-                $ heroku config:set SBT_CLEAN=true
-
-                Then deploy you application with 'git push' again. If the build succeeds you can remove the variable by running this command:
-
-                $ heroku config:unset SBT_CLEAN
-
-                If this does not resolve the problem, please submit a ticket so we can help:
-                https://help.heroku.com
             "},
         ),
 
