@@ -4,14 +4,12 @@
 // This lint is too noisy and enforces a style that reduces readability in many cases.
 #![allow(clippy::module_name_repetitions)]
 
-mod cleanup;
 mod configuration;
 mod detect;
 mod errors;
 mod layers;
 mod sbt;
 
-use crate::cleanup::{cleanup_compilation_artifacts, cleanup_native_packager_directories};
 use crate::configuration::{read_sbt_buildpack_configuration, SbtBuildpackConfiguration};
 use crate::detect::is_sbt_project_directory;
 use crate::errors::{log_user_errors, SbtBuildpackError};
@@ -21,7 +19,6 @@ use crate::layers::sbt_extras::SbtExtrasLayer;
 use crate::layers::sbt_global::SbtGlobalLayer;
 use buildpacks_jvm_shared::env::extend_build_env;
 use buildpacks_jvm_shared::system_properties::read_system_properties;
-use indoc::formatdoc;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
@@ -30,7 +27,7 @@ use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::command::CommandExt;
 use libherokubuildpack::error::on_error as on_buildpack_error;
-use libherokubuildpack::log::{log_header, log_info, log_warning};
+use libherokubuildpack::log::{log_header, log_info};
 use std::io::{stderr, stdout};
 use std::path::PathBuf;
 use std::process::Command;
@@ -139,32 +136,7 @@ impl Buildpack for SbtBuildpack {
             &mut env,
         );
 
-        if let Err(error) = cleanup_native_packager_directories(&context.app_dir) {
-            log_warning(
-                "Removal of native package directory failed",
-                formatdoc! {"
-                    This error should not affect your built application but it may cause the container image
-                    to be larger than expected.
-
-                    Details: {error:?}
-                "},
-            );
-        }
-
         run_sbt_tasks(&context.app_dir, &buildpack_configuration, &env)?;
-
-        log_info("Dropping compilation artifacts from the build");
-        if let Err(error) = cleanup_compilation_artifacts(&context.app_dir) {
-            log_warning(
-                "Removal of compilation artifacts failed",
-                formatdoc! {"
-                This error should not affect your built application but it may cause the container image
-                to be larger than expected.
-
-                Details: {error:?}
-            " },
-            );
-        }
 
         BuildResultBuilder::new().build()
     }
