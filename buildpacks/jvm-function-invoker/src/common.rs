@@ -14,7 +14,7 @@ pub(crate) fn project_toml_salesforce_type_is_function(project_toml_path: &Path)
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::project_toml_salesforce_type_is_function;
     use std::fs;
     use tempfile::tempdir;

@@ -141,7 +141,7 @@ const THIRD_PARTY_DATABASE_URL_ENV_VARS: &[&str] =
     &["JAWSDB_URL", "JAWSDB_MARIA_URL", "CLEARDB_DATABASE_URL"];
 
 #[cfg(test)]
-mod test {
+mod tests {
     use crate::jvm_env_vars_for_env;
     use std::collections::HashMap;
 

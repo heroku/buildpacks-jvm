@@ -243,7 +243,7 @@ fn get_sbt_build_tasks(build_config: &SbtBuildpackConfiguration) -> Vec<String> 
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use crate::configuration::SbtBuildpackConfiguration;
     use crate::errors::SbtBuildpackError;
     use crate::extract_error_from_sbt_output;
