@@ -42,7 +42,7 @@ pub(crate) fn boolean_buildpack_config_env_var(env: &Env, key: impl AsRef<OsStr>
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use crate::util::boolean_buildpack_config_env_var;
     use libcnb::Env;
 

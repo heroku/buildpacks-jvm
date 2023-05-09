@@ -78,7 +78,7 @@ pub(crate) enum OpenJDKDistribution {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
     use libcnb::data::stack_id;
 
