@@ -1,14 +1,13 @@
 use base64::Engine;
+use buildpacks_jvm_shared_test::DEFAULT_INTEGRATION_TEST_BUILDER;
 use libcnb_test::{BuildConfig, BuildpackReference, ContainerConfig, TestRunner};
 use std::time::Duration;
 
 #[test]
 #[ignore = "integration test"]
 fn smoke_test_simple_function() {
-    let builder_name = std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap();
-
     TestRunner::default().build(
-        BuildConfig::new(builder_name, "test-apps/simple-function").buildpacks([
+        BuildConfig::new(DEFAULT_INTEGRATION_TEST_BUILDER, "test-apps/simple-function").buildpacks([
             BuildpackReference::Other(String::from("heroku/jvm")),
             BuildpackReference::Other(String::from("heroku/maven")),
             BuildpackReference::Crate,

@@ -118,6 +118,7 @@ name = "buildpack-heroku-jvm"
 version = "0.0.0"
 dependencies = [
  "buildpacks-jvm-shared",
+ "buildpacks-jvm-shared-test",
  "fs_extra",
  "indoc",
  "libcnb",
@@ -134,6 +135,7 @@ name = "buildpack-heroku-jvm-function-invoker"
 version = "0.0.0"
 dependencies = [
  "base64 0.21.0",
+ "buildpacks-jvm-shared-test",
  "indoc",
  "libcnb",
  "libcnb-test",

@@ -1,6 +1,5 @@
-use libcnb_test::{
-    assert_contains, assert_not_contains, BuildConfig, BuildpackReference, PackResult, TestRunner,
-};
+use crate::default_config;
+use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
 use std::fs::OpenOptions;
 use std::path::Path;
 
@@ -157,18 +156,6 @@ fn without_wrapper_and_maven_3_2_5_system_properties() {
             );
         },
     )
-}
-
-fn default_config() -> BuildConfig {
-    BuildConfig::new(
-        std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
-        "test-apps/simple-http-service",
-    )
-    .buildpacks(vec![
-        BuildpackReference::Other(String::from("heroku/jvm")),
-        BuildpackReference::Crate,
-    ])
-    .to_owned()
 }
 
 fn remove_maven_wrapper(path: &Path) {

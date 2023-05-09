@@ -1,4 +1,6 @@
-use libcnb_test::{assert_not_contains, BuildConfig, BuildpackReference, TestRunner};
+use crate::default_buildpacks;
+use buildpacks_jvm_shared_test::DEFAULT_INTEGRATION_TEST_BUILDER;
+use libcnb_test::{assert_not_contains, BuildConfig, TestRunner};
 
 /// Tests that no confusing or non-actionable warnings caused by the buildpack are shown in the
 /// sbt 1.x log during build.
@@ -6,14 +8,10 @@ use libcnb_test::{assert_not_contains, BuildConfig, BuildpackReference, TestRunn
 #[ignore = "integration test"]
 fn test_sbt_1_x_logging() {
     let build_config = BuildConfig::new(
-        "heroku/builder:22",
+        DEFAULT_INTEGRATION_TEST_BUILDER,
         "test-apps/sbt-1.8.2-coursier-scala-2.13.10",
     )
-    .buildpacks(vec![
-        BuildpackReference::Other(String::from("heroku/jvm")),
-        BuildpackReference::Crate,
-        BuildpackReference::Other(String::from("heroku/procfile")),
-    ])
+    .buildpacks(default_buildpacks())
     .to_owned();
 
     TestRunner::default().build(&build_config, |context| {

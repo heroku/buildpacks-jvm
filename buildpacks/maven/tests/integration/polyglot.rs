@@ -1,17 +1,16 @@
-use libcnb_test::{assert_contains, BuildConfig, BuildpackReference, TestRunner};
+use crate::default_buildpacks;
+use buildpacks_jvm_shared_test::DEFAULT_INTEGRATION_TEST_BUILDER;
+use libcnb_test::{assert_contains, BuildConfig, TestRunner};
 
 #[test]
 #[ignore = "integration test"]
 fn polyglot_maven_app() {
     TestRunner::default().build(
         BuildConfig::new(
-            std::env::var("INTEGRATION_TEST_CNB_BUILDER").unwrap(),
+            DEFAULT_INTEGRATION_TEST_BUILDER,
             "test-apps/simple-http-service-groovy-polyglot",
         )
-        .buildpacks(vec![
-            BuildpackReference::Other(String::from("heroku/jvm")),
-            BuildpackReference::Crate,
-        ]),
+        .buildpacks(default_buildpacks()),
         |context| {
             assert_contains!(context.pack_stdout, "[INFO] BUILD SUCCESS");
         },

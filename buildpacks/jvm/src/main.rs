@@ -19,6 +19,7 @@ use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::util::{boolean_buildpack_config_env_var, ValidateSha256Error};
 use crate::version::NormalizeVersionStringError;
+use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
@@ -29,13 +30,14 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::Buildpack;
 use libcnb::{buildpack_main, Platform};
-#[cfg(test)]
-use libcnb_test as _;
 use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
-// Work around unused_crate_dependencies. url is used in heroku_database_env_var_rewrite.
-use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
-use url as _;
+use url as _; // Used by exec.d binary
+
+#[cfg(test)]
+use buildpacks_jvm_shared_test as _;
+#[cfg(test)]
+use libcnb_test as _;
 
 pub(crate) struct OpenJdkBuildpack;
 

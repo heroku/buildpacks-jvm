@@ -18,3 +18,4 @@ url = "2"
 
 [dev-dependencies]
 libcnb-test.workspace = true
+buildpacks-jvm-shared-test.workspace = true
