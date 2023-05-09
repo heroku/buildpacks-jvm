@@ -50,7 +50,7 @@ fn output_from_env(env: &Env) -> HashMap<ExecDProgramOutputKey, String> {
 }
 
 #[cfg(test)]
-mod tests {
+mod test {
     use crate::output_from_env;
     use libcnb::data::exec_d_program_output_key;
     use libcnb::Env;
