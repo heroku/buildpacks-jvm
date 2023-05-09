@@ -53,8 +53,6 @@ jobs:
       fail-fast: false
       matrix:
         buildpack-directory: ${{ fromJson(needs.gather-repo-metadata.outputs.buildpack_dirs) }}
-    env:
-      INTEGRATION_TEST_CNB_BUILDER: "heroku/builder:22"
     steps:
       - name: Checkout
         uses: actions/checkout@v3

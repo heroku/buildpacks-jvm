@@ -36,35 +36,41 @@ pub fn start_container_assert_basic_http_response(
                 "http://{}",
                 context
                     .address_for_port(PORT)
-                    .expect("address for container port should be available from libcnb-test")
+                    .expect(ADDRESS_FOR_PORT_EXPECT_MESSAGE)
             );
 
-            let backoff = exponential_backoff::Backoff::new(
-                32,
-                Duration::from_secs(10),
-                Duration::from_secs(5 * 60),
-            );
-
-            let mut last_response = None;
-            for delay in backoff.iter() {
-                std::thread::sleep(delay);
-
-                match ureq::get(&url).call() {
-                    Err(_) => continue,
-                    Ok(response) => {
-                        last_response = Some(response);
-                        break;
-                    }
-                }
-            }
-
-            let response_body = last_response
-                .and_then(|response| response.into_string().ok())
-                .expect("response body should be available");
+            let response_body = http_request_backoff(|| ureq::get(&url).call())
+                .expect(UREQ_RESPONSE_RESULT_EXPECT_MESSAGE)
+                .into_string()
+                .expect(UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE);
 
             assert_contains!(&response_body, expected_http_response_body_contains);
         },
     );
+}
+
+#[allow(clippy::missing_errors_doc)]
+pub fn http_request_backoff<F, T, E>(request_fn: F) -> Result<T, E>
+where
+    F: Fn() -> Result<T, E>,
+{
+    let backoff =
+        exponential_backoff::Backoff::new(32, Duration::from_secs(1), Duration::from_secs(5 * 60));
+
+    let mut backoff_durations = backoff.into_iter();
+
+    loop {
+        match request_fn() {
+            result @ Ok(_) => return result,
+            result @ Err(_) => match backoff_durations.next() {
+                None => return result,
+                Some(backoff_duration) => {
+                    std::thread::sleep(backoff_duration);
+                    continue;
+                }
+            },
+        }
+    }
 }
 
 /// Opinionated helper for smoke-testing JVM buildpacks.
@@ -100,5 +106,13 @@ pub fn smoke_test<P, B>(
 }
 
 pub const DEFAULT_INTEGRATION_TEST_BUILDER: &str = "heroku/builder:22";
+
+pub const ADDRESS_FOR_PORT_EXPECT_MESSAGE: &str =
+    "address for container port should be available from libcnb-test";
+
+pub const UREQ_RESPONSE_RESULT_EXPECT_MESSAGE: &str = "http request should be successful";
+
+pub const UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE: &str =
+    "http response body should be convertable to a string";
 
 const PORT: u16 = 8080;

@@ -8,6 +8,7 @@
 use libcnb_test::BuildpackReference;
 
 mod caching;
+mod sbt_at_launch;
 mod smoke;
 mod ux;
 

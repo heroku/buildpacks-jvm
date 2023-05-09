@@ -1,7 +1,8 @@
 use crate::configuration::ReadSbtBuildpackConfigurationError;
 use crate::layers::sbt_extras::SbtExtrasLayerError;
 use crate::layers::sbt_global::SbtGlobalLayerError;
-use crate::sbt_version::ReadSbtVersionError;
+use crate::sbt::output::SbtError;
+use crate::sbt::version::ReadSbtVersionError;
 use buildpacks_jvm_shared::log::log_please_try_again_error;
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
@@ -20,8 +21,7 @@ pub(crate) enum SbtBuildpackError {
     DetectPhaseIoError(std::io::Error),
     SbtBuildIoError(std::io::Error),
     SbtBuildUnexpectedExitCode(ExitStatus),
-    MissingStageTask,
-    AlreadyDefinedAsObject,
+    SbtError(SbtError),
     ReadSbtBuildpackConfigurationError(ReadSbtBuildpackConfigurationError),
     ReadSystemPropertiesError(ReadSystemPropertiesError),
 }
@@ -163,17 +163,17 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             ", exit_code = exit_code_string(exit_status) },
         ),
 
-        SbtBuildpackError::MissingStageTask => log_error(
+        SbtBuildpackError::SbtError(SbtError::MissingTask(task_name)) => log_error(
             "Failed to run sbt!",
             formatdoc! {"
-                It looks like your build.sbt does not have a valid 'stage' task. Please reference our Dev Center article for
+                It looks like your build.sbt does not have a valid '{task_name}' task. Please reference our Dev Center article for
                 information on how to create one:
 
                 https://devcenter.heroku.com/articles/scala-support#build-behavior
             "},
         ),
 
-        SbtBuildpackError::AlreadyDefinedAsObject => log_error(
+        SbtBuildpackError::SbtError(SbtError::AlreadyDefinedAsObject) => log_error(
             "Failed to run sbt!",
             formatdoc! {"
                 We're sorry this build is failing. It looks like you may need to run a clean build to remove any

@@ -1181,6 +1181,7 @@ dependencies = [
  "shell-words",
  "tempfile",
  "thiserror",
+ "ureq",
 ]
 
 [[package]]
