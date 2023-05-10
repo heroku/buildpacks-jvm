@@ -5,6 +5,10 @@ use buildpacks_jvm_shared_test::{
 };
 use libcnb_test::{assert_contains, assert_not_contains, BuildConfig, ContainerConfig, TestRunner};
 
+/// Users can request to have sbt and all caches to be available at launch. One use-case for this
+/// is not using native-packager and wanting to rely on `sbt run` to run the application in prod.
+///
+/// This test uses an app that is deployed this way and configures the buildpack accordingly.
 #[test]
 #[ignore = "integration test"]
 fn test_the_thing() {
@@ -31,6 +35,10 @@ fn test_the_thing() {
                     .expect(UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE);
 
                 assert_contains!(&response, "Hello from Scala!");
+
+                // The caches written during the build for sbt, Scala and application dependencies
+                // are expected to be available at launch as well to avoid duplicate downloads and
+                // compilation:
 
                 let logs = context.logs_now();
                 assert_not_contains!(

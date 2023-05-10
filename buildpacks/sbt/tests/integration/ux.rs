@@ -22,6 +22,12 @@ fn test_sbt_1_x_logging() {
     });
 }
 
+/// The buildpack requires (unless otherwise configured) that the application build defines a
+/// `stage` task. That task is not a default sbt task but is usually added by sbt-native-packager.
+///
+/// To guide new users that might not be aware that they need a `stage` task, we need to output a
+/// descriptive message that explains the issue instead of only relying on sbt telling the user
+/// that the `stage` task could not be found.
 #[test]
 #[ignore = "integration test"]
 fn test_missing_stage_task_logging() {
