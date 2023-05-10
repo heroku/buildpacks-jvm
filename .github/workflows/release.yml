@@ -27,12 +27,12 @@ jobs:
       - name: Install yj
         uses: buildpacks/github-actions/setup-tools@v5.1.0
       - id: login
-        name: "Login to public ECR"
+        name: "Login to Docker Hub"
         uses: docker/login-action@v2
         with:
-          registry: public.ecr.aws
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          registry: docker.io
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
         env:
           AWS_REGION: us-east-1
       - id: install-musl-tools
