@@ -148,9 +148,9 @@ impl Buildpack for SbtBuildpack {
             .map_err(SbtBuildpackError::SbtBuildIoError)?;
 
         output.status.success().then_some(()).ok_or(
-            sbt::output::parse_errors(&output.stdout).map_or_else(
-                || SbtBuildpackError::SbtBuildUnexpectedExitCode(output.status),
-                SbtBuildpackError::SbtBuildError,
+            SbtBuildpackError::SbtBuildUnexpectedExitStatus(
+                output.status,
+                sbt::output::parse_errors(&output.stdout),
             ),
         )?;
 

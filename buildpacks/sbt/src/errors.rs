@@ -20,8 +20,7 @@ pub(crate) enum SbtBuildpackError {
     UnsupportedSbtVersion(Version),
     DetectPhaseIoError(std::io::Error),
     SbtBuildIoError(std::io::Error),
-    SbtBuildUnexpectedExitCode(ExitStatus),
-    SbtBuildError(SbtError),
+    SbtBuildUnexpectedExitStatus(ExitStatus, Option<SbtError>),
     ReadSbtBuildpackConfigurationError(ReadSbtBuildpackConfigurationError),
     ReadSystemPropertiesError(ReadSystemPropertiesError),
 }
@@ -153,7 +152,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             " },
         ),
 
-        SbtBuildpackError::SbtBuildUnexpectedExitCode(exit_status) => log_error(
+        SbtBuildpackError::SbtBuildUnexpectedExitStatus(exit_status, None) => log_error(
             "Running sbt failed",
             formatdoc! { "
                 We're sorry this build is failing! If you can't find the issue in application code,
@@ -163,7 +162,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             ", exit_code = exit_code_string(exit_status) },
         ),
 
-        SbtBuildpackError::SbtBuildError(SbtError::MissingTask(task_name)) => log_error(
+        SbtBuildpackError::SbtBuildUnexpectedExitStatus(_, Some(SbtError::MissingTask(task_name))) => log_error(
             "Failed to run sbt!",
             formatdoc! {"
                 It looks like your build.sbt does not have a valid '{task_name}' task. Please reference our Dev Center article for
