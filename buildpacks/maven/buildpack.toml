@@ -41,4 +41,4 @@ url = "https://lang-jvm.s3.us-east-1.amazonaws.com/maven-3.3.9.tar.gz"
 sha256 = "72e5a073cd1acb8925a55366a37268d28a5bdde76d4cda4888364068472aa46e"
 [metadata.release]
 [metadata.release.docker]
-repository = "public.ecr.aws/heroku-buildpacks/heroku-maven-buildpack"
+repository = "docker.io/heroku/buildpack-maven"

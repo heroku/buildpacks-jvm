@@ -29,4 +29,4 @@ url = "https://repo1.maven.org/maven2/com/heroku/agent/heroku-java-metrics-agent
 sha256 = "9a718680e4a93f93a8755b20fb21cc541e5c2692acc9da27c667530f48a716db"
 [metadata.release]
 [metadata.release.docker]
-repository = "public.ecr.aws/heroku-buildpacks/heroku-jvm-buildpack"
+repository = "docker.io/heroku/buildpack-jvm"
