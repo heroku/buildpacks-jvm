@@ -77,10 +77,10 @@ fn get_layer_env_scope(available_at_launch: bool) -> Scope {
 fn heroku_sbt_plugin_for_version(version: &semver::Version) -> Option<&'static [u8]> {
     match version {
         semver::Version { major: 0, .. } => Some(include_bytes!(
-            "../../assets/heroku_buildpack_plugin_sbt_v0.scala"
+            "../../sbt-plugins/buildpack-plugin-0.x.scala"
         )),
         semver::Version { major: 1, .. } => Some(include_bytes!(
-            "../../assets/heroku_buildpack_plugin_sbt_v1.scala"
+            "../../sbt-plugins/buildpack-plugin-1.x.scala"
         )),
         _ => None,
     }

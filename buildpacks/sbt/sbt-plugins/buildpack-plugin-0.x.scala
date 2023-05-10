@@ -1,5 +1,5 @@
 import sbt._
-import Keys._
+import sbt.Keys._
 
 object HerokuBuildpackPlugin extends Plugin {
   override def settings = Seq(
