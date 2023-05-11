@@ -19,7 +19,7 @@ version = "1.0.10"
 
 [[order.group]]
 id = "heroku/sbt"
-version = "0.0.1"
+version = "1.0.1"
 
 [[order.group]]
 id = "heroku/procfile"
