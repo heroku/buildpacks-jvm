@@ -2,7 +2,7 @@ api = "0.9"
 
 [buildpack]
 id = "heroku/java"
-version = "0.6.10"
+version = "0.6.11"
 name = "Java"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for Java applications."
