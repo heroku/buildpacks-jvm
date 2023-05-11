@@ -2,10 +2,10 @@
 uri = "."
 
 [[dependencies]]
-uri = "docker://public.ecr.aws/heroku-buildpacks/heroku-jvm-buildpack@sha256:bc58cd36e77a1b16709218782fd865df63d3f3c2d25785c8e4a36b381c83a435"
+uri = "docker://docker.io/heroku/buildpack-jvm@sha256:de28bad8801d2a55517184a17600a9bdd44c92755664944cf6cb9aa1cca36fc5"
 
 [[dependencies]]
-#uri = "docker://public.ecr.aws/heroku-buildpacks/heroku-sbt-buildpack@sha256:[NEED TO PUBLISH SBT BUILDPACK FIRST]"
+uri = "docker://docker.io/heroku/buildpack-sbt@sha256:8f928df6e3cf2e8f350a494f0bd3bdfb9c8fb139dec082cee1cc96f71c9f9301"
 
 [[dependencies]]
 uri = "docker://docker.io/heroku/procfile-cnb:2.0.0"

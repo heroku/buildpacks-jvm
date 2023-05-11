@@ -3,8 +3,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-* Upgraded `heroku/maven` to `1.0.5`
+* Upgraded `heroku/maven` to `1.0.4`
 * Upgraded `heroku/jvm` to `1.0.10`
+* The buildpack now implements Buildpack API 0.9 instead of 0.8, and so requires `lifecycle` 0.15.x or newer. ([#491](https://github.com/heroku/buildpacks-jvm/pull/491))
 
 ## [0.6.9] 2023/04/24
 * Upgraded `heroku/jvm` to `1.0.9`

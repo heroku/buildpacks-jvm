@@ -1,4 +1,4 @@
-api = "0.8"
+api = "0.9"
 
 [buildpack]
 id = "heroku/java-function"
@@ -18,11 +18,11 @@ version = "1.0.10"
 
 [[order.group]]
 id = "heroku/maven"
-version = "1.0.5"
+version = "1.0.4"
 
 [[order.group]]
 id = "heroku/jvm-function-invoker"
-version = "0.6.9"
+version = "0.6.8"
 
 [metadata]
 [metadata.release]
