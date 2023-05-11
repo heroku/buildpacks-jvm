@@ -1,4 +1,4 @@
-api = "0.8"
+api = "0.9"
 
 [buildpack]
 id = "heroku/java"
@@ -19,7 +19,7 @@ version = "1.0.10"
 
 [[order.group]]
 id = "heroku/maven"
-version = "1.0.5"
+version = "1.0.4"
 
 [[order.group]]
 id = "heroku/procfile"

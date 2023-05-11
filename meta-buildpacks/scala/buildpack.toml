@@ -1,12 +1,12 @@
-api = "0.8"
+api = "0.9"
 
 [buildpack]
 id = "heroku/scala"
-version = "0.0.1"
+version = "1.0.0"
 name = "Scala"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for Scala applications."
-keywords = ["scala", "java"]
+keywords = ["scala"]
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
@@ -19,7 +19,7 @@ version = "1.0.10"
 
 [[order.group]]
 id = "heroku/sbt"
-version = "1.0.1"
+version = "1.0.0"
 
 [[order.group]]
 id = "heroku/procfile"
