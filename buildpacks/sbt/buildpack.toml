@@ -24,5 +24,7 @@ id = "heroku-22"
 [[stacks]]
 id = "*"
 
+[metadata]
+[metadata.release]
 [metadata.release.docker]
 repository = "docker.io/heroku/buildpack-sbt"
