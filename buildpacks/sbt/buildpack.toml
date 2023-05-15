@@ -13,15 +13,6 @@ keywords = ["java", "scala", "sbt"]
 type = "BSD-3-Clause"
 
 [[stacks]]
-id = "heroku-18"
-
-[[stacks]]
-id = "heroku-20"
-
-[[stacks]]
-id = "heroku-22"
-
-[[stacks]]
 id = "*"
 
 [metadata]
