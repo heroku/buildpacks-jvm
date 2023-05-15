@@ -12,16 +12,10 @@ keywords = ["java", "jvm", "jdk", "openjdk"]
 type = "BSD-3-Clause"
 
 [[stacks]]
-id = "heroku-18"
-
-[[stacks]]
 id = "heroku-20"
 
 [[stacks]]
 id = "heroku-22"
-
-[[stacks]]
-id = "io.buildpacks.stacks.bionic"
 
 [metadata]
 [metadata.heroku-metrics-agent]
