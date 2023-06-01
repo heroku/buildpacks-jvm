@@ -40,9 +40,9 @@ checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
 name = "base64"
-version = "0.21.0"
+version = "0.21.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4a4ddaa51a5bc52a6948f74c06d20aaaddb71924eab79b8c97a8c556e942d6a"
+checksum = "604178f6c5c21f02dc555784810edfb88d34ac2c73b2eae109655649ee73ce3d"
 
 [[package]]
 name = "bit-set"
@@ -80,7 +80,7 @@ version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af254ed2da4936ef73309e9597180558821cb16ae9bba4cb24ce6b612d8d80ed"
 dependencies = [
- "base64 0.21.0",
+ "base64 0.21.2",
  "bollard-stubs",
  "bytes",
  "futures-core",
@@ -134,7 +134,7 @@ dependencies = [
 name = "buildpack-heroku-jvm-function-invoker"
 version = "0.0.0"
 dependencies = [
- "base64 0.21.0",
+ "base64 0.21.2",
  "buildpacks-jvm-shared-test",
  "indoc",
  "libcnb",
