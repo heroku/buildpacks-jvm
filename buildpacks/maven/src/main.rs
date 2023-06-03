@@ -127,7 +127,7 @@ impl Buildpack for MavenBuildpack {
 
         log_header("Installing Maven");
 
-        let (mvn_executable, mvn_env) = match maven_mode {
+        let (mvn_executable, mut mvn_env) = match maven_mode {
             Mode::UseWrapper => {
                 log_info("Maven wrapper detected, skipping installation.");
 
@@ -184,6 +184,9 @@ impl Buildpack for MavenBuildpack {
                 )
             }
         };
+        if let Some(java_home) = current_or_platform_env.get("JAVA_HOME") {
+            mvn_env.insert("JAVA_HOME", java_home);
+        }
 
         let maven_goals = current_or_platform_env
             .get("MAVEN_CUSTOM_GOALS")
