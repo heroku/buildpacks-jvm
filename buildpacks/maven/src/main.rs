@@ -111,6 +111,11 @@ impl Buildpack for MavenBuildpack {
 
     #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
+        let mut current_or_platform_env = Env::from_current();
+        for (key, value) in context.platform.env().iter() {
+            current_or_platform_env.insert(key, value);
+        }
+
         let maven_repository_layer =
             context.handle_layer(layer_name!("repository"), MavenRepositoryLayer)?;
 
@@ -180,9 +185,7 @@ impl Buildpack for MavenBuildpack {
             }
         };
 
-        let maven_goals = context
-            .platform
-            .env()
+        let maven_goals = current_or_platform_env
             .get("MAVEN_CUSTOM_GOALS")
             .map_or_else(
                 || Ok(default_maven_goals()),
@@ -192,9 +195,7 @@ impl Buildpack for MavenBuildpack {
                 },
             )?;
 
-        let mut maven_options = context
-            .platform
-            .env()
+        let mut maven_options = current_or_platform_env
             .get("MAVEN_CUSTOM_OPTS")
             .map_or_else(
                 || Ok(default_maven_opts()),
@@ -207,8 +208,9 @@ impl Buildpack for MavenBuildpack {
                 },
             )?;
 
-        let settings_xml_path = resolve_settings_xml_path(&context.app_dir, context.platform.env())
-            .map_err(MavenBuildpackError::SettingsError)?;
+        let settings_xml_path =
+            resolve_settings_xml_path(&context.app_dir, &current_or_platform_env)
+                .map_err(MavenBuildpackError::SettingsError)?;
 
         if let Some(settings_xml_path) = settings_xml_path {
             maven_options.push(String::from("-s"));
