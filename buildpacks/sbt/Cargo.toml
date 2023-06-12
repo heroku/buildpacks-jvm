@@ -9,7 +9,7 @@ publish.workspace = true
 libcnb.workspace = true
 libherokubuildpack.workspace = true
 indoc = "2"
-java-properties = "1"
+java-properties = "2"
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
 thiserror = "1"

@@ -17,5 +17,5 @@ tempfile = "3"
 
 [dev-dependencies]
 libcnb-test.workspace = true
-java-properties = "1"
+java-properties = "2"
 buildpacks-jvm-shared-test.workspace = true
