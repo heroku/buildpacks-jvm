@@ -76,7 +76,7 @@ jobs:
           prerelease: false
       - id: upload_release_package
         name: Upload buildpackage to release
-        uses: svenstaro/upload-release-action@2.5.0
+        uses: svenstaro/upload-release-action@2.6.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.package.outputs.cnb_package_file_path }}
