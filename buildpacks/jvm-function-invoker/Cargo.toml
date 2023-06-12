@@ -17,5 +17,5 @@ toml.workspace = true
 tempfile = "3"
 libcnb-test.workspace = true
 ureq = "2.6.2"
-base64 = "0.21.0"
+base64 = "0.21.2"
 buildpacks-jvm-shared-test.workspace = true
