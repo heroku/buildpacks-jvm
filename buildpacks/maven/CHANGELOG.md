@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * This buildpack now declares to be compatible with the `*` stack. While the buildpack cannot guarantee it works with any stack conceivable, it should be compatible with some stacks that are not maintained by Heroku. Use of this buildpack on such stacks is unsupported. ([#498](https://github.com/heroku/buildpacks-jvm/pull/498))
+* Allow `JAVA_HOME` to be set by user or operator via `<platform>/env`. ([#508](https://github.com/heroku/buildpacks-jvm/pull/508))
+* `MAVEN_SETTINGS_PATH`, `MAVEN_ESTTINGS_URL`, `MAVEN_CUSTOM_GOALS`, and `MAVEN_CUSTOM_OPTS` can be set by a previous buildpack. ([#508](https://github.com/heroku/buildpacks-jvm/pull/508))
 
 ## [1.0.4] 2023/05/11
 
