@@ -5,7 +5,7 @@ uri = "."
 uri = "docker://docker.io/heroku/buildpack-jvm@sha256:de28bad8801d2a55517184a17600a9bdd44c92755664944cf6cb9aa1cca36fc5"
 
 [[dependencies]]
-uri = "docker://docker.io/heroku/buildpack-maven@sha256:a4d8e60cf3047c04412081619a7c1c8146fa252115c93029a7ae34d699126fe7"
+uri = "docker://docker.io/heroku/buildpack-maven@sha256:9bf891728f37e4a6259b348bf24536764414f1fe6938ed526cd55e4c6e144cae"
 
 [[dependencies]]
 uri = "docker://docker.io/heroku/procfile-cnb:2.0.0"

@@ -19,7 +19,7 @@ version = "1.0.10"
 
 [[order.group]]
 id = "heroku/maven"
-version = "1.0.4"
+version = "1.0.5"
 
 [[order.group]]
 id = "heroku/procfile"
