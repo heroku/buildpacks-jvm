@@ -122,9 +122,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Automated post-release PRs
 
-## [0.1.2]
+## [0.1.2] 2012/01/19
 ### Changes
 * Upgrade `heroku/maven` to `0.2.0`
 
-## [0.1.1]
+## [0.1.1] 2012/01/13
 * Initial release

@@ -66,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Now requires (in the CNB sense) `jdk` to pass detection
 * Now provides (in the CNB sense) `jvm-application` to subsequent buildpacks
 
-## [0.2.0]
+## [0.2.0] 2021/01/19
 ### Added
 * Debug logging, can be enabled by setting `HEROKU_BUILDPACK_DEBUG` environment variable
 
@@ -81,5 +81,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Caching of Maven dependencies
 * Exit code of `bin/detect` when detection failed without an error
 
-## [0.1.0]
+## [0.1.0] 2021/01/15
 * Initial release
