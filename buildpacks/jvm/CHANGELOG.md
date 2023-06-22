@@ -4,7 +4,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Removed
+### Removed
 
 * Removed support for the `heroku-18` stack due to the stack being EOL and no longer maintained. ([#498](https://github.com/heroku/buildpacks-jvm/pull/498))
 * Removed support for the `io.buildpacks.stacks.bionic` stack from `buildpack.toml`. Since the stack id is used for URL construction, this stack never properly worked. ([#498](https://github.com/heroku/buildpacks-jvm/pull/498))
