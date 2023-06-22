@@ -2,10 +2,10 @@
 uri = "."
 
 [[dependencies]]
-uri = "docker://docker.io/heroku/buildpack-jvm@sha256:de28bad8801d2a55517184a17600a9bdd44c92755664944cf6cb9aa1cca36fc5"
+uri = "libcnb:heroku/jvm"
 
 [[dependencies]]
-uri = "docker://docker.io/heroku/buildpack-maven@sha256:9bf891728f37e4a6259b348bf24536764414f1fe6938ed526cd55e4c6e144cae"
+uri = "libcnb:heroku/maven"
 
 [[dependencies]]
-uri = "docker://docker.io/heroku/buildpack-jvm-function-invoker@sha256:93320793ed269c88e97c4f3cb8fb94479df7b6d5585d273be933c80b9936a16b"
+uri = "libcnb:heroku/jvm-function-invoker"
