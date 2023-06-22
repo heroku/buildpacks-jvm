@@ -200,5 +200,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Automated post-release PRs
 
-## [0.1.0]
+## [0.1.0] 2021/01/14
 * Initial release
