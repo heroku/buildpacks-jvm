@@ -2,10 +2,10 @@
 uri = "."
 
 [[dependencies]]
-uri = "docker://docker.io/heroku/buildpack-jvm@sha256:de28bad8801d2a55517184a17600a9bdd44c92755664944cf6cb9aa1cca36fc5"
+uri = "libcnb:heroku/jvm"
 
 [[dependencies]]
-uri = "docker://docker.io/heroku/buildpack-sbt@sha256:8f928df6e3cf2e8f350a494f0bd3bdfb9c8fb139dec082cee1cc96f71c9f9301"
+uri = "libcnb:heroku/sbt"
 
 [[dependencies]]
 uri = "docker://docker.io/heroku/procfile-cnb:2.0.0"
