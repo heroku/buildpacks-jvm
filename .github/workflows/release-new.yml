@@ -1,0 +1,77 @@
+name: Release Buildpacks
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  detect:
+    name: Detecting Buildpacks
+    uses: heroku/languages-github-actions/.github/workflows/_buildpacks-release-detect.yml@main
+
+  package:
+    name: ${{ matrix.id }}
+    needs: [ detect ]
+    strategy:
+      fail-fast: true
+      matrix:
+        include: ${{ fromJSON(needs.detect.outputs.buildpacks) }}
+    uses: heroku/languages-github-actions/.github/workflows/_buildpacks-release-package.yml@main
+    with:
+      buildpack_id: ${{ matrix.id }}
+      buildpack_path: ${{ matrix.path }}
+
+  publish-docker:
+    name: ${{ matrix.id }}
+    needs: [ detect, package ]
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.detect.outputs.buildpacks) }}
+    uses: heroku/languages-github-actions/.github/workflows/_buildpacks-release-publish-docker.yml@main
+    with:
+      buildpack_id: ${{ matrix.id }}
+  #    secrets:
+  #      docker_hub_user:
+  #      docker_hub_token:
+
+  publish-github:
+    name: ${{ matrix.id }}
+    needs: [ detect, package ]
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.detect.outputs.buildpacks) }}
+    uses: heroku/languages-github-actions/.github/workflows/_buildpacks-release-publish-github.yml@main
+    with:
+      buildpack_id: ${{ matrix.id }}
+
+  publish-cnb:
+    name: ${{ matrix.id }}
+    needs: [ detect, publish-docker ]
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.detect.outputs.buildpacks) }}
+    uses: heroku/languages-github-actions/.github/workflows/_buildpacks-release-publish-cnb-registry.yml@main
+    with:
+      buildpack_id: ${{ matrix.id }}
+  #    secrets:
+  #      cnb_registry_token:
+
+  update-builder:
+    name: ${{ matrix.id }}
+    needs: [ detect, publish-docker, publish-cnb, publish-github ]
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.detect.outputs.buildpacks) }}
+    uses: heroku/languages-github-actions/.github/workflows/_buildpacks-release-update-builder.yml@main
+    with:
+      buildpack_id: ${{ matrix.id }}
+#      app_id:
+#    secrets:
+#      app_private_key:
