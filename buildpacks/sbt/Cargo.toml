@@ -20,4 +20,4 @@ buildpacks-jvm-shared.workspace = true
 [dev-dependencies]
 libcnb-test.workspace = true
 buildpacks-jvm-shared-test.workspace = true
-ureq = "2.7.1"
+ureq = "2"
