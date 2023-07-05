@@ -7,5 +7,5 @@ publish.workspace = true
 
 [dependencies]
 ureq = "2"
-exponential-backoff = "1.2.0"
+exponential-backoff = "1"
 libcnb-test.workspace = true
