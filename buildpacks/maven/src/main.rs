@@ -89,10 +89,8 @@ impl Buildpack for MavenBuildpack {
     type Error = MavenBuildpackError;
 
     fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
-        let app_has_pom = ["xml", "atom", "clj", "groovy", "rb", "scala", "yaml", "yml"]
-            .iter()
-            .map(|extension| context.app_dir.join(format!("pom.{extension}")))
-            .any(|path| path.exists());
+        let app_has_pom =
+            buildpacks_jvm_shared::app::maven::detect(&context.app_dir).unwrap_or(false);
 
         if app_has_pom {
             DetectResultBuilder::pass()

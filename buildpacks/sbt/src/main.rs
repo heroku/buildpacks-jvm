@@ -11,12 +11,12 @@ mod layers;
 mod sbt;
 
 use crate::configuration::read_sbt_buildpack_configuration;
-use crate::detect::is_sbt_project_directory;
 use crate::errors::{log_user_errors, SbtBuildpackError};
 use crate::layers::dependency_resolver_home::{DependencyResolver, DependencyResolverHomeLayer};
 use crate::layers::sbt_boot::SbtBootLayer;
 use crate::layers::sbt_extras::SbtExtrasLayer;
 use crate::layers::sbt_global::SbtGlobalLayer;
+use buildpacks_jvm_shared::app::sbt::detect;
 use buildpacks_jvm_shared::env::extend_build_env;
 use buildpacks_jvm_shared::system_properties::read_system_properties;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -39,8 +39,8 @@ impl Buildpack for SbtBuildpack {
     type Error = SbtBuildpackError;
 
     fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
-        let is_sbt_project = is_sbt_project_directory(&context.app_dir)
-            .map_err(SbtBuildpackError::DetectPhaseIoError)?;
+        let is_sbt_project =
+            detect(&context.app_dir).map_err(SbtBuildpackError::DetectPhaseIoError)?;
 
         if is_sbt_project {
             DetectResultBuilder::pass()

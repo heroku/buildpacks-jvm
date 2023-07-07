@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.1] - 2023-06-22
+## [2.1.1] - 2023-06-22
+
+* Changed `heroku/jvm` logic to only install the JVM on the presence of files on disk([#]())
 
 ### Removed
 

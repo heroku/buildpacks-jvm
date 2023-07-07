@@ -19,6 +19,7 @@ use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::util::{boolean_buildpack_config_env_var, ValidateSha256Error};
 use crate::version::NormalizeVersionStringError;
+use buildpacks_jvm_shared::app;
 use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
@@ -62,15 +63,22 @@ impl Buildpack for OpenJdkBuildpack {
     type Metadata = OpenJdkBuildpackMetadata;
     type Error = OpenJdkBuildpackError;
 
-    fn detect(&self, _context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
-        DetectResultBuilder::pass()
-            .build_plan(
-                BuildPlanBuilder::new()
-                    .provides("jdk")
-                    .requires("jdk")
-                    .build(),
-            )
-            .build()
+    fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
+        let jvm_app_detected = [
+            app::maven::detect(&context.app_dir).unwrap_or(false),
+            app::sbt::detect(&context.app_dir).unwrap_or(false),
+            context.app_dir.join("system.properties").exists(),
+        ]
+        .iter()
+        .any(|detected| *detected);
+
+        let plan = if jvm_app_detected {
+            BuildPlanBuilder::new().provides("jdk").requires("jvm")
+        } else {
+            BuildPlanBuilder::new().provides("jdk")
+        };
+
+        DetectResultBuilder::pass().build_plan(plan.build()).build()
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
