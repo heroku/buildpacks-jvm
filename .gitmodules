@@ -4,7 +4,8 @@
 
 [submodule "buildpacks/sbt/test-apps/heroku-scala-getting-started"]
 	path = buildpacks/sbt/test-apps/heroku-scala-getting-started
-	url = git@github.com:heroku/scala-getting-started.git
+	url = https://github.com/heroku/scala-getting-started.git
+
 [submodule "buildpacks/maven/test-apps/heroku-java-getting-started"]
 	path = buildpacks/maven/test-apps/heroku-java-getting-started
-	url = git@github.com:heroku/java-getting-started.git
+	url = https://github.com/heroku/java-getting-started.git
