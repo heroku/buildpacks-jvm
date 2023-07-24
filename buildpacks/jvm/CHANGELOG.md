@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* This buildpack now requires that an OpenJDK version is specified in `system.properties` when the buildpack is used standalone (no other buildpack adds `jdk` to the build plan `require`s). Users that use this buildpack in a standalone fashion can add a `system.properties` file to their application with the following contents to restore the old behavior of installing the most recent OpenJDK 8 release: `java.runtime.version=8`. ([#546](https://github.com/heroku/buildpacks-jvm/pull/546))
+
 ## [1.1.2] - 2023-07-24
 
 * Default version for **OpenJDK 8** is now `1.8.0_382`. ([#543](https://github.com/heroku/buildpacks-jvm/pull/543))

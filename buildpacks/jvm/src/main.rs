@@ -62,15 +62,29 @@ impl Buildpack for OpenJdkBuildpack {
     type Metadata = OpenJdkBuildpackMetadata;
     type Error = OpenJdkBuildpackError;
 
-    fn detect(&self, _context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
-        DetectResultBuilder::pass()
-            .build_plan(
-                BuildPlanBuilder::new()
-                    .provides("jdk")
-                    .requires("jdk")
-                    .build(),
-            )
-            .build()
+    fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
+        // This buildpack is first and foremost a buildpack that is designed for composing with
+        // other buildpacks, usually with JVM build tools such as Maven or Gradle. To enable
+        // other buildpacks to conditionally require the installation of OpenJDK, the detect of this
+        // buildpack wil fail if no other buildpack requires "jdk".
+        //
+        // Some users might want to install OpenJDK without using another buildpack, which wouldn't
+        // work with this buildpack since "jdk" would not be required in the build plan.
+        // To enable this use-case, this buildpack will require "jdk" (itself) if the app contains
+        // a system.properties file with a Java version. This is currently the way to define the
+        // OpenJDK version on Heroku.
+        let app_specifies_jvm_version = read_system_properties(&context.app_dir)
+            .map(|properties| properties.contains_key("java.runtime.version"))
+            .map_err(OpenJdkBuildpackError::ReadVersionStringError)?;
+
+        let build_plan = if app_specifies_jvm_version {
+            BuildPlanBuilder::new().provides("jdk").requires("jdk")
+        } else {
+            BuildPlanBuilder::new().provides("jdk")
+        }
+        .build();
+
+        DetectResultBuilder::pass().build_plan(build_plan).build()
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
