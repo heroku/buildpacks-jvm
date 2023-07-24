@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2023-07-24
+
+- Updated `heroku/jvm` to `1.1.2`.
+- Updated `heroku/maven` to `1.1.2`.
+- Updated `heroku/jvm-function-invoker` to `1.1.2`.
+
 ## [1.1.1] - 2023-06-22
 
 - Updated `heroku/jvm` to `1.1.1`
@@ -236,5 +242,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/v1.1.1
