@@ -1,0 +1,19 @@
+api = "0.9"
+
+[buildpack]
+id = "heroku/add-cnb-require-jdk"
+version = "1.1.2"
+name = "Heroku Internal: Add CNB require for JDK"
+homepage = "https://github.com/heroku/buildpacks-jvm"
+description = "Internal buildpack that adds 'jdk' to the build plan."
+
+[[buildpack.licenses]]
+type = "BSD-3-Clause"
+
+[[stacks]]
+id = "*"
+
+[metadata]
+[metadata.release]
+[metadata.release.docker]
+repository = "docker.io/heroku/buildpack-add-cnb-require-jdk"

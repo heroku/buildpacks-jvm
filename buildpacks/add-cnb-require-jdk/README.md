@@ -1,0 +1,1 @@
+This buildpack only adds `jdk` as a requirement to the build plan. It is used by the `heroku/jvm-standalone` meta-buildpack to enable users to install OpenJDK without another buildpack that adds `jdk` requirement.

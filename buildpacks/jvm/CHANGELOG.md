@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+* This buildpack can no longer be used without another buildpack that requires `jdk` in the build plan. This enables other (meta-)buildpacks to include `heroku/jvm` and only require to install OpenJDK when they need it. For users that used `heroku/jvm` to install OpenJDK in a standalone fashion, a new `heroku/jvm-standalone` buildpack was created that can be used as a drop-in replacement. ([#545](https://github.com/heroku/buildpacks-jvm/pull/545)) 
+
 ## [1.1.2] - 2023-07-24
 
 * Default version for **OpenJDK 8** is now `1.8.0_382`. ([#543](https://github.com/heroku/buildpacks-jvm/pull/543))

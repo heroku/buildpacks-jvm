@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "buildpacks/add-cnb-require-jdk",
     "buildpacks/jvm",
     "buildpacks/jvm-function-invoker",
     "buildpacks/maven",

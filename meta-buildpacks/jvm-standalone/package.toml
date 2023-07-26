@@ -1,0 +1,8 @@
+[buildpack]
+uri = "."
+
+[[dependencies]]
+uri = "libcnb:heroku/jvm"
+
+[[dependencies]]
+uri = "libcnb:heroku/add-cnb-require-jdk"

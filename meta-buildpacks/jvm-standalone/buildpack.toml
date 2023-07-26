@@ -1,0 +1,27 @@
+api = "0.9"
+
+[buildpack]
+id = "heroku/jvm-standalone"
+version = "1.1.2"
+name = "Heroku Standalone OpenJDK Buildpack"
+homepage = "https://github.com/heroku/buildpacks-jvm"
+description = "Installs OpenJDK via Heroku's OpenJDK buildpack unconditionally."
+keywords = ["java", "jvm", "jdk", "openjdk"]
+
+[[buildpack.licenses]]
+type = "BSD-3-Clause"
+
+[[order]]
+
+[[order.group]]
+id = "heroku/jvm"
+version = "1.1.2"
+
+[[order.group]]
+id = "heroku/add-cnb-require-jdk"
+version = "1.1.2"
+
+[metadata]
+[metadata.release]
+[metadata.release.docker]
+repository = "docker.io/heroku/buildpack-jvm-standalone"

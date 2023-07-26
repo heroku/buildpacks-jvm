@@ -144,6 +144,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "buildpack-heroku-add-cnb-require-jdk"
+version = "0.0.0"
+dependencies = [
+ "libcnb",
+]
+
+[[package]]
 name = "buildpack-heroku-jvm"
 version = "0.0.0"
 dependencies = [

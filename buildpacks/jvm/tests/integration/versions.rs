@@ -1,3 +1,15 @@
+/*
+ * These tests are commented out for now until we have the ability to test meta-buildpacks.
+ *
+ * Previously, heroku/jvm could be used without another buildpack requiring 'jdk'. This feature has
+ * been removed so that heroku/jvm can be composed with other buildpacks that only need 'jdk'
+ * conditionally.
+ *
+ * The tests in this file aren't critical as installing OpenJDK will be exercised by other
+ * buildpacks in this repository.
+ */
+
+/*
 use libcnb_test::{assert_contains, BuildConfig, TestRunner};
 
 #[test]
@@ -27,3 +39,4 @@ fn test_openjdk_8_distribution_heroku_22() {
         },
     )
 }
+*/
