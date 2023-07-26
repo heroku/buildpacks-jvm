@@ -64,12 +64,7 @@ impl Buildpack for OpenJdkBuildpack {
 
     fn detect(&self, _context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
         DetectResultBuilder::pass()
-            .build_plan(
-                BuildPlanBuilder::new()
-                    .provides("jdk")
-                    .requires("jdk")
-                    .build(),
-            )
+            .build_plan(BuildPlanBuilder::new().provides("jdk").build())
             .build()
     }
 
