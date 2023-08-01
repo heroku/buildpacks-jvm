@@ -26,5 +26,5 @@ version = "2.0.0"
 
 [metadata]
 [metadata.release]
-[metadata.release.docker]
+[metadata.release.image]
 repository = "docker.io/heroku/buildpack-java-function"
