@@ -31,5 +31,5 @@ sha256 = "2fa7a911bfef93a3bc0699674efd307a53da28f9179a50b10d183080b1f5bbc0"
 url = "https://lang-jvm.s3.us-east-1.amazonaws.com/maven-3.3.9.tar.gz"
 sha256 = "72e5a073cd1acb8925a55366a37268d28a5bdde76d4cda4888364068472aa46e"
 [metadata.release]
-[metadata.release.docker]
+[metadata.release.image]
 repository = "docker.io/heroku/buildpack-maven"

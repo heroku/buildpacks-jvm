@@ -22,5 +22,5 @@ id = "heroku-22"
 url = "https://repo1.maven.org/maven2/com/heroku/agent/heroku-java-metrics-agent/4.0.1/heroku-java-metrics-agent-4.0.1.jar"
 sha256 = "9a718680e4a93f93a8755b20fb21cc541e5c2692acc9da27c667530f48a716db"
 [metadata.release]
-[metadata.release.docker]
+[metadata.release.image]
 repository = "docker.io/heroku/buildpack-jvm"
