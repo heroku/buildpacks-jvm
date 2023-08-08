@@ -1,4 +1,4 @@
-use crate::{util, MavenBuildpack, MavenBuildpackError, Tarball};
+use crate::{MavenBuildpack, MavenBuildpackError, Tarball};
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
@@ -58,20 +58,6 @@ impl Layer for MavenLayer {
             layer_path,
         )
         .map_err(MavenBuildpackError::MavenTarballDecompressError)?;
-
-        // The actual Maven installation is located in the .maven subdirectory of the tarball. We
-        // need to move its contents to the layer itself before it can be used:
-        util::move_directory_contents(layer_path.join(".maven"), layer_path)
-            .map_err(MavenBuildpackError::MavenTarballNormalizationError)?;
-
-        std::fs::remove_dir_all(layer_path.join(".maven"))
-            .map_err(MavenBuildpackError::MavenTarballNormalizationError)?;
-
-        // Heroku's Maven tarballs historically also contained a .m2 directory with pre-populated
-        // dependencies for faster builds. For all recent Maven versions, this directory is
-        // empty and unused.
-        std::fs::remove_dir_all(layer_path.join(".m2"))
-            .map_err(MavenBuildpackError::MavenTarballNormalizationError)?;
 
         // Even though M2_HOME is no longer supported by Maven versions >= 3.5.0, other tooling such
         // as Maven invoker might still depend on it. References:

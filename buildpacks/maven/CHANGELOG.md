@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Remove support for installing Maven `3.2.5`, `3.3.9`, `3.5.4` and `3.6.2` via `system.properties`. These versions of Maven contain security vulnerabilities and should not be used. Users that cannot upgrade to a secure version of Maven can install the Maven Wrapper for the required Maven version to their application (i.e. `mvn wrapper:wrapper -Dmaven=3.6.2`). ([#556](https://github.com/heroku/buildpacks-jvm/pull/556))
+- Default version for Maven is now `3.9.4`. ([#556](https://github.com/heroku/buildpacks-jvm/pull/556))
+
 ## [2.0.0] - 2023-07-31
 
 - No changes.

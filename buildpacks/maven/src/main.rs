@@ -59,7 +59,6 @@ pub(crate) enum MavenBuildpackError {
         actual_sha256: String,
     },
     MavenTarballDecompressError(std::io::Error),
-    MavenTarballNormalizationError(std::io::Error),
     CannotSplitMavenCustomOpts(shell_words::ParseError),
     CannotSplitMavenCustomGoals(shell_words::ParseError),
     DetermineModeError(ReadSystemPropertiesError),
