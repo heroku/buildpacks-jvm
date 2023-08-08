@@ -1,3 +1,4 @@
+use crate::util::extract_tarball;
 use crate::{MavenBuildpack, MavenBuildpackError, Tarball};
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
@@ -53,11 +54,8 @@ impl Layer for MavenLayer {
                 }
             })?;
 
-        libherokubuildpack::tar::decompress_tarball(
-            &mut File::open(&temp_file_path).unwrap(),
-            layer_path,
-        )
-        .map_err(MavenBuildpackError::MavenTarballDecompressError)?;
+        extract_tarball(&mut File::open(&temp_file_path).unwrap(), layer_path, 1)
+            .map_err(MavenBuildpackError::MavenTarballDecompressError)?;
 
         // Even though M2_HOME is no longer supported by Maven versions >= 3.5.0, other tooling such
         // as Maven invoker might still depend on it. References:
