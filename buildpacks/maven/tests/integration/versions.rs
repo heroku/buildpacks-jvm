@@ -20,17 +20,17 @@ fn with_wrapper_and_system_properties() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
-            set_maven_version_app_dir_preprocessor(PREVIOUS_MAVEN_VERSION, &path)
+            set_maven_version_app_dir_preprocessor(DEFAULT_MAVEN_VERSION, &path)
         }),
         |context| {
             assert_contains!(
                 context.pack_stdout,
-                &format!("Selected Maven version: {PREVIOUS_MAVEN_VERSION}")
+                &format!("Selected Maven version: {DEFAULT_MAVEN_VERSION}")
             );
             assert_not_contains!(context.pack_stdout, "$ ./mvnw");
             assert_contains!(
                 context.pack_stdout,
-                &format!("[BUILDPACK INTEGRATION TEST - MAVEN VERSION] {PREVIOUS_MAVEN_VERSION}")
+                &format!("[BUILDPACK INTEGRATION TEST - MAVEN VERSION] {DEFAULT_MAVEN_VERSION}")
             );
         },
     )
@@ -88,71 +88,17 @@ fn without_wrapper_and_unknown_system_properties() {
 
 #[test]
 #[ignore = "integration test"]
-fn without_wrapper_and_maven_3_6_2_system_properties() {
+fn without_wrapper_and_maven_3_9_4_system_properties() {
     TestRunner::default().build(
         default_config().app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
-            set_maven_version_app_dir_preprocessor("3.6.2", &path);
+            set_maven_version_app_dir_preprocessor("3.9.4", &path);
         }),
         |context| {
-            assert_contains!(context.pack_stdout, "Selected Maven version: 3.6.2");
+            assert_contains!(context.pack_stdout, "Selected Maven version: 3.9.4");
             assert_contains!(
                 context.pack_stdout,
-                "[BUILDPACK INTEGRATION TEST - MAVEN VERSION] 3.6.2"
-            );
-        },
-    )
-}
-
-#[test]
-#[ignore = "integration test"]
-fn without_wrapper_and_maven_3_5_4_system_properties() {
-    TestRunner::default().build(
-        default_config().app_dir_preprocessor(|path| {
-            remove_maven_wrapper(&path);
-            set_maven_version_app_dir_preprocessor("3.5.4", &path);
-        }),
-        |context| {
-            assert_contains!(context.pack_stdout, "Selected Maven version: 3.5.4");
-            assert_contains!(
-                context.pack_stdout,
-                "[BUILDPACK INTEGRATION TEST - MAVEN VERSION] 3.5.4"
-            );
-        },
-    )
-}
-
-#[test]
-#[ignore = "integration test"]
-fn without_wrapper_and_maven_3_3_9_system_properties() {
-    TestRunner::default().build(
-        default_config().app_dir_preprocessor(|path| {
-            remove_maven_wrapper(&path);
-            set_maven_version_app_dir_preprocessor("3.3.9", &path);
-        }),
-        |context| {
-            assert_contains!(context.pack_stdout, "Selected Maven version: 3.3.9");
-            assert_contains!(
-                context.pack_stdout,
-                "[BUILDPACK INTEGRATION TEST - MAVEN VERSION] 3.3.9"
-            );
-        },
-    )
-}
-
-#[test]
-#[ignore = "integration test"]
-fn without_wrapper_and_maven_3_2_5_system_properties() {
-    TestRunner::default().build(
-        default_config().app_dir_preprocessor(|path| {
-            remove_maven_wrapper(&path);
-            set_maven_version_app_dir_preprocessor("3.2.5", &path);
-        }),
-        |context| {
-            assert_contains!(context.pack_stdout, "Selected Maven version: 3.2.5");
-            assert_contains!(
-                context.pack_stdout,
-                "[BUILDPACK INTEGRATION TEST - MAVEN VERSION] 3.2.5"
+                "[BUILDPACK INTEGRATION TEST - MAVEN VERSION] 3.9.4"
             );
         },
     )
@@ -177,7 +123,6 @@ fn set_maven_version_app_dir_preprocessor(version: &str, path: &Path) {
     java_properties::write(&mut properties_file, &properties).unwrap();
 }
 
-const DEFAULT_MAVEN_VERSION: &str = "3.6.2";
-const PREVIOUS_MAVEN_VERSION: &str = "3.5.4";
+const DEFAULT_MAVEN_VERSION: &str = "3.9.4";
 const UNKNOWN_MAVEN_VERSION: &str = "1.0.0-unknown-version";
 const SIMPLE_HTTP_SERVICE_MAVEN_WRAPPER_VERSION: &str = "3.6.3";

@@ -27,11 +27,6 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
             "Failed to set executable bit for Maven wrapper",
             error,
         ),
-        MavenBuildpackError::MavenTarballNormalizationError(error) => log_please_try_again_error(
-            "Maven distribution post-processing error",
-            "Could not post-process the downloaded Maven distribution.",
-            error,
-        ),
         MavenBuildpackError::DefaultAppProcessError(error) => log_please_try_again_error(
             "Could not determine default process",
             "While trying to determine a default process based on the used application framework, an unexpected error occurred.",

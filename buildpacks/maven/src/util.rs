@@ -1,22 +1,8 @@
-use buildpacks_jvm_shared::fs::list_directory_contents;
-use std::path::Path;
+use flate2::read::GzDecoder;
+use std::fs::File;
+use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
-
-pub(crate) fn move_directory_contents<P: AsRef<Path>, Q: AsRef<Path>>(
-    from: P,
-    to: Q,
-) -> std::io::Result<()> {
-    let dir_entries = list_directory_contents(from.as_ref())?;
-
-    for dir_entry in dir_entries {
-        std::fs::rename(
-            &dir_entry,
-            to.as_ref().join(dir_entry.components().last().unwrap()),
-        )?;
-    }
-
-    Ok(())
-}
+use tar::Archive;
 
 pub(crate) fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(ExitStatus) -> E>(
     command: &mut Command,
@@ -34,4 +20,30 @@ pub(crate) fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(ExitStat
                 Err(exit_status_fn(exit_status))
             }
         })
+}
+
+pub(crate) fn extract_tarball(
+    file: &mut File,
+    destination: &Path,
+    strip_components: usize,
+) -> Result<(), std::io::Error> {
+    let mut archive = Archive::new(GzDecoder::new(file));
+
+    for entry in archive.entries()? {
+        let mut entry = entry?;
+        let path = entry.path()?;
+
+        let entry_destination = path
+            .components()
+            .skip(strip_components)
+            .fold(PathBuf::from(destination), |acc, item| acc.join(item));
+
+        if let Some(entry_destination_parent) = entry_destination.parent() {
+            std::fs::create_dir_all(entry_destination_parent)?;
+        }
+
+        entry.unpack(entry_destination)?;
+    }
+
+    Ok(())
 }
