@@ -7,10 +7,12 @@
 
 use buildpacks_jvm_shared_test::DEFAULT_INTEGRATION_TEST_BUILDER;
 use libcnb_test::{BuildConfig, BuildpackReference};
+use std::path::Path;
 
 mod automatic_process_type;
 mod caching;
 mod customization;
+mod download_mirror;
 mod misc;
 mod polyglot;
 mod settings_xml;
@@ -31,4 +33,8 @@ pub(crate) fn default_buildpacks() -> Vec<BuildpackReference> {
         BuildpackReference::Other(String::from("heroku/jvm")),
         BuildpackReference::Crate,
     ]
+}
+
+pub(crate) fn remove_maven_wrapper(path: &Path) {
+    std::fs::remove_file(path.join("mvnw")).unwrap()
 }

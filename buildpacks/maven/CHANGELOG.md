@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add support for overriding the mirror from which Maven is downloaded from. The default continues to be `https://repo.maven.apache.org/maven2/`. Use the `MAVEN_DOWNLOAD_MIRROR` environment variable to configure a different base URL. This setting has no effect when Maven Wrapper is used. ([#559](https://github.com/heroku/buildpacks-jvm/pull/559))
+
 ## [3.0.0] - 2023-08-09
 
 - Remove support for installing Maven `3.2.5`, `3.3.9`, `3.5.4` and `3.6.2` via `system.properties`. These versions of Maven contain security vulnerabilities and should not be used. Users that cannot upgrade to a secure version of Maven can install the Maven Wrapper for the required Maven version to their application (i.e. `mvn wrapper:wrapper -Dmaven=3.6.2`). ([#556](https://github.com/heroku/buildpacks-jvm/pull/556))

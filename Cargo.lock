@@ -116,6 +116,7 @@ dependencies = [
  "shell-words",
  "tar",
  "tempfile",
+ "url",
 ]
 
 [[package]]
@@ -1057,6 +1058,7 @@ dependencies = [
  "form_urlencoded",
  "idna",
  "percent-encoding",
+ "serde",
 ]
 
 [[package]]

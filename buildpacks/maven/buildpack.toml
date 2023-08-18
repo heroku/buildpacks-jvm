@@ -16,11 +16,12 @@ type = "BSD-3-Clause"
 id = "*"
 
 [metadata]
-default-version = "3.9.4"
-[metadata.tarballs]
-[metadata.tarballs."3.9.4"]
-url = "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.4/apache-maven-3.9.4-bin.tar.gz"
+default-maven-version = "3.9.4"
+default-apache-maven-mirror = "https://repo.maven.apache.org/maven2/"
+
+[metadata.maven-versions."3.9.4"]
+path = "org/apache/maven/apache-maven/3.9.4/apache-maven-3.9.4-bin.tar.gz"
 sha256 = "ff66b70c830a38d331d44f6c25a37b582471def9a161c93902bac7bea3098319"
-[metadata.release]
+
 [metadata.release.image]
 repository = "docker.io/heroku/buildpack-maven"

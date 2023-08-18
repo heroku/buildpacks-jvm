@@ -134,5 +134,14 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
                 Details: {error}
             ", error = error },
         ),
+        MavenBuildpackError::InvalidMavenDownloadMirror(error) => log_error(
+            "Invalid Maven Download Mirror",
+            formatdoc! {"
+                Could not parse the value of the MAVEN_DOWNLOAD_MIRROR environment variable as a
+                base URL. Please ensure that the value is a valid URL and and try again.
+
+                Details: {error}
+            ", error = error },
+        ),
     }
 }

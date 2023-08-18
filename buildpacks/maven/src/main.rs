@@ -38,6 +38,7 @@ use buildpacks_jvm_shared_test as _;
 use java_properties as _;
 #[cfg(test)]
 use libcnb_test as _;
+use url::Url;
 
 mod errors;
 mod framework;
@@ -52,6 +53,7 @@ pub(crate) struct MavenBuildpack;
 #[derive(Debug)]
 pub(crate) enum MavenBuildpackError {
     UnsupportedMavenVersion(String),
+    InvalidMavenDownloadMirror(url::ParseError),
     MavenTarballDownloadError(DownloadError),
     MavenTarballSha256IoError(std::io::Error),
     MavenTarballSha256Mismatch {
@@ -71,14 +73,17 @@ pub(crate) enum MavenBuildpackError {
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct MavenBuildpackMetadata {
-    #[serde(rename = "default-version")]
-    default_version: String,
-    tarballs: HashMap<String, Tarball>,
+    #[serde(rename = "default-maven-version")]
+    default_maven_version: String,
+    #[serde(rename = "default-apache-maven-mirror")]
+    default_apache_maven_mirror: Url,
+    #[serde(rename = "maven-versions")]
+    maven_versions: HashMap<String, MavenVersion>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub(crate) struct Tarball {
-    url: String,
+pub(crate) struct MavenVersion {
+    path: String,
     sha256: String,
 }
 
@@ -120,7 +125,7 @@ impl Buildpack for MavenBuildpack {
 
         let maven_mode = determine_mode(
             &context.app_dir,
-            &context.buildpack_descriptor.metadata.default_version,
+            &context.buildpack_descriptor.metadata.default_maven_version,
         )
         .map_err(MavenBuildpackError::DetermineModeError)?;
 
@@ -157,17 +162,39 @@ impl Buildpack for MavenBuildpack {
 
                 log_info(format!("Selected Maven version: {}", &version));
 
+                let apache_maven_mirror = context
+                    .platform
+                    .env()
+                    .get_string_lossy("MAVEN_DOWNLOAD_MIRROR")
+                    .map_or_else(
+                        || {
+                            Ok(context
+                                .buildpack_descriptor
+                                .metadata
+                                .default_apache_maven_mirror
+                                .clone())
+                        },
+                        |url_string| Url::parse(&url_string),
+                    )
+                    .map_err(MavenBuildpackError::InvalidMavenDownloadMirror)?;
+
                 let maven_layer = context
                     .buildpack_descriptor
                     .metadata
-                    .tarballs
+                    .maven_versions
                     .get(&version)
                     .cloned()
                     .ok_or_else(|| {
                         MavenBuildpackError::UnsupportedMavenVersion(version.clone()).into()
                     })
-                    .and_then(|tarball| {
-                        context.handle_layer(layer_name!("maven"), MavenLayer { tarball })
+                    .and_then(|version| {
+                        context.handle_layer(
+                            layer_name!("maven"),
+                            MavenLayer {
+                                apache_maven_mirror,
+                                version,
+                            },
+                        )
                     })?;
 
                 log_info(format!("Successfully installed Apache Maven {}", &version));

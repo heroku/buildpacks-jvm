@@ -82,6 +82,8 @@ Allows overriding the Maven goals used during the build process. The default goa
 Allows overriding the Java options for the Maven process during build. The default Java options are `-Xmx1024m`.
 #### `HEROKU_BUILDPACK_DEBUG`
 If set, the buildpack will emit debug log messages.
+#### `MAVEN_DOWNLOAD_MIRROR`
+If set, the buildpack will use this value as the root URL for downloading Maven distributions. The default is `https://repo.maven.apache.org/maven2/`. Has no effect when Maven Wrapper is used.
 
 ## License
 See [LICENSE](../../LICENSE) file.

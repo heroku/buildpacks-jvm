@@ -1,4 +1,4 @@
-use crate::default_config;
+use crate::{default_config, remove_maven_wrapper};
 use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
 use std::fs::OpenOptions;
 use std::path::Path;
@@ -102,10 +102,6 @@ fn without_wrapper_and_maven_3_9_4_system_properties() {
             );
         },
     )
-}
-
-fn remove_maven_wrapper(path: &Path) {
-    std::fs::remove_file(path.join("mvnw")).unwrap()
 }
 
 fn set_maven_version_app_dir_preprocessor(version: &str, path: &Path) {

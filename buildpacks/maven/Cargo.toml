@@ -16,6 +16,7 @@ shell-words = "1"
 tempfile = "3"
 flate2 = "1.0.26"
 tar = "0.4.39"
+url = { version = "2.4.0", features = ["serde"] }
 
 [dev-dependencies]
 libcnb-test.workspace = true
