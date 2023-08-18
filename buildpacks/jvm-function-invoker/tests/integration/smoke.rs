@@ -1,7 +1,7 @@
 use base64::Engine;
 use buildpacks_jvm_shared_test::{
-    ADDRESS_FOR_PORT_EXPECT_MESSAGE, DEFAULT_INTEGRATION_TEST_BUILDER,
-    UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE, UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
+    DEFAULT_INTEGRATION_TEST_BUILDER, UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE,
+    UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
 };
 use libcnb_test::{BuildConfig, BuildpackReference, ContainerConfig, TestRunner};
 use std::time::Duration;
@@ -27,7 +27,7 @@ fn smoke_test_simple_function() {
                     let request_payload = "\"All those moments will be lost in time, like tears in rain...\"";
 
                     // Absolute minimum request that can be served by the function runtime.
-                    let response_payload = ureq::post(&format!("http://{}", container.address_for_port(PORT).expect(ADDRESS_FOR_PORT_EXPECT_MESSAGE)))
+                    let response_payload = ureq::post(&format!("http://{}", container.address_for_port(PORT)))
                         .set("Content-Type", "application/json")
                         .set("Authorization", "")
                         .set("ce-id", "function")

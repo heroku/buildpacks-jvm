@@ -1,7 +1,7 @@
 use crate::default_buildpacks;
 use buildpacks_jvm_shared_test::{
-    http_request_backoff, ADDRESS_FOR_PORT_EXPECT_MESSAGE, DEFAULT_INTEGRATION_TEST_BUILDER,
-    UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE, UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
+    http_request_backoff, DEFAULT_INTEGRATION_TEST_BUILDER, UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE,
+    UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
 };
 use libcnb_test::{assert_contains, assert_not_contains, BuildConfig, ContainerConfig, TestRunner};
 
@@ -27,7 +27,7 @@ fn test_the_thing() {
                 .expose_port(PORT)
                 .env("PORT", PORT.to_string()),
             |context| {
-                let addr = context.address_for_port(PORT).expect(ADDRESS_FOR_PORT_EXPECT_MESSAGE);
+                let addr = context.address_for_port(PORT);
 
                 let response = http_request_backoff(|| ureq::get(&format!("http://{addr}")).call())
                     .expect(UREQ_RESPONSE_RESULT_EXPECT_MESSAGE)
