@@ -32,12 +32,7 @@ pub fn start_container_assert_basic_http_response(
             .expose_port(PORT)
             .env("PORT", PORT.to_string()),
         |context| {
-            let url = format!(
-                "http://{}",
-                context
-                    .address_for_port(PORT)
-                    .expect(ADDRESS_FOR_PORT_EXPECT_MESSAGE)
-            );
+            let url = format!("http://{}", context.address_for_port(PORT));
 
             let response_body = http_request_backoff(|| ureq::get(&url).call())
                 .expect(UREQ_RESPONSE_RESULT_EXPECT_MESSAGE)
@@ -106,9 +101,6 @@ pub fn smoke_test<P, B>(
 }
 
 pub const DEFAULT_INTEGRATION_TEST_BUILDER: &str = "heroku/builder:22";
-
-pub const ADDRESS_FOR_PORT_EXPECT_MESSAGE: &str =
-    "address for container port should be available from libcnb-test";
 
 pub const UREQ_RESPONSE_RESULT_EXPECT_MESSAGE: &str = "http request should be successful";
 
