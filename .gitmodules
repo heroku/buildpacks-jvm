@@ -9,3 +9,7 @@
 [submodule "buildpacks/maven/test-apps/heroku-java-getting-started"]
 	path = buildpacks/maven/test-apps/heroku-java-getting-started
 	url = https://github.com/heroku/java-getting-started.git
+
+[submodule "buildpacks/gradle/test-apps/heroku-gradle-getting-started"]
+	path = buildpacks/gradle/test-apps/heroku-gradle-getting-started
+	url = https://github.com/heroku/gradle-getting-started.git
