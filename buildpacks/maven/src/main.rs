@@ -111,7 +111,7 @@ impl Buildpack for MavenBuildpack {
     #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
         let mut current_or_platform_env = Env::from_current();
-        for (key, value) in context.platform.env().iter() {
+        for (key, value) in context.platform.env() {
             current_or_platform_env.insert(key, value);
         }
 
