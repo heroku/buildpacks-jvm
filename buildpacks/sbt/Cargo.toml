@@ -13,7 +13,7 @@ java-properties = "2"
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
 thiserror = "1"
-semver="1"
+semver = { version = "1", features = ["serde"] }
 shell-words = "1"
 buildpacks-jvm-shared.workspace = true
 
