@@ -24,13 +24,13 @@ pub(crate) fn maven_custom_goals() {
                    org.wildfly.client:wildfly-client-config:jar:1.0.1.Final:compile
                    org.jboss.xnio:xnio-nio:jar:3.8.8.Final:runtime
                    org.jboss.threads:jboss-threads:jar:3.5.0.Final:compile
-                   com.google.guava:guava:jar:30.0-jre:compile
+                   com.google.guava:guava:jar:32.0.0-jre:compile
                    com.google.guava:failureaccess:jar:1.0.1:compile
                    com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile
                    com.google.code.findbugs:jsr305:jar:3.0.2:compile
-                   org.checkerframework:checker-qual:jar:3.5.0:compile
-                   com.google.errorprone:error_prone_annotations:jar:2.3.4:compile
-                   com.google.j2objc:j2objc-annotations:jar:1.3:compile
+                   org.checkerframework:checker-qual:jar:3.33.0:compile
+                   com.google.errorprone:error_prone_annotations:jar:2.18.0:compile
+                   com.google.j2objc:j2objc-annotations:jar:2.8:compile
                    junit:junit:jar:4.13.1:test
                    org.hamcrest:hamcrest-core:jar:1.3:test
 
