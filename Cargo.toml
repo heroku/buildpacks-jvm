@@ -1,4 +1,6 @@
 [workspace]
+resolver = "1"
+
 members = [
     "buildpacks/jvm",
     "buildpacks/jvm-function-invoker",
