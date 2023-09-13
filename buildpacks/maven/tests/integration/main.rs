@@ -13,6 +13,7 @@ mod caching;
 mod customization;
 mod misc;
 mod polyglot;
+mod sbom;
 mod settings_xml;
 mod smoke;
 mod versions;
