@@ -21,3 +21,5 @@ tar = "0.4.39"
 libcnb-test.workspace = true
 java-properties = "2"
 buildpacks-jvm-shared-test.workspace = true
+serde-cyclonedx = "0.8.4"
+serde_json = "1.0.104"
