@@ -22,3 +22,5 @@ tempfile = "3"
 buildpacks-jvm-shared-test.workspace = true
 java-properties = "2"
 libcnb-test = "=0.23.0"
+serde-cyclonedx = "0.8.4"
+serde_json = "1.0.104"

@@ -8,6 +8,7 @@ homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Heroku's Maven buildpack. A component of the 'heroku/java' buildpack."
 keywords = ["maven", "heroku"]
 clear-env = true
+sbom-formats = ["application/vnd.cyclonedx+json"]
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
