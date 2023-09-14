@@ -38,6 +38,8 @@ impl Layer for GradleHomeLayer {
         )
         .map_err(GradleBuildpackError::WriteGradlePropertiesError)?;
 
+        // We're adding this empty task to all projects to ensure we have a task we can run when
+        // we start the Gradle daemon that doesn't side-effect or output anything to the console.
         // https://docs.gradle.org/8.3/userguide/init_scripts.html
         fs::write(
             layer_path.join("init.gradle.kts"),
