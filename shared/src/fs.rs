@@ -33,7 +33,6 @@ pub fn is_executable<P: AsRef<Path>>(path: P) -> bool {
 }
 
 #[cfg(unix)]
-#[allow(clippy::missing_errors_doc)]
 pub fn set_executable<P: AsRef<Path>>(path: P) -> std::io::Result<()> {
     use std::os::unix::fs::PermissionsExt;
 

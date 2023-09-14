@@ -7,7 +7,6 @@ use std::path::Path;
 ///
 /// A missing `system.properties` file is not considered an error. The resulting `HashMap`
 /// will be empty instead.
-#[allow(clippy::missing_errors_doc)]
 pub fn read_system_properties(
     app_dir: &Path,
 ) -> Result<HashMap<String, String>, ReadSystemPropertiesError> {
@@ -24,7 +23,7 @@ pub fn read_system_properties(
 
 /// Writes all given properties to the `system.properties` file in the app's directory.
 // Implicit hasher is allowed since the properties crate only works with the default one.
-#[allow(clippy::missing_errors_doc, clippy::implicit_hasher)]
+#[allow(clippy::implicit_hasher)]
 pub fn write_system_properties(
     app_dir: &Path,
     properties: &HashMap<String, String>,

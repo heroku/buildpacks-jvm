@@ -10,8 +10,8 @@ libcnb.workspace = true
 libherokubuildpack.workspace = true
 serde = { version = "1", features = ["derive"] }
 buildpacks-jvm-shared.workspace = true
-nom = "7.1.1"
-indoc = "2.0.1"
+nom = "7"
+indoc = "2"
 
 [dev-dependencies]
 libcnb-test.workspace = true

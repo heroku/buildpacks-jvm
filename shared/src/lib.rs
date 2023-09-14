@@ -5,6 +5,8 @@
 #![warn(clippy::pedantic)]
 // This lint is too noisy and enforces a style that reduces readability in many cases.
 #![allow(clippy::module_name_repetitions)]
+// This crate is for internal use only, we don't always need error docs.
+#![allow(clippy::missing_errors_doc)]
 
 pub mod env;
 pub mod fs;
