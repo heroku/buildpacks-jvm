@@ -42,6 +42,7 @@ pub(crate) struct GradleBuildpack;
 #[derive(Debug)]
 pub(crate) enum GradleBuildpackError {
     GradleWrapperNotFound,
+    DetectError(std::io::Error),
     GradleBuildIoError(std::io::Error),
     GradleBuildUnexpectedStatusError(ExitStatus),
     GetTasksError(GradleCommandError<()>),
@@ -62,7 +63,10 @@ impl Buildpack for GradleBuildpack {
     type Error = GradleBuildpackError;
 
     fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
-        if is_gradle_project_directory(&context.app_dir) {
+        let is_gradle_project_directory = is_gradle_project_directory(&context.app_dir)
+            .map_err(GradleBuildpackError::DetectError)?;
+
+        if is_gradle_project_directory {
             DetectResultBuilder::pass()
                 .build_plan(
                     BuildPlanBuilder::new()

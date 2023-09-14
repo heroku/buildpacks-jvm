@@ -94,5 +94,12 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 https://help.heroku.com
             "},
         ),
+        GradleBuildpackError::DetectError(error) => {
+            log_please_try_again_error(
+                "Failed determine is a file exists during detect",
+                "Failed determine is a file exists during detect",
+                error,
+            );
+        }
     }
 }
