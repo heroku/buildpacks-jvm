@@ -2,6 +2,7 @@
 resolver = "2"
 
 members = [
+    "buildpacks/gradle",
     "buildpacks/jvm",
     "buildpacks/jvm-function-invoker",
     "buildpacks/maven",

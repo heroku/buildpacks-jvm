@@ -5,6 +5,8 @@
 #![warn(clippy::pedantic)]
 // This lint is too noisy and enforces a style that reduces readability in many cases.
 #![allow(clippy::module_name_repetitions)]
+// This crate is for internal use only, we don't always need error docs.
+#![allow(clippy::missing_errors_doc)]
 
 use libcnb_test::{
     assert_contains, BuildConfig, BuildpackReference, ContainerConfig, TestContext, TestRunner,
@@ -44,7 +46,6 @@ pub fn start_container_assert_basic_http_response(
     );
 }
 
-#[allow(clippy::missing_errors_doc)]
 pub fn http_request_backoff<F, T, E>(request_fn: F) -> Result<T, E>
 where
     F: Fn() -> Result<T, E>,

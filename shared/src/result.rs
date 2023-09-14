@@ -1,6 +1,5 @@
 /// Removes [`std::io::Error`] values from a [`Result`] that have the
 /// [`std::io::ErrorKind::NotFound`] error kind by replacing them with the default value for `T`.
-#[allow(clippy::missing_errors_doc)]
 pub fn default_on_not_found<T: Default>(
     result: Result<T, std::io::Error>,
 ) -> Result<T, std::io::Error> {
@@ -9,7 +8,6 @@ pub fn default_on_not_found<T: Default>(
 
 /// Removes [`std::io::Error`] values from a [`Result`] that have the
 /// [`std::io::ErrorKind::NotFound`] error kind by replacing the `Err(std::io::Error)` with Ok(None).
-#[allow(clippy::missing_errors_doc)]
 pub fn none_on_not_found<T>(
     result: Result<T, std::io::Error>,
 ) -> Result<Option<T>, std::io::Error> {
