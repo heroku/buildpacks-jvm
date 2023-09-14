@@ -57,9 +57,9 @@ pub(crate) struct Task {
 mod parser {
     use super::Task;
     use super::TaskGroup;
-    use nom::bytes::complete::tag;
-    use nom::character::complete::{alphanumeric1, char, line_ending, not_line_ending};
-    use nom::combinator::{map, verify};
+    use nom::bytes::complete::{is_not, tag};
+    use nom::character::complete::{char, line_ending, not_line_ending};
+    use nom::combinator::{map, recognize, verify};
     use nom::multi::{count, many0, many1, many_till};
     use nom::sequence::{terminated, tuple};
     use nom::{Finish, IResult};
@@ -90,7 +90,7 @@ mod parser {
     fn task_line(input: &str) -> IResult<&str, Task> {
         map(
             tuple((
-                map(terminated(alphanumeric1, tag(" - ")), String::from),
+                map(terminated(task_name, tag(" - ")), String::from),
                 map(terminated(not_line_ending, line_ending), String::from),
             )),
             |(name, description)| Task { name, description },
@@ -101,13 +101,18 @@ mod parser {
         map(terminated(not_line_ending, line_ending), String::from)(input)
     }
 
+    fn task_name(input: &str) -> IResult<&str, &str> {
+        // https://github.com/gradle/gradle/blob/95410a3dff9c63c660f897297f54ebaad3581f5a/subprojects/core/src/main/java/org/gradle/util/internal/NameValidator.java#L26-L27
+        recognize(is_not("/\\:<>\"?*| "))(input)
+    }
+
     #[cfg(test)]
     mod test {
         use super::{Task, TaskGroup};
         use indoc::indoc;
 
         #[test]
-        fn foo() {
+        fn test() {
             let input = indoc! {"
 
                 ------------------------------------------------------------
@@ -161,6 +166,12 @@ mod parser {
                 check - Runs all checks.
                 test - Runs the test suite.
 
+                Weird tasks
+                -----------
+                bärchen - Contains an umlaut.
+                1337 - Only consists of numbers.
+                one-two - Contains a dash.
+
                 Rules
                 -----
                 Pattern: clean<TaskName>: Cleans the output files of a task.
@@ -181,7 +192,8 @@ mod parser {
                     TaskGroup { heading: String::from("Build Setup tasks"), tasks: vec![Task { name: String::from("init"), description: String::from("Initializes a new Gradle build.") }, Task { name: String::from("wrapper"), description: String::from("Generates Gradle wrapper files.") }] },
                     TaskGroup { heading: String::from("Documentation tasks"), tasks: vec![Task { name: String::from("javadoc"), description: String::from("Generates Javadoc API documentation for the main source code.") }] },
                     TaskGroup { heading: String::from("Help tasks"), tasks: vec![Task { name: String::from("buildEnvironment"), description: String::from("Displays all buildscript dependencies declared in root project 'demo'.") }, Task { name: String::from("dependencies"), description: String::from("Displays all dependencies declared in root project 'demo'.") }, Task { name: String::from("dependencyInsight"), description: String::from("Displays the insight into a specific dependency in root project 'demo'.") }, Task { name: String::from("dependencyManagement"), description: String::from("Displays the dependency management declared in root project 'demo'.") }, Task { name: String::from("help"), description: String::from("Displays a help message.") }, Task { name: String::from("javaToolchains"), description: String::from("Displays the detected java toolchains.") }, Task { name: String::from("kotlinDslAccessorsReport"), description: String::from("Prints the Kotlin code for accessing the currently available project extensions and conventions.") }, Task { name: String::from("outgoingVariants"), description: String::from("Displays the outgoing variants of root project 'demo'.") }, Task { name: String::from("projects"), description: String::from("Displays the sub-projects of root project 'demo'.") }, Task { name: String::from("properties"), description: String::from("Displays the properties of root project 'demo'.") }, Task { name: String::from("resolvableConfigurations"), description: String::from("Displays the configurations that can be resolved in root project 'demo'.") }, Task { name: String::from("tasks"), description: String::from("Displays the tasks runnable from root project 'demo'.") }] },
-                    TaskGroup { heading: String::from("Verification tasks"), tasks: vec![Task { name: String::from("check"), description: String::from("Runs all checks.") }, Task { name: String::from("test"), description: String::from("Runs the test suite.") }] }
+                    TaskGroup { heading: String::from("Verification tasks"), tasks: vec![Task { name: String::from("check"), description: String::from("Runs all checks.") }, Task { name: String::from("test"), description: String::from("Runs the test suite.") }] },
+                    TaskGroup { heading: String::from("Weird tasks"), tasks: vec![Task { name: String::from("bärchen"), description: String::from("Contains an umlaut.") }, Task { name: String::from("1337"), description: String::from("Only consists of numbers.") },  Task { name: String::from("one-two"), description: String::from("Contains a dash.") }] }
                 ]
             );
         }
