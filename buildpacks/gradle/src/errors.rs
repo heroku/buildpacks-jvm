@@ -28,7 +28,7 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 please submit a ticket so we can help: https://help.heroku.com/
 
                 Details: {error}
-            ", error = error },
+            "},
         ),
         GradleBuildpackError::GradleBuildUnexpectedStatusError(exit_status) => {
             let exit_code_string = exit_status.code().map_or_else(
@@ -42,8 +42,8 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                     We're sorry this build is failing! If you can't find the issue in application code,
                     please submit a ticket so we can help: https://help.heroku.com/
 
-                    Gradle exit code was: {exit_code}
-                ", exit_code = exit_code_string },
+                    Gradle exit code was: {exit_code_string}
+                "},
             );
         }
         GradleBuildpackError::GetTasksError(error) => log_please_try_again_error(
