@@ -15,7 +15,7 @@ type = "BSD-3-Clause"
 [[stacks]]
 id = "*"
 
+[metadata]
 [metadata.release]
-
-[metadata.release.docker]
+[metadata.release.image]
 repository = "docker.io/heroku/buildpack-gradle"
