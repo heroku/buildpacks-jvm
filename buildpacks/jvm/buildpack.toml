@@ -2,7 +2,7 @@ api = "0.9"
 
 [buildpack]
 id = "heroku/jvm"
-version = "3.1.0"
+version = "3.2.0"
 name = "Heroku OpenJDK Buildpack"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for installing OpenJDK"
