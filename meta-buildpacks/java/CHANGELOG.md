@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2023-09-20
+
+- Updated `heroku/gradle` to `3.2.0`.
+- Updated `heroku/jvm` to `3.2.0`.
+- Updated `heroku/maven` to `3.2.0`.
+
 ## [3.1.0] - 2023-09-18
 
 - Updated `heroku/procfile` to `2.0.1`. ([#568](https://github.com/heroku/buildpacks-jvm/pull/568))
@@ -191,7 +197,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v3.1.0...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/heroku/buildpacks-jvm/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/heroku/buildpacks-jvm/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...v2.0.0
