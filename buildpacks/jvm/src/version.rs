@@ -29,6 +29,7 @@ pub(crate) fn normalize_version_string<S: Into<String>>(
         "18" => "18.0.2.1",
         "19" => "19.0.2",
         "20" => "20.0.2",
+        "21" => "21.0.0",
         other => other,
     };
 
