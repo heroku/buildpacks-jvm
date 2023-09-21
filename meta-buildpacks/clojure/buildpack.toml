@@ -1,0 +1,32 @@
+api = "0.9"
+
+[buildpack]
+id = "heroku/clojure"
+version = "3.2.0"
+name = "Scala"
+homepage = "https://github.com/heroku/buildpacks-jvm"
+description = "Official Heroku buildpack for Clojure applications."
+keywords = ["clojure"]
+
+[[buildpack.licenses]]
+type = "BSD-3-Clause"
+
+[[order]]
+
+[[order.group]]
+id = "heroku/jvm"
+version = "3.2.0"
+
+[[order.group]]
+id = "heroku/leiningen"
+version = "3.2.0"
+
+[[order.group]]
+id = "heroku/procfile"
+version = "2.0.1"
+optional = true
+
+[metadata]
+[metadata.release]
+[metadata.release.image]
+repository = "docker.io/heroku/buildpack-clojure"

@@ -1,0 +1,21 @@
+api = "0.9"
+
+[buildpack]
+id = "heroku/leiningen"
+version = "3.2.0"
+name = "Leiningen"
+clear-env = true
+homepage = "https://github.com/heroku/buildpacks-jvm"
+description = "Official Heroku buildpack for leiningen applications."
+keywords = ["java", "clojure", "leiningen"]
+
+[[buildpack.licenses]]
+type = "BSD-3-Clause"
+
+[[stacks]]
+id = "*"
+
+[metadata]
+[metadata.release]
+[metadata.release.image]
+repository = "docker.io/heroku/buildpack-leiningen"
