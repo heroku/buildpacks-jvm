@@ -4,7 +4,7 @@ use libcnb_test::{assert_contains, BuildConfig, TestRunner};
 #[ignore = "integration test"]
 fn test_openjdk_8_distribution_heroku_20() {
     TestRunner::default().build(
-        BuildConfig::new("heroku/buildpacks:20", "test-apps/java-8-app"),
+        BuildConfig::new("heroku/builder:20", "test-apps/java-8-app"),
         |context| {
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
