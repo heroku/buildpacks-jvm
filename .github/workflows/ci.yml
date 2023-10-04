@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Update Rust toolchain
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Update Rust toolchain
@@ -55,7 +55,7 @@ jobs:
         buildpack-directory: ${{ fromJson(needs.gather-repo-metadata.outputs.buildpack_dirs) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Install musl-tools
@@ -80,7 +80,7 @@ jobs:
       buildpack_dirs: ${{ steps.find-buildpack-dirs.outputs.buildpack_dirs }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - id: find-buildpack-dirs
