@@ -45,7 +45,7 @@ fn handle_maven_settings_url_env_var(env: &Env) -> Option<Result<PathBuf, Settin
                     error,
                 )
             })
-            .map(|_| path)
+            .map(|()| path)
     })
 }
 
