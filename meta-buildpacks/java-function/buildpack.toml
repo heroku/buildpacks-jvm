@@ -2,7 +2,7 @@ api = "0.9"
 
 [buildpack]
 id = "heroku/java-function"
-version = "3.2.0"
+version = "3.2.1"
 name = "Java Function"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 keywords = ["java", "function"]
@@ -14,15 +14,15 @@ type = "BSD-3-Clause"
 
 [[order.group]]
 id = "heroku/jvm"
-version = "3.2.0"
+version = "3.2.1"
 
 [[order.group]]
 id = "heroku/maven"
-version = "3.2.0"
+version = "3.2.1"
 
 [[order.group]]
 id = "heroku/jvm-function-invoker"
-version = "3.2.0"
+version = "3.2.1"
 
 [metadata]
 [metadata.release]

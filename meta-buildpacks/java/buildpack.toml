@@ -2,7 +2,7 @@ api = "0.9"
 
 [buildpack]
 id = "heroku/java"
-version = "3.2.0"
+version = "3.2.1"
 name = "Java"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Official Heroku buildpack for Java applications."
@@ -15,11 +15,11 @@ type = "BSD-3-Clause"
 
 [[order.group]]
 id = "heroku/jvm"
-version = "3.2.0"
+version = "3.2.1"
 
 [[order.group]]
 id = "heroku/maven"
-version = "3.2.0"
+version = "3.2.1"
 
 [[order.group]]
 id = "heroku/procfile"
@@ -30,11 +30,11 @@ optional = true
 
 [[order.group]]
 id = "heroku/jvm"
-version = "3.2.0"
+version = "3.2.1"
 
 [[order.group]]
 id = "heroku/gradle"
-version = "3.2.0"
+version = "3.2.1"
 
 [[order.group]]
 id = "heroku/procfile"
