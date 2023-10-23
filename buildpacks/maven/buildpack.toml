@@ -3,11 +3,11 @@ api = "0.9"
 [buildpack]
 id = "heroku/maven"
 version = "3.2.1"
-name = "Maven"
-clear-env = true
+name = "Heroku Maven"
 homepage = "https://github.com/heroku/buildpacks-jvm"
-description = "Official Heroku buildpack for Maven applications."
-keywords = ["java", "maven", "mvn"]
+description = "Heroku's Maven buildpack. A component of the 'heroku/java' buildpack."
+keywords = ["maven", "heroku"]
+clear-env = true
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
@@ -17,10 +17,11 @@ id = "*"
 
 [metadata]
 default-version = "3.9.4"
+
 [metadata.tarballs]
 [metadata.tarballs."3.9.4"]
 url = "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.4/apache-maven-3.9.4-bin.tar.gz"
 sha256 = "ff66b70c830a38d331d44f6c25a37b582471def9a161c93902bac7bea3098319"
+
 [metadata.release]
-[metadata.release.image]
-repository = "docker.io/heroku/buildpack-maven"
+image = { repository = "docker.io/heroku/buildpack-maven" }

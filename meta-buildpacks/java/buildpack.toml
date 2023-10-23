@@ -3,10 +3,10 @@ api = "0.9"
 [buildpack]
 id = "heroku/java"
 version = "3.2.1"
-name = "Java"
+name = "Heroku Java"
 homepage = "https://github.com/heroku/buildpacks-jvm"
-description = "Official Heroku buildpack for Java applications."
-keywords = ["java"]
+description = "Heroku's buildpack for Java applications."
+keywords = ["java", "openjdk", "maven", "gradle", "heroku"]
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
@@ -41,7 +41,5 @@ id = "heroku/procfile"
 version = "2.0.1"
 optional = true
 
-[metadata]
 [metadata.release]
-[metadata.release.image]
-repository = "docker.io/heroku/buildpack-java"
+image = { repository = "docker.io/heroku/buildpack-java" }

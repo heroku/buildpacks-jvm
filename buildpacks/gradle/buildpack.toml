@@ -3,11 +3,11 @@ api = "0.9"
 [buildpack]
 id = "heroku/gradle"
 version = "3.2.1"
-name = "Gradle"
-clear-env = true
+name = "Heroku Gradle"
 homepage = "https://github.com/heroku/buildpacks-jvm"
-description = "Official Heroku buildpack for Gradle applications."
-keywords = ["java", "gradle"]
+description = "Heroku's Gradle buildpack. A component of the 'heroku/java' buildpack."
+keywords = ["gradle", "heroku"]
+clear-env = true
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
@@ -15,7 +15,5 @@ type = "BSD-3-Clause"
 [[stacks]]
 id = "*"
 
-[metadata]
 [metadata.release]
-[metadata.release.image]
-repository = "docker.io/heroku/buildpack-gradle"
+image = { repository = "docker.io/heroku/buildpack-gradle" }

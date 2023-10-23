@@ -3,11 +3,11 @@ api = "0.9"
 [buildpack]
 id = "heroku/sbt"
 version = "3.2.1"
-name = "sbt"
-clear-env = true
+name = "Heroku sbt"
 homepage = "https://github.com/heroku/buildpacks-jvm"
-description = "Official Heroku buildpack for sbt applications."
-keywords = ["java", "scala", "sbt"]
+description = "Heroku's sbt buildpack. A component of the 'heroku/scala' buildpack."
+keywords = ["sbt", "heroku"]
+clear-env = true
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
@@ -15,7 +15,5 @@ type = "BSD-3-Clause"
 [[stacks]]
 id = "*"
 
-[metadata]
 [metadata.release]
-[metadata.release.image]
-repository = "docker.io/heroku/buildpack-sbt"
+image = { repository = "docker.io/heroku/buildpack-sbt" }
