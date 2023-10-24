@@ -3,10 +3,10 @@ api = "0.9"
 [buildpack]
 id = "heroku/jvm-function-invoker"
 version = "3.2.1"
-name = "JVM Function Invoker"
-clear-env = true
+name = "Salesforce JVM Function Invoker"
 homepage = "https://github.com/heroku/buildpacks-jvm"
-keywords = ["java", "function"]
+description = "Salesforce's JVM function invoker buildpack. A component of the 'heroku/java-function' buildpack."
+clear-env = true
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
@@ -14,10 +14,9 @@ type = "BSD-3-Clause"
 [[stacks]]
 id = "*"
 
-[metadata]
 [metadata.runtime]
 url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.1.3/sf-fx-runtime-java-runtime-1.1.3-jar-with-dependencies.jar"
 sha256 = "b8e17b6ee9889304cbd07958f86ac067cb58c7f6bdd324a87133d377f670adb5"
+
 [metadata.release]
-[metadata.release.image]
-repository = "docker.io/heroku/buildpack-jvm-function-invoker"
+image = { repository = "docker.io/heroku/buildpack-jvm-function-invoker" }

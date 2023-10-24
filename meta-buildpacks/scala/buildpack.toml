@@ -3,10 +3,10 @@ api = "0.9"
 [buildpack]
 id = "heroku/scala"
 version = "3.2.1"
-name = "Scala"
+name = "Heroku Scala"
 homepage = "https://github.com/heroku/buildpacks-jvm"
-description = "Official Heroku buildpack for Scala applications."
-keywords = ["scala"]
+description = "Heroku's buildpack for Scala applications."
+keywords = ["scala", "openjdk", "sbt", "heroku"]
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
@@ -26,7 +26,5 @@ id = "heroku/procfile"
 version = "2.0.1"
 optional = true
 
-[metadata]
 [metadata.release]
-[metadata.release.image]
-repository = "docker.io/heroku/buildpack-scala"
+image = { repository = "docker.io/heroku/buildpack-scala" }

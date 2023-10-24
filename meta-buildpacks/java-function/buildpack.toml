@@ -3,9 +3,9 @@ api = "0.9"
 [buildpack]
 id = "heroku/java-function"
 version = "3.2.1"
-name = "Java Function"
+name = "Salesforce Java Function"
 homepage = "https://github.com/heroku/buildpacks-jvm"
-keywords = ["java", "function"]
+description = "Salesforce's buildpack for Java Functions."
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
@@ -24,7 +24,5 @@ version = "3.2.1"
 id = "heroku/jvm-function-invoker"
 version = "3.2.1"
 
-[metadata]
 [metadata.release]
-[metadata.release.image]
-repository = "docker.io/heroku/buildpack-java-function"
+image = { repository = "docker.io/heroku/buildpack-java-function" }
