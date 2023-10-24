@@ -13,7 +13,7 @@ fn smoke_test_simple_function() {
         BuildConfig::new(DEFAULT_INTEGRATION_TEST_BUILDER, "test-apps/simple-function").buildpacks([
             BuildpackReference::Other(String::from("heroku/jvm")),
             BuildpackReference::Other(String::from("heroku/maven")),
-            BuildpackReference::Crate,
+            BuildpackReference::CurrentCrate,
         ]),
         |context| {
             context.start_container(
