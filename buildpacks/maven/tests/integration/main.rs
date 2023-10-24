@@ -29,6 +29,6 @@ pub(crate) fn default_config() -> BuildConfig {
 pub(crate) fn default_buildpacks() -> Vec<BuildpackReference> {
     vec![
         BuildpackReference::Other(String::from("heroku/jvm")),
-        BuildpackReference::Crate,
+        BuildpackReference::CurrentCrate,
     ]
 }
