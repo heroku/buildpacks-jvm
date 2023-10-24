@@ -14,7 +14,7 @@ regex = "1"
 serde = { version = "1", features = ["derive"] }
 shell-words = "1"
 tempfile = "3"
-flate2 = "1.0.26"
+flate2 = "1.0.28"
 tar = "0.4.39"
 
 [dev-dependencies]
