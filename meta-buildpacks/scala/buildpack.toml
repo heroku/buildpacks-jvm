@@ -21,10 +21,5 @@ version = "3.2.2"
 id = "heroku/sbt"
 version = "3.2.2"
 
-[[order.group]]
-id = "heroku/procfile"
-version = "2.0.1"
-optional = true
-
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-scala" }
