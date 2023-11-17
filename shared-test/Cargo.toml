@@ -6,6 +6,6 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-ureq = "2"
 exponential-backoff = "1"
-libcnb-test.workspace = true
+libcnb-test = "=0.15.0"
+ureq = "2"
