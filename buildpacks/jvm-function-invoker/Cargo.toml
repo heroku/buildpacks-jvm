@@ -7,15 +7,15 @@ publish.workspace = true
 
 [dependencies]
 indoc = "2"
-libcnb.workspace = true
-libherokubuildpack.workspace = true
+libcnb = "=0.15.0"
+libherokubuildpack = "=0.15.0"
 serde = "1"
 thiserror = "1"
-toml.workspace = true
+toml = "0.8"
 
 [dev-dependencies]
-tempfile = "3"
-libcnb-test.workspace = true
-ureq = "2"
 base64 = "0.21"
 buildpacks-jvm-shared-test.workspace = true
+libcnb-test = "=0.15.0"
+tempfile = "3"
+ureq = "2"
