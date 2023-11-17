@@ -9,8 +9,8 @@ publish.workspace = true
 buildpacks-jvm-shared.workspace = true
 indoc = "2"
 java-properties = "2"
-libcnb = "=0.15.0"
-libherokubuildpack = "=0.15.0"
+libcnb = "=0.16.0"
+libherokubuildpack = "=0.16.0"
 semver = { version = "1", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 shell-words = "1"
@@ -19,5 +19,5 @@ thiserror = "1"
 
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
-libcnb-test = "=0.15.0"
+libcnb-test = "=0.16.0"
 ureq = "2"

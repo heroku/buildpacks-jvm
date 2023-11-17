@@ -9,8 +9,8 @@ publish.workspace = true
 buildpacks-jvm-shared.workspace = true
 fs_extra = "1"
 indoc = "2"
-libcnb = "=0.15.0"
-libherokubuildpack = "=0.15.0"
+libcnb = "=0.16.0"
+libherokubuildpack = "=0.16.0"
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
 ureq = "2"
@@ -18,4 +18,4 @@ url = "2"
 
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
-libcnb-test = "=0.15.0"
+libcnb-test = "=0.16.0"
