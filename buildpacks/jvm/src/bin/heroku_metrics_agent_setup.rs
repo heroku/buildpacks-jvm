@@ -7,7 +7,7 @@ use libcnb::exec_d::write_exec_d_program_output;
 use libcnb::Env;
 use std::collections::HashMap;
 
-pub(crate) fn main() {
+fn main() {
     write_exec_d_program_output(output_from_env(&Env::from_current()));
 }
 

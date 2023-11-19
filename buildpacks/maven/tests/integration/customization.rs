@@ -4,7 +4,7 @@ use libcnb_test::{assert_contains, TestRunner};
 
 #[test]
 #[ignore = "integration test"]
-pub(crate) fn maven_custom_goals() {
+fn maven_custom_goals() {
     TestRunner::default().build(default_config().env("MAVEN_CUSTOM_GOALS", "site"), |context| {
         // Assert only the goals in MAVEN_CUSTOM_GOALS are executed
         assert_contains!(context.pack_stdout, "./mvnw -DskipTests site");
@@ -41,7 +41,7 @@ pub(crate) fn maven_custom_goals() {
 
 #[test]
 #[ignore = "integration test"]
-pub(crate) fn maven_custom_opts() {
+fn maven_custom_opts() {
     TestRunner::default().build(default_config().env("MAVEN_CUSTOM_OPTS", "-X"), |context| {
         // Assert only the options in MAVEN_CUSTOM_GOALS are used
         assert_contains!(context.pack_stdout, "./mvnw -X clean install");

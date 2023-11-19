@@ -41,10 +41,7 @@ impl<P> GradleCommandError<P> {
     }
 }
 
-pub(crate) fn run_gradle_command<T, F, P>(
-    command: &mut Command,
-    parser: F,
-) -> Result<T, GradleCommandError<P>>
+fn run_gradle_command<T, F, P>(command: &mut Command, parser: F) -> Result<T, GradleCommandError<P>>
 where
     F: FnOnce(&str, &str) -> Result<T, P>,
 {

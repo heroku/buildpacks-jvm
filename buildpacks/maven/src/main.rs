@@ -39,10 +39,10 @@ mod settings;
 mod util;
 mod warnings;
 
-pub(crate) struct MavenBuildpack;
+struct MavenBuildpack;
 
 #[derive(Debug)]
-pub(crate) enum MavenBuildpackError {
+enum MavenBuildpackError {
     UnsupportedMavenVersion(String),
     MavenTarballDownloadError(DownloadError),
     MavenTarballSha256IoError(std::io::Error),
@@ -62,14 +62,14 @@ pub(crate) enum MavenBuildpackError {
 }
 
 #[derive(Debug, Deserialize)]
-pub(crate) struct MavenBuildpackMetadata {
+struct MavenBuildpackMetadata {
     #[serde(rename = "default-version")]
     default_version: String,
     tarballs: HashMap<String, Tarball>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub(crate) struct Tarball {
+struct Tarball {
     url: String,
     sha256: String,
 }
@@ -284,7 +284,7 @@ impl From<MavenBuildpackError> for libcnb::Error<MavenBuildpackError> {
     }
 }
 
-pub(crate) fn app_dependency_list_path<P: AsRef<Path>>(app_dir: P) -> PathBuf {
+fn app_dependency_list_path<P: AsRef<Path>>(app_dir: P) -> PathBuf {
     app_dir.as_ref().join("target/mvn-dependency-list.log")
 }
 

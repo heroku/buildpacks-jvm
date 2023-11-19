@@ -22,17 +22,6 @@ where
 }
 
 #[cfg(unix)]
-pub fn is_executable<P: AsRef<Path>>(path: P) -> bool {
-    use std::os::unix::fs::PermissionsExt;
-
-    path.as_ref()
-        .metadata()
-        .map(|metadata| metadata.is_file() && metadata.permissions().mode() & 0o111 != 0)
-        .ok()
-        .unwrap_or_default()
-}
-
-#[cfg(unix)]
 pub fn set_executable<P: AsRef<Path>>(path: P) -> std::io::Result<()> {
     use std::os::unix::fs::PermissionsExt;
 

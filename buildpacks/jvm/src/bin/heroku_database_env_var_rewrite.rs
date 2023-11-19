@@ -6,7 +6,9 @@ use libcnb::exec_d::write_exec_d_program_output;
 use std::collections::HashMap;
 use url::Url;
 
-pub(crate) fn main() {
+fn main() {
+    // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
+    #[allow(clippy::unwrap_used)]
     write_exec_d_program_output(
         jvm_env_vars_for_env(&std::env::vars().collect())
             .into_iter()
@@ -68,6 +70,8 @@ fn jvm_env_vars_for_env(input: &HashMap<String, String>) -> HashMap<String, Stri
         .iter()
         .filter(|(name, _)| name.starts_with("HEROKU_POSTGRESQL_") && name.ends_with("_URL"))
     {
+        // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
+        #[allow(clippy::unwrap_used)]
         result.extend(env_vars_for_database_url(
             value,
             format!("{}_JDBC", name.strip_suffix("_URL").unwrap()),
@@ -90,6 +94,8 @@ fn env_vars_for_database_url(
     url_string: impl AsRef<str>,
     env_var_prefix: impl AsRef<str>,
 ) -> HashMap<String, String> {
+    // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
+    #[allow(clippy::unwrap_used)]
     let mut url = Url::parse(url_string.as_ref()).unwrap();
 
     // Previous versions of this script only set the environment variables when a username and
@@ -104,7 +110,10 @@ fn env_vars_for_database_url(
         Some(password) => String::from(password),
     };
 
+    // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
+    #[allow(clippy::unwrap_used)]
     url.set_username("").unwrap();
+    #[allow(clippy::unwrap_used)]
     url.set_password(None).unwrap();
 
     url.query_pairs_mut()
@@ -112,6 +121,8 @@ fn env_vars_for_database_url(
         .append_pair("password", &original_password);
 
     if url.scheme() == "postgres" {
+        // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
+        #[allow(clippy::unwrap_used)]
         url.set_scheme("postgresql").unwrap();
         url.query_pairs_mut().append_pair("sslmode", "require");
     };

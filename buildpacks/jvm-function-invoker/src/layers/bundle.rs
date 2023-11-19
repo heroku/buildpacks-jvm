@@ -126,4 +126,4 @@ pub(crate) enum BundleLayerError {
     CouldNotReadFunctionBundleToml(TomlFileError),
 }
 
-pub(crate) const FUNCTION_BUNDLE_DIR_ENV_VAR_NAME: &str = "JVM_FUNCTION_BUNDLE_DIR";
+const FUNCTION_BUNDLE_DIR_ENV_VAR_NAME: &str = "JVM_FUNCTION_BUNDLE_DIR";
