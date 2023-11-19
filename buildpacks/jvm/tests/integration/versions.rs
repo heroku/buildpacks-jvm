@@ -11,7 +11,7 @@ fn test_openjdk_8_distribution_heroku_20() {
                 "openjdk version \"1.8.0_392-heroku\""
             );
         },
-    )
+    );
 }
 
 #[test]
@@ -25,5 +25,5 @@ fn test_openjdk_8_distribution_heroku_22() {
                 "openjdk version \"1.8.0_392\""
             );
         },
-    )
+    );
 }

@@ -12,7 +12,6 @@ pub(crate) struct SbtBuildpackConfiguration {
 }
 
 #[derive(Debug)]
-#[allow(clippy::enum_variant_names)]
 pub(crate) enum ReadSbtBuildpackConfigurationError {
     InvalidPreTaskList(shell_words::ParseError),
     InvalidTaskList(shell_words::ParseError),

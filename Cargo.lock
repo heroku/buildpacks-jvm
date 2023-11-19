@@ -844,7 +844,6 @@ dependencies = [
  "serde",
  "shell-words",
  "tempfile",
- "thiserror",
  "ureq",
 ]
 

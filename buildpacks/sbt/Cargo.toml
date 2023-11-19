@@ -5,6 +5,9 @@ rust-version.workspace = true
 edition.workspace = true
 publish.workspace = true
 
+[lints]
+workspace = true
+
 [dependencies]
 buildpacks-jvm-shared.workspace = true
 indoc = "2"
@@ -14,10 +17,9 @@ libherokubuildpack = "=0.16.0"
 semver = { version = "1", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 shell-words = "1"
-tempfile = "3"
-thiserror = "1"
 
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
 libcnb-test = "=0.16.0"
+tempfile = "3"
 ureq = "2"

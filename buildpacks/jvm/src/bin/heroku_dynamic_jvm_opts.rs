@@ -1,8 +1,5 @@
-// Enable rustc and Clippy lints that are disabled by default.
-// https://rust-lang.github.io/rust-clippy/stable/index.html
-#![warn(clippy::pedantic)]
-// This lint is too noisy and enforces a style that reduces readability in many cases.
-#![allow(clippy::module_name_repetitions)]
+// Required due to: https://github.com/rust-lang/rust/issues/95513
+#![allow(unused_crate_dependencies)]
 
 use libcnb::data::exec_d::ExecDProgramOutputKey;
 use libcnb::data::exec_d_program_output_key;

@@ -46,7 +46,7 @@ fn smoke_test_simple_function() {
                 },
             );
         },
-    )
+    );
 }
 
 const PORT: u16 = 8080;

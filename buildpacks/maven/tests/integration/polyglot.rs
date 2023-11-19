@@ -14,5 +14,5 @@ fn polyglot_maven_app() {
         |context| {
             assert_contains!(context.pack_stdout, "[INFO] BUILD SUCCESS");
         },
-    )
+    );
 }

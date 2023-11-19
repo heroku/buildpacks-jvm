@@ -1,12 +1,3 @@
-// Enable rustc and Clippy lints that are disabled by default.
-// https://doc.rust-lang.org/rustc/lints/listing/allowed-by-default.html#unused-crate-dependencies
-#![warn(unused_crate_dependencies)]
-// https://rust-lang.github.io/rust-clippy/stable/index.html
-#![warn(clippy::pedantic)]
-// Re-disable pedantic lints that are too noisy/unwanted.
-#![allow(clippy::module_name_repetitions)]
-#![allow(clippy::enum_variant_names)]
-
 use crate::common::project_toml_salesforce_type_is_function;
 use crate::error::{handle_buildpack_error, JvmFunctionInvokerBuildpackError};
 use crate::layers::bundle::BundleLayer;
