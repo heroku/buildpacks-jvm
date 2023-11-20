@@ -51,10 +51,7 @@ impl GradleDependencyReport {
             })
     }
 
-    pub(crate) fn flattened_dependencies(
-        &self,
-        configuration_name: &str,
-    ) -> Option<Vec<Dependency>> {
+    fn flattened_dependencies(&self, configuration_name: &str) -> Option<Vec<Dependency>> {
         self.entries.get(configuration_name).map(|dependencies| {
             let mut acc = vec![];
 
@@ -105,7 +102,7 @@ pub(crate) enum Suffix {
 }
 
 #[derive(Debug)]
-pub(crate) enum ParseError {}
+enum ParseError {}
 
 mod parser {
     use super::{Dependency, GradleDependencyReport, Suffix};

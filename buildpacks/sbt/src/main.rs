@@ -34,7 +34,7 @@ use tempfile as _;
 #[cfg(test)]
 use ureq as _;
 
-pub(crate) struct SbtBuildpack;
+struct SbtBuildpack;
 
 impl Buildpack for SbtBuildpack {
     type Platform = GenericPlatform;

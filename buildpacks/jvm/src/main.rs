@@ -31,10 +31,10 @@ use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
 use libcnb_test as _;
 
-pub(crate) struct OpenJdkBuildpack;
+struct OpenJdkBuildpack;
 
 #[derive(Debug)]
-pub(crate) enum OpenJdkBuildpackError {
+enum OpenJdkBuildpackError {
     OpenJdkDownloadError(DownloadError),
     MetricsAgentDownloadError(DownloadError),
     MetricsAgentSha256ValidationError(ValidateSha256Error),
@@ -125,13 +125,13 @@ impl Buildpack for OpenJdkBuildpack {
 }
 
 #[derive(Deserialize, Debug)]
-pub(crate) struct OpenJdkBuildpackMetadata {
+struct OpenJdkBuildpackMetadata {
     #[serde(rename = "heroku-metrics-agent")]
     heroku_metrics_agent: HerokuMetricsAgentMetadata,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub(crate) struct HerokuMetricsAgentMetadata {
+struct HerokuMetricsAgentMetadata {
     url: String,
     sha256: String,
 }

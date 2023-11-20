@@ -29,10 +29,10 @@ mod framework;
 mod gradle_command;
 mod layers;
 
-pub(crate) struct GradleBuildpack;
+struct GradleBuildpack;
 
 #[derive(Debug)]
-pub(crate) enum GradleBuildpackError {
+enum GradleBuildpackError {
     GradleWrapperNotFound,
     DetectError(std::io::Error),
     GradleBuildIoError(std::io::Error),
@@ -47,7 +47,7 @@ pub(crate) enum GradleBuildpackError {
 }
 
 #[derive(Debug, Deserialize)]
-pub(crate) struct GradleBuildpackMetadata {}
+struct GradleBuildpackMetadata {}
 
 impl Buildpack for GradleBuildpack {
     type Platform = GenericPlatform;
@@ -147,4 +147,4 @@ impl From<GradleBuildpackError> for libcnb::Error<GradleBuildpackError> {
     }
 }
 
-pub(crate) const GRADLE_TASK_NAME_HEROKU_START_DAEMON: &str = "heroku_buildpack_start_daemon";
+const GRADLE_TASK_NAME_HEROKU_START_DAEMON: &str = "heroku_buildpack_start_daemon";

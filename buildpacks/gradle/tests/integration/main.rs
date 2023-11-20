@@ -13,7 +13,7 @@ use libcnb_test::BuildpackReference;
 mod smoke;
 mod ux;
 
-pub(crate) fn default_buildpacks() -> Vec<BuildpackReference> {
+fn default_buildpacks() -> Vec<BuildpackReference> {
     vec![
         BuildpackReference::Other(String::from("heroku/jvm")),
         BuildpackReference::CurrentCrate,

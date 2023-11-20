@@ -29,7 +29,7 @@ pub(crate) struct Tasks {
 }
 
 impl Tasks {
-    pub(crate) fn names(&self) -> Vec<String> {
+    fn names(&self) -> Vec<String> {
         self.groups
             .iter()
             .flat_map(|task_group| &task_group.tasks)

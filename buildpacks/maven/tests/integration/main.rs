@@ -7,6 +7,8 @@
 
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
+// Required due to: https://github.com/rust-lang/rust-clippy/issues/11119
+#![allow(clippy::unwrap_used)]
 
 use buildpacks_jvm_shared_test::DEFAULT_INTEGRATION_TEST_BUILDER;
 use libcnb_test::{BuildConfig, BuildpackReference};
@@ -20,7 +22,7 @@ mod settings_xml;
 mod smoke;
 mod versions;
 
-pub(crate) fn default_config() -> BuildConfig {
+fn default_config() -> BuildConfig {
     BuildConfig::new(
         DEFAULT_INTEGRATION_TEST_BUILDER,
         "test-apps/simple-http-service",
@@ -29,7 +31,7 @@ pub(crate) fn default_config() -> BuildConfig {
     .clone()
 }
 
-pub(crate) fn default_buildpacks() -> Vec<BuildpackReference> {
+fn default_buildpacks() -> Vec<BuildpackReference> {
     vec![
         BuildpackReference::Other(String::from("heroku/jvm")),
         BuildpackReference::CurrentCrate,

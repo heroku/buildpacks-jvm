@@ -35,6 +35,8 @@ impl Layer for MavenLayer {
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
+        // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
+        #[allow(clippy::unwrap_used)]
         let temp_dir = tempfile::tempdir().unwrap();
         let temp_file_path = temp_dir.path().join("maven.tar.gz");
 
@@ -54,6 +56,8 @@ impl Layer for MavenLayer {
                 }
             })?;
 
+        // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
+        #[allow(clippy::unwrap_used)]
         extract_tarball(&mut File::open(&temp_file_path).unwrap(), layer_path, 1)
             .map_err(MavenBuildpackError::MavenTarballDecompressError)?;
 
