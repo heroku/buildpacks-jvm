@@ -48,7 +48,7 @@ fn maven_settings_path() {
     TestRunner::default().build(
         default_config()
             .app_dir_preprocessor(move |dir| {
-                write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value)
+                write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value);
             })
             .env("MAVEN_SETTINGS_PATH", settings_xml_filename),
         |context| {
@@ -71,7 +71,7 @@ fn maven_settings_path_and_settings_url() {
     TestRunner::default().build(
         default_config()
             .app_dir_preprocessor(move |dir| {
-                write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value)
+                write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value);
             })
             .env("MAVEN_SETTINGS_PATH", settings_xml_filename)
             .env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL),
@@ -96,7 +96,7 @@ fn maven_settings_xml_in_app_root() {
     TestRunner::default().build(
         // Note that there is no MAVEN_SETTINGS_PATH here
         default_config().app_dir_preprocessor(move |dir| {
-            write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value)
+            write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value);
         }),
         |context| {
             assert_contains!(

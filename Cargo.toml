@@ -13,9 +13,18 @@ members = [
 
 [workspace.package]
 version = "0.0.0"
-rust-version = "1.66"
+rust-version = "1.74"
 edition = "2021"
 publish = false
+
+[workspace.lints.rust]
+unused_crate_dependencies = "warn"
+
+[workspace.lints.clippy]
+pedantic = "warn"
+enum_variant_names = "allow"
+missing_errors_doc = "allow"
+module_name_repetitions = "allow"
 
 [workspace.dependencies]
 buildpacks-jvm-shared = { path = "shared" }

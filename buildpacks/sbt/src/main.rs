@@ -1,9 +1,3 @@
-// Enable rustc and Clippy lints that are disabled by default.
-// https://rust-lang.github.io/rust-clippy/stable/index.html
-#![warn(clippy::pedantic)]
-// This lint is too noisy and enforces a style that reduces readability in many cases.
-#![allow(clippy::module_name_repetitions)]
-
 mod configuration;
 mod detect;
 mod errors;
@@ -30,6 +24,15 @@ use libherokubuildpack::error::on_error as on_buildpack_error;
 use libherokubuildpack::log::{log_header, log_info};
 use std::io::{stderr, stdout};
 use std::process::Command;
+
+#[cfg(test)]
+use buildpacks_jvm_shared_test as _;
+#[cfg(test)]
+use libcnb_test as _;
+#[cfg(test)]
+use tempfile as _;
+#[cfg(test)]
+use ureq as _;
 
 pub(crate) struct SbtBuildpack;
 

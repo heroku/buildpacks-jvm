@@ -89,7 +89,6 @@ fn get_layer_env_scope(available_at_launch: bool) -> Scope {
 }
 
 #[derive(Debug)]
-#[allow(clippy::enum_variant_names)]
 pub(crate) enum SbtExtrasLayerError {
     CouldNotWriteScript(std::io::Error),
     CouldNotSetPermissions(std::io::Error),

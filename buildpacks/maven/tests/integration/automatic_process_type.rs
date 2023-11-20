@@ -16,5 +16,5 @@ fn spring_boot_process_type() {
         |context| {
             start_container_assert_basic_http_response(&context, "Hello from Spring Boot!");
         },
-    )
+    );
 }

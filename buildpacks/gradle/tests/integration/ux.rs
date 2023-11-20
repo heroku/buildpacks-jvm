@@ -18,7 +18,7 @@ fn test_unsupported_java_version() {
             &dir,
             &HashMap::from([(String::from("java.runtime.version"), String::from("7"))]),
         )
-        .unwrap()
+        .unwrap();
     })
     .to_owned();
 

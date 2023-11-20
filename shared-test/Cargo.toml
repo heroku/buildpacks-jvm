@@ -5,6 +5,9 @@ rust-version.workspace = true
 edition.workspace = true
 publish.workspace = true
 
+[lints]
+workspace = true
+
 [dependencies]
 exponential-backoff = "1"
 libcnb-test = "=0.16.0"
