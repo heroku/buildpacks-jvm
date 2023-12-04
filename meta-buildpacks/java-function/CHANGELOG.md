@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.1] - 2023-12-04
+
+### Changed
+
+- Updated `heroku/jvm-function-invoker` to `4.0.1`.
+- Updated `heroku/jvm` to `4.0.1`.
+- Updated `heroku/maven` to `4.0.1`.
+
 ## [4.0.0] - 2023-10-25
 
 ### Changed
@@ -291,7 +299,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.0...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.1...HEAD
+[4.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v3.2.2...v4.0.0
 [3.2.2]: https://github.com/heroku/buildpacks-jvm/compare/v3.2.1...v3.2.2
 [3.2.1]: https://github.com/heroku/buildpacks-jvm/compare/v3.2.0...v3.2.1
