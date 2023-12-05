@@ -15,8 +15,8 @@ type = "BSD-3-Clause"
 id = "*"
 
 [metadata.runtime]
-url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.1.5/sf-fx-runtime-java-runtime-1.1.5-jar-with-dependencies.jar"
-sha256 = "721da3c59ec01eba36e2c7f43d505bcb8f0289a3a5c64938f0a3ac623acd87b3"
+url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.1.6/sf-fx-runtime-java-runtime-1.1.6-jar-with-dependencies.jar"
+sha256 = "0995f1597508e150a65fe395f90945c4b8ea1b75dca2b3a759fa224ef587bf10"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-jvm-function-invoker" }
