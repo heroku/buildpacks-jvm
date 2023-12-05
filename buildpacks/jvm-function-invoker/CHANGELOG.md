@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated function runtime to 1.1.6
+- Updated function runtime to 1.1.6 ([#622](https://github.com/heroku/buildpacks-jvm/pull/622))
 
 ## [4.0.1] - 2023-12-04
 
