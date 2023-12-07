@@ -11,11 +11,11 @@ workspace = true
 [dependencies]
 buildpacks-jvm-shared.workspace = true
 indoc = "2"
-libcnb = "=0.16.0"
-libherokubuildpack = "=0.16.0"
+libcnb = "=0.17.0"
+libherokubuildpack = "=0.17.0"
 nom = "7"
 serde = { version = "1", features = ["derive"] }
 
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
-libcnb-test = "=0.16.0"
+libcnb-test = "=0.17.0"
