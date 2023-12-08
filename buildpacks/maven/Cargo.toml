@@ -12,8 +12,8 @@ workspace = true
 buildpacks-jvm-shared.workspace = true
 flate2 = "1"
 indoc = "2"
-libcnb = "=0.16.0"
-libherokubuildpack = "=0.16.0"
+libcnb = "=0.17.0"
+libherokubuildpack = "=0.17.0"
 regex = "1"
 serde = { version = "1", features = ["derive"] }
 shell-words = "1"
@@ -23,4 +23,4 @@ tempfile = "3"
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
 java-properties = "2"
-libcnb-test = "=0.16.0"
+libcnb-test = "=0.17.0"
