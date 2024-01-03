@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::str::ParseBoolError;
 
 #[derive(Debug)]
+#[allow(clippy::struct_field_names)]
 pub(crate) struct SbtBuildpackConfiguration {
     pub(crate) sbt_project: Option<String>,
     pub(crate) sbt_pre_tasks: Option<Vec<String>>,
