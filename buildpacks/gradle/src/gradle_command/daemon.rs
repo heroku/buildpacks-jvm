@@ -1,16 +1,19 @@
+use crate::gradle_command::init::gradle_init_script_args;
 use crate::gradle_command::GradleCommandError;
 use crate::GRADLE_TASK_NAME_HEROKU_START_DAEMON;
 use libcnb::Env;
 use libherokubuildpack::command::CommandExt;
 use std::io::{stderr, stdout};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub(crate) fn start(
     gradle_wrapper_executable_path: &Path,
     gradle_env: &Env,
+    gradle_init_scripts: &[PathBuf],
 ) -> Result<(), GradleCommandError<()>> {
     let output = Command::new(gradle_wrapper_executable_path)
+        .args(gradle_init_script_args(gradle_init_scripts))
         .args([
             // Fixes an issue when when running under Apple Rosetta emulation
             "-Djdk.lang.Process.launchMechanism=vfork",

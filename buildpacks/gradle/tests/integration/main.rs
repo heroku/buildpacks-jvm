@@ -10,6 +10,7 @@
 
 use libcnb_test::BuildpackReference;
 
+mod init_scripts;
 mod smoke;
 mod ux;
 

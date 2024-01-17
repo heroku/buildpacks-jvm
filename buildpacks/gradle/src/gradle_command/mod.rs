@@ -1,5 +1,6 @@
 mod daemon;
 mod dependency_report;
+pub(crate) mod init;
 mod tasks;
 
 pub(crate) use daemon::start as start_daemon;

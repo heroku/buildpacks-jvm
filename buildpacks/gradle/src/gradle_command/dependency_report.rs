@@ -1,16 +1,19 @@
+use crate::gradle_command::init::gradle_init_script_args;
 use crate::gradle_command::GradleCommandError;
 use libcnb::Env;
 use std::collections::BTreeMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub(crate) fn dependency_report(
     app_dir: &Path,
     env: &Env,
+    gradle_init_scripts: &[PathBuf],
 ) -> Result<GradleDependencyReport, GradleCommandError<()>> {
     let output = Command::new(app_dir.join("gradlew"))
         .current_dir(app_dir)
         .envs(env)
+        .args(gradle_init_script_args(gradle_init_scripts))
         .args(["--quiet", "dependencies"])
         .output()
         .map_err(GradleCommandError::Io)?;

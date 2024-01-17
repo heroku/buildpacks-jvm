@@ -1,16 +1,19 @@
+use crate::gradle_command::init::gradle_init_script_args;
 use crate::gradle_command::{run_gradle_command, GradleCommandError};
 use libcnb::Env;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub(crate) fn tasks(
     current_dir: &Path,
     env: &Env,
+    gradle_init_scripts: &[PathBuf],
 ) -> Result<Tasks, GradleCommandError<nom::error::Error<String>>> {
     run_gradle_command(
         Command::new(current_dir.join("gradlew"))
             .current_dir(current_dir)
             .envs(env)
+            .args(gradle_init_script_args(gradle_init_scripts))
             .args(["--quiet", "tasks"]),
         |stdout, _stderr| {
             parser::parse(stdout)
