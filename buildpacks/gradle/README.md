@@ -31,5 +31,9 @@ Allows other buildpacks to depend on a compiled JVM application.
 #### `GRADLE_TASK`
 Allows overriding the Gradle task used during the build process. The default task is `stage`.
 
+### Buildpack Specific Directories
+#### `$APP_DIR/.heroku/gradle/init.d`
+Allows usage of [Gradle init scripts](https://docs.gradle.org/8.5/userguide/init_scripts.html). Kotlin and/or Groovy init scripts in this directory will be automatically picked up by the buildpack and passed to Gradle.
+
 ## License
 See [LICENSE](../../LICENSE) file.

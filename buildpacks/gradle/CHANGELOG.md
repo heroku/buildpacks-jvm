@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for [Gradle init scripts](https://docs.gradle.org/8.5/userguide/init_scripts.html). Kotlin and/or Groovy init scripts in `$APP_DIR/.heroku/gradle/init.d` will be automatically picked up by the buildpack and passed to Gradle. ([#629](https://github.com/heroku/buildpacks-jvm/pull/629))
+
 ## [4.0.2] - 2023-12-05
 
 - No changes.
