@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* For containers that do not correspond to `Eco`, `Basic`, `Standard-1X`, `Standard-2X` or `Private-S` Heroku dyno types, only `-XX:MaxRAMPercentage=80.0` will now be passed to the JVM via `JAVA_TOOL_OPTIONS`. ([#631](https://github.com/heroku/buildpacks-jvm/pull/631))
 * Default version for **OpenJDK 8** is now `1.8.0_402`. ([#630](https://github.com/heroku/buildpacks-jvm/pull/630))
 * Default version for **OpenJDK 11** is now `11.0.22`. ([#630](https://github.com/heroku/buildpacks-jvm/pull/630))
 * Default version for **OpenJDK 17** is now `17.0.10`.([#630](https://github.com/heroku/buildpacks-jvm/pull/630))
