@@ -8,7 +8,7 @@ fn test_openjdk_8_distribution_heroku_20() {
         |context| {
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"1.8.0_392-heroku\""
+                "openjdk version \"1.8.0_402-heroku\""
             );
         },
     );
@@ -22,7 +22,7 @@ fn test_openjdk_8_distribution_heroku_22() {
         |context| {
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"1.8.0_392\""
+                "openjdk version \"1.8.0_402\""
             );
         },
     );
