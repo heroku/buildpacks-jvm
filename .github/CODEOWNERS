@@ -1,1 +1,8 @@
 * @heroku/languages
+
+# Reduce team review request noise for Dependabot updates and automated release PRs.
+buildpack.toml @Malax
+CHANGELOG.md @Malax
+Cargo.toml @Malax
+Cargo.lock @Malax
+pom.xml @Malax
