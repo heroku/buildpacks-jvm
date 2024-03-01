@@ -11,10 +11,10 @@ buildpacks-jvm-shared.workspace = true
 fs_extra = "1"
 indoc = "2"
 libcnb = "=0.17.0"
-libherokubuildpack = "=0.17.0"
+libherokubuildpack = { version = "=0.17.0", default-features = false, features = ["digest", "download", "error", "log", "tar"] }
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
-ureq = "2"
+ureq = { version = "2", default-features = false, features = ["tls"] }
 url = "2"
 
 [dev-dependencies]
