@@ -6,22 +6,15 @@ mod version;
 
 use crate::constants::SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME;
 use crate::errors::on_error_jvm_buildpack;
-use crate::layers::heroku_metrics_agent::HerokuMetricsAgentLayer;
-use crate::layers::openjdk::OpenJdkLayer;
-use crate::layers::runtime::RuntimeLayer;
 use crate::util::{boolean_buildpack_config_env_var, ValidateSha256Error};
 use crate::version::NormalizeVersionStringError;
 use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
-pub(crate) use constants::{
-    JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
-};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
-use libcnb::Buildpack;
 use libcnb::{buildpack_main, Platform};
+use libcnb::{layer, Buildpack};
 use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
 use url as _; // Used by exec.d binary
@@ -31,7 +24,7 @@ use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
 use libcnb_test as _;
 
-struct OpenJdkBuildpack;
+pub(crate) struct OpenJdkBuildpack;
 
 #[derive(Debug)]
 enum OpenJdkBuildpackError {
@@ -85,20 +78,14 @@ impl Buildpack for OpenJdkBuildpack {
             .map_err(OpenJdkBuildpackError::ReadVersionStringError)?;
 
         let normalized_version = version::normalize_version_string(
-            &context.stack_id,
+            FAKE_STACK_ID,
             app_dir_version_string.unwrap_or_else(|| String::from("8")),
         )
         .map_err(OpenJdkBuildpackError::NormalizeVersionStringError)?;
 
-        context.handle_layer(
-            layer_name!("openjdk"),
-            OpenJdkLayer {
-                tarball_url: version::resolve_openjdk_url(
-                    &context.stack_id,
-                    normalized_version.0,
-                    normalized_version.1,
-                ),
-            },
+        layers::openjdk::handle(
+            version::resolve_openjdk_url(FAKE_STACK_ID, normalized_version.0, normalized_version.1),
+            &context,
         )?;
 
         libherokubuildpack::log::log_header("Installing Heroku JVM metrics agent");
@@ -111,10 +98,10 @@ impl Buildpack for OpenJdkBuildpack {
                 "Skipping agent installation, {SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME} environment variable is set to a truthy value."
             ));
         } else {
-            context.handle_layer(layer_name!("heroku_metrics_agent"), HerokuMetricsAgentLayer)?;
+            layers::heroku_metrics_agent::handle(&context)?;
         }
 
-        context.handle_layer(layer_name!("runtime"), RuntimeLayer)?;
+        layers::runtime::handle(&context)?;
 
         BuildResultBuilder::new().build()
     }
@@ -143,3 +130,5 @@ impl From<OpenJdkBuildpackError> for libcnb::Error<OpenJdkBuildpackError> {
         libcnb::Error::BuildpackError(error)
     }
 }
+
+const FAKE_STACK_ID: &str = "heroku-22";

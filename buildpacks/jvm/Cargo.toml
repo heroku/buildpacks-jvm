@@ -10,8 +10,8 @@ workspace = true
 buildpacks-jvm-shared.workspace = true
 fs_extra = "1"
 indoc = "2"
-libcnb = "=0.17.0"
-libherokubuildpack = "=0.17.0"
+libcnb = { path = "../../../libcnb.rs/libcnb" }
+libherokubuildpack = { path = "../../../libcnb.rs/libherokubuildpack" }
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
 ureq = "2"

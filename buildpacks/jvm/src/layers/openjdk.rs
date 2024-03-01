@@ -1,22 +1,19 @@
-use crate::{
-    util, OpenJdkBuildpack, OpenJdkBuildpackError, JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER,
-    JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
+use crate::constants::{
+    JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
+use crate::{util, OpenJdkBuildpack, OpenJdkBuildpackError};
 use fs_extra::dir::CopyOptions;
 use libcnb::additional_buildpack_binary_path;
 use libcnb::build::BuildContext;
-use libcnb::data::layer_content_metadata::LayerTypes;
-use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::data::layer_name;
+use libcnb::layer::{
+    InspectExistingAction, InvalidMetadataAction, LayerDefinition, LayerDefinitionResult,
+};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use serde::Deserialize;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use tempfile::tempdir;
-
-pub(crate) struct OpenJdkLayer {
-    pub(crate) tarball_url: String,
-}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub(crate) struct OpenJdkLayerMetadata {
@@ -24,35 +21,47 @@ pub(crate) struct OpenJdkLayerMetadata {
     source_tarball_url: String,
 }
 
-impl Layer for OpenJdkLayer {
-    type Buildpack = OpenJdkBuildpack;
-    type Metadata = OpenJdkLayerMetadata;
-
-    fn types(&self) -> LayerTypes {
-        LayerTypes {
+pub(crate) fn handle(
+    tarball_url: String,
+    context: &BuildContext<OpenJdkBuildpack>,
+) -> libcnb::Result<(), OpenJdkBuildpackError> {
+    let layer = context.execute_layer_definition(
+        layer_name!("openjdk"),
+        LayerDefinition {
+            build: false,
             launch: true,
-            build: true,
             cache: true,
-        }
-    }
+            invalid_metadata: &|_| InvalidMetadataAction::DeleteLayer,
+            inspect_existing: &|metadata, _| {
+                if context.app_dir.join(JDK_OVERLAY_DIR_NAME).exists()
+                    || metadata.jdk_overlay_applied
+                {
+                    // Since the JDK overlay will modify the OpenJDK distribution and the cached version
+                    // might already have an (potentially different) overlay applied, we re-crate the layer
+                    // in that case.
+                    InspectExistingAction::Delete
+                } else if tarball_url == metadata.source_tarball_url {
+                    InspectExistingAction::Keep
+                } else {
+                    InspectExistingAction::Delete
+                }
+            },
+        },
+    )?;
 
-    fn create(
-        &self,
-        context: &BuildContext<Self::Buildpack>,
-        layer_path: &Path,
-    ) -> Result<LayerResult<Self::Metadata>, OpenJdkBuildpackError> {
+    if let LayerDefinitionResult::Empty { layer_data, .. } = layer {
         libherokubuildpack::log::log_header("Installing OpenJDK");
 
         let temp_dir = tempdir().map_err(OpenJdkBuildpackError::CannotCreateOpenJdkTempDir)?;
         let path = temp_dir.path().join("openjdk.tar.gz");
 
-        libherokubuildpack::download::download_file(&self.tarball_url, &path)
+        libherokubuildpack::download::download_file(&tarball_url, &path)
             .map_err(OpenJdkBuildpackError::OpenJdkDownloadError)?;
 
         std::fs::File::open(&path)
             .map_err(OpenJdkBuildpackError::CannotOpenOpenJdkTarball)
             .and_then(|mut file| {
-                libherokubuildpack::tar::decompress_tarball(&mut file, layer_path)
+                libherokubuildpack::tar::decompress_tarball(&mut file, &layer_data.path)
                     .map_err(OpenJdkBuildpackError::CannotDecompressOpenJdkTarball)
             })?;
 
@@ -63,7 +72,7 @@ impl Layer for OpenJdkLayer {
         // Depending on OpenJDK version, the path for the cacerts file can differ.
         let relative_jdk_cacerts_path = ["jre/lib/security/cacerts", "lib/security/cacerts"]
             .iter()
-            .find(|path| layer_path.join(path).is_file())
+            .find(|path| layer_data.path.join(path).is_file())
             .ok_or(OpenJdkBuildpackError::MissingJdkCertificatesFile)?;
 
         let symlink_ubuntu_java_cacerts_file = ubuntu_java_cacerts_file_path.is_file()
@@ -72,7 +81,7 @@ impl Layer for OpenJdkLayer {
                 .exists();
 
         if symlink_ubuntu_java_cacerts_file {
-            let absolute_jdk_cacerts_path = layer_path.join(relative_jdk_cacerts_path);
+            let absolute_jdk_cacerts_path = layer_data.path.join(relative_jdk_cacerts_path);
 
             fs::rename(
                 &absolute_jdk_cacerts_path,
@@ -95,7 +104,7 @@ impl Layer for OpenJdkLayer {
 
             fs_extra::copy_items(
                 &jdk_overlay_contents,
-                layer_path,
+                &layer_data.path,
                 &CopyOptions {
                     overwrite: true,
                     skip_exist: false,
@@ -106,17 +115,21 @@ impl Layer for OpenJdkLayer {
             .map_err(OpenJdkBuildpackError::CannotCopyJdkOverlayContents)?;
         }
 
-        LayerResultBuilder::new(OpenJdkLayerMetadata {
-            source_tarball_url: self.tarball_url.clone(),
-            jdk_overlay_applied,
-        })
-        .env(
+        libcnb::layer::replace_metadata(
+            OpenJdkLayerMetadata {
+                jdk_overlay_applied,
+                source_tarball_url: tarball_url.clone(),
+            },
+            &layer_data.path,
+        )?;
+
+        libcnb::layer::replace_env(
             LayerEnv::new()
                 .chainable_insert(
                     Scope::All,
                     ModificationBehavior::Override,
                     "JAVA_HOME",
-                    layer_path,
+                    layer_data.path,
                 )
                 .chainable_insert(
                     Scope::All,
@@ -130,30 +143,17 @@ impl Layer for OpenJdkLayer {
                     JAVA_TOOL_OPTIONS_ENV_VAR_NAME,
                     "-Dfile.encoding=UTF-8",
                 ),
-        )
-        .exec_d_program(
-            "heroku_dynamic_jvm_opts",
-            additional_buildpack_binary_path!("heroku_dynamic_jvm_opts"),
-        )
-        .build()
+            &layer_data.path,
+        )?;
+
+        libcnb::layer::replace_execd_programs(
+            &[(
+                "heroku_dynamic_jvm_opts",
+                &additional_buildpack_binary_path!("heroku_dynamic_jvm_opts"),
+            )],
+            &layer_data.path,
+        )?;
     }
 
-    fn existing_layer_strategy(
-        &self,
-        context: &BuildContext<Self::Buildpack>,
-        layer_data: &LayerData<Self::Metadata>,
-    ) -> Result<ExistingLayerStrategy, OpenJdkBuildpackError> {
-        if context.app_dir.join(JDK_OVERLAY_DIR_NAME).exists()
-            || layer_data.content_metadata.metadata.jdk_overlay_applied
-        {
-            // Since the JDK overlay will modify the OpenJDK distribution and the cached version
-            // might already have an (potentially different) overlay applied, we re-crate the layer
-            // in that case.
-            Ok(ExistingLayerStrategy::Recreate)
-        } else if self.tarball_url == layer_data.content_metadata.metadata.source_tarball_url {
-            Ok(ExistingLayerStrategy::Keep)
-        } else {
-            Ok(ExistingLayerStrategy::Recreate)
-        }
-    }
+    Ok(())
 }

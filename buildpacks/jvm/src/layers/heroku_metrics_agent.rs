@@ -1,39 +1,41 @@
 use crate::util::validate_sha256;
 use crate::{HerokuMetricsAgentMetadata, OpenJdkBuildpack, OpenJdkBuildpackError};
 use libcnb::build::BuildContext;
-use libcnb::data::layer_content_metadata::LayerTypes;
-use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::data::layer_name;
+use libcnb::layer::{
+    InspectExistingAction, InvalidMetadataAction, LayerDefinition, LayerDefinitionResult,
+};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::{additional_buildpack_binary_path, Buildpack};
-use serde::Deserialize;
-use serde::Serialize;
-use std::path::Path;
-
-pub(crate) struct HerokuMetricsAgentLayer;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub(crate) struct HerokuMetricsAgentLayerMetadata {
     source: HerokuMetricsAgentMetadata,
 }
 
-impl Layer for HerokuMetricsAgentLayer {
-    type Buildpack = OpenJdkBuildpack;
-    type Metadata = HerokuMetricsAgentLayerMetadata;
-
-    fn types(&self) -> LayerTypes {
-        LayerTypes {
+pub(crate) fn handle(
+    context: &BuildContext<OpenJdkBuildpack>,
+) -> libcnb::Result<(), OpenJdkBuildpackError> {
+    let layer = context.execute_layer_definition(
+        layer_name!("heroku_metrics_agent"),
+        LayerDefinition {
             build: false,
             launch: true,
             cache: true,
-        }
-    }
+            invalid_metadata: &|_| InvalidMetadataAction::DeleteLayer,
+            inspect_existing: &|metadata: &HerokuMetricsAgentLayerMetadata, _| {
+                if metadata.source == context.buildpack_descriptor.metadata.heroku_metrics_agent {
+                    InspectExistingAction::Keep
+                } else {
+                    InspectExistingAction::Delete
+                }
+            },
+        },
+    )?;
 
-    fn create(
-        &self,
-        context: &BuildContext<Self::Buildpack>,
-        layer_path: &Path,
-    ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
-        let agent_jar_path = layer_path.join("heroku-metrics-agent.jar");
+    if let LayerDefinitionResult::Empty { layer_data, .. } = layer {
+        let agent_jar_path = layer_data.path.join("heroku-metrics-agent.jar");
 
         let metrics_agent_metadata = &context.buildpack_descriptor.metadata.heroku_metrics_agent;
 
@@ -43,33 +45,24 @@ impl Layer for HerokuMetricsAgentLayer {
         validate_sha256(&agent_jar_path, &metrics_agent_metadata.sha256)
             .map_err(OpenJdkBuildpackError::MetricsAgentSha256ValidationError)?;
 
-        LayerResultBuilder::new(HerokuMetricsAgentLayerMetadata {
-            source: (*metrics_agent_metadata).clone(),
-        })
-        .env(LayerEnv::new().chainable_insert(
-            Scope::All,
-            ModificationBehavior::Override,
-            "HEROKU_METRICS_AGENT_PATH",
-            agent_jar_path,
-        ))
-        .exec_d_program(
-            "heroku_metrics_agent_setup",
-            additional_buildpack_binary_path!("heroku_metrics_agent_setup"),
-        )
-        .build()
+        libcnb::layer::replace_execd_programs(
+            &[(
+                "heroku_metrics_agent_setup",
+                &additional_buildpack_binary_path!("heroku_metrics_agent_setup"),
+            )],
+            &layer_data.path,
+        )?;
+
+        libcnb::layer::replace_env(
+            LayerEnv::new().chainable_insert(
+                Scope::All,
+                ModificationBehavior::Override,
+                "HEROKU_METRICS_AGENT_PATH",
+                agent_jar_path,
+            ),
+            &layer_data.path,
+        )?;
     }
 
-    fn existing_layer_strategy(
-        &self,
-        context: &BuildContext<Self::Buildpack>,
-        layer_data: &LayerData<Self::Metadata>,
-    ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
-        if layer_data.content_metadata.metadata.source
-            == context.buildpack_descriptor.metadata.heroku_metrics_agent
-        {
-            Ok(ExistingLayerStrategy::Keep)
-        } else {
-            Ok(ExistingLayerStrategy::Recreate)
-        }
-    }
+    Ok(())
 }
