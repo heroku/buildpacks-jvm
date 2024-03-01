@@ -10,4 +10,4 @@ workspace = true
 indoc = "2"
 java-properties = "2"
 libcnb = "=0.17.0"
-libherokubuildpack = "=0.17.0"
+libherokubuildpack = { version = "=0.17.0", default-features = false, features = ["log"] }

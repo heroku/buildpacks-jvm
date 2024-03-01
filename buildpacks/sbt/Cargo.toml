@@ -11,7 +11,7 @@ buildpacks-jvm-shared.workspace = true
 indoc = "2"
 java-properties = "2"
 libcnb = "=0.17.0"
-libherokubuildpack = "=0.17.0"
+libherokubuildpack = { version = "=0.17.0", default-features = false, features = ["command", "error", "log"] }
 semver = { version = "1", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 shell-words = "1"
@@ -20,4 +20,4 @@ shell-words = "1"
 buildpacks-jvm-shared-test.workspace = true
 libcnb-test = "=0.17.0"
 tempfile = "3"
-ureq = "2"
+ureq = { version = "2", default-features = false, features = ["tls"] }

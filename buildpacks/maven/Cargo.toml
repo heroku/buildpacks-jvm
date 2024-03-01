@@ -8,14 +8,14 @@ workspace = true
 
 [dependencies]
 buildpacks-jvm-shared.workspace = true
-flate2 = "1"
+flate2 = { version = "1", default-features = false, features = ["zlib"] }
 indoc = "2"
 libcnb = "=0.17.0"
-libherokubuildpack = "=0.17.0"
+libherokubuildpack = { version = "=0.17.0", default-features = false, features = ["digest", "download", "error", "log"] }
 regex = "1"
 serde = { version = "1", features = ["derive"] }
 shell-words = "1"
-tar = "0.4"
+tar = { version = "0.4", default-features = false }
 tempfile = "3"
 
 [dev-dependencies]
