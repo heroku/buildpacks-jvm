@@ -35,7 +35,6 @@ docker run --rm -it -e "PORT=8080" -p 8080:8080 sample-app
 A `pom.xml` file, or one of the other POM formats supported by the
 [Maven Polyglot plugin](https://github.com/takari/polyglot-maven) in the root
 directory is requried for these buildpacks to build your app.
-be present.
 
 ## Configuration
 
@@ -78,6 +77,7 @@ to build your application.
 ### Build Tools
 
 | ID              | Name                               | Readme                                | Changelog                                   |
+|-----------------|------------------------------------|---------------------------------------|---------------------------------------------|
 | `heroku/maven`  | [Maven](https://maven.apache.org/) | [Readme](buildpacks/maven/README.md)  | [Changelog](buildpacks/maven/CHANGELOG.md)  |
 | `heroku/gradle` | [Gradle](https://gradle.org/)      | [Readme](buildpacks/gradle/README.md) | [Changelog](buildpacks/gradle/CHANGELOG.md) |
 | `heroku/sbt`    | [sbt](https://www.scala-sbt.org/)  | [Readme](buildpacks/sbt/README.md)    | [Changelog](buildpacks/sbt/CHANGELOG.md)    |
