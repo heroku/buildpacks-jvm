@@ -55,7 +55,7 @@ or testing this buildpack.
 1. Run `cargo check` to download dependencies and ensure there are no
    compilation issues.
 1. Build the buildpack with `cargo libcnb package`.
-1. Use the buildpack to build an app: `pack build sample-app --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_python --path /path/to/sample-app`
+1. Use the buildpack to build an app: `pack build sample-app --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_jvm --path /path/to/sample-app`
 
 ### Testing
 
@@ -72,8 +72,8 @@ terms of our project [LICENSE](LICENSE) and to sign the
 
 
 [discussions]: https://github.com/heroku/buildpacks/discussions
-[issues]: https://github.com/heroku/buildpacks-python/issues
+[issues]: https://github.com/heroku/buildpacks-jvm/issues
 [libcnb]: https://github.com/heroku/libcnb.rs
 [libcnb-deps]: https://github.com/heroku/libcnb.rs#development-environment-setup
-[pulls]: https://github.com/heroku/buildpacks-python/pulls
+[pulls]: https://github.com/heroku/buildpacks-jvm/pulls
 [roadmap]: https://github.com/heroku/roadmap
