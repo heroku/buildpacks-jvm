@@ -9,7 +9,7 @@ always, thanks for contributing.
 
 The intent and goal of open sourcing this project is to increase the contributor
 and user base. However, only Salesforce employees will be given `admin` rights
-and will be the final arbitrars of what contributions are accepted or not.
+and will be the final arbiters of what contributions are accepted or not.
 
 ## Getting started
 
@@ -55,7 +55,7 @@ or testing this buildpack.
 1. Run `cargo check` to download dependencies and ensure there are no
    compilation issues.
 1. Build the buildpack with `cargo libcnb package`.
-1. Use the buildpack to build an app: `pack build sample-app --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_jvm --path /path/to/sample-app`
+1. Use the buildpack to build an app: `pack build sample-app --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_java --path /path/to/sample-app`
 
 ### Testing
 
@@ -63,17 +63,24 @@ or testing this buildpack.
 - `cargo test -- --ignored` performs all integration tests.
 
 ## Code of Conduct
+
 Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
+
 By contributing your code, you agree to license your contribution under the
 terms of our project [LICENSE](LICENSE) and to sign the
 [Salesforce CLA](https://cla.salesforce.com/sign-cla).
 
 
 [discussions]: https://github.com/heroku/buildpacks/discussions
+
 [issues]: https://github.com/heroku/buildpacks-jvm/issues
+
 [libcnb]: https://github.com/heroku/libcnb.rs
+
 [libcnb-deps]: https://github.com/heroku/libcnb.rs#development-environment-setup
+
 [pulls]: https://github.com/heroku/buildpacks-jvm/pulls
+
 [roadmap]: https://github.com/heroku/roadmap
