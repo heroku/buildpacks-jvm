@@ -15,7 +15,7 @@ thiserror = "1"
 toml = "0.8"
 
 [dev-dependencies]
-base64 = "0.21"
+base64 = "0.22"
 buildpacks-jvm-shared-test.workspace = true
 libcnb-test = "=0.17.0"
 tempfile = "3"
