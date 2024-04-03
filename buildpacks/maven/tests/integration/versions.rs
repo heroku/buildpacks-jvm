@@ -115,6 +115,7 @@ fn set_maven_version_app_dir_preprocessor(version: &str, path: &Path) {
         .read(true)
         .write(true)
         .create(true)
+        .truncate(false)
         .open(path.join("system.properties"))
         .unwrap();
 

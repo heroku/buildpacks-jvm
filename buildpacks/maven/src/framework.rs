@@ -97,12 +97,14 @@ pub(crate) fn default_app_process<P: AsRef<Path>>(
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub(crate) enum DefaultAppProcessError {
     DetectFrameworkError(DetectFrameworkError),
     IoError(std::io::Error),
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub(crate) enum DetectFrameworkError {
     IoError(std::io::Error),
     RegexError(regex::Error),
