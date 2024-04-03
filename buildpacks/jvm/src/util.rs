@@ -37,8 +37,7 @@ pub(crate) fn list_directory_contents<P: AsRef<Path>>(path: P) -> std::io::Resul
 
 pub(crate) fn boolean_buildpack_config_env_var(env: &Env, key: impl AsRef<OsStr>) -> bool {
     env.get(key.as_ref())
-        .map(|value| value != "0" && value != "false" && value != "no")
-        .unwrap_or_default()
+        .is_some_and(|value| value != "0" && value != "false" && value != "no")
 }
 
 #[cfg(test)]
