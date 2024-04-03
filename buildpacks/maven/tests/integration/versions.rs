@@ -1,6 +1,6 @@
 use crate::default_config;
 use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
-use std::fs::OpenOptions;
+use std::fs::File;
 use std::path::Path;
 
 #[test]
@@ -111,17 +111,14 @@ fn remove_maven_wrapper(path: &Path) {
 fn set_maven_version_app_dir_preprocessor(version: &str, path: &Path) {
     let version = version.to_string();
 
-    let mut properties_file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .open(path.join("system.properties"))
-        .unwrap();
+    let system_properties_path = path.join("system.properties");
 
-    let mut properties = java_properties::read(&mut properties_file).unwrap();
+    let mut properties =
+        java_properties::read(File::open(&system_properties_path).unwrap()).unwrap();
+
     properties.insert(String::from("maven.version"), version);
-    java_properties::write(&mut properties_file, &properties).unwrap();
+
+    java_properties::write(File::create(&system_properties_path).unwrap(), &properties).unwrap();
 }
 
 const DEFAULT_MAVEN_VERSION: &str = "3.9.4";
