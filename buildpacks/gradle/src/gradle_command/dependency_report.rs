@@ -101,9 +101,6 @@ pub(crate) enum Suffix {
     NotResolved,
 }
 
-#[derive(Debug)]
-enum ParseError {}
-
 mod parser {
     use super::{Dependency, GradleDependencyReport, Suffix};
     use nom::branch::alt;
