@@ -34,21 +34,13 @@ pub(crate) fn normalize_version_string<S: Into<String>>(
     };
 
     match user_distribution_string {
-        None => Ok(default_distribution(stack_id)),
-        Some("heroku" | "openjdk") => Ok(OpenJDKDistribution::Heroku),
+        None => Ok(OpenJDKDistribution::default()),
         Some("zulu") => Ok(OpenJDKDistribution::AzulZulu),
         Some(unknown) => Err(NormalizeVersionStringError::UnknownDistribution(
             String::from(unknown),
         )),
     }
     .map(|distribution| (distribution, String::from(version_string)))
-}
-
-fn default_distribution(stack_id: &StackId) -> OpenJDKDistribution {
-    match stack_id.as_str() {
-        "heroku-18" | "heroku-20" => OpenJDKDistribution::Heroku,
-        _ => OpenJDKDistribution::AzulZulu,
-    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -65,16 +57,15 @@ pub(crate) fn resolve_openjdk_url<V: Into<String>>(
     let base_url = format!("https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/{stack_id}");
 
     let file_name = match distribution {
-        OpenJDKDistribution::Heroku => format!("openjdk{version_string}.tar.gz"),
         OpenJDKDistribution::AzulZulu => format!("zulu-{version_string}.tar.gz"),
     };
 
     format!("{base_url}/{file_name}")
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
 pub(crate) enum OpenJDKDistribution {
-    Heroku,
+    #[default]
     AzulZulu,
 }
 
