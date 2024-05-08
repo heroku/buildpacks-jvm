@@ -12,8 +12,9 @@ clear-env = true
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
 
-[[stacks]]
-id = "*"
+[[targets]]
+os = "linux"
+arch = "amd64"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-gradle" }

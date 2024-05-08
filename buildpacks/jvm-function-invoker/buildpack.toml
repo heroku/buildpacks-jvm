@@ -11,8 +11,9 @@ clear-env = true
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
 
-[[stacks]]
-id = "*"
+[[targets]]
+os = "linux"
+arch = "amd64"
 
 [metadata.runtime]
 url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.1.6/sf-fx-runtime-java-runtime-1.1.6-jar-with-dependencies.jar"

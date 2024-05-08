@@ -11,11 +11,9 @@ keywords = ["openjdk", "heroku"]
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
 
-[[stacks]]
-id = "heroku-20"
-
-[[stacks]]
-id = "heroku-22"
+[[targets]]
+os = "linux"
+arch = "amd64"
 
 [metadata.heroku-metrics-agent]
 url = "https://repo1.maven.org/maven2/com/heroku/agent/heroku-java-metrics-agent/4.0.1/heroku-java-metrics-agent-4.0.1.jar"
