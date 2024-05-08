@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Buildpack API version changed from `0.9` to `0.10`. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
+
 ## [4.1.1] - 2024-05-01
 
 ### Changed
@@ -279,7 +283,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.5] - 2021-04-08
 
 * Upgraded `heroku/jvm-function-invoker` to `0.2.4`
+
 ### Fixed
+
 * Fixed `licenses` in `buildpack.toml`
 
 ## [0.3.4] - 2021-03-17
@@ -304,7 +310,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - 2021-02-03
 
 * Upgraded `heroku/jvm-function-invoker` to `0.2.1`
+
 ### Changed
+
 * Now packages released buildpack images instead of local paths to ensure standalone and bundled
   versions are exactly the same.
 
@@ -315,12 +323,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2021-02-01
 
 ### Changed
+
 * Upgraded `heroku/jvm` to `0.1.3`
 * Upgraded `heroku/jvm-function-invoker` to `0.2.0`
 
 ## [0.1.0] - 2021-01-21
 
 ### Added
+
 * Initial release
 
 [unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.1...HEAD

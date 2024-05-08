@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Buildpack API version changed from `0.9` to `0.10`. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
+
 ## [4.1.1] - 2024-05-01
 
 - No changes.
@@ -101,22 +105,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.5] - 2021-08-10
 
 ### Fixed
+
 * Ensures `mvnw` is executable
 
 ## [0.2.4] - 2021-07-16
 
 ### Added
+
 * Loosen stack requirements allowing any linux distro use this buildpack
 
 ## [0.2.3] - 2021-05-05
 
 ### Added
+
 * Documentation in `README.md`
 * `M2_HOME` environment variable is now set for subsequent buildpacks if Maven was installed.
 * `MAVEN_OPTS` environment variable will be set for subsequent buildpacks to allow the use of the local
   repository layer without explicit configuration.
 
 ### Fixed
+
 * Fixed `licenses` in `buildpack.toml`
 
 ## [0.2.2] - 2021-02-23
@@ -124,6 +132,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.1] - 2021-02-03
 
 ### Added
+
 * Automated post-release PRs
 * Now requires (in the CNB sense) `jdk` to pass detection
 * Now provides (in the CNB sense) `jvm-application` to subsequent buildpacks
@@ -131,9 +140,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2021-01-19
 
 ### Added
+
 * Debug logging, can be enabled by setting `HEROKU_BUILDPACK_DEBUG` environment variable
 
 ### Changed
+
 * Code refactoring
 * Logging style now adheres to Heroku's CNB logging style
 * Maven options that are implementation details are no longer logged by default
@@ -141,6 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `MAVEN_CUSTOM_OPTS` or `MAVEN_CUSTOM_GOALS`
 
 ### Fixed
+
 * Caching of Maven dependencies
 * Exit code of `bin/detect` when detection failed without an error
 

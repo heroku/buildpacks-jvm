@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Buildpack API version changed from `0.9` to `0.10`. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
+
 ## [4.1.1] - 2024-05-01
 
 ### Changed
@@ -156,7 +160,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Upgraded `heroku/maven` to `1.0.1`
 * Upgraded `heroku/jvm` to `1.0.1`
+
 ### Breaking
+
 * Remove Gradle support from this meta-buildpack. Gradle support was realized by using a shimmed version of the `heroku/gradle` Heroku buildpack. We decided to strictly separate shimmed buildpacks from proper CNBs. Gradle support will be re-added later, using a native CNB. ([#308](https://github.com/heroku/buildpacks-jvm/pull/308))
 
 ## [0.5.0] - 2022-05-17
@@ -211,7 +217,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.6] - 2021-04-29
 
 * Upgraded `heroku/jvm` to `0.1.6`
+
 ### Fixed
+
 * Fixed `licenses` in `buildpack.toml`
 
 ## [0.3.5] - 2021-03-17
@@ -239,6 +247,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - 2021-02-03
 
 ### Changed
+
 * Now packages released buildpack images instead of local paths to ensure standalone and bundled
   versions are exactly the same.
 
@@ -247,11 +256,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Upgraded `heroku/jvm` to `0.1.3`
 
 ### Added
+
 * Automated post-release PRs
 
 ## [0.1.2] - 2012-01-19
 
 ### Changes
+
 * Upgrade `heroku/maven` to `0.2.0`
 
 ## [0.1.1] - 2012-01-13

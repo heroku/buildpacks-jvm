@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Buildpack API version changed from `0.9` to `0.10`. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
+- This buildpack is no longer Heroku stack specific and can be used with most x86 Linux based CNB build and run images. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
+- Default OpenJDK distribution is now always Azul® Zulu®. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
+
+### Removed
+
+- Support for Heroku's own OpenJDK build distribution. Users that explicitly request that distribution by prefixing their OpenJDK version with `heroku-` need to either remove the prefix or replace it with `zulu-`. Azul Zulu is a drop-in replacement for the Heroku OpenJDK distribution. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
+
 ## [4.1.1] - 2024-05-01
 
 ### Changed
@@ -188,6 +198,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.15] - 2022-03-24
 
 ### Added
+
 * Support for Java 18
 
 ## [0.1.14] - 2022-03-02
@@ -213,6 +224,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.11] - 2021-10-28
 
 ### Changed
+
 * Default version for **OpenJDK 7** is now `1.7.0_322`
 * Default version for **OpenJDK 17** is now `17.0.1`
 
@@ -221,6 +233,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.9] - 2021-10-19
 
 ### Changed
+
 * Default version for **OpenJDK 8** is now `1.8.0_312`
 * Default version for **OpenJDK 11** is now `11.0.13`
 * Default version for **OpenJDK 13** is now `13.0.9`
@@ -229,14 +242,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.8] - 2021-09-15
 
 ### Added
+
 * Support for Java 17
 
 ### Fixed
+
 * Updated GPG public key
 
 ## [0.1.7] - 2021-07-28
 
 ### Changed
+
 * Default version for **OpenJDK 7** is now `1.7.0_312`
 * Default version for **OpenJDK 8** is now `1.8.0_302`
 * Default version for **OpenJDK 11** is now `11.0.12`
@@ -247,6 +263,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.6] - 2021-04-29
 
 ### Changed
+
 * Default version for **OpenJDK 7** is now `1.7.0_302`
 * Default version for **OpenJDK 8** is now `1.8.0_292`
 * Default version for **OpenJDK 11** is now `11.0.11`
@@ -255,11 +272,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Default version for **OpenJDK 16** is now `16.0.1`
 
 ### Fixed
+
 * Fixed `licenses` in `buildpack.toml`
 
 ## [0.1.5] - 2021-03-17
 
 ### Added
+
 * Support for Java 16
 
 ## [0.1.4] - 2021-02-23
@@ -267,14 +286,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.3] - 2021-02-04
 
 ### Changed
+
 * Status headers are now bold
 
 ### Fixed
+
 * `JAVA_HOME` will now be correctly set when using older versions of `pack`
 
 ## [0.1.2] - 2021-01-22
 
 ### Changed
+
 * Default version for **OpenJDK 7** is now `1.7.0_292`
 * Default version for **OpenJDK 8** is now `1.8.0_282`
 * Default version for **OpenJDK 11** is now `11.0.10`
@@ -284,6 +306,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.1] - 2021-01-19
 
 ### Added
+
 * Automated post-release PRs
 
 ## [0.1.0] - 2021-01-14
