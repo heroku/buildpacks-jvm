@@ -1,6 +1,5 @@
 use crate::SbtBuildpack;
 use libcnb::build::BuildContext;
-use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
@@ -27,11 +26,11 @@ impl Layer for SbtBootLayer {
     }
 
     fn create(
-        &self,
-        context: &BuildContext<Self::Buildpack>,
+        &mut self,
+        _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
-        LayerResultBuilder::new(SbtLayerMetadata::current(self, context))
+        LayerResultBuilder::new(SbtLayerMetadata::current(self))
             .env(
                 LayerEnv::new()
                     .chainable_insert(
@@ -52,16 +51,15 @@ impl Layer for SbtBootLayer {
     }
 
     fn existing_layer_strategy(
-        &self,
-        context: &BuildContext<Self::Buildpack>,
+        &mut self,
+        _context: &BuildContext<Self::Buildpack>,
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
-        let strategy =
-            if layer_data.content_metadata.metadata == SbtLayerMetadata::current(self, context) {
-                ExistingLayerStrategy::Keep
-            } else {
-                ExistingLayerStrategy::Recreate
-            };
+        let strategy = if layer_data.content_metadata.metadata == SbtLayerMetadata::current(self) {
+            ExistingLayerStrategy::Keep
+        } else {
+            ExistingLayerStrategy::Recreate
+        };
 
         Ok(strategy)
     }
@@ -79,16 +77,14 @@ fn get_layer_env_scope(available_at_launch: bool) -> Scope {
 pub(crate) struct SbtLayerMetadata {
     sbt_version: Version,
     layer_version: String,
-    stack_id: StackId,
 }
 
 const LAYER_VERSION: &str = "v1";
 
 impl SbtLayerMetadata {
-    fn current(layer: &SbtBootLayer, context: &BuildContext<SbtBuildpack>) -> Self {
+    fn current(layer: &SbtBootLayer) -> Self {
         SbtLayerMetadata {
             sbt_version: layer.for_sbt_version.clone(),
-            stack_id: context.stack_id.clone(),
             layer_version: String::from(LAYER_VERSION),
         }
     }

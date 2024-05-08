@@ -24,7 +24,7 @@ impl Layer for GradleHomeLayer {
     }
 
     fn create(
-        &self,
+        &mut self,
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
@@ -63,7 +63,7 @@ impl Layer for GradleHomeLayer {
     }
 
     fn existing_layer_strategy(
-        &self,
+        &mut self,
         _context: &BuildContext<Self::Buildpack>,
         _layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
@@ -71,7 +71,7 @@ impl Layer for GradleHomeLayer {
     }
 
     fn update(
-        &self,
+        &mut self,
         _context: &BuildContext<Self::Buildpack>,
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
