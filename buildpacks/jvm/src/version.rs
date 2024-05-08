@@ -1,7 +1,4 @@
-use libcnb::data::buildpack::StackId;
-
 pub(crate) fn normalize_version_string<S: Into<String>>(
-    stack_id: &StackId,
     user_version_string: S,
 ) -> Result<(OpenJDKDistribution, String), NormalizeVersionStringError> {
     let user_version_string = user_version_string.into();
@@ -49,18 +46,17 @@ pub(crate) enum NormalizeVersionStringError {
 }
 
 pub(crate) fn resolve_openjdk_url<V: Into<String>>(
-    stack_id: &StackId,
     distribution: OpenJDKDistribution,
     version_string: V,
 ) -> String {
     let version_string = version_string.into();
-    let base_url = format!("https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/{stack_id}");
 
-    let file_name = match distribution {
-        OpenJDKDistribution::AzulZulu => format!("zulu-{version_string}.tar.gz"),
-    };
-
-    format!("{base_url}/{file_name}")
+    match distribution {
+        // We're using the legacy stack specific URL of heroku-22 for all targets. This is not a
+        // problem as the distribution hosted there is NOT stack specific. This will eventually be
+        // replaced with a stack agnostic URL.
+        OpenJDKDistribution::AzulZulu => format!("https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-22/zulu-{version_string}.tar.gz"),
+    }
 }
 
 #[derive(Debug, Copy, Clone, Default, Eq, PartialEq)]
@@ -72,106 +68,52 @@ pub(crate) enum OpenJDKDistribution {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use libcnb::data::stack_id;
 
     #[test]
-    fn normalize_version_string_stack_specific_distribution() {
-        assert_eq!(
-            normalize_version_string(&stack_id!("heroku-18"), "8"),
-            Ok((OpenJDKDistribution::Heroku, String::from("1.8.0_412")))
-        );
+    fn test_normalize_version_string() {
+        let zulu = OpenJDKDistribution::AzulZulu;
 
-        assert_eq!(
-            normalize_version_string(&stack_id!("heroku-20"), "8"),
-            Ok((OpenJDKDistribution::Heroku, String::from("1.8.0_412")))
-        );
+        let latest_java_8 = "1.8.0_412";
+        let latest_java_11 = "11.0.23";
+        let latest_java_21 = "21.0.3";
 
-        assert_eq!(
-            normalize_version_string(&stack_id!("heroku-22"), "8"),
-            Ok((OpenJDKDistribution::AzulZulu, String::from("1.8.0_412")))
-        );
-
-        assert_eq!(
-            normalize_version_string(&stack_id!("bogus"), "8"),
-            Ok((OpenJDKDistribution::AzulZulu, String::from("1.8.0_412")))
-        );
-    }
-
-    #[test]
-    fn foo() {
-        assert_eq!(
-            resolve_openjdk_url(
-                &stack_id!("heroku-20"),
-                OpenJDKDistribution::Heroku,
-                "1.0.0"
+        let test_cases = [
+            // OpenJDK 8
+            ("8", Ok((zulu, String::from(latest_java_8)))),
+            (latest_java_8, Ok((zulu, String::from(latest_java_8)))),
+            ("zulu-8", Ok((zulu, String::from(latest_java_8)))),
+            (
+                &format!("zulu-{latest_java_8}"),
+                Ok((zulu, String::from(latest_java_8))),
             ),
-            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-20/openjdk1.0.0.tar.gz"
-        );
-
-        assert_eq!(
-            resolve_openjdk_url(
-                &stack_id!("heroku-20"),
-                OpenJDKDistribution::Heroku,
-                "1.2.3"
+            // OpenJDK 11
+            ("11", Ok((zulu, String::from(latest_java_11)))),
+            (latest_java_11, Ok((zulu, String::from(latest_java_11)))),
+            ("zulu-11", Ok((zulu, String::from(latest_java_11)))),
+            (
+                &format!("zulu-{latest_java_11}"),
+                Ok((zulu, String::from(latest_java_11))),
             ),
-            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-20/openjdk1.2.3.tar.gz"
-        );
-
-        assert_eq!(
-            resolve_openjdk_url(
-                &stack_id!("heroku-22"),
-                OpenJDKDistribution::Heroku,
-                "1.2.3"
+            // OpenJDK 21
+            ("21", Ok((zulu, String::from(latest_java_21)))),
+            ("zulu-21", Ok((zulu, String::from(latest_java_21)))),
+            // Other
+            ("1337", Ok((zulu, String::from("1337")))),
+            (
+                "4.8.15.16.23.42",
+                Ok((zulu, String::from("4.8.15.16.23.42"))),
             ),
-            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-22/openjdk1.2.3.tar.gz"
-        );
-
-        assert_eq!(
-            resolve_openjdk_url(
-                &stack_id!("heroku-18"),
-                OpenJDKDistribution::Heroku,
-                "1.2.3.4.5-suffix"
+            // Errors
+            (
+                "heroku-21",
+                Err(NormalizeVersionStringError::UnknownDistribution(
+                    String::from("heroku"),
+                )),
             ),
-            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-18/openjdk1.2.3.4.5-suffix.tar.gz"
-        );
-    }
+        ];
 
-    #[test]
-    fn foo_zulu() {
-        assert_eq!(
-            resolve_openjdk_url(
-                &stack_id!("heroku-20"),
-                OpenJDKDistribution::AzulZulu,
-                "1.0.0"
-            ),
-            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-20/zulu-1.0.0.tar.gz"
-        );
-
-        assert_eq!(
-            resolve_openjdk_url(
-                &stack_id!("heroku-20"),
-                OpenJDKDistribution::AzulZulu,
-                "1.2.3"
-            ),
-            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-20/zulu-1.2.3.tar.gz"
-        );
-
-        assert_eq!(
-            resolve_openjdk_url(
-                &stack_id!("heroku-22"),
-                OpenJDKDistribution::AzulZulu,
-                "1.2.3"
-            ),
-            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-22/zulu-1.2.3.tar.gz"
-        );
-
-        assert_eq!(
-            resolve_openjdk_url(
-                &stack_id!("heroku-18"),
-                OpenJDKDistribution::AzulZulu,
-                "1.2.3.4.5-suffix"
-            ),
-            "https://lang-jvm.s3.us-east-1.amazonaws.com/jdk/heroku-18/zulu-1.2.3.4.5-suffix.tar.gz"
-        );
+        for (input, expected_output) in test_cases {
+            assert_eq!(normalize_version_string(input), expected_output);
+        }
     }
 }
