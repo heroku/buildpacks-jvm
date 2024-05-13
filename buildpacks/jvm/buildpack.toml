@@ -1,4 +1,4 @@
-api = "0.9"
+api = "0.10"
 
 [buildpack]
 id = "heroku/jvm"
@@ -11,11 +11,14 @@ keywords = ["openjdk", "heroku"]
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
 
+# This workaround can be removed once a new Pack release ships that includes:
+# https://github.com/buildpacks/pack/pull/2081
 [[stacks]]
-id = "heroku-20"
+id = "*"
 
-[[stacks]]
-id = "heroku-22"
+[[targets]]
+os = "linux"
+arch = "amd64"
 
 [metadata.heroku-metrics-agent]
 url = "https://repo1.maven.org/maven2/com/heroku/agent/heroku-java-metrics-agent/4.0.1/heroku-java-metrics-agent-4.0.1.jar"

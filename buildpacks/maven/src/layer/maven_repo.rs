@@ -22,7 +22,7 @@ impl Layer for MavenRepositoryLayer {
     }
 
     fn create(
-        &self,
+        &mut self,
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
@@ -46,7 +46,7 @@ impl Layer for MavenRepositoryLayer {
     }
 
     fn existing_layer_strategy(
-        &self,
+        &mut self,
         _context: &BuildContext<Self::Buildpack>,
         _layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {

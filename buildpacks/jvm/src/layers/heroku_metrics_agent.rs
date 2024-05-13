@@ -29,7 +29,7 @@ impl Layer for HerokuMetricsAgentLayer {
     }
 
     fn create(
-        &self,
+        &mut self,
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
@@ -60,7 +60,7 @@ impl Layer for HerokuMetricsAgentLayer {
     }
 
     fn existing_layer_strategy(
-        &self,
+        &mut self,
         context: &BuildContext<Self::Buildpack>,
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {

@@ -25,7 +25,7 @@ impl Layer for OptLayer {
     }
 
     fn create(
-        &self,
+        &mut self,
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, JvmFunctionInvokerBuildpackError> {

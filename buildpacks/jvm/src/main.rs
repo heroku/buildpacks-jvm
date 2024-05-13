@@ -85,7 +85,6 @@ impl Buildpack for OpenJdkBuildpack {
             .map_err(OpenJdkBuildpackError::ReadVersionStringError)?;
 
         let normalized_version = version::normalize_version_string(
-            &context.stack_id,
             app_dir_version_string.unwrap_or_else(|| String::from("8")),
         )
         .map_err(OpenJdkBuildpackError::NormalizeVersionStringError)?;
@@ -94,7 +93,6 @@ impl Buildpack for OpenJdkBuildpack {
             layer_name!("openjdk"),
             OpenJdkLayer {
                 tarball_url: version::resolve_openjdk_url(
-                    &context.stack_id,
                     normalized_version.0,
                     normalized_version.1,
                 ),

@@ -31,7 +31,7 @@ impl Layer for RuntimeLayer {
     }
 
     fn create(
-        &self,
+        &mut self,
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, JvmFunctionInvokerBuildpackError> {
@@ -67,7 +67,7 @@ impl Layer for RuntimeLayer {
     }
 
     fn existing_layer_strategy(
-        &self,
+        &mut self,
         context: &BuildContext<Self::Buildpack>,
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, JvmFunctionInvokerBuildpackError> {
