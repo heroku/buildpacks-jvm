@@ -246,7 +246,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Initial release.
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.1...HEADs
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.1...HEAD
 [4.1.1]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.2...v4.1.0
 [4.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.1...v4.0.2
