@@ -14,8 +14,11 @@ libcnb = "=0.21.0"
 libherokubuildpack = { version = "=0.21.0", default-features = false, features = ["digest", "download", "error", "log", "tar"] }
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
-ureq = { version = "2", default-features = false, features = ["tls"] }
 url = "2"
+nom = "7"
+inventory = { git = "https://github.com/Malax/inventory", features = ["sha2"] }
+thiserror.workspace = true
+sha2.workspace = true
 
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true

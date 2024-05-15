@@ -1,20 +1,25 @@
 mod constants;
 mod errors;
 mod layers;
+mod openjdk_artifact;
+mod openjdk_version;
 mod util;
-mod version;
 
 use crate::constants::SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME;
 use crate::errors::on_error_jvm_buildpack;
 use crate::layers::heroku_metrics_agent::HerokuMetricsAgentLayer;
 use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
+use crate::openjdk_artifact::{
+    OpenJdkArtifactMetadata, OpenJdkArtifactRequirement, OpenJdkArtifactRequirementParseError,
+};
 use crate::util::{boolean_buildpack_config_env_var, ValidateSha256Error};
-use crate::version::NormalizeVersionStringError;
 use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
+use inventory::artifact::{Arch, Os, UnsupportedArchError, UnsupportedOsError};
+use inventory::inventory::{Inventory, ParseInventoryError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
@@ -26,27 +31,33 @@ use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
 use url as _; // Used by exec.d binary
 
+use crate::openjdk_version::OpenJdkVersion;
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
 use libcnb_test as _;
+use sha2::Sha256;
 
 struct OpenJdkBuildpack;
 
 #[derive(Debug)]
 enum OpenJdkBuildpackError {
+    UnsupportedOpenJdkVersion(OpenJdkArtifactRequirement),
     OpenJdkDownloadError(DownloadError),
     MetricsAgentDownloadError(DownloadError),
     MetricsAgentSha256ValidationError(ValidateSha256Error),
     CannotCreateOpenJdkTempDir(std::io::Error),
     CannotOpenOpenJdkTarball(std::io::Error),
     CannotDecompressOpenJdkTarball(std::io::Error),
-    ReadVersionStringError(ReadSystemPropertiesError),
-    NormalizeVersionStringError(NormalizeVersionStringError),
+    ReadSystemPropertiesError(ReadSystemPropertiesError),
+    OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError),
     MissingJdkCertificatesFile,
     CannotSymlinkUbuntuCertificates(std::io::Error),
     CannotListJdkOverlayContents(std::io::Error),
     CannotCopyJdkOverlayContents(fs_extra::error::Error),
+    ParseInventoryError(ParseInventoryError),
+    UnsupportedOsError(UnsupportedOsError),
+    UnsupportedArchError(UnsupportedArchError),
 }
 
 impl Buildpack for OpenJdkBuildpack {
@@ -67,7 +78,7 @@ impl Buildpack for OpenJdkBuildpack {
         // OpenJDK version on Heroku.
         let app_specifies_jvm_version = read_system_properties(&context.app_dir)
             .map(|properties| properties.contains_key("java.runtime.version"))
-            .map_err(OpenJdkBuildpackError::ReadVersionStringError)?;
+            .map_err(OpenJdkBuildpackError::ReadSystemPropertiesError)?;
 
         let build_plan = if app_specifies_jvm_version {
             BuildPlanBuilder::new().provides("jdk").requires("jdk")
@@ -80,22 +91,46 @@ impl Buildpack for OpenJdkBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let app_dir_version_string = read_system_properties(&context.app_dir)
-            .map(|properties| properties.get("java.runtime.version").cloned())
-            .map_err(OpenJdkBuildpackError::ReadVersionStringError)?;
+        let openjdk_artifact_requirement = read_system_properties(&context.app_dir)
+            .map(|properties| {
+                properties
+                    .get("java.runtime.version")
+                    .cloned()
+                    .unwrap_or(String::from("8"))
+            })
+            .map_err(OpenJdkBuildpackError::ReadSystemPropertiesError)
+            .and_then(|string| {
+                string
+                    .parse::<OpenJdkArtifactRequirement>()
+                    .map_err(OpenJdkBuildpackError::OpenJdkArtifactRequirementParseError)
+            })?;
 
-        let normalized_version = version::normalize_version_string(
-            app_dir_version_string.unwrap_or_else(|| String::from("8")),
-        )
-        .map_err(OpenJdkBuildpackError::NormalizeVersionStringError)?;
+        let openjdk_inventory = include_str!("../openjdk_inventory.toml")
+            .parse::<Inventory<OpenJdkVersion, Sha256, OpenJdkArtifactMetadata>>()
+            .map_err(OpenJdkBuildpackError::ParseInventoryError)?;
+
+        let openjdk_artifact = openjdk_inventory
+            .partial_resolve(
+                context
+                    .target
+                    .os
+                    .parse::<Os>()
+                    .map_err(OpenJdkBuildpackError::UnsupportedOsError)?,
+                context
+                    .target
+                    .arch
+                    .parse::<Arch>()
+                    .map_err(OpenJdkBuildpackError::UnsupportedArchError)?,
+                &openjdk_artifact_requirement,
+            )
+            .ok_or(OpenJdkBuildpackError::UnsupportedOpenJdkVersion(
+                openjdk_artifact_requirement,
+            ))?;
 
         context.handle_layer(
             layer_name!("openjdk"),
             OpenJdkLayer {
-                tarball_url: version::resolve_openjdk_url(
-                    normalized_version.0,
-                    normalized_version.1,
-                ),
+                artifact: openjdk_artifact,
             },
         )?;
 

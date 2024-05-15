@@ -1,0 +1,10 @@
+[[artifacts]]
+version = "11.0.23"
+os = "linux"
+arch = "amd64"
+url = "https://cdn.azul.com/zulu/bin/zulu11.72.19-ca-jdk11.0.23-linux_x64.tar.gz"
+checksum = "sha256:0a4d1bfc7a96a7f9f5329b72b9801b3c53366417b4753f1b658fa240204c7347"
+
+[artifacts.metadata]
+distribution = "zulu"
+heroku_stack = "heroku-22"
