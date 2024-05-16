@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated function runtime to 1.1.7
+- Updated function runtime to 1.1.7. ([#664](https://github.com/heroku/buildpacks-jvm/pull/664))
 - Buildpack API version changed from `0.9` to `0.10`, and so requires `lifecycle` `0.17.x` or newer. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
 
 ## [4.1.1] - 2024-05-01
