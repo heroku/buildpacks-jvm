@@ -6,7 +6,6 @@ use std::str::FromStr;
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub(crate) struct OpenJdkArtifactMetadata {
     pub(crate) distribution: OpenJdkDistribution,
-    pub(crate) heroku_stack: String,
 }
 
 #[derive(Clone, Debug, PartialEq)]
