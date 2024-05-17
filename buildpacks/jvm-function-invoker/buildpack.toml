@@ -21,8 +21,8 @@ os = "linux"
 arch = "amd64"
 
 [metadata.runtime]
-url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.1.6/sf-fx-runtime-java-runtime-1.1.6-jar-with-dependencies.jar"
-sha256 = "0995f1597508e150a65fe395f90945c4b8ea1b75dca2b3a759fa224ef587bf10"
+url = "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-runtime-java-runtime/1.1.7/sf-fx-runtime-java-runtime-1.1.7-jar-with-dependencies.jar"
+sha256 = "6afdd87639d77c6e033f9c74171baa9c60f3da4fbdbea7a1bef0783f8bb945c6"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-jvm-function-invoker" }
