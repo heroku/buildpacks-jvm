@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.1.2] - 2024-05-17
+
 ### Changed
 
 - Updated function runtime to 1.1.7. ([#664](https://github.com/heroku/buildpacks-jvm/pull/664))
@@ -247,7 +249,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Initial release.
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.1...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.2...HEAD
+[4.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.1...v4.1.2
 [4.1.1]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.2...v4.1.0
 [4.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.1...v4.0.2
