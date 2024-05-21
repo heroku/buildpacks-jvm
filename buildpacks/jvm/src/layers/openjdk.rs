@@ -1,8 +1,11 @@
+use crate::openjdk_artifact::OpenJdkArtifactMetadata;
+use crate::openjdk_version::OpenJdkVersion;
 use crate::{
     util, OpenJdkBuildpack, OpenJdkBuildpackError, JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER,
     JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
 use fs_extra::dir::CopyOptions;
+use inventory::artifact::Artifact;
 use libcnb::additional_buildpack_binary_path;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
@@ -10,12 +13,13 @@ use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerR
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use serde::Deserialize;
 use serde::Serialize;
+use sha2::Sha256;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tempfile::tempdir;
 
-pub(crate) struct OpenJdkLayer {
-    pub(crate) tarball_url: String,
+pub(crate) struct OpenJdkLayer<'a> {
+    pub(crate) artifact: &'a Artifact<OpenJdkVersion, Sha256, OpenJdkArtifactMetadata>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -24,7 +28,7 @@ pub(crate) struct OpenJdkLayerMetadata {
     source_tarball_url: String,
 }
 
-impl Layer for OpenJdkLayer {
+impl<'a> Layer for OpenJdkLayer<'a> {
     type Buildpack = OpenJdkBuildpack;
     type Metadata = OpenJdkLayerMetadata;
 
@@ -41,12 +45,15 @@ impl Layer for OpenJdkLayer {
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, OpenJdkBuildpackError> {
-        libherokubuildpack::log::log_header("Installing OpenJDK");
+        libherokubuildpack::log::log_header(format!(
+            "Installing OpenJDK {}",
+            self.artifact.version
+        ));
 
         let temp_dir = tempdir().map_err(OpenJdkBuildpackError::CannotCreateOpenJdkTempDir)?;
         let path = temp_dir.path().join("openjdk.tar.gz");
 
-        libherokubuildpack::download::download_file(&self.tarball_url, &path)
+        libherokubuildpack::download::download_file(&self.artifact.url, &path)
             .map_err(OpenJdkBuildpackError::OpenJdkDownloadError)?;
 
         std::fs::File::open(&path)
@@ -107,7 +114,7 @@ impl Layer for OpenJdkLayer {
         }
 
         LayerResultBuilder::new(OpenJdkLayerMetadata {
-            source_tarball_url: self.tarball_url.clone(),
+            source_tarball_url: self.artifact.url.clone(),
             jdk_overlay_applied,
         })
         .env(
@@ -150,7 +157,7 @@ impl Layer for OpenJdkLayer {
             // might already have an (potentially different) overlay applied, we re-crate the layer
             // in that case.
             Ok(ExistingLayerStrategy::Recreate)
-        } else if self.tarball_url == layer_data.content_metadata.metadata.source_tarball_url {
+        } else if self.artifact.url == layer_data.content_metadata.metadata.source_tarball_url {
             Ok(ExistingLayerStrategy::Keep)
         } else {
             Ok(ExistingLayerStrategy::Recreate)

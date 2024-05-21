@@ -40,6 +40,38 @@ pub(crate) fn boolean_buildpack_config_env_var(env: &Env, key: impl AsRef<OsStr>
         .is_some_and(|value| value != "0" && value != "false" && value != "no")
 }
 
+pub(crate) fn zip_longest<A, B>(a: A, b: B) -> ZipLongest<A, B>
+where
+    A: Iterator,
+    B: Iterator,
+{
+    ZipLongest { a, b }
+}
+
+pub(crate) struct ZipLongest<A, B> {
+    a: A,
+    b: B,
+}
+
+impl<A, B> Iterator for ZipLongest<A, B>
+where
+    A: Iterator,
+    B: Iterator,
+{
+    type Item = (Option<A::Item>, Option<B::Item>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let a_item = self.a.next();
+        let b_item = self.b.next();
+
+        if a_item.is_none() && b_item.is_none() {
+            None
+        } else {
+            Some((a_item, b_item))
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::util::boolean_buildpack_config_env_var;
