@@ -29,7 +29,5 @@ missing_errors_doc = "allow"
 module_name_repetitions = "allow"
 
 [workspace.dependencies]
-thiserror = "1"
-sha2 = "0.10"
 buildpacks-jvm-shared = { path = "shared" }
 buildpacks-jvm-shared-test = { path = "shared-test" }

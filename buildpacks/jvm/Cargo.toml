@@ -17,8 +17,8 @@ tempfile = "3"
 url = "2"
 nom = "7"
 inventory = { git = "https://github.com/Malax/inventory", features = ["sha2"] }
-thiserror.workspace = true
-sha2.workspace = true
+thiserror = "1"
+sha2 = "0.10"
 
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
