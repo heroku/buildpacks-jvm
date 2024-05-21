@@ -6,7 +6,6 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 #[derive(Clone, Debug)]
-#[allow(dead_code)]
 pub(crate) enum OpenJdkVersion {
     Legacy {
         major: u32,
@@ -15,15 +14,18 @@ pub(crate) enum OpenJdkVersion {
     Jep322 {
         major: u32,
         remaining_elements: Vec<u32>,
+        #[allow(dead_code)]
         suffix: Jep322VnumSuffix,
     },
 }
 
 #[derive(Clone, Debug)]
-#[allow(dead_code)]
 pub(crate) struct Jep322VnumSuffix {
+    #[allow(dead_code)]
     pre: Option<String>,
+    #[allow(dead_code)]
     build: Option<u32>,
+    #[allow(dead_code)]
     opt: Option<String>,
 }
 
