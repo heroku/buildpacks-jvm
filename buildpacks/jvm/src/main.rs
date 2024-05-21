@@ -18,7 +18,7 @@ use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSyste
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
-use inventory::artifact::{Arch, Os, UnsupportedArchError, UnsupportedOsError};
+use inventory::artifact::{Arch, Os};
 use inventory::inventory::{Inventory, ParseInventoryError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -56,8 +56,6 @@ enum OpenJdkBuildpackError {
     CannotListJdkOverlayContents(std::io::Error),
     CannotCopyJdkOverlayContents(fs_extra::error::Error),
     ParseInventoryError(ParseInventoryError),
-    UnsupportedOsError(UnsupportedOsError),
-    UnsupportedArchError(UnsupportedArchError),
 }
 
 impl Buildpack for OpenJdkBuildpack {
@@ -115,12 +113,12 @@ impl Buildpack for OpenJdkBuildpack {
                     .target
                     .os
                     .parse::<Os>()
-                    .map_err(OpenJdkBuildpackError::UnsupportedOsError)?,
+                    .expect("OS should be always parseable, buildpack will not run on unsupported operating systems."),
                 context
                     .target
                     .arch
                     .parse::<Arch>()
-                    .map_err(OpenJdkBuildpackError::UnsupportedArchError)?,
+                    .expect("arch should be always parseable, buildpack will not run on unsupported architectures."),
                 &openjdk_artifact_requirement,
             )
             .ok_or(OpenJdkBuildpackError::UnsupportedOpenJdkVersion(

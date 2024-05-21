@@ -132,31 +132,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
                     ", version = version },
                 )
             }
-        }
-        OpenJdkBuildpackError::UnsupportedOsError(error) => log_error(
-            "Unsupported Operating System",
-            formatdoc! {"
-                The target operating system for this build is not supported. This error should
-                never occur to users of this buildpack.
-
-                If you see this error, please file an issue:
-                https://github.com/heroku/buildpacks-jvm/issues/new
-
-                Details: {error}
-            ", error = error },
-        ),
-        OpenJdkBuildpackError::UnsupportedArchError(error) => log_error(
-            "Unsupported System Architecture",
-            formatdoc! {"
-                The target system architecture for this build is not supported. This error should
-                never occur to users of this buildpack.
-
-                If you see this error, please file an issue:
-                https://github.com/heroku/buildpacks-jvm/issues/new
-
-                Details: {error}
-            ", error = error },
-        ),
+        },
         OpenJdkBuildpackError::ParseInventoryError(error) => log_error(
             "Invalid Inventory File",
             formatdoc! {"
