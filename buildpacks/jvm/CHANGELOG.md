@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - This buildpack is no longer Heroku stack specific and can be used with most x86 Linux based CNB build and run images. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
 - Default OpenJDK distribution is now always Azul® Zulu®. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
 - Some error messages relating to OpenJDK installation changed. ([#665](https://github.com/heroku/buildpacks-jvm/pull/665))
-- OpenJDK is now downloaded from `https://s3.amazonaws.com/heroku-buildpacks-jvm`. Users that use allow-listing for internet access during builds might need to add this new URL to their allow-list. ([#665](https://github.com/heroku/buildpacks-jvm/pull/665))
+- OpenJDK is now downloaded from `heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com`. Users that use allow-listing for internet access during builds might need to add this new URL to their allow-list. ([#665](https://github.com/heroku/buildpacks-jvm/pull/665))
 
 ### Removed
 
