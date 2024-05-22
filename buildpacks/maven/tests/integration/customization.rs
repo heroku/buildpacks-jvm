@@ -13,7 +13,7 @@ fn maven_custom_goals() {
         // The dependency list is implemented by using the dependency:list goal. We need to
         // assert it won't be overwritten by the user's choice of goals.
         assert_eq!(
-            context.run_shell_command("cat /app/target/mvn-dependency-list.log").stdout,
+            context.run_shell_command("cat /workspace/target/mvn-dependency-list.log").stdout,
             indoc! {"
 
                 The following files have been resolved:

@@ -24,7 +24,7 @@ fn mvnw_executable_bit() {
 fn mvn_dependency_list() {
     TestRunner::default().build(default_build_config("test-apps/simple-http-service"), |context| {
         assert_eq!(
-            context.run_shell_command("cat /app/target/mvn-dependency-list.log").stdout,
+            context.run_shell_command("cat /workspace/target/mvn-dependency-list.log").stdout,
             indoc! {"
 
                 The following files have been resolved:
