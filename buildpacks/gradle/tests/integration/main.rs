@@ -13,7 +13,6 @@ use libcnb_test::{BuildConfig, BuildpackReference};
 use std::path::Path;
 
 mod smoke;
-mod ux;
 
 fn default_build_config(fixture_path: impl AsRef<Path>) -> BuildConfig {
     let builder = builder();
