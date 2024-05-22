@@ -1,7 +1,4 @@
-use libcnb_test::{
-    assert_contains, BuildConfig, BuildpackReference, ContainerConfig, TestContext, TestRunner,
-};
-use std::path::Path;
+use libcnb_test::{assert_contains, BuildConfig, ContainerConfig, TestContext, TestRunner};
 use std::time::Duration;
 
 /// Extremely opinionated helper for testing containers that expose a HTTP interface.
@@ -61,27 +58,15 @@ where
 
 /// Opinionated helper for smoke-testing JVM buildpacks.
 ///
-/// Builds the app with the given buildpacks, asserts that the build finished successfully and
+/// Builds the app with the given build config, asserts that the build finished successfully and
 /// builds the app again to ensure that any caching logic does not break subsequent builds. After
 /// each build, an HTTP request is made to the resulting container, asserting that the given string
 /// is present in the response.
-pub fn smoke_test<P, B>(
-    builder_name: &str,
-    app_dir: P,
-    buildpacks: B,
-    expected_http_response_body_contains: &str,
-) where
-    P: AsRef<Path>,
-    B: Into<Vec<BuildpackReference>>,
-{
-    let build_config = BuildConfig::new(builder_name, app_dir)
-        .buildpacks(buildpacks.into())
-        .clone();
-
-    TestRunner::default().build(&build_config, |context| {
+pub fn smoke_test(build_config: &BuildConfig, expected_http_response_body_contains: &str) {
+    TestRunner::default().build(build_config, |context| {
         start_container_assert_basic_http_response(&context, expected_http_response_body_contains);
 
-        context.rebuild(&build_config, |context| {
+        context.rebuild(build_config, |context| {
             start_container_assert_basic_http_response(
                 &context,
                 expected_http_response_body_contains,
@@ -89,8 +74,6 @@ pub fn smoke_test<P, B>(
         });
     });
 }
-
-pub const DEFAULT_INTEGRATION_TEST_BUILDER: &str = "heroku/builder:22";
 
 pub const UREQ_RESPONSE_RESULT_EXPECT_MESSAGE: &str = "http request should be successful";
 

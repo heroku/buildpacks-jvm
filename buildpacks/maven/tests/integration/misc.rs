@@ -1,4 +1,4 @@
-use crate::default_config;
+use crate::default_build_config;
 use indoc::indoc;
 use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
 use std::fs;
@@ -8,7 +8,7 @@ use std::os::unix::fs::PermissionsExt;
 #[ignore = "integration test"]
 fn mvnw_executable_bit() {
     TestRunner::default().build(
-        default_config().app_dir_preprocessor(|dir| {
+        default_build_config("test-apps/simple-http-service").app_dir_preprocessor(|dir| {
             fs::set_permissions(dir.join("mvnw"), fs::Permissions::from_mode(0o444)).unwrap();
         }),
         |context| {
@@ -22,7 +22,7 @@ fn mvnw_executable_bit() {
 #[test]
 #[ignore = "integration test"]
 fn mvn_dependency_list() {
-    TestRunner::default().build(default_config(), |context| {
+    TestRunner::default().build(default_build_config("test-apps/simple-http-service"), |context| {
         assert_eq!(
             context.run_shell_command("cat /app/target/mvn-dependency-list.log").stdout,
             indoc! {"
@@ -53,7 +53,7 @@ fn mvn_dependency_list() {
 #[test]
 #[ignore = "integration test"]
 fn no_unexpected_files_in_app_dir() {
-    TestRunner::default().build(default_config(), |context| {
+    TestRunner::default().build(default_build_config("test-apps/simple-http-service"), |context| {
         assert_eq!(
             context.run_shell_command("find /workspace -type f | sort -s").stdout,
             indoc! {"
@@ -101,21 +101,24 @@ fn no_unexpected_files_in_app_dir() {
 #[test]
 #[ignore = "integration test"]
 fn no_internal_maven_options_logging() {
-    TestRunner::default().build(default_config(), |context| {
-        assert_not_contains!(context.pack_stdout, "-Dmaven.repo.local=");
-        assert_not_contains!(context.pack_stdout, "-Duser.home=");
-        assert_not_contains!(context.pack_stdout, "dependency:list");
-        assert_not_contains!(
-            context.pack_stdout,
-            "-DoutputFile=target/mvn-dependency-list.log"
-        );
-    });
+    TestRunner::default().build(
+        default_build_config("test-apps/simple-http-service"),
+        |context| {
+            assert_not_contains!(context.pack_stdout, "-Dmaven.repo.local=");
+            assert_not_contains!(context.pack_stdout, "-Duser.home=");
+            assert_not_contains!(context.pack_stdout, "dependency:list");
+            assert_not_contains!(
+                context.pack_stdout,
+                "-DoutputFile=target/mvn-dependency-list.log"
+            );
+        },
+    );
 }
 
 #[test]
 #[ignore = "integration test"]
 fn descriptive_error_message_on_failed_build() {
-    TestRunner::default().build(default_config().app_dir("test-apps/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
+    TestRunner::default().build(default_build_config("test-apps/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
             assert_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
 
             assert_contains!(

@@ -1,20 +1,16 @@
+use crate::default_build_config;
 use base64::Engine;
 use buildpacks_jvm_shared_test::{
-    DEFAULT_INTEGRATION_TEST_BUILDER, UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE,
-    UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
+    UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE, UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
 };
-use libcnb_test::{BuildConfig, BuildpackReference, ContainerConfig, TestRunner};
+use libcnb_test::{ContainerConfig, TestRunner};
 use std::time::Duration;
 
 #[test]
 #[ignore = "integration test"]
 fn smoke_test_simple_function() {
     TestRunner::default().build(
-        BuildConfig::new(DEFAULT_INTEGRATION_TEST_BUILDER, "test-apps/simple-function").buildpacks([
-            BuildpackReference::Other(String::from("heroku/jvm")),
-            BuildpackReference::Other(String::from("heroku/maven")),
-            BuildpackReference::CurrentCrate,
-        ]),
+       default_build_config("test-apps/simple-function"),
         |context| {
             context.start_container(
                 ContainerConfig::new()

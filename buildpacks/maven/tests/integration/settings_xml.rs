@@ -1,4 +1,4 @@
-use crate::default_config;
+use crate::default_build_config;
 use indoc::formatdoc;
 use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
 use std::fs;
@@ -8,7 +8,8 @@ use std::path::PathBuf;
 #[ignore = "integration test"]
 fn maven_settings_url_success() {
     TestRunner::default().build(
-        default_config().env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL),
+        default_build_config("test-apps/simple-http-service")
+            .env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL),
         |context| {
             assert_contains!(
                 context.pack_stdout,
@@ -24,7 +25,7 @@ fn maven_settings_url_success() {
 #[ignore = "integration test"]
 fn maven_settings_url_failure() {
     TestRunner::default().build(
-            default_config()
+        default_build_config("test-apps/simple-http-service")
                 .env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL_404)
                 .expected_pack_result(PackResult::Failure),
             |context| {
@@ -46,7 +47,7 @@ fn maven_settings_path() {
     let settings_xml_test_value = "Take off every 'ZIG'!!";
 
     TestRunner::default().build(
-        default_config()
+        default_build_config("test-apps/simple-http-service")
             .app_dir_preprocessor(move |dir| {
                 write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value);
             })
@@ -69,7 +70,7 @@ fn maven_settings_path_and_settings_url() {
     let settings_xml_test_value = "We get signal.";
 
     TestRunner::default().build(
-        default_config()
+        default_build_config("test-apps/simple-http-service")
             .app_dir_preprocessor(move |dir| {
                 write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value);
             })
@@ -95,7 +96,7 @@ fn maven_settings_xml_in_app_root() {
 
     TestRunner::default().build(
         // Note that there is no MAVEN_SETTINGS_PATH here
-        default_config().app_dir_preprocessor(move |dir| {
+        default_build_config("test-apps/simple-http-service").app_dir_preprocessor(move |dir| {
             write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value);
         }),
         |context| {
@@ -119,7 +120,7 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_path() {
 
     TestRunner::default().build(
         // Note that there is no MAVEN_SETTINGS_PATH here
-        default_config()
+        default_build_config("test-apps/simple-http-service")
             .app_dir_preprocessor(move |dir| {
                 write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value);
                 write_settings_xml(dir.join(zero_wing_filename), zero_wing_test_value);
@@ -144,7 +145,7 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_url() {
 
     TestRunner::default().build(
         // Note that there is no MAVEN_SETTINGS_PATH here
-        default_config()
+        default_build_config("test-apps/simple-http-service")
             .app_dir_preprocessor(move |dir| {
                 write_settings_xml(dir.join(settings_xml_filename), settings_xml_test_value);
             })
