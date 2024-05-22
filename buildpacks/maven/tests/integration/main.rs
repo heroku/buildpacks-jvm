@@ -10,6 +10,7 @@
 // Required due to: https://github.com/rust-lang/rust-clippy/issues/11119
 #![allow(clippy::unwrap_used)]
 
+use libcnb::data::buildpack_id;
 use libcnb_test::{BuildConfig, BuildpackReference};
 use std::path::Path;
 
@@ -36,7 +37,7 @@ fn default_build_config(fixture_path: impl AsRef<Path>) -> BuildConfig {
     let mut config = BuildConfig::new(&builder, fixture_path);
     config.target_triple(target_triple);
     config.buildpacks(vec![
-        BuildpackReference::Other(String::from("heroku/jvm")),
+        BuildpackReference::WorkspaceBuildpack(buildpack_id!("heroku/jvm")),
         BuildpackReference::CurrentCrate,
     ]);
     config
