@@ -50,10 +50,10 @@ pub(crate) enum ReadSbtVersionError {
 
 /// Checks if the given sbt version is a version that is supported by this buildpack.
 ///
-/// sbt versions outside of the `1.x` series aren't supported by the upstream project anymore.
-/// However, we supported `0.11.x` through `0.13.x` before and can continue supporting them for now.
+/// sbt versions outside the `1.x` series aren't supported by the upstream project anymore and
+/// this buildpack dropped support for those versions as well.
 pub(crate) fn is_supported_sbt_version(version: &semver::Version) -> bool {
-    [">=0.11, <=0.13", ">=1, <2"]
+    [">=1, <2"]
         .into_iter()
         .map(|version_req_string| {
             semver::VersionReq::parse(version_req_string).expect("valid semver version requirement")
