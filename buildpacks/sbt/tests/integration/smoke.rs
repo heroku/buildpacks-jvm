@@ -10,10 +10,10 @@ use buildpacks_jvm_shared_test::{smoke_test, DEFAULT_INTEGRATION_TEST_BUILDER};
 
 #[test]
 #[ignore = "integration test"]
-fn smoke_test_play_framework_2_8_19() {
+fn smoke_test_play_framework_3_0_3() {
     smoke_test(
         DEFAULT_INTEGRATION_TEST_BUILDER,
-        "test-apps/play-framework-2.8.19",
+        "test-apps/play-framework-3.0.3",
         default_buildpacks(),
         "Welcome to Play!",
     );
