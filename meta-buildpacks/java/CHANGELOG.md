@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0] - 2024-05-23
+
 ### Changed
 
 - Buildpack API version changed from `0.9` to `0.10`, and so requires `lifecycle` `0.17.x` or newer. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))
+- Updated `heroku/gradle` to `5.0.0`.
+- Updated `heroku/jvm` to `5.0.0`.
+- Updated `heroku/maven` to `5.0.0`.
 
 ## [4.1.1] - 2024-05-01
 
@@ -269,7 +274,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.1...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.1...v5.0.0
 [4.1.1]: https://github.com/heroku/buildpacks-jvm/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.2...v4.1.0
 [4.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v4.0.1...v4.0.2
