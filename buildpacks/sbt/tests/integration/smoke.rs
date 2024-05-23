@@ -43,17 +43,6 @@ fn smoke_test_sbt_1_8_2_ivy_scala_2_13_10() {
 
 #[test]
 #[ignore = "integration test"]
-fn smoke_test_sbt_0_13_16_ivy_scala_2_13_10() {
-    smoke_test(
-        DEFAULT_INTEGRATION_TEST_BUILDER,
-        "test-apps/sbt-0.13.16-scala-2.13.10",
-        default_buildpacks(),
-        "Hello from Scala!",
-    );
-}
-
-#[test]
-#[ignore = "integration test"]
 fn smoke_test_getting_started_guide() {
     smoke_test(
         DEFAULT_INTEGRATION_TEST_BUILDER,

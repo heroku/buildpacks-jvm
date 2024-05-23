@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Support for sbt `<1.0`. This buildpack supported old and deprecated sbt versions on a best-effort basis before. Artifacts required by those older versions recently started to be unavailable upstream which caused us to drop support for those versions. If you're affected, please migrate your project to the latest stable sbt version `1.10.0`. ([#669](https://github.com/heroku/buildpacks-jvm/pull/669))
+
 ### Changed
 
 - Buildpack API version changed from `0.9` to `0.10`, and so requires `lifecycle` `0.17.x` or newer. ([#662](https://github.com/heroku/buildpacks-jvm/pull/662))

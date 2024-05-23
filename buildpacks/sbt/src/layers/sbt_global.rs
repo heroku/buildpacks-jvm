@@ -11,7 +11,6 @@ use std::path::Path;
 
 pub(crate) struct SbtGlobalLayer {
     pub(crate) available_at_launch: bool,
-    pub(crate) for_sbt_version: semver::Version,
 }
 
 impl Layer for SbtGlobalLayer {
@@ -31,19 +30,20 @@ impl Layer for SbtGlobalLayer {
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
-        if let Some(plugin_bytes) = heroku_sbt_plugin_for_version(&self.for_sbt_version) {
-            let plugin_path = layer_path
-                .join("plugins")
-                .join("HerokuBuildpackPlugin.scala");
+        let plugin_path = layer_path
+            .join("plugins")
+            .join("HerokuBuildpackPlugin.scala");
 
-            if let Some(plugin_path_parent) = plugin_path.parent() {
-                fs::create_dir_all(plugin_path_parent)
-                    .map_err(SbtGlobalLayerError::CouldNotWritePlugin)?;
-            }
-
-            fs::write(plugin_path, plugin_bytes)
+        if let Some(plugin_path_parent) = plugin_path.parent() {
+            fs::create_dir_all(plugin_path_parent)
                 .map_err(SbtGlobalLayerError::CouldNotWritePlugin)?;
         }
+
+        fs::write(
+            plugin_path,
+            include_bytes!("../../sbt-plugins/buildpack-plugin-1.x.scala"),
+        )
+        .map_err(SbtGlobalLayerError::CouldNotWritePlugin)?;
 
         LayerResultBuilder::new(GenericMetadata::default())
             .env(
@@ -71,18 +71,6 @@ fn get_layer_env_scope(available_at_launch: bool) -> Scope {
         Scope::All
     } else {
         Scope::Build
-    }
-}
-
-fn heroku_sbt_plugin_for_version(version: &semver::Version) -> Option<&'static [u8]> {
-    match version {
-        semver::Version { major: 0, .. } => Some(include_bytes!(
-            "../../sbt-plugins/buildpack-plugin-0.x.scala"
-        )),
-        semver::Version { major: 1, .. } => Some(include_bytes!(
-            "../../sbt-plugins/buildpack-plugin-1.x.scala"
-        )),
-        _ => None,
     }
 }
 

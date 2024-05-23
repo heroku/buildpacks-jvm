@@ -132,7 +132,6 @@ impl Buildpack for SbtBuildpack {
                 layer_name!("sbt-global"),
                 SbtGlobalLayer {
                     available_at_launch: sbt_available_at_launch,
-                    for_sbt_version: sbt_version,
                 },
             )?,
             &mut env,
