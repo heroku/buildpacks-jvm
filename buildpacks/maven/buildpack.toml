@@ -21,6 +21,10 @@ id = "*"
 os = "linux"
 arch = "amd64"
 
+[[targets]]
+os = "linux"
+arch = "arm64"
+
 [metadata]
 default-version = "3.9.4"
 

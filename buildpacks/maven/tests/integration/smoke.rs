@@ -5,16 +5,14 @@
 //!
 //! These tests are strictly happy-path tests and do not assert any output of the buildpack.
 
-use crate::default_buildpacks;
-use buildpacks_jvm_shared_test::{smoke_test, DEFAULT_INTEGRATION_TEST_BUILDER};
+use crate::default_build_config;
+use buildpacks_jvm_shared_test::smoke_test;
 
 #[test]
 #[ignore = "integration test"]
 fn smoke_test_getting_started_guide() {
     smoke_test(
-        DEFAULT_INTEGRATION_TEST_BUILDER,
-        "test-apps/heroku-java-getting-started",
-        default_buildpacks(),
+        &default_build_config("test-apps/heroku-java-getting-started"),
         "Getting Started with Java on Heroku",
     );
 }

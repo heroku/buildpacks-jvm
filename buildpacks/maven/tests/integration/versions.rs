@@ -1,4 +1,4 @@
-use crate::default_config;
+use crate::default_build_config;
 use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
 use std::fs::File;
 use std::path::Path;
@@ -6,7 +6,7 @@ use std::path::Path;
 #[test]
 #[ignore = "integration test"]
 fn with_wrapper() {
-    TestRunner::default().build(default_config(), |context| {
+    TestRunner::default().build( default_build_config("test-apps/simple-http-service"), |context| {
             assert_not_contains!(context.pack_stdout, "Selected Maven version:");
             assert_contains!(context.pack_stdout, "Maven wrapper detected, skipping installation.");
             assert_contains!(context.pack_stdout, "$ ./mvnw");
@@ -18,7 +18,7 @@ fn with_wrapper() {
 #[ignore = "integration test"]
 fn with_wrapper_and_system_properties() {
     TestRunner::default().build(
-        default_config().app_dir_preprocessor(|path| {
+        default_build_config("test-apps/simple-http-service").app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
             set_maven_version_app_dir_preprocessor(DEFAULT_MAVEN_VERSION, &path);
         }),
@@ -40,7 +40,7 @@ fn with_wrapper_and_system_properties() {
 #[ignore = "integration test"]
 fn with_wrapper_and_unknown_system_properties() {
     TestRunner::default().build(
-            default_config().app_dir_preprocessor(|path| set_maven_version_app_dir_preprocessor(
+            default_build_config("test-apps/simple-http-service").app_dir_preprocessor(|path| set_maven_version_app_dir_preprocessor(
                 UNKNOWN_MAVEN_VERSION, &path
             )).expected_pack_result(PackResult::Failure),
             |context| {
@@ -54,7 +54,7 @@ fn with_wrapper_and_unknown_system_properties() {
 #[ignore = "integration test"]
 fn without_wrapper_and_without_system_properties() {
     TestRunner::default().build(
-        default_config().app_dir_preprocessor(|path| {
+        default_build_config("test-apps/simple-http-service").app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
         }),
         |context| {
@@ -75,7 +75,7 @@ fn without_wrapper_and_without_system_properties() {
 #[ignore = "integration test"]
 fn without_wrapper_and_unknown_system_properties() {
     TestRunner::default().build(
-            default_config().app_dir_preprocessor(|path| {
+            default_build_config("test-apps/simple-http-service").app_dir_preprocessor(|path| {
                 remove_maven_wrapper(&path);
                 set_maven_version_app_dir_preprocessor(UNKNOWN_MAVEN_VERSION, &path);
             }).expected_pack_result(PackResult::Failure),
@@ -90,7 +90,7 @@ fn without_wrapper_and_unknown_system_properties() {
 #[ignore = "integration test"]
 fn without_wrapper_and_maven_3_9_4_system_properties() {
     TestRunner::default().build(
-        default_config().app_dir_preprocessor(|path| {
+        default_build_config("test-apps/simple-http-service").app_dir_preprocessor(|path| {
             remove_maven_wrapper(&path);
             set_maven_version_app_dir_preprocessor("3.9.4", &path);
         }),

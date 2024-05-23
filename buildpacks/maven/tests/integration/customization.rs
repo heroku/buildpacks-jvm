@@ -1,11 +1,11 @@
-use crate::default_config;
+use crate::default_build_config;
 use indoc::indoc;
 use libcnb_test::{assert_contains, TestRunner};
 
 #[test]
 #[ignore = "integration test"]
 fn maven_custom_goals() {
-    TestRunner::default().build(default_config().env("MAVEN_CUSTOM_GOALS", "site"), |context| {
+    TestRunner::default().build(default_build_config("test-apps/simple-http-service").env("MAVEN_CUSTOM_GOALS", "site"), |context| {
         // Assert only the goals in MAVEN_CUSTOM_GOALS are executed
         assert_contains!(context.pack_stdout, "./mvnw -DskipTests site");
         assert_contains!(context.pack_stdout,"[INFO] --- maven-site-plugin:3.7.1:site (default-site) @ simple-http-service ---");
@@ -13,7 +13,7 @@ fn maven_custom_goals() {
         // The dependency list is implemented by using the dependency:list goal. We need to
         // assert it won't be overwritten by the user's choice of goals.
         assert_eq!(
-            context.run_shell_command("cat /app/target/mvn-dependency-list.log").stdout,
+            context.run_shell_command("cat /workspace/target/mvn-dependency-list.log").stdout,
             indoc! {"
 
                 The following files have been resolved:
@@ -42,16 +42,19 @@ fn maven_custom_goals() {
 #[test]
 #[ignore = "integration test"]
 fn maven_custom_opts() {
-    TestRunner::default().build(default_config().env("MAVEN_CUSTOM_OPTS", "-X"), |context| {
-        // Assert only the options in MAVEN_CUSTOM_GOALS are used
-        assert_contains!(context.pack_stdout, "./mvnw -X clean install");
-        assert_contains!(context.pack_stdout, "[DEBUG] -- end configuration --");
+    TestRunner::default().build(
+        default_build_config("test-apps/simple-http-service").env("MAVEN_CUSTOM_OPTS", "-X"),
+        |context| {
+            // Assert only the options in MAVEN_CUSTOM_GOALS are used
+            assert_contains!(context.pack_stdout, "./mvnw -X clean install");
+            assert_contains!(context.pack_stdout, "[DEBUG] -- end configuration --");
 
-        // -DskipTests is part of the default Maven options. We expect it to be overridden by MAVEN_CUSTOM_OPTS and
-        // therefore expect Maven to run tests.
-        assert_contains!(
-            context.pack_stdout,
-            "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0"
-        );
-    });
+            // -DskipTests is part of the default Maven options. We expect it to be overridden by MAVEN_CUSTOM_OPTS and
+            // therefore expect Maven to run tests.
+            assert_contains!(
+                context.pack_stdout,
+                "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0"
+            );
+        },
+    );
 }

@@ -5,16 +5,14 @@
 //!
 //! These tests are strictly happy-path tests and do not assert any output of the buildpack.
 
-use crate::default_buildpacks;
-use buildpacks_jvm_shared_test::{smoke_test, DEFAULT_INTEGRATION_TEST_BUILDER};
+use crate::default_build_config;
+use buildpacks_jvm_shared_test::smoke_test;
 
 #[test]
 #[ignore = "integration test"]
 fn smoke_test_play_framework_3_0_3() {
     smoke_test(
-        DEFAULT_INTEGRATION_TEST_BUILDER,
-        "test-apps/play-framework-3.0.3",
-        default_buildpacks(),
+        &default_build_config("test-apps/play-framework-3.0.3"),
         "Welcome to Play!",
     );
 }
@@ -23,9 +21,7 @@ fn smoke_test_play_framework_3_0_3() {
 #[ignore = "integration test"]
 fn smoke_test_sbt_1_8_2_coursier_scala_2_13_10() {
     smoke_test(
-        DEFAULT_INTEGRATION_TEST_BUILDER,
-        "test-apps/sbt-1.8.2-coursier-scala-2.13.10",
-        default_buildpacks(),
+        &default_build_config("test-apps/sbt-1.8.2-coursier-scala-2.13.10"),
         "Hello from Scala!",
     );
 }
@@ -34,9 +30,7 @@ fn smoke_test_sbt_1_8_2_coursier_scala_2_13_10() {
 #[ignore = "integration test"]
 fn smoke_test_sbt_1_8_2_ivy_scala_2_13_10() {
     smoke_test(
-        DEFAULT_INTEGRATION_TEST_BUILDER,
-        "test-apps/sbt-1.8.2-ivy-scala-2.13.10",
-        default_buildpacks(),
+        &default_build_config("test-apps/sbt-1.8.2-ivy-scala-2.13.10"),
         "Hello from Scala!",
     );
 }
@@ -45,9 +39,7 @@ fn smoke_test_sbt_1_8_2_ivy_scala_2_13_10() {
 #[ignore = "integration test"]
 fn smoke_test_getting_started_guide() {
     smoke_test(
-        DEFAULT_INTEGRATION_TEST_BUILDER,
-        "test-apps/heroku-scala-getting-started",
-        default_buildpacks(),
+        &default_build_config("test-apps/heroku-scala-getting-started"),
         "Getting Started with Scala on Heroku",
     );
 }

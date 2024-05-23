@@ -1,9 +1,9 @@
-use crate::default_buildpacks;
+use crate::default_build_config;
 use buildpacks_jvm_shared_test::{
-    http_request_backoff, DEFAULT_INTEGRATION_TEST_BUILDER, UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE,
+    http_request_backoff, UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE,
     UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
 };
-use libcnb_test::{assert_contains, assert_not_contains, BuildConfig, ContainerConfig, TestRunner};
+use libcnb_test::{assert_contains, assert_not_contains, ContainerConfig, TestRunner};
 
 /// Users can request to have sbt and all caches to be available at launch. One use-case for this
 /// is not using native-packager and wanting to rely on `sbt run` to run the application in prod.
@@ -12,14 +12,10 @@ use libcnb_test::{assert_contains, assert_not_contains, BuildConfig, ContainerCo
 #[test]
 #[ignore = "integration test"]
 fn test_the_thing() {
-    let build_config = BuildConfig::new(
-        DEFAULT_INTEGRATION_TEST_BUILDER,
-        "test-apps/sbt-1.8.2-scala-2.13.10-no-native-packager",
-    )
-    .buildpacks(default_buildpacks())
-    .env("SBT_TASKS", "compile")
-    .env("SBT_AVAILABLE_AT_LAUNCH", "true")
-    .to_owned();
+    let build_config = default_build_config("test-apps/sbt-1.8.2-scala-2.13.10-no-native-packager")
+        .env("SBT_TASKS", "compile")
+        .env("SBT_AVAILABLE_AT_LAUNCH", "true")
+        .to_owned();
 
     TestRunner::default().build(&build_config, |context| {
         context.start_container(

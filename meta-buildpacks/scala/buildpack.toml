@@ -23,3 +23,13 @@ version = "4.1.1"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-scala" }
+
+# Targets for this buildpack, used by languages-github-actions when releasing.
+# Can be removed as soon as pack supports packaging composite multi-arch buildpacks.
+[[metadata.targets]]
+os = "linux"
+arch = "amd64"
+
+[[metadata.targets]]
+os = "linux"
+arch = "arm64"
