@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Fall back to `std::env::consts::ARCH` when `CNB_TARGET_ARCHITECTURE` is missing. This is a workaround for certain lifecycle and platform API combinations. ([#672](https://github.com/heroku/buildpacks-jvm/pull/672))
+
 ## [5.0.0] - 2024-05-23
 
 ### Added
