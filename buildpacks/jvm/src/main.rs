@@ -29,6 +29,7 @@ use libcnb::Buildpack;
 use libcnb::{buildpack_main, Platform};
 use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
+use std::env::consts;
 use url as _; // Used by exec.d binary
 
 use crate::openjdk_version::OpenJdkVersion;
@@ -114,9 +115,13 @@ impl Buildpack for OpenJdkBuildpack {
                     .os
                     .parse::<Os>()
                     .expect("OS should be always parseable, buildpack will not run on unsupported operating systems."),
-                context
-                    .target
-                    .arch
+                // On platform API <= `0.9` together with lifecycle <= `0.17`, the `CNB_TARGET_ARCH` environment variable will not be set.
+                // This will be the case for the `salesforce-functions` builder. To ensure this buildpack can run there, we will
+                // fall back to Rust's architecture constant when the architecture cannot be determined. This workaround can be removed when
+                // the `salesforce-functions` builder is EOL.
+                Some(context.target.arch.as_str())
+                    .filter(|value| !value.is_empty())
+                    .unwrap_or(consts::ARCH)
                     .parse::<Arch>()
                     .expect("arch should be always parseable, buildpack will not run on unsupported architectures."),
                 &openjdk_artifact_requirement,
