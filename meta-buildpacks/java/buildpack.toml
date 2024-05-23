@@ -2,7 +2,7 @@ api = "0.10"
 
 [buildpack]
 id = "heroku/java"
-version = "4.1.1"
+version = "5.0.0"
 name = "Heroku Java"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Heroku's buildpack for Java applications."
@@ -15,21 +15,21 @@ type = "BSD-3-Clause"
 
 [[order.group]]
 id = "heroku/jvm"
-version = "4.1.1"
+version = "5.0.0"
 
 [[order.group]]
 id = "heroku/maven"
-version = "4.1.1"
+version = "5.0.0"
 
 [[order]]
 
 [[order.group]]
 id = "heroku/jvm"
-version = "4.1.1"
+version = "5.0.0"
 
 [[order.group]]
 id = "heroku/gradle"
-version = "4.1.1"
+version = "5.0.0"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-java" }
