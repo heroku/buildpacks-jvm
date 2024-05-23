@@ -3,7 +3,7 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-# An heroku controller showing a sample home page
+# An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 
 # Map static resources from the /public folder to the /assets URL path
