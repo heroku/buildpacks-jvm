@@ -2,7 +2,7 @@ api = "0.10"
 
 [buildpack]
 id = "heroku/java-function"
-version = "5.0.0"
+version = "5.0.1"
 name = "Salesforce Java Function"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Salesforce's buildpack for Java Functions."
@@ -14,15 +14,15 @@ type = "BSD-3-Clause"
 
 [[order.group]]
 id = "heroku/jvm"
-version = "5.0.0"
+version = "5.0.1"
 
 [[order.group]]
 id = "heroku/maven"
-version = "5.0.0"
+version = "5.0.1"
 
 [[order.group]]
 id = "heroku/jvm-function-invoker"
-version = "5.0.0"
+version = "5.0.1"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-java-function" }
