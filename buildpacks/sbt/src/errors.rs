@@ -3,7 +3,9 @@ use crate::layers::sbt_extras::SbtExtrasLayerError;
 use crate::layers::sbt_global::SbtGlobalLayerError;
 use crate::sbt::output::SbtError;
 use crate::sbt::version::ReadSbtVersionError;
-use buildpacks_jvm_shared::log::log_please_try_again_error;
+use buildpacks_jvm_shared::log::{
+    log_build_tool_unexpected_exit_code_error, log_please_try_again_error,
+};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
@@ -142,25 +144,14 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             }
         }
 
-        SbtBuildpackError::SbtBuildIoError(error) => log_error(
+        SbtBuildpackError::SbtBuildIoError(error) => log_please_try_again_error(
             "Running sbt failed",
             formatdoc! { "
-                We're sorry this build is failing! If you can't find the issue in application code,
-                please submit a ticket so we can help: https://help.heroku.com/
-
-                Details: {error}
-            " },
+                An unexpected IO error occurred while running sbt.
+            "}, error,
         ),
 
-        SbtBuildpackError::SbtBuildUnexpectedExitStatus(exit_status, None) => log_error(
-            "Running sbt failed",
-            formatdoc! { "
-                We're sorry this build is failing! If you can't find the issue in application code,
-                please submit a ticket so we can help: https://help.heroku.com/
-
-                sbt exit code was: {exit_code}
-            ", exit_code = exit_code_string(exit_status) },
-        ),
+        SbtBuildpackError::SbtBuildUnexpectedExitStatus(exit_status, None) => log_build_tool_unexpected_exit_code_error("sbt", exit_status),
 
         SbtBuildpackError::SbtBuildUnexpectedExitStatus(_, Some(SbtError::MissingTask(task_name))) => log_error(
             "Failed to run sbt!",
@@ -178,12 +169,6 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             error,
         ),
     }
-}
-
-fn exit_code_string(exit_status: ExitStatus) -> String {
-    exit_status
-        .code()
-        .map_or(String::from("<unknown>"), |code| code.to_string())
 }
 
 impl From<SbtBuildpackError> for libcnb::Error<SbtBuildpackError> {

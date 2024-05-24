@@ -123,12 +123,12 @@ fn descriptive_error_message_on_failed_build() {
 
             assert_contains!(
                 context.pack_stderr,
-                "[Error: Failed to build app with Maven]"
+                "[Error: Unexpected Maven exit code]"
             );
 
             assert_contains!(
                 context.pack_stderr,
-                "We're sorry this build is failing! If you can't find the issue in application code,\nplease submit a ticket so we can help: https://help.heroku.com/"
+                "Maven unexpectedly exited with code '1'. The most common reason for this are\nproblems with your application code and/or build configuration."
             );
         });
 }
