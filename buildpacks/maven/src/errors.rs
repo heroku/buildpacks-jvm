@@ -1,5 +1,8 @@
 use crate::{MavenBuildpackError, SettingsError};
-use buildpacks_jvm_shared::log::log_please_try_again_error;
+use buildpacks_jvm_shared::log::{
+    log_build_tool_io_error, log_build_tool_unexpected_exit_code_error, log_please_try_again,
+    log_please_try_again_error,
+};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
@@ -59,52 +62,23 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
         MavenBuildpackError::MavenTarballSha256Mismatch {
             expected_sha256,
             actual_sha256,
-        } => log_error(
+        } => log_please_try_again(
             "Maven download checksum error",
             formatdoc! {"
                 Maven distribution download succeeded, but the downloaded file's SHA256
                 checksum {actual_sha256} did not match the expected checksum {expected_sha256}.
-
-                Please try again. If this error persists, please contact us:
-                https://help.heroku.com/
             ", actual_sha256 = actual_sha256, expected_sha256 = expected_sha256 },
         ),
-        MavenBuildpackError::MavenTarballSha256IoError(error) => log_error(
+        MavenBuildpackError::MavenTarballSha256IoError(error) => log_please_try_again_error(
             "Maven download checksum error",
             formatdoc! {"
                 Maven distribution download succeeded, but an error occurred while verifying the
                 SHA256 checksum of the downloaded file.
-
-                Please try again. If this error persists, please contact us:
-                https://help.heroku.com/
-
-                Details: {error}
-            ", error = error },
+            "},
+            error
         ),
-        MavenBuildpackError::MavenBuildUnexpectedExitCode(exit_status) => {
-            let exit_code_string = exit_status
-                .code()
-                .map_or_else(|| String::from("<unknown>"), |exit_code| exit_code.to_string());
-
-            log_error(
-                "Failed to build app with Maven",
-                formatdoc! {"
-                    We're sorry this build is failing! If you can't find the issue in application code,
-                    please submit a ticket so we can help: https://help.heroku.com/
-
-                    Maven exit code was: {exit_code}
-                ", exit_code = exit_code_string },
-            );
-        },
-        MavenBuildpackError::MavenBuildIoError(error) => log_error(
-            "Failed to build app with Maven",
-            formatdoc! {"
-                We're sorry this build is failing! If you can't find the issue in application code,
-                please submit a ticket so we can help: https://help.heroku.com/
-
-                Details: {error}
-            ", error = error },
-        ),
+        MavenBuildpackError::MavenBuildUnexpectedExitCode(exit_status) => log_build_tool_unexpected_exit_code_error("Maven", exit_status),
+        MavenBuildpackError::MavenBuildIoError(error) => log_build_tool_io_error("Maven", error),
         MavenBuildpackError::CannotSplitMavenCustomOpts(error) => log_error(
             "Invalid MAVEN_CUSTOM_OPTS",
             formatdoc! {"

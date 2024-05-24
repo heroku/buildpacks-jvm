@@ -1,6 +1,8 @@
 use crate::GradleBuildpackError;
-use buildpacks_jvm_shared::log::log_please_try_again_error;
-use indoc::{formatdoc, indoc};
+use buildpacks_jvm_shared::log::{
+    log_build_tool_io_error, log_build_tool_unexpected_exit_code_error, log_please_try_again_error,
+};
+use indoc::indoc;
 use libherokubuildpack::log::log_error;
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
@@ -21,30 +23,9 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 "},
             );
         }
-        GradleBuildpackError::GradleBuildIoError(error) => log_error(
-            "Failed to build app with Gradle",
-            formatdoc! {"
-                We're sorry this build is failing! If you can't find the issue in application code,
-                please submit a ticket so we can help: https://help.heroku.com/
-
-                Details: {error}
-            "},
-        ),
+        GradleBuildpackError::GradleBuildIoError(error) => log_build_tool_io_error("Gradle", error),
         GradleBuildpackError::GradleBuildUnexpectedStatusError(exit_status) => {
-            let exit_code_string = exit_status.code().map_or_else(
-                || String::from("<unknown>"),
-                |exit_code| exit_code.to_string(),
-            );
-
-            log_error(
-                "Failed to build app with Gradle",
-                formatdoc! {"
-                    We're sorry this build is failing! If you can't find the issue in application code,
-                    please submit a ticket so we can help: https://help.heroku.com/
-
-                    Gradle exit code was: {exit_code_string}
-                "},
-            );
+            log_build_tool_unexpected_exit_code_error("Gradle", exit_status);
         }
         GradleBuildpackError::GetTasksError(error) => log_please_try_again_error(
             "Failed to get Gradle tasks",
@@ -73,14 +54,10 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 error,
             );
         }
-        GradleBuildpackError::StartGradleDaemonError(error) => log_error(
+        GradleBuildpackError::StartGradleDaemonError(error) => log_please_try_again_error(
             "Failed to start Gradle daemon",
-            formatdoc! {"
-                We're sorry this build is failing! If you can't find the issue in application code,
-                please submit a ticket so we can help: https://help.heroku.com/
-
-                Details: {error:?}
-            ", error = error },
+            "The Gradle daemon for this build could not be started.",
+            error,
         ),
         GradleBuildpackError::BuildTaskUnknown => log_error(
             "Failed to determine build task",
@@ -89,9 +66,6 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 to build your app. Our Dev Center article on preparing a Gradle application for Heroku
                 describes how to create this task:
                 https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku
-
-                If you're stilling having trouble, please submit a ticket so we can help:
-                https://help.heroku.com
             "},
         ),
         GradleBuildpackError::DetectError(error) => {
