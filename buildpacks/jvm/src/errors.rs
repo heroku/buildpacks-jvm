@@ -1,6 +1,6 @@
 use crate::openjdk_artifact::HerokuOpenJdkVersionRequirement;
-use crate::{OpenJdkArtifactRequirementParseError, OpenJdkBuildpackError, ValidateSha256Error};
-use buildpacks_jvm_shared::log::{log_please_try_again, log_please_try_again_error};
+use crate::{OpenJdkArtifactRequirementParseError, OpenJdkBuildpackError};
+use buildpacks_jvm_shared::log::log_please_try_again_error;
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
@@ -21,32 +21,6 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
                     Heroku
             "},
         ),
-        OpenJdkBuildpackError::MetricsAgentDownloadError(error) => log_please_try_again_error(
-            "Heroku Metrics Agent download failed",
-            "Could not download Heroku Metrics Agent.",
-            error,
-        ),
-        OpenJdkBuildpackError::MetricsAgentSha256ValidationError(sha_256_error) => {
-            match sha_256_error {
-                ValidateSha256Error::CouldNotObtainSha256(error) =>
-                    log_please_try_again_error(
-                        "Heroku Metrics Agent download checksum error",
-                        formatdoc! {"
-                            Heroku Metrics Agent download succeeded, but an error occurred while verifying the
-                            SHA256 checksum of the downloaded file.
-                        "},
-                        error
-                    ),
-                ValidateSha256Error::InvalidChecksum { actual, expected } =>
-                    log_please_try_again(
-                        "Heroku Metrics Agent download checksum error",
-                        formatdoc! {"
-                            Heroku Metrics Agent download succeeded, but the downloaded file's SHA256
-                            checksum {actual} did not match the expected checksum {expected}.
-                        ", actual = actual, expected = expected },
-                    )
-            }
-        },
         OpenJdkBuildpackError::CannotCreateOpenJdkTempDir(error) => log_please_try_again_error(
             "Unexpected IO error",
             "Could not create temporary directory for the OpenJDK download due to an unexpected I/O error.",

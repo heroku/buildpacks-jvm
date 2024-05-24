@@ -5,15 +5,12 @@ mod openjdk_artifact;
 mod openjdk_version;
 mod util;
 
-use crate::constants::SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME;
 use crate::errors::on_error_jvm_buildpack;
-use crate::layers::heroku_metrics_agent::HerokuMetricsAgentLayer;
 use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::openjdk_artifact::{
     OpenJdkArtifactMetadata, OpenJdkArtifactRequirement, OpenJdkArtifactRequirementParseError,
 };
-use crate::util::{boolean_buildpack_config_env_var, ValidateSha256Error};
 use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
@@ -21,14 +18,13 @@ pub(crate) use constants::{
 use inventory::artifact::{Arch, Os};
 use inventory::inventory::{Inventory, ParseInventoryError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
+use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
-use libcnb::generic::GenericPlatform;
+use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::Buildpack;
-use libcnb::{buildpack_main, Platform};
 use libherokubuildpack::download::DownloadError;
-use serde::{Deserialize, Serialize};
 use std::env::consts;
 use url as _; // Used by exec.d binary
 
@@ -45,8 +41,6 @@ struct OpenJdkBuildpack;
 enum OpenJdkBuildpackError {
     UnsupportedOpenJdkVersion(OpenJdkArtifactRequirement),
     OpenJdkDownloadError(DownloadError),
-    MetricsAgentDownloadError(DownloadError),
-    MetricsAgentSha256ValidationError(ValidateSha256Error),
     CannotCreateOpenJdkTempDir(std::io::Error),
     CannotOpenOpenJdkTarball(std::io::Error),
     CannotDecompressOpenJdkTarball(std::io::Error),
@@ -61,7 +55,7 @@ enum OpenJdkBuildpackError {
 
 impl Buildpack for OpenJdkBuildpack {
     type Platform = GenericPlatform;
-    type Metadata = OpenJdkBuildpackMetadata;
+    type Metadata = GenericMetadata;
     type Error = OpenJdkBuildpackError;
 
     fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
@@ -137,19 +131,6 @@ impl Buildpack for OpenJdkBuildpack {
             },
         )?;
 
-        libherokubuildpack::log::log_header("Installing Heroku JVM metrics agent");
-
-        if boolean_buildpack_config_env_var(
-            context.platform.env(),
-            SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME,
-        ) {
-            libherokubuildpack::log::log_info(format!(
-                "Skipping agent installation, {SKIP_HEROKU_JVM_METRICS_AGENT_INSTALLATION_ENV_VAR_NAME} environment variable is set to a truthy value."
-            ));
-        } else {
-            context.handle_layer(layer_name!("heroku_metrics_agent"), HerokuMetricsAgentLayer)?;
-        }
-
         context.handle_layer(layer_name!("runtime"), RuntimeLayer)?;
 
         BuildResultBuilder::new().build()
@@ -158,18 +139,6 @@ impl Buildpack for OpenJdkBuildpack {
     fn on_error(&self, error: libcnb::Error<Self::Error>) {
         libherokubuildpack::error::on_error(on_error_jvm_buildpack, error);
     }
-}
-
-#[derive(Deserialize, Debug)]
-struct OpenJdkBuildpackMetadata {
-    #[serde(rename = "heroku-metrics-agent")]
-    heroku_metrics_agent: HerokuMetricsAgentMetadata,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-struct HerokuMetricsAgentMetadata {
-    url: String,
-    sha256: String,
 }
 
 buildpack_main!(OpenJdkBuildpack);

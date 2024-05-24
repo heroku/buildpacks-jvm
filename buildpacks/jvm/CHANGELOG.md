@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Some error messages have changed so they longer suggest to open a Heroku support ticket. Instead, users are now provided with a link to create an issue on GitHub. ([#674](https://github.com/heroku/buildpacks-jvm/pull/674))
 
+### Removed
+
+- The buildpack no longer installs [Heroku's Java Metrics Agent](https://github.com/heroku/heroku-java-metrics-agent). It is only useful on the Heroku platform and can be installed by a dedicated buildpack in the future. ([#679](https://github.com/heroku/buildpacks-jvm/pull/679))
+
 ## [5.0.1] - 2024-05-23
 
 ### Changed
