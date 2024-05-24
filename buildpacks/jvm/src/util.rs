@@ -1,5 +1,27 @@
+use sha2::digest::{FixedOutput, Output, Update};
 use std::fs::DirEntry;
+use std::io::Read;
 use std::path::{Path, PathBuf};
+
+pub(crate) fn digest<D>(mut input: impl Read) -> Result<Output<D>, std::io::Error>
+where
+    D: Default + Update + FixedOutput,
+{
+    let mut digest = D::default();
+
+    let mut buffer = [0x00; 1024];
+    loop {
+        let bytes_read = input.read(&mut buffer)?;
+
+        if bytes_read > 0 {
+            digest.update(&buffer[..bytes_read]);
+        } else {
+            break;
+        }
+    }
+
+    Ok(digest.finalize_fixed())
+}
 
 pub(crate) fn list_directory_contents<P: AsRef<Path>>(path: P) -> std::io::Result<Vec<PathBuf>> {
     std::fs::read_dir(path.as_ref())

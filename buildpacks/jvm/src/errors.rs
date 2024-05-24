@@ -1,6 +1,6 @@
 use crate::openjdk_artifact::HerokuOpenJdkVersionRequirement;
 use crate::{OpenJdkArtifactRequirementParseError, OpenJdkBuildpackError};
-use buildpacks_jvm_shared::log::log_please_try_again_error;
+use buildpacks_jvm_shared::log::{log_please_try_again, log_please_try_again_error};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
@@ -64,9 +64,9 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
             "Could not copy the contents of the application's JDK overlay.",
             error,
         ),
-        OpenJdkBuildpackError::CannotOpenOpenJdkTarball(error) => log_please_try_again_error(
+        OpenJdkBuildpackError::CannotReadOpenJdkTarball(error) => log_please_try_again_error(
             "Unexpected IO error",
-            "Could not open downloaded OpenJDK tarball file.",
+            "Could not read downloaded OpenJDK tarball file.",
             error,
         ),
         OpenJdkBuildpackError::CannotDecompressOpenJdkTarball(error) => log_please_try_again_error(
@@ -120,6 +120,15 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
 
             Details: {error}
         ", error = error },
+        ),
+        OpenJdkBuildpackError::OpenJdkTarballChecksumError { expected, actual } => log_please_try_again(
+            "Corrupted OpenJDK download",
+            formatdoc! {"
+                The validation of the downloaded OpenJDK distribution failed due to a checksum mismatch.
+
+                Expected: {expected}
+                Actual: {actual}
+            ", expected = hex::encode(expected), actual = hex::encode(actual) }
         )
     }
 }

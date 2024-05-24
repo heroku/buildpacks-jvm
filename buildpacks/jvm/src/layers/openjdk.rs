@@ -1,5 +1,6 @@
 use crate::openjdk_artifact::OpenJdkArtifactMetadata;
 use crate::openjdk_version::OpenJdkVersion;
+use crate::util::digest;
 use crate::{
     util, OpenJdkBuildpack, OpenJdkBuildpackError, JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER,
     JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
@@ -57,7 +58,23 @@ impl<'a> Layer for OpenJdkLayer<'a> {
             .map_err(OpenJdkBuildpackError::OpenJdkDownloadError)?;
 
         std::fs::File::open(&path)
-            .map_err(OpenJdkBuildpackError::CannotOpenOpenJdkTarball)
+            .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
+            .and_then(|file| {
+                digest::<Sha256>(file).map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
+            })
+            .and_then(|downloaded_file_digest| {
+                if downloaded_file_digest.as_slice() == self.artifact.checksum.value {
+                    Ok(())
+                } else {
+                    Err(OpenJdkBuildpackError::OpenJdkTarballChecksumError {
+                        expected: self.artifact.checksum.value.clone(),
+                        actual: downloaded_file_digest.to_vec(),
+                    })
+                }
+            })?;
+
+        std::fs::File::open(&path)
+            .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
             .and_then(|mut file| {
                 libherokubuildpack::tar::decompress_tarball(&mut file, layer_path)
                     .map_err(OpenJdkBuildpackError::CannotDecompressOpenJdkTarball)

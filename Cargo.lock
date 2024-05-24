@@ -76,6 +76,7 @@ dependencies = [
  "buildpacks-jvm-shared",
  "buildpacks-jvm-shared-test",
  "fs_extra",
+ "hex",
  "indoc",
  "inventory",
  "libcnb",
