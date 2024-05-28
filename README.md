@@ -51,7 +51,7 @@ web: java -Dserver.port=$PORT $JAVA_OPTS -jar target/demo-0.0.1-SNAPSHOT.jar
 
 #### OpenJDK Version
 
-By default, the latest OpenJDK 8 release will be installed. You can configure the OpenJDK version your application
+By default, the latest OpenJDK long-term support (LTS) release will be installed. You can configure the OpenJDK version your application
 needs. The buildpack tries to determine the required version in the following order:
 
 ##### `system.properties`
@@ -64,7 +64,7 @@ the required OpenJDK version:
 java.runtime.version=21
 ```
 
-Supported major versions are `8`, `11`, `17`, and `21`. The buildpack will always install the latest release
+Supported major versions are `8`, `11`, `17`, `21` and `22`. The buildpack will always install the latest release
 of the requested major version.
 
 ## Included Buildpacks
