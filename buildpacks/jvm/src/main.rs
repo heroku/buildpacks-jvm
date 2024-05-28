@@ -3,18 +3,26 @@ mod errors;
 mod layers;
 mod openjdk_artifact;
 mod openjdk_version;
+mod salesforce_functions;
 mod util;
 
+use crate::constants::OPENJDK_LATEST_LTS_VERSION;
 use crate::errors::on_error_jvm_buildpack;
 use crate::layers::openjdk::OpenJdkLayer;
 use crate::layers::runtime::RuntimeLayer;
 use crate::openjdk_artifact::{
-    OpenJdkArtifactMetadata, OpenJdkArtifactRequirement, OpenJdkArtifactRequirementParseError,
+    HerokuOpenJdkVersionRequirement, OpenJdkArtifactMetadata, OpenJdkArtifactRequirement,
+    OpenJdkArtifactRequirementParseError, OpenJdkDistribution,
 };
+use crate::openjdk_version::OpenJdkVersion;
+use crate::salesforce_functions::is_salesforce_function_app;
 use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
+#[cfg(test)]
+use buildpacks_jvm_shared_test as _;
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
+use indoc::formatdoc;
 use inventory::artifact::{Arch, Os};
 use inventory::inventory::{Inventory, ParseInventoryError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -24,16 +32,13 @@ use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::Buildpack;
-use libherokubuildpack::download::DownloadError;
-use std::env::consts;
-use url as _; // Used by exec.d binary
-
-use crate::openjdk_version::OpenJdkVersion;
-#[cfg(test)]
-use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
 use libcnb_test as _;
+use libherokubuildpack::download::DownloadError;
+use libherokubuildpack::log::log_warning;
 use sha2::Sha256;
+use std::env::consts;
+use url as _; // Used by exec.d binary
 
 struct OpenJdkBuildpack;
 
@@ -86,18 +91,52 @@ impl Buildpack for OpenJdkBuildpack {
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
         let openjdk_artifact_requirement = read_system_properties(&context.app_dir)
-            .map(|properties| {
-                properties
-                    .get("java.runtime.version")
-                    .cloned()
-                    .unwrap_or(String::from("8"))
-            })
             .map_err(OpenJdkBuildpackError::ReadSystemPropertiesError)
+            .map(|properties| properties.get("java.runtime.version").cloned())
             .and_then(|string| {
                 string
-                    .parse::<OpenJdkArtifactRequirement>()
-                    .map_err(OpenJdkBuildpackError::OpenJdkArtifactRequirementParseError)
+                    .map(|string| {
+                        string
+                            .parse::<OpenJdkArtifactRequirement>()
+                            .map_err(OpenJdkBuildpackError::OpenJdkArtifactRequirementParseError)
+                    })
+                    .transpose()
             })?;
+
+        let openjdk_artifact_requirement = if let Some(openjdk_artifact_requirement) =
+            openjdk_artifact_requirement
+        {
+            openjdk_artifact_requirement
+        // The default version for Salesforce functions is always OpenJDK 8. Keep this conditional
+        // around until Salesforce functions is EOL and then remove it.
+        } else if is_salesforce_function_app(&context.app_dir) {
+            OpenJdkArtifactRequirement {
+                version: HerokuOpenJdkVersionRequirement::Major(8),
+                distribution: OpenJdkDistribution::default(),
+            }
+        } else {
+            log_warning(
+                "No OpenJDK version specified",
+                formatdoc! {"
+                    Your application does not explicitly specify an OpenJDK version. The latest
+                    long-term support (LTS) version will be installed. This currently is OpenJDK {OPENJDK_LATEST_LTS_VERSION}.
+
+                    This default version will change when a new LTS version is released. Your
+                    application might fail to build with the new version. We recommend explicitly
+                    setting the required OpenJDK version for your application.
+
+                    To set the OpenJDK version, add or edit the system.properties file in the root
+                    directory of your application to contain:
+
+                    java.runtime.version = {OPENJDK_LATEST_LTS_VERSION}
+                "},
+            );
+
+            OpenJdkArtifactRequirement {
+                version: HerokuOpenJdkVersionRequirement::Major(OPENJDK_LATEST_LTS_VERSION),
+                distribution: OpenJdkDistribution::default(),
+            }
+        };
 
         let openjdk_inventory = include_str!("../openjdk_inventory.toml")
             .parse::<Inventory<OpenJdkVersion, Sha256, OpenJdkArtifactMetadata>>()
