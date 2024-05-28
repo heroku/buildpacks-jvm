@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Checksum validation of downloaded OpenJDK distribution files. ([#680](https://github.com/heroku/buildpacks-jvm/pull/680))
+- A warning will now be shown when the OpenJDK version is not explicitly configured for an application. ([#681](https://github.com/heroku/buildpacks-jvm/pull/681))
 
 ### Changed
 
+- This buildpack now installs the latest long-term support release (currently 21) of OpenJDK if no version is explicitly configured. Previously, OpenJDK 8 was installed as the default. ([#681](https://github.com/heroku/buildpacks-jvm/pull/681))
 - Some error messages have changed so they longer suggest to open a Heroku support ticket. Instead, users are now provided with a link to create an issue on GitHub. ([#674](https://github.com/heroku/buildpacks-jvm/pull/674))
 
 ### Removed
