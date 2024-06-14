@@ -1,0 +1,23 @@
+[package]
+name = "leiningen"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+libcnb.workspace = true
+libherokubuildpack.workspace = true
+indoc = "2"
+java-properties = "2"
+serde = { version = "1", features = ["derive"] }
+tempfile = "3"
+thiserror = "1"
+semver = { version = "1", features = ["serde"] }
+shell-words = "1"
+buildpacks-jvm-shared.workspace = true
+
+[dev-dependencies]
+libcnb-test.workspace = true
+buildpacks-jvm-shared-test.workspace = true
+ureq = "2"
