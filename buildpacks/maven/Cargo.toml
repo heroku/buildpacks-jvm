@@ -10,8 +10,8 @@ workspace = true
 buildpacks-jvm-shared.workspace = true
 flate2 = { version = "1", default-features = false, features = ["zlib"] }
 indoc = "2"
-libcnb = "=0.21.0"
-libherokubuildpack = { version = "=0.21.0", default-features = false, features = ["digest", "download", "error", "log"] }
+libcnb = "=0.22.0"
+libherokubuildpack = { version = "=0.22.0", default-features = false, features = ["digest", "download", "error", "log"] }
 regex = "1"
 serde = { version = "1", features = ["derive"] }
 shell-words = "1"
@@ -21,4 +21,4 @@ tempfile = "3"
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
 java-properties = "2"
-libcnb-test = "=0.21.0"
+libcnb-test = "=0.22.0"
