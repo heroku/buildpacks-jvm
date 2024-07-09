@@ -605,7 +605,7 @@ checksum = "b248f5224d1d606005e02c97f5aa4e88eeb230488bcc03bc9ca4d7991399f2b5"
 [[package]]
 name = "inventory"
 version = "0.1.0"
-source = "git+https://github.com/Malax/inventory#a13cb2556d514eb80ee3b4053be408a9554cb9e0"
+source = "git+https://github.com/Malax/inventory#e4eed7de95e49d441cdf13f9c001644ed9159393"
 dependencies = [
  "hex",
  "serde",
