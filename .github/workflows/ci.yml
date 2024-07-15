@@ -15,7 +15,7 @@ env:
 jobs:
   lint:
     name: Rust Code Linting
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
 
   unit-test:
     name: Unit Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
 
   integration-test:
     name: Integration Tests (${{ matrix.buildpack-directory }}, ${{matrix.builder}}, ${{matrix.arch}})
-    runs-on: ${{ matrix.arch == 'arm64' && 'pub-hk-ubuntu-22.04-arm-large' || 'pub-hk-ubuntu-22.04-large' }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'pub-hk-ubuntu-24.04-arm-large' || 'pub-hk-ubuntu-24.04-large' }}
     strategy:
       fail-fast: false
       matrix:
@@ -80,6 +80,18 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Install Pack CLI
         uses: buildpacks/github-actions/setup-pack@v5.7.2
+      # The images are pulled up front to prevent duplicate pulls due to the tests being run concurrently.
+      - name: Pull builder image
+        run: docker pull ${{ env.INTEGRATION_TEST_BUILDER }}
+      - name: Pull run image
+        # Using `docker inspect` rather than `pack builder inspect` since the latter makes
+        # additional requests to Docker Hub even when the image is available locally.
+        run: |
+          RUN_IMAGE=$(
+            docker inspect --format='{{index .Config.Labels "io.buildpacks.builder.metadata"}}' '${{ env.INTEGRATION_TEST_BUILDER }}' \
+              | jq --exit-status --raw-output '.stack.runImage.image'
+          )
+          docker pull "${RUN_IMAGE}"
       - name: Run integration tests
         working-directory: ${{ matrix.buildpack-directory }}
         # Runs only tests annotated with the `ignore` attribute (which in this repo, are the integration tests).
