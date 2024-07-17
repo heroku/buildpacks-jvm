@@ -71,7 +71,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
         ),
         OpenJdkBuildpackError::CannotDecompressOpenJdkTarball(error) => log_please_try_again_error(
             "Unexpected IO error",
-            "Could decompress downloaded OpenJDK tarball file.",
+            "Could not decompress downloaded OpenJDK tarball file.",
             error,
         ),
         OpenJdkBuildpackError::OpenJdkDownloadError(error) => log_please_try_again_error(
