@@ -15,6 +15,11 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
             "Could not read your application's system.properties file due to an unexpected I/O error.",
             error,
         ),
+        MavenBuildpackError::MavenTarballCreateTemporaryDirectoryError(error) => log_please_try_again_error(
+            "Unexpected IO error",
+            "Could not create a temporary directory for Maven distribution",
+            error
+        ),
         MavenBuildpackError::MavenTarballDownloadError(error) => log_please_try_again_error(
             "Maven download failed",
             "Could not download Maven distribution.",

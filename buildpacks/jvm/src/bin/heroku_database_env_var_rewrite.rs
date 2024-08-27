@@ -7,21 +7,22 @@ use std::collections::HashMap;
 use url::Url;
 
 fn main() {
-    // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
-    #[allow(clippy::unwrap_used)]
     write_exec_d_program_output(
         jvm_env_vars_for_env(&std::env::vars().collect())
+            .expect("Heroku database environment variables should be rewritable")
             .into_iter()
-            .map(|(key, value)| (key.parse().unwrap(), value))
+            .filter_map(|(key, value)| key.parse().ok().map(|key| (key, value)))
             .collect::<HashMap<ExecDProgramOutputKey, String>>(),
     );
 }
 
-fn jvm_env_vars_for_env(input: &HashMap<String, String>) -> HashMap<String, String> {
+fn jvm_env_vars_for_env(
+    input: &HashMap<String, String>,
+) -> Result<HashMap<String, String>, DatabaseEnvVarError> {
     let mut result = HashMap::new();
 
     if let Some(database_url) = input.get("DATABASE_URL") {
-        result.extend(env_vars_for_database_url(database_url, DEFAULT_ENV_PREFIX));
+        result.extend(env_vars_for_database_url(database_url, DEFAULT_ENV_PREFIX)?);
 
         // This handling might look wrong at first, but this is how it was historically implemented.
         // The DATABASE_CONNECTION_POOL_URL will only be considered with DATABASE_URL is set as
@@ -30,12 +31,12 @@ fn jvm_env_vars_for_env(input: &HashMap<String, String>) -> HashMap<String, Stri
             result.extend(env_vars_for_database_url(
                 database_connection_pool_url,
                 DEFAULT_ENV_PREFIX,
-            ));
+            )?);
 
             result.extend(env_vars_for_database_url(
                 database_connection_pool_url,
                 "DATABASE_CONNECTION_POOL_JDBC",
-            ));
+            )?);
         }
 
         // Handling for Spring specific JDBC environment variables
@@ -48,7 +49,10 @@ fn jvm_env_vars_for_env(input: &HashMap<String, String>) -> HashMap<String, Stri
             && !input.contains_key("SPRING_DATASOURCE_USERNAME")
             && !input.contains_key("SPRING_DATASOURCE_PASSWORD")
         {
-            result.extend(env_vars_for_database_url(database_url, "SPRING_DATASOURCE"));
+            result.extend(env_vars_for_database_url(
+                database_url,
+                "SPRING_DATASOURCE",
+            )?);
         }
     } else {
         // If there is no DATABASE_URL, we try some known environment variables from third-party
@@ -58,7 +62,7 @@ fn jvm_env_vars_for_env(input: &HashMap<String, String>) -> HashMap<String, Stri
                 result.extend(env_vars_for_database_url(
                     third_party_database_url,
                     DEFAULT_ENV_PREFIX,
-                ));
+                )?);
             }
         }
     }
@@ -70,12 +74,10 @@ fn jvm_env_vars_for_env(input: &HashMap<String, String>) -> HashMap<String, Stri
         .iter()
         .filter(|(name, _)| name.starts_with("HEROKU_POSTGRESQL_") && name.ends_with("_URL"))
     {
-        // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
-        #[allow(clippy::unwrap_used)]
         result.extend(env_vars_for_database_url(
             value,
-            format!("{}_JDBC", name.strip_suffix("_URL").unwrap()),
-        ));
+            format!("{}_JDBC", name.strip_suffix("_URL").unwrap_or(name)),
+        )?);
     }
 
     // Spring uses a dedicated environment variable when connecting to Redis. If that environment
@@ -87,47 +89,44 @@ fn jvm_env_vars_for_env(input: &HashMap<String, String>) -> HashMap<String, Stri
         }
     }
 
-    result
+    Ok(result)
 }
 
 fn env_vars_for_database_url(
     url_string: impl AsRef<str>,
     env_var_prefix: impl AsRef<str>,
-) -> HashMap<String, String> {
-    // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
-    #[allow(clippy::unwrap_used)]
-    let mut url = Url::parse(url_string.as_ref()).unwrap();
+) -> Result<HashMap<String, String>, DatabaseEnvVarError> {
+    let mut url = Url::parse(url_string.as_ref())?;
 
     // Previous versions of this script only set the environment variables when a username and
     // password was present. We keep this logic to ensure backwards compatability.
     let original_username = match url.username() {
-        "" => return HashMap::new(),
+        "" => return Ok(HashMap::new()),
         username => String::from(username),
     };
 
     let original_password = match url.password() {
-        None => return HashMap::new(),
+        None => return Ok(HashMap::new()),
         Some(password) => String::from(password),
     };
 
-    // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
-    #[allow(clippy::unwrap_used)]
-    url.set_username("").unwrap();
-    #[allow(clippy::unwrap_used)]
-    url.set_password(None).unwrap();
+    url.set_username("")
+        .map_err(|()| DatabaseEnvVarError::CannotSetUsername)?;
+
+    url.set_password(None)
+        .map_err(|()| DatabaseEnvVarError::CannotSetPassword)?;
 
     url.query_pairs_mut()
         .append_pair("user", &original_username)
         .append_pair("password", &original_password);
 
     if url.scheme() == "postgres" {
-        // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
-        #[allow(clippy::unwrap_used)]
-        url.set_scheme("postgresql").unwrap();
+        url.set_scheme("postgresql")
+            .map_err(|()| DatabaseEnvVarError::CannotSetScheme)?;
         url.query_pairs_mut().append_pair("sslmode", "require");
     };
 
-    HashMap::from([
+    Ok(HashMap::from([
         (
             format!("{}_URL", env_var_prefix.as_ref()),
             format!("jdbc:{url}"),
@@ -140,7 +139,19 @@ fn env_vars_for_database_url(
             format!("{}_PASSWORD", env_var_prefix.as_ref()),
             original_password,
         ),
-    ])
+    ]))
+}
+
+#[derive(thiserror::Error, Debug)]
+enum DatabaseEnvVarError {
+    #[error(transparent)]
+    CannotParseUrl(#[from] url::ParseError),
+    #[error("Cannot set username in database URL")]
+    CannotSetUsername,
+    #[error("Cannot set password in database URL")]
+    CannotSetPassword,
+    #[error("Cannot set scheme in database URL")]
+    CannotSetScheme,
 }
 
 const DEFAULT_ENV_PREFIX: &str = "JDBC_DATABASE";
@@ -157,7 +168,8 @@ mod tests {
         let result = jvm_env_vars_for_env(&HashMap::from([(
             String::from("DATABASE_URL"),
             String::from("postgres://AzureDiamond:hunter2@db.example.com:5432/testdb"),
-        )]));
+        )]))
+        .unwrap();
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
@@ -186,7 +198,8 @@ mod tests {
                 String::from("HEROKU_POSTGRESQL_BLUE_URL"),
                 String::from("postgres://blue:squirtle@db.example.com:5432/water-pokemon"),
             ),
-        ]));
+        ]))
+        .unwrap();
 
         assert_eq!(
             result.get("HEROKU_POSTGRESQL_RED_JDBC_URL"),
@@ -222,7 +235,8 @@ mod tests {
         let result = jvm_env_vars_for_env(&HashMap::from([(
             String::from("DATABASE_URL"),
             String::from("mysql://foo:bar@ec2-0-0-0-0:5432/abc123?reconnect=true"),
-        )]));
+        )]))
+        .unwrap();
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
@@ -251,7 +265,8 @@ mod tests {
                     "mysql://foo:bar@ec2-0-0-0-0:5432/{}?reconnect=true",
                     &database_url_var_name
                 ),
-            )]));
+            )]))
+            .unwrap();
 
             assert_eq!(
                 result.get("JDBC_DATABASE_URL"),
@@ -290,7 +305,8 @@ mod tests {
                         "postgres://AzureDiamond:hunter2@db.example.com:5432/regular-database",
                     ),
                 ),
-            ]));
+            ]))
+            .unwrap();
 
             assert_eq!(
                 result.get("JDBC_DATABASE_URL"),
@@ -320,7 +336,8 @@ mod tests {
                 String::from("DATABASE_CONNECTION_POOL_URL"),
                 String::from("postgres://pooluser:poolpass@pooled.example.com:5432/testdb"),
             ),
-        ]));
+        ]))
+        .unwrap();
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
@@ -358,7 +375,8 @@ mod tests {
         let result = jvm_env_vars_for_env(&HashMap::from([(
             String::from("DATABASE_CONNECTION_POOL_URL"),
             String::from("postgres://pooluser:poolpass@pooled.example.com:5432/testdb"),
-        )]));
+        )]))
+        .unwrap();
 
         assert_eq!(result, HashMap::new());
     }
@@ -368,7 +386,8 @@ mod tests {
         let result = jvm_env_vars_for_env(&HashMap::from([(
             String::from("DATABASE_URL"),
             String::from("postgres://AzureDiamond:hunter2@db.example.com:5432/testdb"),
-        )]));
+        )]))
+        .unwrap();
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
@@ -412,7 +431,8 @@ mod tests {
                 String::from("DISABLE_SPRING_DATASOURCE_URL"),
                 String::from("true"),
             ),
-        ]));
+        ]))
+        .unwrap();
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
@@ -445,7 +465,7 @@ mod tests {
                 String::from("SPRING_DATASOURCE_URL"),
                 String::from("jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamondSpring&password=hunter2&sslmode=require"),
             ),
-        ]));
+        ])).unwrap();
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
@@ -472,7 +492,8 @@ mod tests {
         let result = jvm_env_vars_for_env(&HashMap::from([(
             String::from("DATABASE_URL"),
             String::from("postgres://test123@ec2-52-13-12"),
-        )]));
+        )]))
+        .unwrap();
 
         assert_eq!(result, HashMap::new());
     }
@@ -482,7 +503,7 @@ mod tests {
         let result =  jvm_env_vars_for_env(&HashMap::from([(
             String::from("DATABASE_URL"),
             String::from("postgres://AzureDiamond:hunter2@db.example.com:5432/testdb?foo=bar&e=mc^2#fragment")
-        ),]));
+        ),])).unwrap();
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
@@ -504,7 +525,8 @@ mod tests {
         let result = jvm_env_vars_for_env(&HashMap::from([(
             String::from("DATABASE_URL"),
             String::from("postgres://AzureDiamond:hunter2@db.example.com:5432"),
-        )]));
+        )]))
+        .unwrap();
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
@@ -527,7 +549,8 @@ mod tests {
         let result = jvm_env_vars_for_env(&HashMap::from([(
             String::from("REDIS_URL"),
             String::from("redis://h:asdfqwer1234asdf@ec2-111-1-1-1.compute-1.amazonaws.com:111"),
-        )]));
+        )]))
+        .unwrap();
 
         assert_eq!(
             result.get("SPRING_REDIS_URL"),
@@ -550,7 +573,8 @@ mod tests {
                 String::from("DISABLE_SPRING_REDIS_URL"),
                 String::from("true"),
             ),
-        ]));
+        ]))
+        .unwrap();
 
         assert_eq!(result.get("SPRING_REDIS_URL"), None);
     }
@@ -570,7 +594,8 @@ mod tests {
                     "redis://h:asdfqwer1234asdf@ec2-111-1-1-1.compute-1.amazonaws.com:222",
                 ),
             ),
-        ]));
+        ]))
+        .unwrap();
 
         assert_eq!(result.get("SPRING_REDIS_URL"), None);
     }

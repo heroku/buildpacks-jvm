@@ -44,6 +44,7 @@ struct MavenBuildpack;
 #[derive(Debug)]
 enum MavenBuildpackError {
     UnsupportedMavenVersion(String),
+    MavenTarballCreateTemporaryDirectoryError(std::io::Error),
     MavenTarballDownloadError(DownloadError),
     MavenTarballSha256IoError(std::io::Error),
     MavenTarballSha256Mismatch {
