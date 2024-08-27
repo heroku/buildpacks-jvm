@@ -16,6 +16,9 @@ rust-version = "1.78"
 edition = "2021"
 
 [workspace.lints.rust]
+# Temporarily allow use of deprecated items until all buildpacks migrated away
+# from the trait based layer API.
+deprecated = "allow"
 unreachable_pub = "warn"
 unsafe_code = "warn"
 unused_crate_dependencies = "warn"
