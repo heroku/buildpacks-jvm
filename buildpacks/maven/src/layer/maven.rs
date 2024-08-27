@@ -35,9 +35,9 @@ impl Layer for MavenLayer {
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
-        // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
-        #[allow(clippy::unwrap_used)]
-        let temp_dir = tempfile::tempdir().unwrap();
+        let temp_dir = tempfile::tempdir()
+            .map_err(MavenBuildpackError::MavenTarballCreateTemporaryDirectoryError)?;
+
         let temp_file_path = temp_dir.path().join("maven.tar.gz");
 
         libherokubuildpack::download::download_file(&self.tarball.url, &temp_file_path)
@@ -56,9 +56,8 @@ impl Layer for MavenLayer {
                 }
             })?;
 
-        // TODO: Remove usage of unwrap(): https://github.com/heroku/buildpacks-jvm/issues/616
-        #[allow(clippy::unwrap_used)]
-        extract_tarball(&mut File::open(&temp_file_path).unwrap(), layer_path, 1)
+        File::open(&temp_file_path)
+            .and_then(|mut file| extract_tarball(&mut file, layer_path, 1))
             .map_err(MavenBuildpackError::MavenTarballDecompressError)?;
 
         // Even though M2_HOME is no longer supported by Maven versions >= 3.5.0, other tooling such
