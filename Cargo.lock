@@ -127,7 +127,6 @@ version = "0.0.0"
 dependencies = [
  "indoc",
  "java-properties",
- "libcnb",
  "libherokubuildpack",
 ]
 
