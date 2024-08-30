@@ -1,47 +1,34 @@
-use libcnb::build::BuildContext;
-use libcnb::data::layer_content_metadata::LayerTypes;
-use libcnb::generic::GenericMetadata;
-use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
-
-use std::fs;
-use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
-
 use crate::error::JvmFunctionInvokerBuildpackError;
 use crate::JvmFunctionInvokerBuildpack;
+use libcnb::build::BuildContext;
+use libcnb::data::layer_name;
+use libcnb::layer::UncachedLayerDefinition;
+use std::fs;
+use std::os::unix::fs::PermissionsExt;
 
-pub(crate) struct OptLayer;
-
-impl Layer for OptLayer {
-    type Buildpack = JvmFunctionInvokerBuildpack;
-    type Metadata = GenericMetadata;
-
-    fn types(&self) -> LayerTypes {
-        LayerTypes {
-            launch: true,
+pub(crate) fn handle_opt(
+    context: &BuildContext<JvmFunctionInvokerBuildpack>,
+) -> libcnb::Result<(), JvmFunctionInvokerBuildpackError> {
+    let layer_ref = context.uncached_layer(
+        layer_name!("opt"),
+        UncachedLayerDefinition {
             build: false,
-            cache: false,
-        }
-    }
+            launch: true,
+        },
+    )?;
 
-    fn create(
-        &mut self,
-        _context: &BuildContext<Self::Buildpack>,
-        layer_path: &Path,
-    ) -> Result<LayerResult<Self::Metadata>, JvmFunctionInvokerBuildpackError> {
-        let layer_bin_dir = layer_path.join("bin");
-        let destination = layer_bin_dir.join(JVM_RUNTIME_SCRIPT_NAME);
+    let layer_bin_dir = layer_ref.path().join("bin");
+    let destination = layer_bin_dir.join(JVM_RUNTIME_SCRIPT_NAME);
 
-        fs::create_dir_all(&layer_bin_dir).map_err(OptLayerError::CouldNotWriteRuntimeScript)?;
+    fs::create_dir_all(&layer_bin_dir).map_err(OptLayerError::CouldNotWriteRuntimeScript)?;
 
-        fs::write(&destination, include_bytes!("../../opt/jvm-runtime.sh"))
-            .map_err(OptLayerError::CouldNotWriteRuntimeScript)?;
+    fs::write(&destination, include_bytes!("../../opt/jvm-runtime.sh"))
+        .map_err(OptLayerError::CouldNotWriteRuntimeScript)?;
 
-        fs::set_permissions(&destination, fs::Permissions::from_mode(0o755))
-            .map_err(OptLayerError::CouldNotSetExecutableBitForRuntimeScript)?;
+    fs::set_permissions(&destination, fs::Permissions::from_mode(0o755))
+        .map_err(OptLayerError::CouldNotSetExecutableBitForRuntimeScript)?;
 
-        LayerResultBuilder::new(GenericMetadata::default()).build()
-    }
+    Ok(())
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -50,6 +37,12 @@ pub(crate) enum OptLayerError {
     CouldNotWriteRuntimeScript(std::io::Error),
     #[error("Could not set executable bit on runtime script: {0}")]
     CouldNotSetExecutableBitForRuntimeScript(std::io::Error),
+}
+
+impl From<OptLayerError> for libcnb::Error<JvmFunctionInvokerBuildpackError> {
+    fn from(value: OptLayerError) -> Self {
+        libcnb::Error::BuildpackError(JvmFunctionInvokerBuildpackError::OptLayerError(value))
+    }
 }
 
 pub(crate) const JVM_RUNTIME_SCRIPT_NAME: &str = "jvm-runtime.sh";
