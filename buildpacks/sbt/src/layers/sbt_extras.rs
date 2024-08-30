@@ -1,91 +1,91 @@
 use crate::errors::SbtBuildpackError;
 use crate::SbtBuildpack;
 use libcnb::build::BuildContext;
-use libcnb::data::layer_content_metadata::LayerTypes;
+use libcnb::data::layer_name;
 use libcnb::generic::GenericMetadata;
-use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::layer::{
+    CachedLayerDefinition, InvalidMetadataAction, LayerState, RestoredLayerAction,
+};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Buildpack;
+use libcnb::Env;
 use std::fs;
 use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
 
-pub(crate) struct SbtExtrasLayer {
-    pub(crate) available_at_launch: bool,
-}
+pub(crate) fn handle_sbt_extras(
+    context: &BuildContext<SbtBuildpack>,
+    available_at_launch: bool,
+    env: &mut Env,
+) -> libcnb::Result<(), SbtBuildpackError> {
+    let layer_ref = context.cached_layer(
+        layer_name!("sbt-extras"),
+        CachedLayerDefinition {
+            build: false,
+            launch: available_at_launch,
+            invalid_metadata_action: &|_| InvalidMetadataAction::DeleteLayer,
+            restored_layer_action: &|_: &GenericMetadata, _| RestoredLayerAction::KeepLayer,
+        },
+    )?;
 
-impl Layer for SbtExtrasLayer {
-    type Buildpack = SbtBuildpack;
-    type Metadata = GenericMetadata;
-
-    fn types(&self) -> LayerTypes {
-        LayerTypes {
-            launch: self.available_at_launch,
-            build: true,
-            cache: true,
-        }
-    }
-
-    fn create(
-        &mut self,
-        _context: &BuildContext<Self::Buildpack>,
-        layer_path: &Path,
-    ) -> Result<LayerResult<Self::Metadata>, <Self::Buildpack as Buildpack>::Error> {
-        let sbt_extras_script_path = layer_path.join("bin").join("sbt");
+    if let LayerState::Empty { .. } = layer_ref.state {
+        let sbt_extras_script_path = layer_ref.path().join("bin").join("sbt");
 
         if let Some(sbt_extras_script_path_parent) = sbt_extras_script_path.parent() {
-            fs::create_dir_all(sbt_extras_script_path_parent)
-                .map_err(SbtExtrasLayerError::CouldNotWriteScript)?;
+            fs::create_dir_all(sbt_extras_script_path_parent).map_err(|error| {
+                SbtBuildpackError::SbtExtrasLayerError(SbtExtrasLayerError::CouldNotWriteScript(
+                    error,
+                ))
+            })?;
         }
 
         fs::write(
             &sbt_extras_script_path,
             include_bytes!("../../sbt-extras/sbt"),
         )
-        .map_err(SbtExtrasLayerError::CouldNotWriteScript)?;
+        .map_err(|error| {
+            SbtBuildpackError::SbtExtrasLayerError(SbtExtrasLayerError::CouldNotWriteScript(error))
+        })?;
 
-        fs::set_permissions(&sbt_extras_script_path, Permissions::from_mode(0o755))
-            .map_err(SbtExtrasLayerError::CouldNotSetPermissions)?;
+        fs::set_permissions(&sbt_extras_script_path, Permissions::from_mode(0o755)).map_err(
+            |error| {
+                SbtBuildpackError::SbtExtrasLayerError(SbtExtrasLayerError::CouldNotSetPermissions(
+                    error,
+                ))
+            },
+        )?;
 
-        let launchers_dir = layer_path.join("launchers");
-        fs::create_dir_all(&launchers_dir)
-            .map_err(SbtExtrasLayerError::CouldNotCreateLaunchersDir)?;
+        let launchers_dir = layer_ref.path().join("launchers");
+        fs::create_dir_all(&launchers_dir).map_err(|error| {
+            SbtBuildpackError::SbtExtrasLayerError(SbtExtrasLayerError::CouldNotCreateLaunchersDir(
+                error,
+            ))
+        })?;
 
-        LayerResultBuilder::new(GenericMetadata::default())
-            .env(
-                LayerEnv::new()
-                    .chainable_insert(
-                        get_layer_env_scope(self.available_at_launch),
-                        ModificationBehavior::Delimiter,
-                        "SBT_OPTS",
-                        " ",
-                    )
-                    .chainable_insert(
-                        get_layer_env_scope(self.available_at_launch),
-                        ModificationBehavior::Append,
-                        "SBT_OPTS",
-                        format!("-sbt-launch-dir {}", launchers_dir.to_string_lossy()),
-                    ),
-            )
-            .build()
+        let env_scope = if available_at_launch {
+            Scope::All
+        } else {
+            Scope::Build
+        };
+
+        layer_ref.write_env(
+            LayerEnv::new()
+                .chainable_insert(
+                    env_scope.clone(),
+                    ModificationBehavior::Delimiter,
+                    "SBT_OPTS",
+                    " ",
+                )
+                .chainable_insert(
+                    env_scope,
+                    ModificationBehavior::Append,
+                    "SBT_OPTS",
+                    format!("-sbt-launch-dir {}", launchers_dir.to_string_lossy()),
+                ),
+        )?;
     }
 
-    fn existing_layer_strategy(
-        &mut self,
-        _context: &BuildContext<Self::Buildpack>,
-        _layer_data: &LayerData<Self::Metadata>,
-    ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
-        Ok(ExistingLayerStrategy::Keep)
-    }
-}
-
-fn get_layer_env_scope(available_at_launch: bool) -> Scope {
-    if available_at_launch {
-        Scope::All
-    } else {
-        Scope::Build
-    }
+    *env = layer_ref.read_env()?.apply(Scope::Build, env);
+    Ok(())
 }
 
 #[derive(Debug)]
@@ -93,10 +93,4 @@ pub(crate) enum SbtExtrasLayerError {
     CouldNotWriteScript(std::io::Error),
     CouldNotSetPermissions(std::io::Error),
     CouldNotCreateLaunchersDir(std::io::Error),
-}
-
-impl From<SbtExtrasLayerError> for SbtBuildpackError {
-    fn from(value: SbtExtrasLayerError) -> Self {
-        Self::SbtExtrasLayerError(value)
-    }
 }

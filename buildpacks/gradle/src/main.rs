@@ -3,14 +3,13 @@ use crate::detect::is_gradle_project_directory;
 use crate::errors::on_error_gradle_buildpack;
 use crate::framework::{detect_framework, Framework};
 use crate::gradle_command::GradleCommandError;
-use crate::layers::gradle_home::GradleHomeLayer;
+use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use buildpacks_jvm_shared as shared;
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::{buildpack_main, Buildpack, Env};
@@ -85,10 +84,7 @@ impl Buildpack for GradleBuildpack {
             .map_err(GradleBuildpackError::CannotSetGradleWrapperExecutableBit)?;
 
         let mut gradle_env = Env::from_current();
-        shared::env::extend_build_env(
-            context.handle_layer(layer_name!("home"), GradleHomeLayer)?,
-            &mut gradle_env,
-        );
+        handle_gradle_home_layer(&context, &mut gradle_env)?;
 
         log_header("Starting Gradle Daemon");
         gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)

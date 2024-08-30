@@ -7,15 +7,15 @@ mod sbt;
 use crate::configuration::read_sbt_buildpack_configuration;
 use crate::detect::is_sbt_project_directory;
 use crate::errors::{log_user_errors, SbtBuildpackError};
-use crate::layers::dependency_resolver_home::{DependencyResolver, DependencyResolverHomeLayer};
-use crate::layers::sbt_boot::SbtBootLayer;
-use crate::layers::sbt_extras::SbtExtrasLayer;
-use crate::layers::sbt_global::SbtGlobalLayer;
-use buildpacks_jvm_shared::env::extend_build_env;
+use crate::layers::dependency_resolver_home::{
+    handle_dependency_resolver_home, DependencyResolver,
+};
+use crate::layers::sbt_boot::handle_sbt_boot;
+use crate::layers::sbt_extras::handle_sbt_extras;
+use crate::layers::sbt_global::handle_sbt_global;
 use buildpacks_jvm_shared::system_properties::read_system_properties;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
@@ -78,64 +78,29 @@ impl Buildpack for SbtBuildpack {
             ))?;
         }
 
-        let mut env = Env::from_current();
-
         let sbt_available_at_launch = buildpack_configuration
             .sbt_available_at_launch
             .unwrap_or_default();
 
-        extend_build_env(
-            context.handle_layer(
-                layer_name!("ivy-home"),
-                DependencyResolverHomeLayer {
-                    available_at_launch: sbt_available_at_launch,
-                    dependency_resolver: DependencyResolver::Ivy,
-                },
-            )?,
-            &mut env,
-        );
+        let mut env = Env::from_current();
 
-        extend_build_env(
-            context.handle_layer(
-                layer_name!("coursier-home"),
-                DependencyResolverHomeLayer {
-                    available_at_launch: sbt_available_at_launch,
-                    dependency_resolver: DependencyResolver::Coursier,
-                },
-            )?,
+        handle_dependency_resolver_home(
+            &context,
+            sbt_available_at_launch,
+            DependencyResolver::Ivy,
             &mut env,
-        );
+        )?;
 
-        extend_build_env(
-            context.handle_layer(
-                layer_name!("sbt-extras"),
-                SbtExtrasLayer {
-                    available_at_launch: sbt_available_at_launch,
-                },
-            )?,
+        handle_dependency_resolver_home(
+            &context,
+            sbt_available_at_launch,
+            DependencyResolver::Coursier,
             &mut env,
-        );
+        )?;
 
-        extend_build_env(
-            context.handle_layer(
-                layer_name!("sbt-boot"),
-                SbtBootLayer {
-                    available_at_launch: sbt_available_at_launch,
-                    for_sbt_version: sbt_version.clone(),
-                },
-            )?,
-            &mut env,
-        );
-
-        extend_build_env(
-            context.handle_layer(
-                layer_name!("sbt-global"),
-                SbtGlobalLayer {
-                    available_at_launch: sbt_available_at_launch,
-                },
-            )?,
-            &mut env,
-        );
+        handle_sbt_extras(&context, sbt_available_at_launch, &mut env)?;
+        handle_sbt_boot(&context, sbt_version, sbt_available_at_launch, &mut env)?;
+        handle_sbt_global(&context, sbt_available_at_launch, &mut env)?;
 
         log_header("Building Scala project");
 

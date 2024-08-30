@@ -1,21 +1,20 @@
 use crate::common::project_toml_salesforce_type_is_function;
 use crate::error::{handle_buildpack_error, JvmFunctionInvokerBuildpackError};
-use crate::layers::bundle::BundleLayer;
-use crate::layers::opt::OptLayer;
-use crate::layers::runtime::RuntimeLayer;
+use crate::layers::bundle::handle_bundle;
+use crate::layers::opt::handle_opt;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{LaunchBuilder, ProcessBuilder};
-use libcnb::data::{layer_name, process_type};
+use libcnb::data::process_type;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
-use libcnb::layer_env::Scope;
 use libcnb::{Buildpack, Env};
 use libherokubuildpack::error::on_error;
 use libherokubuildpack::log::{log_header, log_info};
 use serde::Deserialize;
 
+use crate::layers::runtime::handle_runtime;
 #[cfg(test)]
 use base64 as _;
 #[cfg(test)]
@@ -68,18 +67,15 @@ impl Buildpack for JvmFunctionInvokerBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        context.handle_layer(layer_name!("opt"), OptLayer)?;
+        handle_opt(&context)?;
+
+        let mut env = Env::new();
 
         log_header("Installing Java function runtime");
-        let runtime_layer = context.handle_layer(layer_name!("runtime"), RuntimeLayer)?;
+        handle_runtime(&context, &mut env)?;
         log_info("Function runtime installation successful");
 
-        context.handle_layer(
-            layer_name!("bundle"),
-            BundleLayer {
-                env: runtime_layer.env.apply(Scope::Build, &Env::new()),
-            },
-        )?;
+        handle_bundle(&context, &env)?;
 
         BuildResultBuilder::new()
             .launch(

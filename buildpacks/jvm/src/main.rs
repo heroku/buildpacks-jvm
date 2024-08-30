@@ -8,8 +8,8 @@ mod util;
 
 use crate::constants::OPENJDK_LATEST_LTS_VERSION;
 use crate::errors::on_error_jvm_buildpack;
-use crate::layers::openjdk::OpenJdkLayer;
-use crate::layers::runtime::RuntimeLayer;
+use crate::layers::openjdk::handle_openjdk_layer;
+use crate::layers::runtime::handle_runtime_layer;
 use crate::openjdk_artifact::{
     HerokuOpenJdkVersionRequirement, OpenJdkArtifactMetadata, OpenJdkArtifactRequirement,
     OpenJdkArtifactRequirementParseError, OpenJdkDistribution,
@@ -28,7 +28,6 @@ use inventory::inventory::{Inventory, ParseInventoryError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::Buildpack;
@@ -164,14 +163,8 @@ impl Buildpack for OpenJdkBuildpack {
                 openjdk_artifact_requirement,
             ))?;
 
-        context.handle_layer(
-            layer_name!("openjdk"),
-            OpenJdkLayer {
-                artifact: openjdk_artifact,
-            },
-        )?;
-
-        context.handle_layer(layer_name!("runtime"), RuntimeLayer)?;
+        handle_openjdk_layer(&context, openjdk_artifact)?;
+        handle_runtime_layer(&context)?;
 
         BuildResultBuilder::new().build()
     }

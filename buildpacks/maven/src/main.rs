@@ -1,7 +1,7 @@
 use crate::errors::on_error_maven_buildpack;
 use crate::framework::DefaultAppProcessError;
-use crate::layer::maven::MavenLayer;
-use crate::layer::maven_repo::MavenRepositoryLayer;
+use crate::layer::maven::handle_maven_layer;
+use crate::layer::maven_repo::handle_maven_repository_layer;
 use crate::mode::{determine_mode, Mode};
 use crate::settings::{resolve_settings_xml_path, SettingsError};
 use crate::warnings::{log_default_maven_version_warning, log_unused_maven_wrapper_warning};
@@ -9,10 +9,8 @@ use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{LaunchBuilder, ProcessBuilder};
-use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
-use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::download::DownloadError;
 use libherokubuildpack::log::{log_header, log_info};
@@ -108,8 +106,8 @@ impl Buildpack for MavenBuildpack {
             current_or_platform_env.insert(key, value);
         }
 
-        let maven_repository_layer =
-            context.handle_layer(layer_name!("repository"), MavenRepositoryLayer)?;
+        let mut mvn_env = Env::from_current();
+        handle_maven_repository_layer(&context, &mut mvn_env)?;
 
         let maven_mode = determine_mode(
             &context.app_dir,
@@ -119,7 +117,7 @@ impl Buildpack for MavenBuildpack {
 
         log_header("Installing Maven");
 
-        let (mvn_executable, mut mvn_env) = match maven_mode {
+        let mvn_executable = match maven_mode {
             Mode::UseWrapper => {
                 log_info("Maven wrapper detected, skipping installation.");
 
@@ -128,12 +126,7 @@ impl Buildpack for MavenBuildpack {
                 fs::set_permissions(maven_wrapper_path, Permissions::from_mode(0o777))
                     .map_err(MavenBuildpackError::CannotSetMavenWrapperExecutableBit)?;
 
-                (
-                    PathBuf::from("./mvnw"),
-                    maven_repository_layer
-                        .env
-                        .apply(Scope::Build, &Env::from_current()),
-                )
+                PathBuf::from("./mvnw")
             }
             Mode::InstallVersion {
                 version,
@@ -150,32 +143,22 @@ impl Buildpack for MavenBuildpack {
 
                 log_info(format!("Selected Maven version: {}", &version));
 
-                let maven_layer = context
+                let tarball = context
                     .buildpack_descriptor
                     .metadata
                     .tarballs
                     .get(&version)
                     .cloned()
-                    .ok_or_else(|| {
-                        MavenBuildpackError::UnsupportedMavenVersion(version.clone()).into()
-                    })
-                    .and_then(|tarball| {
-                        context.handle_layer(layer_name!("maven"), MavenLayer { tarball })
-                    })?;
+                    .ok_or_else(|| MavenBuildpackError::UnsupportedMavenVersion(version.clone()))?;
+
+                handle_maven_layer(&context, &tarball, &mut mvn_env)?;
 
                 log_info(format!("Successfully installed Apache Maven {}", &version));
 
-                (
-                    PathBuf::from("mvn"),
-                    maven_layer.env.apply(
-                        Scope::Build,
-                        &maven_repository_layer
-                            .env
-                            .apply(Scope::Build, &Env::from_current()),
-                    ),
-                )
+                PathBuf::from("mvn")
             }
         };
+
         if let Some(java_home) = current_or_platform_env.get("JAVA_HOME") {
             mvn_env.insert("JAVA_HOME", java_home);
         }
