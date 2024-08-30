@@ -46,8 +46,8 @@ where
         match request_fn() {
             result @ Ok(_) => return result,
             result @ Err(_) => match backoff_durations.next() {
-                None => return result,
-                Some(backoff_duration) => {
+                None | Some(None) => return result,
+                Some(Some(backoff_duration)) => {
                     std::thread::sleep(backoff_duration);
                     continue;
                 }
