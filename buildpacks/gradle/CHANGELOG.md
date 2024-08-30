@@ -69,7 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Initial release
+- Initial release
 
 [unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...HEAD
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
