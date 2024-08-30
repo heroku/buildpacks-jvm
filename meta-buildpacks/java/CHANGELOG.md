@@ -103,11 +103,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.2.0] - 2023-09-20
 
+### Changed
+
 - Updated `heroku/gradle` to `3.2.0`.
 - Updated `heroku/jvm` to `3.2.0`.
 - Updated `heroku/maven` to `3.2.0`.
 
 ## [3.1.0] - 2023-09-18
+
+### Changed
 
 - Updated `heroku/procfile` to `2.0.1`. ([#568](https://github.com/heroku/buildpacks-jvm/pull/568))
 - Updated `heroku/gradle` to `3.1.0`.
@@ -116,187 +120,258 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2023-08-09
 
+### Changed
+
 - Updated `heroku/jvm` to `3.0.0`.
 - Updated `heroku/maven` to `3.0.0`.
 
 ## [2.0.0] - 2023-07-31
+
+### Changed
 
 - Updated `heroku/jvm` to `2.0.0`.
 - Updated `heroku/maven` to `2.0.0`.
 
 ## [1.1.2] - 2023-07-24
 
+### Changed
+
 - Updated `heroku/jvm` to `1.1.2`.
 - Updated `heroku/maven` to `1.1.2`.
 
 ## [1.1.1] - 2023-06-22
+
+### Changed
 
 - Updated `heroku/jvm` to `1.1.1`
 - Updated `heroku/maven` to `1.1.1`
 
 ## [0.6.11] - 2023-06-13
 
-* Upgraded `heroku/maven` to `1.0.5`
+### Changed
+
+- Upgraded `heroku/maven` to `1.0.5`
 
 ## [0.6.10] - 2023-05-11
 
-* Upgraded `heroku/maven` to `1.0.4`
-* Upgraded `heroku/jvm` to `1.0.10`
-* The buildpack now implements Buildpack API 0.9 instead of 0.8, and so requires `lifecycle` 0.15.x or newer. ([#491](https://github.com/heroku/buildpacks-jvm/pull/491))
+### Changed
+
+- Upgraded `heroku/maven` to `1.0.4`
+- Upgraded `heroku/jvm` to `1.0.10`
+- The buildpack now implements Buildpack API 0.9 instead of 0.8, and so requires `lifecycle` 0.15.x or newer. ([#491](https://github.com/heroku/buildpacks-jvm/pull/491))
 
 ## [0.6.9] - 2023-04-24
 
-* Upgraded `heroku/jvm` to `1.0.9`
+### Changed
+
+- Upgraded `heroku/jvm` to `1.0.9`
 
 ## [0.6.8] - 2023-03-31
 
-* Upgraded `heroku/jvm` to `1.0.8`
+### Changed
+
+- Upgraded `heroku/jvm` to `1.0.8`
 
 ## [0.6.7] - 2023-03-23
 
-* Upgraded `heroku/jvm` to `1.0.7`
+### Changed
+
+- Upgraded `heroku/jvm` to `1.0.7`
 
 ## [0.6.6] - 2023-01-18
 
-* Upgraded `heroku/jvm` to `1.0.6`
+### Changed
+
+- Upgraded `heroku/jvm` to `1.0.6`
 
 ## [0.6.5] - 2022-10-20
 
-* Upgraded `heroku/jvm` to `1.0.5`
+### Changed
+
+- Upgraded `heroku/jvm` to `1.0.5`
 
 ## [0.6.4] - 2022-09-28
 
-* Upgraded `heroku/maven` to `1.0.3`
-* Upgraded `heroku/jvm` to `1.0.4`
+### Changed
 
-* Upgraded `heroku/procfile` to `2.0.0`. ([#374](https://github.com/heroku/buildpacks-jvm/pull/374))
-* Buildpack now implements buildpack API version `0.8` and so requires lifecycle version `0.14.x` or newer. ([#363](https://github.com/heroku/buildpacks-jvm/pull/363))
+- Upgraded `heroku/maven` to `1.0.3`
+- Upgraded `heroku/jvm` to `1.0.4`
+- Upgraded `heroku/procfile` to `2.0.0`. ([#374](https://github.com/heroku/buildpacks-jvm/pull/374))
+- Buildpack now implements buildpack API version `0.8` and so requires lifecycle version `0.14.x` or newer. ([#363](https://github.com/heroku/buildpacks-jvm/pull/363))
 
 ## [0.6.3] - 2022-08-29
 
-* Upgraded `heroku/jvm` to `1.0.3`
+### Changed
+
+- Upgraded `heroku/jvm` to `1.0.3`
 
 ## [0.6.2] - 2022-07-29
 
-* Upgraded `heroku/maven` to `1.0.2`
+### Changed
+
+- Upgraded `heroku/maven` to `1.0.2`
 
 ## [0.6.1] - 2022-07-26
 
-* Upgraded `heroku/jvm` to `1.0.2`
-* Upgraded `heroku/procfile` to `1.0.2`
+### Changed
+
+- Upgraded `heroku/jvm` to `1.0.2`
+- Upgraded `heroku/procfile` to `1.0.2`
 
 ## [0.6.0] - 2022-06-09
 
-* Upgraded `heroku/maven` to `1.0.1`
-* Upgraded `heroku/jvm` to `1.0.1`
+### Changed
 
-### Breaking
+- Upgraded `heroku/maven` to `1.0.1`
+- Upgraded `heroku/jvm` to `1.0.1`
 
-* Remove Gradle support from this meta-buildpack. Gradle support was realized by using a shimmed version of the `heroku/gradle` Heroku buildpack. We decided to strictly separate shimmed buildpacks from proper CNBs. Gradle support will be re-added later, using a native CNB. ([#308](https://github.com/heroku/buildpacks-jvm/pull/308))
+### Removed
+
+- Remove Gradle support from this meta-buildpack. Gradle support was realized by using a shimmed version of the `heroku/gradle` Heroku buildpack. We decided to strictly separate shimmed buildpacks from proper CNBs. Gradle support will be re-added later, using a native CNB. ([#308](https://github.com/heroku/buildpacks-jvm/pull/308))
 
 ## [0.5.0] - 2022-05-17
 
-* Upgraded `heroku/jvm` to `1.0.0`
-* Upgraded `heroku/procfile` to `1.0.1`
+### Changed
+
+- Upgraded `heroku/jvm` to `1.0.0`
+- Upgraded `heroku/procfile` to `1.0.1`
 
 ## [0.3.16] - 2022-03-24
 
-* Upgraded `heroku/jvm` to `0.1.15`
-* Upgraded `heroku/maven` to `1.0.0`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.15`
+- Upgraded `heroku/maven` to `1.0.0`
 
 ## [0.3.15] - 2022-03-02
 
-* Upgraded `heroku/jvm` to `0.1.14`
-* Upgraded `heroku/maven` to `0.2.6`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.14`
+- Upgraded `heroku/maven` to `0.2.6`
 
 ## [0.3.14] - 2022-01-24
 
-* Upgraded `heroku/jvm` to `0.1.12`
-* Update github-action to upload buildpackage to Github Releases
-* Switch to BSD 3-Clause License
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.12`
+- Update github-action to upload buildpackage to Github Releases
+- Switch to BSD 3-Clause License
 
 ## [0.3.13] - 2021-10-28
 
-* Upgraded `heroku/jvm` to `0.1.11`
-* Upgraded `heroku/jvm` to `0.1.10`
-* Upgraded `heroku/jvm` to `0.1.9`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.11`
+- Upgraded `heroku/jvm` to `0.1.10`
+- Upgraded `heroku/jvm` to `0.1.9`
 
 ## [0.3.12] - 2021-10-19
 
+- No changes.
+
 ## [0.3.11] - 2021-09-15
 
-* Upgraded `heroku/jvm` to `0.1.8`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.8`
 
 ## [0.3.10] - 2021-08-10
 
-* Upgraded `heroku/maven` to `0.2.5`
+### Changed
+
+- Upgraded `heroku/maven` to `0.2.5`
 
 ## [0.3.9] - 2021-07-28
 
-* Upgraded `heroku/jvm` to `0.1.7`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.7`
 
 ## [0.3.8] - 2021-07-16
 
-* Upgraded `heroku/maven` to `0.2.4`
+### Changed
+
+- Upgraded `heroku/maven` to `0.2.4`
 
 ## [0.3.7] - 2021-05-05
 
-* Upgraded `heroku/maven` to `0.2.3`
+### Changed
+
+- Upgraded `heroku/maven` to `0.2.3`
 
 ## [0.3.6] - 2021-04-29
 
-* Upgraded `heroku/jvm` to `0.1.6`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.6`
 
 ### Fixed
 
-* Fixed `licenses` in `buildpack.toml`
+### Changed
+
+- Fixed `licenses` in `buildpack.toml`
 
 ## [0.3.5] - 2021-03-17
 
-* Upgraded `heroku/jvm` to `0.1.5`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.5`
 
 ## [0.3.4] - 2021-03-15
 
-* Upgraded `heroku/procfile` to `0.6.2`
+### Changed
+
+- Upgraded `heroku/procfile` to `0.6.2`
 
 ## [0.3.3] - 2021-02-23
 
-* Upgraded `heroku/gradle` to `0.0.35`
-* Upgraded `heroku/maven` to `0.2.2`
-* Upgraded `heroku/jvm` to `0.1.4`
+### Changed
+
+- Upgraded `heroku/gradle` to `0.0.35`
+- Upgraded `heroku/maven` to `0.2.2`
+- Upgraded `heroku/jvm` to `0.1.4`
 
 ## [0.3.2] - 2021-02-04
 
-* Upgraded `heroku/jvm` to `0.1.3`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.3`
 
 ## [0.3.1] - 2021-02-04
 
-* Upgraded `heroku/maven` to `0.2.1`
+### Changed
+
+- Upgraded `heroku/maven` to `0.2.1`
 
 ## [0.3.0] - 2021-02-03
 
 ### Changed
 
-* Now packages released buildpack images instead of local paths to ensure standalone and bundled
+- Now packages released buildpack images instead of local paths to ensure standalone and bundled
   versions are exactly the same.
 
 ## [0.1.3] - 2021-01-22
 
-* Upgraded `heroku/jvm` to `0.1.3`
+### Changed
+
+- Upgraded `heroku/jvm` to `0.1.3`
 
 ### Added
 
-* Automated post-release PRs
+- Automated post-release PRs
 
 ## [0.1.2] - 2012-01-19
 
 ### Changes
 
-* Upgrade `heroku/maven` to `0.2.0`
+- Upgrade `heroku/maven` to `0.2.0`
 
 ## [0.1.1] - 2012-01-13
 
-* Initial release
+### Added
+
+- Initial release
 
 [unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...HEAD
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
@@ -315,4 +390,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [3.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...v2.0.0
 [1.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...v1.1.2
-[1.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/v1.1.1
+[1.1.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.11...v1.1.1
+[0.6.11]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.10...heroku%2Fjava_0.6.11
+[0.6.10]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.9..heroku%2Fjava_0.6.10
+[0.6.9]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.8..heroku%2Fjava_0.6.9
+[0.6.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.7..heroku%2Fjava_0.6.8
+[0.6.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.6..heroku%2Fjava_0.6.7
+[0.6.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.5..heroku%2Fjava_0.6.6
+[0.6.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.4..heroku%2Fjava_0.6.5
+[0.6.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.3..heroku%2Fjava_0.6.4
+[0.6.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.2..heroku%2Fjava_0.6.3
+[0.6.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.1..heroku%2Fjava_0.6.2
+[0.6.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.0..heroku%2Fjava_0.6.1
+[0.6.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.5.0..heroku%2Fjava_0.6.0
+[0.5.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.16..heroku%2Fjava_0.5.0
+[0.3.16]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.15..heroku%2Fjava_0.3.16
+[0.3.15]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.14..heroku%2Fjava_0.3.15
+[0.3.14]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.13..heroku%2Fjava_0.3.14
+[0.3.13]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.12..heroku%2Fjava_0.3.13
+[0.3.12]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.11..heroku%2Fjava_0.3.12
+[0.3.11]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.10..heroku%2Fjava_0.3.11
+[0.3.10]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.9..heroku%2Fjava_0.3.10
+[0.3.9]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.8..heroku%2Fjava_0.3.9
+[0.3.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.7..heroku%2Fjava_0.3.8
+[0.3.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.6..heroku%2Fjava_0.3.7
+[0.3.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.5..heroku%2Fjava_0.3.6
+[0.3.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.4..heroku%2Fjava_0.3.5
+[0.3.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.3..heroku%2Fjava_0.3.4
+[0.3.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.2..heroku%2Fjava_0.3.3
+[0.3.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.1..heroku%2Fjava_0.3.2
+[0.3.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.0..heroku%2Fjava_0.3.1
+[0.3.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.1.3..heroku%2Fjava_0.3.0
+[0.1.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.1.2..heroku%2Fjava_0.1.3
+[0.1.2]: https://github.com/heroku/buildpacks-jvm/compare/java_0.1.1..heroku%2Fjava_0.1.2
+[0.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/java_0.1.1
