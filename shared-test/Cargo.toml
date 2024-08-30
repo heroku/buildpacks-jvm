@@ -7,6 +7,6 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
-exponential-backoff = "1"
+exponential-backoff = "2"
 libcnb-test = "=0.23.0"
 ureq = { version = "2", default-features = false, features = ["tls"] }
