@@ -92,10 +92,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.2.0] - 2023-09-20
 
+### Changed
+
 - Updated `heroku/jvm` to `3.2.0`.
 - Updated `heroku/sbt` to `3.2.0`.
 
 ## [3.1.0] - 2023-09-18
+
+### Changed
 
 - Updated `heroku/procfile` to `2.0.1`. ([#568](https://github.com/heroku/buildpacks-jvm/pull/568))
 - Updated `heroku/jvm` to `3.1.0`.
@@ -103,27 +107,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2023-08-09
 
+### Changed
+
 - Updated `heroku/jvm` to `3.0.0`.
 - Updated `heroku/sbt` to `3.0.0`.
 
 ## [2.0.0] - 2023-07-31
+
+### Changed
 
 - Updated `heroku/jvm` to `2.0.0`.
 - Updated `heroku/sbt` to `2.0.0`.
 
 ## [1.1.2] - 2023-07-24
 
+### Changed
+
 - Updated `heroku/jvm` to `1.1.2`.
 - Updated `heroku/sbt` to `1.1.2`.
 
 ## [1.1.1] - 2023-06-22
+
+### Changed
 
 - Updated `heroku/jvm` to `1.1.1`
 - Updated `heroku/sbt` to `1.1.1`
 
 ## [1.0.0] - 2023-05-11
 
-* Initial release
+### Added
+
+- Initial release
 
 [unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...HEAD
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
@@ -142,4 +156,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [3.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...v2.0.0
 [1.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...v1.1.2
-[1.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/v1.1.1
+[1.1.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fscala_1.0.0...v1.1.1
+[1.0.0]: https://github.com/heroku/buildpacks-jvm/releases/tag/heroku%2Fscala_1.0.0
