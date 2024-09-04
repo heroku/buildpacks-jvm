@@ -5,6 +5,7 @@ members = [
     "buildpacks/gradle",
     "buildpacks/jvm",
     "buildpacks/jvm-function-invoker",
+    "buildpacks/leiningen",
     "buildpacks/maven",
     "buildpacks/sbt",
     "shared",
