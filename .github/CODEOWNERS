@@ -3,6 +3,8 @@
 
 # However, request review from the language owner instead for files that are updated
 # by Dependabot or release automation, to reduce team review request noise.
+/buildpacks/*/test-apps/heroku-*-getting-started/ @Malax
+/buildpacks/sbt/sbt-extras/ @Malax
 buildpack.toml @Malax
 CHANGELOG.md @Malax
 Cargo.toml @Malax
