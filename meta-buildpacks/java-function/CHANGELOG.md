@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.2] - 2024-09-25
+
+### Changed
+
+- Updated `heroku/jvm-function-invoker` to `6.0.2`.
+- Updated `heroku/jvm` to `6.0.2`.
+- Updated `heroku/maven` to `6.0.2`.
+
 ## [6.0.1] - 2024-07-19
 
 ### Changed
@@ -467,7 +475,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.2...HEAD
+[6.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.1...v6.0.0
 [5.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.0...v5.0.1
@@ -484,53 +493,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [3.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...v2.0.0
 [1.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...v1.1.2
-[1.1.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.45...v1.1.1
-[0.3.45]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.44...heroku%2Fjava-function_0.3.45
-[0.3.44]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.43...heroku%2Fjava-function_0.3.44
-[0.3.43]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.42...heroku%2Fjava-function_0.3.43
-[0.3.42]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.41...heroku%2Fjava-function_0.3.42
-[0.3.41]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.40...heroku%2Fjava-function_0.3.41
-[0.3.40]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.39...heroku%2Fjava-function_0.3.40
-[0.3.39]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.38...heroku%2Fjava-function_0.3.39
-[0.3.38]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.37...heroku%2Fjava-function_0.3.38
-[0.3.37]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.36...heroku%2Fjava-function_0.3.37
-[0.3.36]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.35...heroku%2Fjava-function_0.3.36
-[0.3.35]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.34...heroku%2Fjava-function_0.3.35
-[0.3.34]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.33...heroku%2Fjava-function_0.3.34
-[0.3.33]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.32...heroku%2Fjava-function_0.3.33
-[0.3.32]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.31...heroku%2Fjava-function_0.3.32
-[0.3.31]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.30...heroku%2Fjava-function_0.3.31
-[0.3.30]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.29...heroku%2Fjava-function_0.3.30
-[0.3.29]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.28...heroku%2Fjava-function_0.3.29
-[0.3.28]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.27...heroku%2Fjava-function_0.3.28
-[0.3.27]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.26...heroku%2Fjava-function_0.3.27
-[0.3.26]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.25...heroku%2Fjava-function_0.3.26
-[0.3.25]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.24...heroku%2Fjava-function_0.3.25
-[0.3.24]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.23...heroku%2Fjava-function_0.3.24
-[0.3.23]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.22...heroku%2Fjava-function_0.3.23
-[0.3.22]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.21...heroku%2Fjava-function_0.3.22
-[0.3.21]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.20...heroku%2Fjava-function_0.3.21
-[0.3.20]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.19...heroku%2Fjava-function_0.3.20
-[0.3.19]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.18...heroku%2Fjava-function_0.3.19
-[0.3.18]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.17...heroku%2Fjava-function_0.3.18
-[0.3.17]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.16...heroku%2Fjava-function_0.3.17
-[0.3.16]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.15...heroku%2Fjava-function_0.3.16
-[0.3.15]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.14...heroku%2Fjava-function_0.3.15
-[0.3.14]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.13...heroku%2Fjava-function_0.3.14
-[0.3.13]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.12...heroku%2Fjava-function_0.3.13
-[0.3.12]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.11...heroku%2Fjava-function_0.3.12
-[0.3.11]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.10...heroku%2Fjava-function_0.3.11
-[0.3.10]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.9...heroku%2Fjava-function_0.3.10
-[0.3.9]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.8...heroku%2Fjava-function_0.3.9
-[0.3.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.7...heroku%2Fjava-function_0.3.8
-[0.3.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.6...heroku%2Fjava-function_0.3.7
-[0.3.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.5...heroku%2Fjava-function_0.3.6
-[0.3.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.4...heroku%2Fjava-function_0.3.5
-[0.3.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.3...heroku%2Fjava-function_0.3.4
-[0.3.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.2...heroku%2Fjava-function_0.3.3
-[0.3.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.1...heroku%2Fjava-function_0.3.2
-[0.3.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.3.0...heroku%2Fjava-function_0.3.1
-[0.3.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.2.1...heroku%2Fjava-function_0.3.0
-[0.2.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.2.0...heroku%2Fjava-function_0.2.1
-[0.2.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava-function_0.1.0...heroku%2Fjava-function_0.2.0
-[0.1.0]: https://github.com/heroku/buildpacks-jvm/releases/tag/heroku%2Fjava-function_0.1.0
+[1.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/v1.1.1

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.2] - 2024-09-25
+
+- No changes.
+
 ## [6.0.1] - 2024-07-19
 
 ### Added
@@ -404,7 +408,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.2...HEAD
+[6.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.1...v6.0.0
 [5.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.0...v5.0.1
@@ -421,30 +426,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [3.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...v2.0.0
 [1.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...v1.1.2
-[1.1.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.10..v1.1.1
-[1.0.10]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.9..heroku%2Fjvm_1.0.10
-[1.0.9]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.8..heroku%2Fjvm_1.0.9
-[1.0.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.7..heroku%2Fjvm_1.0.8
-[1.0.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.6..heroku%2Fjvm_1.0.7
-[1.0.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.5..heroku%2Fjvm_1.0.6
-[1.0.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.4..heroku%2Fjvm_1.0.5
-[1.0.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.3..heroku%2Fjvm_1.0.4
-[1.0.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.2..heroku%2Fjvm_1.0.3
-[1.0.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.1..heroku%2Fjvm_1.0.2
-[1.0.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_1.0.0..heroku%2Fjvm_1.0.1
-[1.0.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.15..heroku%2Fjvm_1.0.0
-[0.1.15]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.14..heroku%2Fjvm_0.1.15
-[0.1.14]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.12..heroku%2Fjvm_0.1.14
-[0.1.12]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.11..heroku%2Fjvm_0.1.12
-[0.1.11]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.10..heroku%2Fjvm_0.1.11
-[0.1.10]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.9..heroku%2Fjvm_0.1.10
-[0.1.9]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.8..heroku%2Fjvm_0.1.9
-[0.1.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.7..heroku%2Fjvm_0.1.8
-[0.1.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.6..heroku%2Fjvm_0.1.7
-[0.1.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.5..heroku%2Fjvm_0.1.6
-[0.1.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.4..heroku%2Fjvm_0.1.5
-[0.1.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.3..heroku%2Fjvm_0.1.4
-[0.1.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.2..heroku%2Fjvm_0.1.3
-[0.1.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.1..heroku%2Fjvm_0.1.2
-[0.1.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm_0.1.0..heroku%2Fjvm_0.1.1
-[0.1.0]: https://github.com/heroku/buildpacks-jvm/releases/tag/heroku%2Fjvm_0.1.0
+[1.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/v1.1.1

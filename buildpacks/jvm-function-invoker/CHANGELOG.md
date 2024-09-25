@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.2] - 2024-09-25
+
+- No changes.
+
 ## [6.0.1] - 2024-07-19
 
 - No changes.
@@ -305,7 +309,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.2...HEAD
+[6.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.1...v6.0.0
 [5.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.0...v5.0.1
@@ -322,34 +327,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [3.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...v2.0.0
 [1.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...v1.1.2
-[1.1.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.8...v1.1.1
-[0.6.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.7...heroku%2Fjvm-function-invoker_0.6.8
-[0.6.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.6...heroku%2Fjvm-function-invoker_0.6.7
-[0.6.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.5...heroku%2Fjvm-function-invoker_0.6.6
-[0.6.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.4...heroku%2Fjvm-function-invoker_0.6.5
-[0.6.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.3...heroku%2Fjvm-function-invoker_0.6.4
-[0.6.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.2...heroku%2Fjvm-function-invoker_0.6.3
-[0.6.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.1...heroku%2Fjvm-function-invoker_0.6.2
-[0.6.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.6.0...heroku%2Fjvm-function-invoker_0.6.1
-[0.6.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.5.5...heroku%2Fjvm-function-invoker_0.6.0
-[0.5.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.5.4...heroku%2Fjvm-function-invoker_0.5.5
-[0.5.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.5.3...heroku%2Fjvm-function-invoker_0.5.4
-[0.5.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.5.2...heroku%2Fjvm-function-invoker_0.5.3
-[0.5.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.5.1...heroku%2Fjvm-function-invoker_0.5.2
-[0.5.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.5.0...heroku%2Fjvm-function-invoker_0.5.1
-[0.5.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.4.0...heroku%2Fjvm-function-invoker_0.5.0
-[0.4.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.3.0...heroku%2Fjvm-function-invoker_0.4.0
-[0.3.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.11...heroku%2Fjvm-function-invoker_0.3.0
-[0.2.11]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.10...heroku%2Fjvm-function-invoker_0.2.11
-[0.2.10]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.9...heroku%2Fjvm-function-invoker_0.2.10
-[0.2.9]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.8...heroku%2Fjvm-function-invoker_0.2.9
-[0.2.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.7...heroku%2Fjvm-function-invoker_0.2.8
-[0.2.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.6...heroku%2Fjvm-function-invoker_0.2.7
-[0.2.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.5...heroku%2Fjvm-function-invoker_0.2.6
-[0.2.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.4...heroku%2Fjvm-function-invoker_0.2.5
-[0.2.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.3...heroku%2Fjvm-function-invoker_0.2.4
-[0.2.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.2...heroku%2Fjvm-function-invoker_0.2.3
-[0.2.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.1...heroku%2Fjvm-function-invoker_0.2.2
-[0.2.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.2.0...heroku%2Fjvm-function-invoker_0.2.1
-[0.2.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjvm-function-invoker_0.1.0...heroku%2Fjvm-function-invoker_0.2.0
-[0.1.0]: https://github.com/heroku/buildpacks-jvm/releases/tag/heroku%2Fjvm-function-invoker_0.1.0
+[1.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/v1.1.1
