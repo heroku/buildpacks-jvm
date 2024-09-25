@@ -75,5 +75,12 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 error,
             );
         }
+        GradleBuildpackError::CannotDetermineDefaultAppProcess(error) => {
+            log_please_try_again_error(
+                "Failed to determine default app process",
+                "Failed to determine default app process",
+                error,
+            );
+        }
     }
 }

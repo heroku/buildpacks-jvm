@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The buildpack will add a default process type if a supported framework is detected and the expected build output is found. This mirrors the same feature from the Maven buildpack. ([#726](https://github.com/heroku/buildpacks-jvm/pull/726))
+- Support for the Micronaut and Quarkus frameworks. Both previously worked with the buildpack but required some configuration. Unless heavily customized, no build task needs to be specified anymore. ([#726](https://github.com/heroku/buildpacks-jvm/pull/726))
+
 ## [6.0.1] - 2024-07-19
 
 - No changes.
