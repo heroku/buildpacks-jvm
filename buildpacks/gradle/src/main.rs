@@ -1,7 +1,7 @@
 use crate::config::GradleBuildpackConfig;
 use crate::detect::is_gradle_project_directory;
 use crate::errors::on_error_gradle_buildpack;
-use crate::framework::{detect_framework, Framework};
+use crate::framework::{default_app_process, detect_framework, Framework};
 use crate::gradle_command::GradleCommandError;
 use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
@@ -10,6 +10,7 @@ use buildpacks_jvm_shared as shared;
 use buildpacks_jvm_shared_test as _;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
+use libcnb::data::launch::LaunchBuilder;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::{buildpack_main, Buildpack, Env};
@@ -41,6 +42,7 @@ enum GradleBuildpackError {
     WriteGradlePropertiesError(std::io::Error),
     WriteGradleInitScriptError(std::io::Error),
     CannotSetGradleWrapperExecutableBit(std::io::Error),
+    CannotDetermineDefaultAppProcess(std::io::Error),
     StartGradleDaemonError(GradleCommandError<()>),
     BuildTaskUnknown,
 }
@@ -94,18 +96,18 @@ impl Buildpack for GradleBuildpack {
             .map_err(|command_error| command_error.map_parse_error(|_| ()))
             .map_err(GradleBuildpackError::GetTasksError)?;
 
-        let detected_framework = gradle_command::dependency_report(&context.app_dir, &gradle_env)
-            .map_err(GradleBuildpackError::GetDependencyReportError)
-            .map(|dependency_report| detect_framework(&dependency_report))?;
+        let dependency_report = gradle_command::dependency_report(&context.app_dir, &gradle_env)
+            .map_err(GradleBuildpackError::GetDependencyReportError)?;
 
         let task_name = buildpack_config
             .gradle_task
             .as_deref()
             .or_else(|| project_tasks.has_task("stage").then_some("stage"))
             .or_else(|| {
-                detected_framework.map(|framework| match framework {
-                    Framework::SpringBoot => "build",
+                detect_framework(&dependency_report).map(|framework| match framework {
+                    Framework::SpringBoot | Framework::Quarkus => "build",
                     Framework::Ratpack => "installDist",
+                    Framework::Micronaut => "shadowJar",
                 })
             })
             .ok_or(GradleBuildpackError::BuildTaskUnknown)?;
@@ -127,7 +129,14 @@ impl Buildpack for GradleBuildpack {
         // failure, nor can we recover from it in any way.
         let _ = gradle_command::stop_daemon(&gradle_wrapper_executable_path, &gradle_env);
 
-        BuildResultBuilder::new().build()
+        let process = default_app_process(&dependency_report, &context.app_dir)
+            .map_err(GradleBuildpackError::CannotDetermineDefaultAppProcess)?;
+
+        process
+            .map_or(BuildResultBuilder::new(), |process| {
+                BuildResultBuilder::new().launch(LaunchBuilder::new().process(process).build())
+            })
+            .build()
     }
 
     fn on_error(&self, error: libcnb::Error<Self::Error>) {
