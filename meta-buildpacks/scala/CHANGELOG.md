@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.2] - 2024-09-25
+
+### Changed
+
+- Updated `heroku/jvm` to `6.0.2`.
+- Updated `heroku/sbt` to `6.0.2`.
+
 ## [6.0.1] - 2024-07-19
 
 ### Changed
@@ -139,7 +146,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.2...HEAD
+[6.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.1...v6.0.0
 [5.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.0...v5.0.1
@@ -156,5 +164,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [3.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...v2.0.0
 [1.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...v1.1.2
-[1.1.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fscala_1.0.0...v1.1.1
-[1.0.0]: https://github.com/heroku/buildpacks-jvm/releases/tag/heroku%2Fscala_1.0.0
+[1.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/v1.1.1

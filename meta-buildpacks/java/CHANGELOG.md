@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.2] - 2024-09-25
+
+### Changed
+
+- Updated `heroku/gradle` to `6.0.2`.
+- Updated `heroku/jvm` to `6.0.2`.
+- Updated `heroku/maven` to `6.0.2`.
+
 ## [6.0.1] - 2024-07-19
 
 ### Changed
@@ -373,7 +381,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.2...HEAD
+[6.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.1...v6.0.0
 [5.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.0...v5.0.1
@@ -390,37 +399,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [3.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.2...v2.0.0
 [1.1.2]: https://github.com/heroku/buildpacks-jvm/compare/v1.1.1...v1.1.2
-[1.1.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.11...v1.1.1
-[0.6.11]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.10...heroku%2Fjava_0.6.11
-[0.6.10]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.9..heroku%2Fjava_0.6.10
-[0.6.9]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.8..heroku%2Fjava_0.6.9
-[0.6.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.7..heroku%2Fjava_0.6.8
-[0.6.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.6..heroku%2Fjava_0.6.7
-[0.6.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.5..heroku%2Fjava_0.6.6
-[0.6.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.4..heroku%2Fjava_0.6.5
-[0.6.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.3..heroku%2Fjava_0.6.4
-[0.6.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.2..heroku%2Fjava_0.6.3
-[0.6.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.1..heroku%2Fjava_0.6.2
-[0.6.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.6.0..heroku%2Fjava_0.6.1
-[0.6.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.5.0..heroku%2Fjava_0.6.0
-[0.5.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.16..heroku%2Fjava_0.5.0
-[0.3.16]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.15..heroku%2Fjava_0.3.16
-[0.3.15]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.14..heroku%2Fjava_0.3.15
-[0.3.14]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.13..heroku%2Fjava_0.3.14
-[0.3.13]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.12..heroku%2Fjava_0.3.13
-[0.3.12]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.11..heroku%2Fjava_0.3.12
-[0.3.11]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.10..heroku%2Fjava_0.3.11
-[0.3.10]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.9..heroku%2Fjava_0.3.10
-[0.3.9]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.8..heroku%2Fjava_0.3.9
-[0.3.8]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.7..heroku%2Fjava_0.3.8
-[0.3.7]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.6..heroku%2Fjava_0.3.7
-[0.3.6]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.5..heroku%2Fjava_0.3.6
-[0.3.5]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.4..heroku%2Fjava_0.3.5
-[0.3.4]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.3..heroku%2Fjava_0.3.4
-[0.3.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.2..heroku%2Fjava_0.3.3
-[0.3.2]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.1..heroku%2Fjava_0.3.2
-[0.3.1]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.3.0..heroku%2Fjava_0.3.1
-[0.3.0]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.1.3..heroku%2Fjava_0.3.0
-[0.1.3]: https://github.com/heroku/buildpacks-jvm/compare/heroku%2Fjava_0.1.2..heroku%2Fjava_0.1.3
-[0.1.2]: https://github.com/heroku/buildpacks-jvm/compare/java_0.1.1..heroku%2Fjava_0.1.2
-[0.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/java_0.1.1
+[1.1.1]: https://github.com/heroku/buildpacks-jvm/releases/tag/v1.1.1
