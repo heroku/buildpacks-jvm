@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.3] - 2024-09-26
+
+### Changed
+
+- Updated `heroku/gradle` to `6.0.3`.
+- Updated `heroku/jvm` to `6.0.3`.
+- Updated `heroku/maven` to `6.0.3`.
+
 ## [6.0.2] - 2024-09-25
 
 ### Changed
@@ -381,7 +389,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.2...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.3...HEAD
+[6.0.3]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.2...v6.0.3
 [6.0.2]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.1...v6.0.2
 [6.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v5.0.1...v6.0.0
