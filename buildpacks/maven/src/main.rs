@@ -26,8 +26,14 @@ use std::process::{Command, ExitStatus};
 use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
 use java_properties as _;
+use libcnb::data::sbom::SbomFormat;
+use libcnb::sbom::Sbom;
 #[cfg(test)]
 use libcnb_test as _;
+#[cfg(test)]
+use serde_cyclonedx as _;
+#[cfg(test)]
+use serde_json as _;
 
 mod errors;
 mod framework;
@@ -58,6 +64,8 @@ enum MavenBuildpackError {
     MavenBuildIoError(std::io::Error),
     CannotSetMavenWrapperExecutableBit(std::io::Error),
     DefaultAppProcessError(DefaultAppProcessError),
+    CannotCreateTemporarySbomDirectory(std::io::Error),
+    CannotReadMavenSbomFile(std::io::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -244,6 +252,41 @@ impl Buildpack for MavenBuildpack {
         )?;
 
         let mut build_result_builder = BuildResultBuilder::new();
+
+        if current_or_platform_env
+            .get("HEROKU_CNB_ENABLE_EXPERIMENTAL_SBOM")
+            .is_some_and(|value| value == "true")
+        {
+            let sbom_dir = std::env::temp_dir().join("heroku-maven-sbom");
+            fs::create_dir_all(&sbom_dir)
+                .map_err(MavenBuildpackError::CannotCreateTemporarySbomDirectory)?;
+
+            util::run_command(
+                Command::new(&mvn_executable)
+                    .current_dir(&context.app_dir)
+                    .args(
+                        maven_options.iter().chain(&internal_maven_options).chain(
+                            [
+                                format!("-DoutputDirectory={}", sbom_dir.to_string_lossy()),
+                                String::from("-DoutputName=bom"),
+                                String::from("-DschemaVersion=1.4"),
+                                String::from(
+                                    "org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom",
+                                ),
+                            ]
+                            .iter(),
+                        ),
+                    )
+                    .envs(&mvn_env),
+                MavenBuildpackError::MavenBuildIoError,
+                MavenBuildpackError::MavenBuildUnexpectedExitCode,
+            )?;
+
+            let launch_sbom = Sbom::from_path(SbomFormat::CycloneDxJson, sbom_dir.join("bom.json"))
+                .map_err(MavenBuildpackError::CannotReadMavenSbomFile)?;
+
+            build_result_builder = build_result_builder.launch_sbom(launch_sbom);
+        }
 
         if let Some(process) = framework::default_app_process(&context.app_dir)
             .map_err(MavenBuildpackError::DefaultAppProcessError)?

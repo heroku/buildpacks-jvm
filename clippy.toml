@@ -1,2 +1,2 @@
 allow-unwrap-in-tests = true
-doc-valid-idents = ["OpenJDK", ".."]
+doc-valid-idents = ["OpenJDK", "CycloneDX", ".."]
