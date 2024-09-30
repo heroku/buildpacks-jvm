@@ -7,7 +7,7 @@ use serde_cyclonedx::cyclonedx::v_1_4::{Component, CycloneDx, HashAlg};
 #[test]
 #[ignore = "integration test"]
 pub(crate) fn sbom() {
-    TestRunner::default().build(default_build_config("test-apps/simple-http-service"), |context| {
+    TestRunner::default().build(default_build_config("test-apps/simple-http-service").env("HEROKU_CNB_ENABLE_EXPERIMENTAL_SBOM", "true"), |context| {
         context.download_sbom_files(|sbom_files| {
             let sbom_path = sbom_files.path_for(
                 buildpack_id!("heroku/maven"),
