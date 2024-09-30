@@ -1,4 +1,4 @@
-use crate::default_config;
+use crate::default_build_config;
 use libcnb::data::buildpack_id;
 use libcnb::data::sbom::SbomFormat;
 use libcnb_test::{SbomType, TestRunner};
@@ -7,7 +7,7 @@ use serde_cyclonedx::cyclonedx::v_1_4::{Component, CycloneDx, HashAlg};
 #[test]
 #[ignore = "integration test"]
 pub(crate) fn sbom() {
-    TestRunner::default().build(default_config(), |context| {
+    TestRunner::default().build(default_build_config("test-apps/simple-http-service"), |context| {
         context.download_sbom_files(|sbom_files| {
             let sbom_path = sbom_files.path_for(
                 buildpack_id!("heroku/maven"),
@@ -24,7 +24,7 @@ pub(crate) fn sbom() {
                 .collect::<Result<Vec<SimpleSbomComponent>, _>>();
 
             assert_eq!(sbom_simple_components, Ok(vec![
-                SimpleSbomComponent { purl: String::from("pkg:maven/io.undertow/undertow-core@2.3.5.Final?type=jar"), sha256_hash: String::from("6a74380bc67a6b4a63eef12b882a076662fc1bb831c3dc4688ca2026ea7f9754"), main_license_id: String::from("Apache-2.0") },
+                SimpleSbomComponent { purl: String::from("pkg:maven/io.undertow/undertow-core@2.3.12.Final?type=jar"), sha256_hash: String::from("3da2764c7a487e9bf196c9d28c95277648e0c510aa7449e17027b99a1052a53e"), main_license_id: String::from("Apache-2.0") },
                 SimpleSbomComponent { purl: String::from("pkg:maven/org.jboss.logging/jboss-logging@3.4.3.Final?type=jar"), sha256_hash: String::from("0b324cca4d550060e51e70cc0045a6cce62f264278ec1f5082aafeb670fcac49"), main_license_id: String::from("Apache-2.0") },
                 SimpleSbomComponent { purl: String::from("pkg:maven/org.jboss.xnio/xnio-api@3.8.8.Final?type=jar"), sha256_hash: String::from("701988bea1c7426d0cdbbd94c02141031cfe3001a470750e2d25b6ac166b7873"), main_license_id: String::from("Apache-2.0") },
                 SimpleSbomComponent { purl: String::from("pkg:maven/org.wildfly.common/wildfly-common@1.5.4.Final?type=jar"), sha256_hash: String::from("9fda3caf8bd528dec56ebc70daf78f5a9ff5d0bfcea8b3e41ab7ae838747e46a"), main_license_id: String::from("Apache-2.0") },

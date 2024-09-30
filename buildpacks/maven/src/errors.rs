@@ -30,6 +30,11 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
             "Creating temporary directory for SBOM files failed",
             error,
         ),
+        MavenBuildpackError::CannotReadMavenSbomFile(error) => log_please_try_again_error(
+            "Reading Maven SBOM failed",
+            "Failed to read SBOM produced by Maven.",
+            error,
+        ),
         MavenBuildpackError::MavenTarballDecompressError(error) => log_please_try_again_error(
             "Maven download failed",
             "Could not download Maven distribution.",

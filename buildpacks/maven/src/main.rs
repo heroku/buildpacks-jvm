@@ -65,6 +65,7 @@ enum MavenBuildpackError {
     CannotSetMavenWrapperExecutableBit(std::io::Error),
     DefaultAppProcessError(DefaultAppProcessError),
     CannotCreateTemporarySbomDirectory(std::io::Error),
+    CannotReadMavenSbomFile(std::io::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -261,6 +262,7 @@ impl Buildpack for MavenBuildpack {
                     maven_options.iter().chain(&internal_maven_options).chain(
                         [
                             format!("-DoutputDirectory={}", sbom_dir.to_string_lossy()),
+                            String::from("-DschemaVersion=1.4"),
                             String::from("org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom"),
                         ]
                         .iter(),
@@ -273,9 +275,10 @@ impl Buildpack for MavenBuildpack {
 
         let mut build_result_builder = BuildResultBuilder::new();
 
-        build_result_builder = build_result_builder.launch_sbom(
-            Sbom::from_path(SbomFormat::CycloneDxJson, sbom_dir.join("bom.json")).unwrap(),
-        );
+        let launch_sbom = Sbom::from_path(SbomFormat::CycloneDxJson, sbom_dir.join("bom.json"))
+            .map_err(MavenBuildpackError::CannotReadMavenSbomFile)?;
+
+        build_result_builder = build_result_builder.launch_sbom(launch_sbom);
 
         if let Some(process) = framework::default_app_process(&context.app_dir)
             .map_err(MavenBuildpackError::DefaultAppProcessError)?
