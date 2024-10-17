@@ -23,8 +23,6 @@ pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
 use indoc::formatdoc;
-use inventory::artifact::{Arch, Os};
-use inventory::inventory::{Inventory, ParseInventoryError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -34,6 +32,8 @@ use libcnb::Buildpack;
 #[cfg(test)]
 use libcnb_test as _;
 use libherokubuildpack::download::DownloadError;
+use libherokubuildpack::inventory::artifact::{Arch, Os};
+use libherokubuildpack::inventory::{Inventory, ParseInventoryError};
 use libherokubuildpack::log::log_warning;
 use sha2::Sha256;
 use std::env::consts;
