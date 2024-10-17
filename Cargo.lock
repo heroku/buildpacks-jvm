@@ -72,10 +72,9 @@ dependencies = [
  "fs_extra",
  "hex",
  "indoc",
- "inventory",
- "libcnb",
- "libcnb-test",
- "libherokubuildpack",
+ "libcnb 0.24.0",
+ "libcnb-test 0.24.0",
+ "libherokubuildpack 0.24.0",
  "nom",
  "serde",
  "sha2",
@@ -92,9 +91,9 @@ dependencies = [
  "base64",
  "buildpacks-jvm-shared-test",
  "indoc",
- "libcnb",
- "libcnb-test",
- "libherokubuildpack",
+ "libcnb 0.23.0",
+ "libcnb-test 0.23.0",
+ "libherokubuildpack 0.23.0",
  "serde",
  "tempfile",
  "thiserror",
@@ -111,9 +110,9 @@ dependencies = [
  "flate2",
  "indoc",
  "java-properties",
- "libcnb",
- "libcnb-test",
- "libherokubuildpack",
+ "libcnb 0.23.0",
+ "libcnb-test 0.23.0",
+ "libherokubuildpack 0.23.0",
  "regex",
  "serde",
  "shell-words",
@@ -127,7 +126,7 @@ version = "0.0.0"
 dependencies = [
  "indoc",
  "java-properties",
- "libherokubuildpack",
+ "libherokubuildpack 0.23.0",
 ]
 
 [[package]]
@@ -135,7 +134,7 @@ name = "buildpacks-jvm-shared-test"
 version = "0.0.0"
 dependencies = [
  "exponential-backoff",
- "libcnb-test",
+ "libcnb-test 0.23.0",
  "ureq",
 ]
 
@@ -379,9 +378,9 @@ dependencies = [
 
 [[package]]
 name = "globset"
-version = "0.4.14"
+version = "0.4.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57da3b9b5b85bd66f31093f8c408b90a74431672542466497dcbdfdc02034be1"
+checksum = "15f1ce686646e7f1e19bf7d5533fe443a45dbfb990e00629110797578b42fb19"
 dependencies = [
  "aho-corasick",
  "bstr",
@@ -397,9 +396,9 @@ dependencies = [
  "buildpacks-jvm-shared",
  "buildpacks-jvm-shared-test",
  "indoc",
- "libcnb",
- "libcnb-test",
- "libherokubuildpack",
+ "libcnb 0.23.0",
+ "libcnb-test 0.23.0",
+ "libherokubuildpack 0.23.0",
  "nom",
  "serde",
 ]
@@ -437,9 +436,9 @@ dependencies = [
 
 [[package]]
 name = "ignore"
-version = "0.4.22"
+version = "0.4.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b46810df39e66e925525d6e38ce1e7f6e1d208f72dc39757880fcb66e2c58af1"
+checksum = "6d89fd380afde86567dfba715db065673989d6253f42b88179abd3eae47bda4b"
 dependencies = [
  "crossbeam-deque",
  "globset",
@@ -466,18 +465,6 @@ name = "indoc"
 version = "2.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b248f5224d1d606005e02c97f5aa4e88eeb230488bcc03bc9ca4d7991399f2b5"
-
-[[package]]
-name = "inventory"
-version = "0.1.0"
-source = "git+https://github.com/Malax/inventory#e4eed7de95e49d441cdf13f9c001644ed9159393"
-dependencies = [
- "hex",
- "serde",
- "sha2",
- "thiserror",
- "toml",
-]
 
 [[package]]
 name = "itoa"
@@ -514,9 +501,23 @@ version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4b3e7c4d57d10b3e2a76b15fb3ae98a56be73655325ae26723fcb6a4709fd64"
 dependencies = [
- "libcnb-common",
- "libcnb-data",
- "libcnb-proc-macros",
+ "libcnb-common 0.23.0",
+ "libcnb-data 0.23.0",
+ "libcnb-proc-macros 0.23.0",
+ "serde",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
+name = "libcnb"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ce789ba7117d22c9f0046e7b8e37b771e799081687875d3728511249d6dced4"
+dependencies = [
+ "libcnb-common 0.24.0",
+ "libcnb-data 0.24.0",
+ "libcnb-proc-macros 0.24.0",
  "serde",
  "thiserror",
  "toml",
@@ -534,13 +535,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "libcnb-common"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "613d7e5a3aeeb367bfb2a96c25290c6b596e6b15fcd2c729a26dc8e3e1bc67ab"
+dependencies = [
+ "serde",
+ "thiserror",
+ "toml",
+]
+
+[[package]]
 name = "libcnb-data"
 version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aab235141d51d47ecffd1fc7a8efc2851063048ba9d4498963f1ad963c275eee"
 dependencies = [
  "fancy-regex",
- "libcnb-proc-macros",
+ "libcnb-proc-macros 0.23.0",
+ "serde",
+ "thiserror",
+ "toml",
+ "uriparse",
+]
+
+[[package]]
+name = "libcnb-data"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "29345e474049598160f678e07ea217e2d481f6a5048c90493d192b9edfdf146d"
+dependencies = [
+ "fancy-regex",
+ "libcnb-proc-macros 0.24.0",
  "serde",
  "thiserror",
  "toml",
@@ -556,8 +582,25 @@ dependencies = [
  "cargo_metadata",
  "ignore",
  "indoc",
- "libcnb-common",
- "libcnb-data",
+ "libcnb-common 0.23.0",
+ "libcnb-data 0.23.0",
+ "petgraph",
+ "thiserror",
+ "uriparse",
+ "which",
+]
+
+[[package]]
+name = "libcnb-package"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0324344ab58ad358dbc01d187f2ce635bd0500756d224f37869490df094d2f3"
+dependencies = [
+ "cargo_metadata",
+ "ignore",
+ "indoc",
+ "libcnb-common 0.24.0",
+ "libcnb-data 0.24.0",
  "petgraph",
  "thiserror",
  "uriparse",
@@ -577,6 +620,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "libcnb-proc-macros"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9bef14d35d3a45cdfcfe79f64ffa685275c0624b48054e01cd2ca09aba2d3714"
+dependencies = [
+ "cargo_metadata",
+ "fancy-regex",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "libcnb-test"
 version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -584,9 +639,25 @@ checksum = "ce5f600dfa6ca05322ed41dd06239b39fea2ed573f8553d5908d82db93f451e1"
 dependencies = [
  "fastrand",
  "fs_extra",
- "libcnb-common",
- "libcnb-data",
- "libcnb-package",
+ "libcnb-common 0.23.0",
+ "libcnb-data 0.23.0",
+ "libcnb-package 0.23.0",
+ "regex",
+ "tempfile",
+ "thiserror",
+]
+
+[[package]]
+name = "libcnb-test"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "27a8e3828e59e94e1143f5c8b8937771ca128502072c6c27899d359e37aaf0bb"
+dependencies = [
+ "fastrand",
+ "fs_extra",
+ "libcnb-common 0.24.0",
+ "libcnb-data 0.24.0",
+ "libcnb-package 0.24.0",
  "regex",
  "tempfile",
  "thiserror",
@@ -599,8 +670,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ffe351c883e5a3f177742237be322ec7098d22fd5bc555792454cb2297ee3fba"
 dependencies = [
  "crossbeam-utils",
+ "libcnb 0.23.0",
+ "sha2",
+ "termcolor",
+ "thiserror",
+ "toml",
+ "ureq",
+]
+
+[[package]]
+name = "libherokubuildpack"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bec33ef08ce0508ced826f7bdfcd0538bdfc2270632915e447d1ea72bce5645d"
+dependencies = [
  "flate2",
- "libcnb",
+ "hex",
+ "libcnb 0.24.0",
+ "serde",
  "sha2",
  "tar",
  "termcolor",
@@ -841,9 +928,9 @@ dependencies = [
  "buildpacks-jvm-shared-test",
  "indoc",
  "java-properties",
- "libcnb",
- "libcnb-test",
- "libherokubuildpack",
+ "libcnb 0.23.0",
+ "libcnb-test 0.23.0",
+ "libherokubuildpack 0.23.0",
  "semver",
  "serde",
  "shell-words",
@@ -938,9 +1025,9 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 
 [[package]]
 name = "syn"
-version = "2.0.76"
+version = "2.0.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "578e081a14e0cefc3279b0472138c513f37b41a08d5a3cca9b6e4e8ceb6cd525"
+checksum = "89132cd0bf050864e1d38dc3bbc07a0eb8e7530af26344d3d2bbbef83499f590"
 dependencies = [
  "proc-macro2",
  "quote",

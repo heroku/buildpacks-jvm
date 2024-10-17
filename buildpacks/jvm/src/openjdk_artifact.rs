@@ -1,5 +1,5 @@
 use crate::openjdk_version::OpenJdkVersion;
-use inventory::version::{ArtifactRequirement, VersionRequirement};
+use libherokubuildpack::inventory::version::{ArtifactRequirement, VersionRequirement};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 

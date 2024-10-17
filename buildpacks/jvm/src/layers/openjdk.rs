@@ -6,7 +6,6 @@ use crate::{
     JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
 use fs_extra::dir::CopyOptions;
-use inventory::artifact::Artifact;
 use libcnb::additional_buildpack_binary_path;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
@@ -14,6 +13,7 @@ use libcnb::layer::{
     CachedLayerDefinition, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
+use libherokubuildpack::inventory::artifact::Artifact;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Sha256;
