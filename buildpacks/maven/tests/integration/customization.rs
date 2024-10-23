@@ -17,12 +17,12 @@ fn maven_custom_goals() {
             indoc! {"
 
                 The following files have been resolved:
-                   io.undertow:undertow-core:jar:2.3.12.Final:compile
+                   io.undertow:undertow-core:jar:2.3.17.Final:compile
                    org.jboss.logging:jboss-logging:jar:3.4.3.Final:compile
-                   org.jboss.xnio:xnio-api:jar:3.8.8.Final:compile
+                   org.jboss.xnio:xnio-api:jar:3.8.16.Final:compile
                    org.wildfly.common:wildfly-common:jar:1.5.4.Final:compile
                    org.wildfly.client:wildfly-client-config:jar:1.0.1.Final:compile
-                   org.jboss.xnio:xnio-nio:jar:3.8.8.Final:runtime
+                   org.jboss.xnio:xnio-nio:jar:3.8.16.Final:runtime
                    org.jboss.threads:jboss-threads:jar:3.5.0.Final:compile
                    com.google.guava:guava:jar:32.0.0-jre:compile
                    com.google.guava:failureaccess:jar:1.0.1:compile
