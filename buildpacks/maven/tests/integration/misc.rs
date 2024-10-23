@@ -28,12 +28,12 @@ fn mvn_dependency_list() {
             indoc! {"
 
                 The following files have been resolved:
-                   io.undertow:undertow-core:jar:2.3.12.Final:compile
+                   io.undertow:undertow-core:jar:2.3.17.Final:compile
                    org.jboss.logging:jboss-logging:jar:3.4.3.Final:compile
-                   org.jboss.xnio:xnio-api:jar:3.8.8.Final:compile
+                   org.jboss.xnio:xnio-api:jar:3.8.16.Final:compile
                    org.wildfly.common:wildfly-common:jar:1.5.4.Final:compile
                    org.wildfly.client:wildfly-client-config:jar:1.0.1.Final:compile
-                   org.jboss.xnio:xnio-nio:jar:3.8.8.Final:runtime
+                   org.jboss.xnio:xnio-nio:jar:3.8.16.Final:runtime
                    org.jboss.threads:jboss-threads:jar:3.5.0.Final:compile
                    com.google.guava:guava:jar:32.0.0-jre:compile
                    com.google.guava:failureaccess:jar:1.0.1:compile
@@ -80,11 +80,11 @@ fn no_unexpected_files_in_app_dir() {
                 /workspace/target/dependency/jsr305-3.0.2.jar
                 /workspace/target/dependency/junit-4.13.1.jar
                 /workspace/target/dependency/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar
-                /workspace/target/dependency/undertow-core-2.3.12.Final.jar
+                /workspace/target/dependency/undertow-core-2.3.17.Final.jar
                 /workspace/target/dependency/wildfly-client-config-1.0.1.Final.jar
                 /workspace/target/dependency/wildfly-common-1.5.4.Final.jar
-                /workspace/target/dependency/xnio-api-3.8.8.Final.jar
-                /workspace/target/dependency/xnio-nio-3.8.8.Final.jar
+                /workspace/target/dependency/xnio-api-3.8.16.Final.jar
+                /workspace/target/dependency/xnio-nio-3.8.16.Final.jar
                 /workspace/target/maven-archiver/pom.properties
                 /workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
                 /workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
