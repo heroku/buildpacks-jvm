@@ -1,5 +1,8 @@
-use crate::openjdk_artifact::HerokuOpenJdkVersionRequirement;
-use crate::{OpenJdkArtifactRequirementParseError, OpenJdkBuildpackError};
+use crate::openjdk_artifact::{
+    HerokuOpenJdkVersionRequirement, OpenJdkArtifactRequirementParseError,
+};
+use crate::version_resolver::VersionResolveError;
+use crate::OpenJdkBuildpackError;
 use buildpacks_jvm_shared::log::{log_please_try_again, log_please_try_again_error};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
@@ -8,19 +11,6 @@ use libherokubuildpack::log::log_error;
 #[allow(clippy::too_many_lines)]
 pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
     match error {
-        OpenJdkBuildpackError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::UnknownDistribution(distribution)) => log_error(
-            format!("Unsupported distribution: {distribution}"),
-            formatdoc! {"
-                    Please check your system.properties file to ensure the java.runtime.version
-                    string does not contain an unsupported distribution prefix.
-
-                    You can also remove the system.properties file from your application to install
-                    the default OpenJDK version.
-
-                    Thanks,
-                    Heroku
-            "},
-        ),
         OpenJdkBuildpackError::CannotCreateOpenJdkTempDir(error) => log_please_try_again_error(
             "Unexpected IO error",
             "Could not create temporary directory for the OpenJDK download due to an unexpected I/O error.",
@@ -112,15 +102,6 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
                 Details: {error}
             ", error = error },
         ),
-        OpenJdkBuildpackError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::OpenJdkVersionParseError(error)) => log_error(
-        "Invalid OpenJDK version selector",
-        formatdoc! {"
-            The OpenJDK version selector you specified in your system.properties file is invalid.
-            Please specify a valid version selector in your system.properties file.
-
-            Details: {error}
-        ", error = error },
-        ),
         OpenJdkBuildpackError::OpenJdkTarballChecksumError { expected, actual } => log_please_try_again(
             "Corrupted OpenJDK download",
             formatdoc! {"
@@ -129,6 +110,30 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
                 Expected: {expected}
                 Actual: {actual}
             ", expected = hex::encode(expected), actual = hex::encode(actual) }
-        )
+        ),
+        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::UnknownDistribution(distribution))) => log_error(
+            format!("Unsupported distribution: {distribution}"),
+            formatdoc! {"
+                    Please check your system.properties file to ensure the java.runtime.version
+                    string does not contain an unsupported distribution prefix.
+
+                    You can also remove the system.properties file from your application to install
+                    the default OpenJDK version.
+
+                    Thanks,
+                    Heroku
+            "}),
+        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::ReadSystemPropertiesError(error)) => {
+            log_error(
+                "Invalid OpenJDK version selector",
+                formatdoc! {"
+            The OpenJDK version selector you specified in your system.properties file is invalid.
+            Please specify a valid version selector in your system.properties file.
+
+            Details: {error:?}
+        ", error = error },
+            );
+        }
+        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::OpenJdkVersionParseError(_))) => {}
     }
 }

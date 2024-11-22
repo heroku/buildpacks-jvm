@@ -12,7 +12,7 @@ pub(crate) fn start(
 ) -> Result<(), GradleCommandError<()>> {
     let output = Command::new(gradle_wrapper_executable_path)
         .args([
-            // Fixes an issue when when running under Apple Rosetta emulation
+            // Fixes an issue when running under Apple Rosetta emulation
             "-Djdk.lang.Process.launchMechanism=vfork",
             "--daemon",
             GRADLE_TASK_NAME_HEROKU_START_DAEMON,

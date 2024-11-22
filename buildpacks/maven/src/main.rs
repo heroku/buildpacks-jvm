@@ -18,7 +18,6 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::download::DownloadError;
-use libherokubuildpack::log::{log_header, log_info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -27,6 +26,8 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 
+use buildpacks_jvm_shared::output;
+use buildpacks_jvm_shared::output::{BuildpackOutputText, BuildpackOutputTextSection};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
@@ -106,6 +107,8 @@ impl Buildpack for MavenBuildpack {
 
     #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
+        output::print_buildpack_name("Heroku Maven Buildpack");
+
         let mut current_or_platform_env = Env::from_current();
         for (key, value) in context.platform.env() {
             current_or_platform_env.insert(key, value);
@@ -120,11 +123,11 @@ impl Buildpack for MavenBuildpack {
         )
         .map_err(MavenBuildpackError::DetermineModeError)?;
 
-        log_header("Installing Maven");
+        output::print_section("Installing Maven");
 
         let mvn_executable = match maven_mode {
             Mode::UseWrapper => {
-                log_info("Maven wrapper detected, skipping installation.");
+                output::print_subsection("Skipping (Maven wrapper detected)");
 
                 let maven_wrapper_path = context.app_dir.join("mvnw");
 
@@ -146,19 +149,24 @@ impl Buildpack for MavenBuildpack {
                     log_default_maven_version_warning(&version);
                 }
 
-                log_info(format!("Selected Maven version: {}", &version));
+                output::print_subsection(BuildpackOutputText::new(vec![
+                    BuildpackOutputTextSection::regular("Selected Maven version "),
+                    BuildpackOutputTextSection::value(&version),
+                ]));
 
-                let tarball = context
-                    .buildpack_descriptor
-                    .metadata
-                    .tarballs
-                    .get(&version)
-                    .cloned()
-                    .ok_or_else(|| MavenBuildpackError::UnsupportedMavenVersion(version.clone()))?;
+                output::track_timing(|| {
+                    let tarball = context
+                        .buildpack_descriptor
+                        .metadata
+                        .tarballs
+                        .get(&version)
+                        .cloned()
+                        .ok_or_else(|| {
+                            MavenBuildpackError::UnsupportedMavenVersion(version.clone())
+                        })?;
 
-                handle_maven_layer(&context, &tarball, &mut mvn_env)?;
-
-                log_info(format!("Successfully installed Apache Maven {}", &version));
+                    handle_maven_layer(&context, &tarball, &mut mvn_env)
+                })?;
 
                 PathBuf::from("mvn")
             }
@@ -206,16 +214,21 @@ impl Buildpack for MavenBuildpack {
         // running since they might be confusing to the user.
         let internal_maven_options = vec![String::from("-B")];
 
-        log_header("Executing Maven");
-        log_info(format!(
-            "$ {} {} {}",
-            mvn_executable.to_string_lossy(),
-            shell_words::join(&maven_options),
-            shell_words::join(&maven_goals)
-        ));
+        output::print_section("Running Maven build");
+        output::print_subsection(BuildpackOutputText::new(vec![
+            BuildpackOutputTextSection::regular("Running "),
+            BuildpackOutputTextSection::value(format!(
+                "{} {} {}",
+                mvn_executable.to_string_lossy(),
+                shell_words::join(&maven_options),
+                shell_words::join(&maven_goals)
+            )),
+        ]));
 
-        util::run_command(
-            Command::new(&mvn_executable)
+        output::track_timing(|| {
+            let mut command = Command::new(&mvn_executable);
+
+            command
                 .current_dir(&context.app_dir)
                 .args(
                     maven_options
@@ -223,13 +236,29 @@ impl Buildpack for MavenBuildpack {
                         .chain(&internal_maven_options)
                         .chain(&maven_goals),
                 )
-                .envs(&mvn_env),
-            MavenBuildpackError::MavenBuildIoError,
-            MavenBuildpackError::MavenBuildUnexpectedExitCode,
-        )?;
+                .envs(&mvn_env);
 
-        util::run_command(
-            Command::new(&mvn_executable)
+            output::run_command(
+                command,
+                false,
+                MavenBuildpackError::MavenBuildIoError,
+                |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
+            )
+        })?;
+
+        output::print_section(BuildpackOutputText::new(vec![
+            BuildpackOutputTextSection::regular("Running "),
+            BuildpackOutputTextSection::value(format!(
+                "{} dependency:list",
+                mvn_executable.to_string_lossy()
+            )),
+            BuildpackOutputTextSection::regular(" quietly"),
+        ]));
+
+        output::track_timing(|| {
+            let mut command = Command::new(&mvn_executable);
+
+            command
                 .current_dir(&context.app_dir)
                 .args(
                     maven_options.iter().chain(&internal_maven_options).chain(
@@ -243,10 +272,15 @@ impl Buildpack for MavenBuildpack {
                         .iter(),
                     ),
                 )
-                .envs(&mvn_env),
-            MavenBuildpackError::MavenBuildIoError,
-            MavenBuildpackError::MavenBuildUnexpectedExitCode,
-        )?;
+                .envs(&mvn_env);
+
+            output::run_command(
+                command,
+                true,
+                MavenBuildpackError::MavenBuildIoError,
+                |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
+            )
+        })?;
 
         let mut build_result_builder = BuildResultBuilder::new();
 
