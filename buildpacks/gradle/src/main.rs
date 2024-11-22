@@ -6,6 +6,9 @@ use crate::gradle_command::GradleCommandError;
 use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use buildpacks_jvm_shared as shared;
+use buildpacks_jvm_shared::output::{
+    print_buildpack_name, print_section, print_subsection, track_timing,
+};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -75,7 +78,8 @@ impl Buildpack for GradleBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        log_header("Gradle Buildpack");
+        print_buildpack_name("Heroku Gradle Buildpack");
+
         let buildpack_config = GradleBuildpackConfig::from(&context);
 
         let gradle_wrapper_executable_path = Some(context.app_dir.join("gradlew"))
@@ -88,16 +92,26 @@ impl Buildpack for GradleBuildpack {
         let mut gradle_env = Env::from_current();
         handle_gradle_home_layer(&context, &mut gradle_env)?;
 
-        log_header("Starting Gradle Daemon");
-        gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
-            .map_err(GradleBuildpackError::StartGradleDaemonError)?;
+        print_section("Running Gradle build");
 
-        let project_tasks = gradle_command::tasks(&context.app_dir, &gradle_env)
-            .map_err(|command_error| command_error.map_parse_error(|_| ()))
-            .map_err(GradleBuildpackError::GetTasksError)?;
+        track_timing(|| {
+            print_subsection("Starting Gradle daemon");
+            gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
+                .map_err(GradleBuildpackError::StartGradleDaemonError)
+        })?;
 
-        let dependency_report = gradle_command::dependency_report(&context.app_dir, &gradle_env)
-            .map_err(GradleBuildpackError::GetDependencyReportError)?;
+        let project_tasks = track_timing(|| {
+            print_subsection("Querying tasks");
+            gradle_command::tasks(&context.app_dir, &gradle_env)
+                .map_err(|command_error| command_error.map_parse_error(|_| ()))
+                .map_err(GradleBuildpackError::GetTasksError)
+        })?;
+
+        let dependency_report = track_timing(|| {
+            print_subsection("Querying dependency report");
+            gradle_command::dependency_report(&context.app_dir, &gradle_env)
+                .map_err(GradleBuildpackError::GetDependencyReportError)
+        })?;
 
         let task_name = buildpack_config
             .gradle_task
