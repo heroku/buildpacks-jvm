@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Default version for **OpenJDK 17** is now `17.0.13`. ([#747](https://github.com/heroku/buildpacks-jvm/pull/747))
 - Default version for **OpenJDK 21** is now `21.0.5`. ([#747](https://github.com/heroku/buildpacks-jvm/pull/747))
 - Default version for **OpenJDK 23** is now `23.0.1`. ([#747](https://github.com/heroku/buildpacks-jvm/pull/747))
+- Buildpack output changed to a new format. ([#000](https://github.com/heroku/buildpacks-jvm/pull/000))
 
 ## [6.0.3] - 2024-09-26
 
