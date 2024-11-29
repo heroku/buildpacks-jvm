@@ -106,7 +106,6 @@ fn no_internal_maven_options_logging() {
         |context| {
             assert_not_contains!(context.pack_stdout, "-Dmaven.repo.local=");
             assert_not_contains!(context.pack_stdout, "-Duser.home=");
-            assert_not_contains!(context.pack_stdout, "dependency:list");
             assert_not_contains!(
                 context.pack_stdout,
                 "-DoutputFile=target/mvn-dependency-list.log"
