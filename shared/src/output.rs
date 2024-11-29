@@ -39,7 +39,7 @@ pub fn print_warning(title: impl AsRef<str>, body: impl Into<BuildpackOutputText
         ..BuildpackOutputText::default()
     };
 
-    println!("{}", text.to_ansi_string());
+    eprintln!("{}", text.to_ansi_string());
 }
 
 pub fn print_error(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>) {
@@ -59,7 +59,7 @@ pub fn print_error(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>)
         ..BuildpackOutputText::default()
     };
 
-    println!("{}", text.to_ansi_string());
+    eprintln!("{}", text.to_ansi_string());
 }
 
 pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(

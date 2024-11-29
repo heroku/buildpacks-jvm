@@ -114,8 +114,7 @@ impl Buildpack for OpenJdkBuildpack {
                     To set the OpenJDK version, add or edit the system.properties file in the root
                     directory of your application to contain:
 
-                    java.runtime.version = {OPENJDK_LATEST_LTS_VERSION}
-                "},
+                    java.runtime.version = {OPENJDK_LATEST_LTS_VERSION}"},
             );
         }
 
