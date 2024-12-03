@@ -123,7 +123,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
                     Thanks,
                     Heroku
             "}),
-        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::ReadSystemPropertiesError(error)) => {
+        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::OpenJdkVersionParseError(_))) => {
             log_error(
                 "Invalid OpenJDK version selector",
                 formatdoc! {"
@@ -134,6 +134,16 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
         ", error = error },
             );
         }
-        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::OpenJdkVersionParseError(_))) => {}
+        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::ReadSystemPropertiesError(error)) => {
+            log_error(
+                "Invalid system.properties file",
+                formatdoc! {"
+            The contents of your system.properties file cannot be parsed. Please use a valid
+            system.properties file and try again.
+
+            Details: {error:?}
+        ", error = error },
+            );
+        }
     }
 }
