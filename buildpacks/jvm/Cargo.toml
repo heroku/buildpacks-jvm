@@ -10,8 +10,8 @@ workspace = true
 buildpacks-jvm-shared.workspace = true
 fs_extra = "1"
 indoc = "2"
-libcnb = "=0.24.0"
-libherokubuildpack = { version = "=0.24.0", default-features = false, features = ["digest", "download", "error", "inventory", "inventory-sha2", "log", "tar"] }
+libcnb = "=0.26.0"
+libherokubuildpack = { version = "=0.26.0", default-features = false, features = ["digest", "download", "error", "inventory", "inventory-sha2", "log", "tar"] }
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
 url = "2"
@@ -23,4 +23,4 @@ toml = "0.8"
 
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
-libcnb-test = "=0.24.0"
+libcnb-test = "=0.26.0"
