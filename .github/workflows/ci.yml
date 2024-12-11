@@ -96,3 +96,62 @@ jobs:
         working-directory: ${{ matrix.buildpack-directory }}
         # Runs only tests annotated with the `ignore` attribute (which in this repo, are the integration tests).
         run: cargo test --locked -- --ignored --test-threads 16
+
+  print-pack-getting-started-output:
+    runs-on: ${{ matrix.target == 'aarch64-unknown-linux-musl' && 'pub-hk-ubuntu-24.04-arm-medium' || 'ubuntu-24.04' }}
+    strategy:
+      matrix:
+        target: ["aarch64-unknown-linux-musl", "x86_64-unknown-linux-musl"]
+        guide: ["heroku/java-getting-started", "heroku/gradle-getting-started", "heroku/scala-getting-started"]
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install musl-tools
+        run: sudo apt-get install -y --no-install-recommends musl-tools
+      - name: Update Rust toolchain
+        run: rustup update
+      - name: Install Rust linux-musl target
+        run: rustup target add ${{ matrix.target }}
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2.7.5
+      - name: Install Pack CLI
+        uses: buildpacks/github-actions/setup-pack@v5.7.4
+      - name: Pull builder and run images
+        run: |
+          docker pull "heroku/builder:24"
+          docker pull "heroku/heroku:24"
+      - name: Clone ruby getting started guide
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.guide }}
+          path: tmp/guide
+      - name: Install libcnb-cargo for `cargo libcnb package` command
+        run: cargo install libcnb-cargo
+      - name: Compile ruby buildpack
+        run: cargo libcnb package --target ${{ matrix.target }}
+      - name: "PRINT: Getting started guide output"
+        run: |
+          if [ "${{ matrix.guide }}" == "heroku/java-getting-started" ]; then
+            pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --path tmp/guide --pull-policy never \
+              --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm \
+              --buildpack packaged/${{ matrix.target }}/debug/heroku_java \
+              --buildpack packaged/${{ matrix.target }}/debug/heroku_maven \
+
+            elif [ "${{ matrix.guide }}" == "heroku/gradle-getting-started" ]; then
+              pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --path tmp/guide --pull-policy never \
+                --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm \
+                --buildpack packaged/${{ matrix.target }}/debug/heroku_gradle \
+
+            elif [ "${{ matrix.guide }}" == "heroku/scala-getting-started" ]; then
+              pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --path tmp/guide --pull-policy never \
+                --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm \
+                --buildpack packaged/${{ matrix.target }}/debug/heroku_sbt \
+                --buildpack packaged/${{ matrix.target }}/debug/heroku_scala \
+
+            else
+              echo "Unknown guide: ${{ matrix.guide }}"
+              exit 1
+            fi
