@@ -123,14 +123,14 @@ jobs:
         run: |
           docker pull "heroku/builder:24"
           docker pull "heroku/heroku:24"
-      - name: Clone ruby getting started guide
+      - name: Clone getting started guide
         uses: actions/checkout@v4
         with:
           repository: ${{ matrix.guide }}
           path: tmp/guide
       - name: Install libcnb-cargo for `cargo libcnb package` command
         run: cargo install libcnb-cargo
-      - name: Compile ruby buildpack
+      - name: Compile buildpack
         run: cargo libcnb package --target ${{ matrix.target }}
       - name: "PRINT: Getting started guide output"
         run: |
