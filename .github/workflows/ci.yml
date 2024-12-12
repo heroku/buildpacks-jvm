@@ -134,24 +134,33 @@ jobs:
         run: cargo libcnb package --target ${{ matrix.target }}
       - name: "PRINT: Getting started guide output"
         run: |
-          if [ "${{ matrix.guide }}" == "heroku/java-getting-started" ]; then
-            pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --path tmp/guide --pull-policy never \
-              --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm \
-              --buildpack packaged/${{ matrix.target }}/debug/heroku_java \
-              --buildpack packaged/${{ matrix.target }}/debug/heroku_maven \
+          set -euo pipefail
 
-            elif [ "${{ matrix.guide }}" == "heroku/gradle-getting-started" ]; then
-              pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --path tmp/guide --pull-policy never \
-                --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm \
-                --buildpack packaged/${{ matrix.target }}/debug/heroku_gradle \
-
-            elif [ "${{ matrix.guide }}" == "heroku/scala-getting-started" ]; then
-              pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --path tmp/guide --pull-policy never \
-                --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm \
-                --buildpack packaged/${{ matrix.target }}/debug/heroku_sbt \
-                --buildpack packaged/${{ matrix.target }}/debug/heroku_scala \
-
-            else
+          PACK_CMD="pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --path tmp/guide --pull-policy never "
+          case "${{ matrix.guide }}" in
+            "heroku/java-getting-started")
+              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm "
+              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_java "
+              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_maven "
+              ;;
+            "heroku/gradle-getting-started")
+              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm "
+              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_gradle "
+              ;;
+            "heroku/scala-getting-started")
+              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm "
+              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_sbt "
+              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_scala "
+              ;;
+            *)
               echo "Unknown guide: ${{ matrix.guide }}"
               exit 1
-            fi
+              ;;
+          esac
+
+          echo "Running command: $PACK_CMD"
+          bash -c "$PACK_CMD"
+          echo ""
+          echo "With CACHE example"
+          echo ""
+          bash -c "$PACK_CMD"
