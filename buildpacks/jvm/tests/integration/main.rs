@@ -11,6 +11,7 @@
 use libcnb_test::BuildConfig;
 use std::path::Path;
 
+mod overlay;
 mod versions;
 
 fn default_build_config(fixture_path: impl AsRef<Path>) -> BuildConfig {
