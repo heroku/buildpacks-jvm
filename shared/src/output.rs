@@ -154,13 +154,15 @@ impl BuildpackOutputText {
             match section {
                 BuildpackOutputTextSection::Regular(_) => {}
                 BuildpackOutputTextSection::Value(_) => {
-                    result.push_str(ANSI_VALUE_CODE);
                     result.push(VALUE_DELIMITER_CHAR);
+                    result.push_str(ANSI_VALUE_CODE);
                 }
                 BuildpackOutputTextSection::Url(_) => {
+                    result.push(VALUE_DELIMITER_CHAR);
                     result.push_str(ANSI_URL_CODE);
                 }
                 BuildpackOutputTextSection::Command(_) => {
+                    result.push(VALUE_DELIMITER_CHAR);
                     result.push_str(ANSI_COMMAND_CODE);
                 }
             }
@@ -175,8 +177,13 @@ impl BuildpackOutputText {
 
                     result.push_str(&line_start);
 
-                    if let BuildpackOutputTextSection::Value(_) = section {
-                        result.push_str(ANSI_VALUE_CODE);
+                    match section {
+                        BuildpackOutputTextSection::Value(_)
+                        | BuildpackOutputTextSection::Url(_)
+                        | BuildpackOutputTextSection::Command(_) => {
+                            result.push_str(ANSI_VALUE_CODE);
+                        }
+                        BuildpackOutputTextSection::Regular(_) => {}
                     }
                 } else {
                     result.push(char);
