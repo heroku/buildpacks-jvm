@@ -50,6 +50,14 @@ This buildpack relies on [heroku/libcnb.rs][libcnb] to compile buildpacks. All
 [libcnb.rs dependencies][libcnb-deps] will need to be setup prior to building
 or testing this buildpack.
 
+### Clone
+
+This project uses submodules, to clone all code run:
+
+```
+$ git clone --recursive https://github.com/heroku/buildpacks-jvm
+```
+
 ### Building
 
 1. Run `cargo check` to download dependencies and ensure there are no
