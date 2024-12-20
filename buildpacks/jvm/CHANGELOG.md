@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - JDK overlays are now properly sourced from the `.jdk-overlay` directory instead of `.jdk_overlay`. ([#763](https://github.com/heroku/buildpacks-jvm/pull/763))
 
+### Changed
+
+- Buildpack output changed to a new format. ([#000](https://github.com/heroku/buildpacks-jvm/pull/000))
+
 ## [6.0.4] - 2024-12-05
 
 ### Added
