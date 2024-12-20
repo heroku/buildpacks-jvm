@@ -183,10 +183,15 @@ impl BuildpackOutputText {
                 }
             }
 
-            if let BuildpackOutputTextSection::Value(_) = section {
-                result.push(VALUE_DELIMITER_CHAR);
-                result.push_str(ANSI_RESET_CODE);
-                result.push_str(&self.default_code.clone().unwrap_or_default());
+            match section {
+                BuildpackOutputTextSection::Value(_)
+                | BuildpackOutputTextSection::Url(_)
+                | BuildpackOutputTextSection::Command(_) => {
+                    result.push(VALUE_DELIMITER_CHAR);
+                    result.push_str(ANSI_RESET_CODE);
+                    result.push_str(&self.default_code.clone().unwrap_or_default());
+                }
+                BuildpackOutputTextSection::Regular(_) => {}
             }
         }
 
