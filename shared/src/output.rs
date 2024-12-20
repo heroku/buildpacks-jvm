@@ -154,13 +154,15 @@ impl BuildpackOutputText {
             match section {
                 BuildpackOutputTextSection::Regular(_) => {}
                 BuildpackOutputTextSection::Value(_) => {
-                    result.push_str(ANSI_VALUE_CODE);
                     result.push(VALUE_DELIMITER_CHAR);
+                    result.push_str(ANSI_VALUE_CODE);
                 }
                 BuildpackOutputTextSection::Url(_) => {
+                    result.push(VALUE_DELIMITER_CHAR);
                     result.push_str(ANSI_URL_CODE);
                 }
                 BuildpackOutputTextSection::Command(_) => {
+                    result.push(VALUE_DELIMITER_CHAR);
                     result.push_str(ANSI_COMMAND_CODE);
                 }
             }
@@ -175,8 +177,13 @@ impl BuildpackOutputText {
 
                     result.push_str(&line_start);
 
-                    if let BuildpackOutputTextSection::Value(_) = section {
-                        result.push_str(ANSI_VALUE_CODE);
+                    match section {
+                        BuildpackOutputTextSection::Value(_)
+                        | BuildpackOutputTextSection::Url(_)
+                        | BuildpackOutputTextSection::Command(_) => {
+                            result.push_str(ANSI_VALUE_CODE);
+                        }
+                        BuildpackOutputTextSection::Regular(_) => {}
                     }
                 } else {
                     result.push(char);
@@ -187,8 +194,8 @@ impl BuildpackOutputText {
                 BuildpackOutputTextSection::Value(_)
                 | BuildpackOutputTextSection::Url(_)
                 | BuildpackOutputTextSection::Command(_) => {
-                    result.push(VALUE_DELIMITER_CHAR);
                     result.push_str(ANSI_RESET_CODE);
+                    result.push(VALUE_DELIMITER_CHAR);
                     result.push_str(&self.default_code.clone().unwrap_or_default());
                 }
                 BuildpackOutputTextSection::Regular(_) => {}
@@ -304,7 +311,7 @@ mod test {
             ..Default::default()
         };
 
-        assert_eq!(text.to_ansi_string(), "\u{1b}[0m\u{1b}[0;33m! Hello\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! \u{1b}[0;34m`World`\u{1b}[0m\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! How\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! are you?");
+        assert_eq!(text.to_ansi_string(), "\u{1b}[0m\u{1b}[0;33m! Hello\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;34mWorld\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! How\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! are you?");
     }
 
     #[test]
@@ -322,7 +329,7 @@ mod test {
 
         assert_eq!(
             text.to_ansi_string(),
-            "\u{1b}[0m\u{1b}[0;33m! Intro\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! \u{1b}[0;34m`With\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! \u{1b}[0;34mNewline`\u{1b}[0m\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! Outro"
+            "\u{1b}[0m\u{1b}[0;33m! Intro\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;34mWith\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! \u{1b}[0;34mNewline\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! Outro"
         );
     }
 
