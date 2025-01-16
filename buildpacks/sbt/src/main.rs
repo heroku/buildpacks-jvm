@@ -109,7 +109,7 @@ impl Buildpack for SbtBuildpack {
             output::print_section("Running sbt build");
             output::print_subsection(BuildpackOutputText::new(vec![
                 BuildpackOutputTextSection::regular("Running "),
-                BuildpackOutputTextSection::value(format!("sbt {}", shell_words::join(&tasks))),
+                BuildpackOutputTextSection::command(format!("sbt {}", shell_words::join(&tasks))),
             ]));
 
             let mut command = Command::new("sbt");

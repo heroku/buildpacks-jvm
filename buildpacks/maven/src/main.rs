@@ -212,7 +212,7 @@ impl Buildpack for MavenBuildpack {
         output::print_section("Running Maven build");
         output::print_subsection(BuildpackOutputText::new(vec![
             BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::value(format!(
+            BuildpackOutputTextSection::command(format!(
                 "{} {} {}",
                 mvn_executable.to_string_lossy(),
                 shell_words::join(&maven_options),

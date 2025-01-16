@@ -191,7 +191,7 @@ pub(crate) fn handle_openjdk_layer(
                 )
                 .map_err(OpenJdkBuildpackError::CannotSymlinkUbuntuCertificates)?;
 
-                output::print_subsection("Done.");
+                output::print_subsection("Done");
             } else {
                 output::print_subsection(BuildpackOutputText::new(vec![
                     BuildpackOutputTextSection::regular("Skipping ("),
