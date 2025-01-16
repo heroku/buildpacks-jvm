@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 
 pub fn print_buildpack_name(buildpack_name: impl AsRef<str>) {
     let buildpack_name = buildpack_name.as_ref();
-    println!("{ANSI_BUILDPACK_NAME_CODE}# {buildpack_name}{ANSI_RESET_CODE}\n");
+    print!("\n{ANSI_BUILDPACK_NAME_CODE}# {buildpack_name}{ANSI_RESET_CODE}\n\n");
 }
 
 pub fn print_section(text: impl Into<BuildpackOutputText>) {
@@ -71,10 +71,19 @@ pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(
     let child = if quiet {
         command.output_and_write_streams(std::io::sink(), std::io::sink())
     } else {
-        command.output_and_write_streams(
-            line_mapped(std::io::stdout(), add_prefix_to_non_empty("    ")),
-            line_mapped(std::io::stderr(), add_prefix_to_non_empty("    ")),
-        )
+        const SPACE_ASCII: u8 = 0x20;
+        let prefix = vec![SPACE_ASCII; 6];
+
+        println!();
+
+        let output = command.output_and_write_streams(
+            line_mapped(std::io::stdout(), add_prefix_to_non_empty(prefix.clone())),
+            line_mapped(std::io::stderr(), add_prefix_to_non_empty(prefix)),
+        );
+
+        println!();
+
+        output
     };
 
     child.map_err(io_error_fn).and_then(|output| {
@@ -222,6 +231,10 @@ impl BuildpackOutputTextSection {
     pub fn value(value: impl Into<String>) -> Self {
         BuildpackOutputTextSection::Value(value.into())
     }
+
+    pub fn command(value: impl Into<String>) -> Self {
+        BuildpackOutputTextSection::Command(value.into())
+    }
 }
 
 impl From<String> for BuildpackOutputText {
@@ -283,12 +296,12 @@ fn format_duration(duration: &Duration) -> String {
 
 const VALUE_DELIMITER_CHAR: char = '`';
 const ANSI_RESET_CODE: &str = "\u{1b}[0m";
-const ANSI_VALUE_CODE: &str = "\u{1b}[0;34m";
+const ANSI_VALUE_CODE: &str = "\u{1b}[0;33m";
 const ANSI_YELLOW_CODE: &str = "\u{1b}[0;33m";
 const ANSI_RED_CODE: &str = "\u{1b}[0;31m";
 const ANSI_BUILDPACK_NAME_CODE: &str = "\u{1b}[1;35m";
 const ANSI_URL_CODE: &str = "\u{1b}[0;34m";
-const ANSI_COMMAND_CODE: &str = "\u{1b}[0;34m";
+const ANSI_COMMAND_CODE: &str = "\u{1b}[1;36m";
 const ERROR_WARNING_LINE_PREFIX: &str = "! ";
 
 #[cfg(test)]
@@ -311,7 +324,7 @@ mod test {
             ..Default::default()
         };
 
-        assert_eq!(text.to_ansi_string(), "\u{1b}[0m\u{1b}[0;33m! Hello\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;34mWorld\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! How\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! are you?");
+        assert_eq!(text.to_ansi_string(), "\u{1b}[0m\u{1b}[0;33m! Hello\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;33mWorld\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! How\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! are you?");
     }
 
     #[test]
@@ -329,7 +342,7 @@ mod test {
 
         assert_eq!(
             text.to_ansi_string(),
-            "\u{1b}[0m\u{1b}[0;33m! Intro\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;34mWith\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! \u{1b}[0;34mNewline\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! Outro"
+            "\u{1b}[0m\u{1b}[0;33m! Intro\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;33mWith\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! \u{1b}[0;33mNewline\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! Outro"
         );
     }
 

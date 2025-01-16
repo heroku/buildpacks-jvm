@@ -12,7 +12,8 @@ use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use buildpacks_jvm_shared as shared;
 use buildpacks_jvm_shared::output::{
-    print_buildpack_name, print_section, print_subsection, track_timing,
+    print_buildpack_name, print_section, print_subsection, track_timing, BuildpackOutputText,
+    BuildpackOutputTextSection,
 };
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
@@ -25,7 +26,6 @@ use libcnb::{buildpack_main, Buildpack, Env};
 #[cfg(test)]
 use libcnb_test as _;
 use libherokubuildpack::command::CommandExt;
-use libherokubuildpack::log::log_header;
 use serde::Deserialize;
 use std::io::{stderr, stdout};
 use std::process::{Command, ExitStatus};
@@ -131,7 +131,11 @@ impl Buildpack for GradleBuildpack {
             })
             .ok_or(GradleBuildpackError::BuildTaskUnknown)?;
 
-        log_header("Running build task");
+        print_section("Running Gradle build");
+        print_subsection(BuildpackOutputText::new(vec![
+            BuildpackOutputTextSection::regular("Running "),
+            BuildpackOutputTextSection::command(format!("./gradlew {task_name} -x check")),
+        ]));
 
         let output = Command::new(&gradle_wrapper_executable_path)
             .current_dir(&context.app_dir)
