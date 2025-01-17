@@ -42,7 +42,7 @@ fn jvm_env_vars_for_env(
         // Handling for Spring specific JDBC environment variables
         let disable_spring_datasource_url = input
             .get("DISABLE_SPRING_DATASOURCE_URL")
-            .map_or(false, |value| value == "true");
+            .is_some_and(|value| value == "true");
 
         if !disable_spring_datasource_url
             && !input.contains_key("SPRING_DATASOURCE_URL")
