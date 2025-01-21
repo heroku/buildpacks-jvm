@@ -5,11 +5,11 @@ use crate::framework::{default_app_process, detect_framework, Framework};
 use crate::gradle_command::GradleCommandError;
 use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
-use buildpacks_jvm_shared as shared;
 use buildpacks_jvm_shared::output::{
     print_buildpack_name, print_section, print_subsection, track_timing_subsection,
     BuildpackOutputText, BuildpackOutputTextSection,
 };
+use buildpacks_jvm_shared::{self as shared, output};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -24,6 +24,7 @@ use libherokubuildpack::command::CommandExt;
 use serde::Deserialize;
 use std::io::{stderr, stdout};
 use std::process::{Command, ExitStatus};
+use std::time::Instant;
 
 mod config;
 mod detect;
@@ -78,6 +79,7 @@ impl Buildpack for GradleBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
+        let build_timer = Instant::now();
         print_buildpack_name("Heroku Gradle Buildpack");
 
         let buildpack_config = GradleBuildpackConfig::from(&context);
@@ -148,6 +150,7 @@ impl Buildpack for GradleBuildpack {
         let process = default_app_process(&dependency_report, &context.app_dir)
             .map_err(GradleBuildpackError::CannotDetermineDefaultAppProcess)?;
 
+        output::print_all_done(build_timer);
         process
             .map_or(BuildResultBuilder::new(), |process| {
                 BuildResultBuilder::new().launch(LaunchBuilder::new().process(process).build())

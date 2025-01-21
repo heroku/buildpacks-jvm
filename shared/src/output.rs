@@ -16,6 +16,10 @@ pub fn print_subsection(text: impl Into<BuildpackOutputText>) {
     print::sub_bullet(text.into().to_ansi_string());
 }
 
+pub fn print_all_done(timer: Instant) {
+    print::all_done(&Some(timer));
+}
+
 pub fn print_timing_done_subsection(duration: &Duration) {
     println!("{ANSI_RESET_CODE}  - Done ({})", format_duration(duration));
 }

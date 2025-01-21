@@ -21,6 +21,7 @@ use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::error::on_error as on_buildpack_error;
 use std::process::Command;
+use std::time::Instant;
 
 use buildpacks_jvm_shared::output;
 #[cfg(test)]
@@ -59,6 +60,7 @@ impl Buildpack for SbtBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
+        let build_timer = Instant::now();
         output::print_buildpack_name("Heroku sbt Buildpack");
 
         let buildpack_configuration = read_system_properties(&context.app_dir)
@@ -123,6 +125,7 @@ impl Buildpack for SbtBuildpack {
             )
         }?;
 
+        output::print_all_done(build_timer);
         BuildResultBuilder::new().build()
     }
 
