@@ -1,6 +1,12 @@
+use std::process::Output;
+
 use crate::GradleBuildpackError;
-use buildpacks_jvm_shared::log::{
-    log_build_tool_io_error, log_build_tool_unexpected_exit_code_error, log_please_try_again_error,
+use buildpacks_jvm_shared::{
+    log::{
+        log_build_tool_io_error, log_build_tool_unexpected_exit_code_error,
+        log_please_try_again_error,
+    },
+    output::CmdError,
 };
 use indoc::indoc;
 use libherokubuildpack::log::log_error;
@@ -23,10 +29,16 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 "},
             );
         }
-        GradleBuildpackError::GradleBuildIoError(error) => log_build_tool_io_error("Gradle", error),
-        GradleBuildpackError::GradleBuildUnexpectedStatusError(exit_status) => {
-            log_build_tool_unexpected_exit_code_error("Gradle", exit_status);
-        }
+        GradleBuildpackError::GradleBuildFailedCommand(error) => match error {
+            CmdError::SystemError(_, error) => log_build_tool_io_error("Gradle", error),
+            CmdError::NonZeroExitNotStreamed(named_output)
+            | CmdError::NonZeroExitAlreadyStreamed(named_output) => {
+                log_build_tool_unexpected_exit_code_error(
+                    "Gradle",
+                    Into::<Output>::into(named_output.clone()).status,
+                );
+            }
+        },
         GradleBuildpackError::GetTasksError(error) => log_please_try_again_error(
             "Failed to get Gradle tasks",
             "Failed to get Gradle tasks",

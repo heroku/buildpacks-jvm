@@ -4,10 +4,9 @@ use crate::errors::on_error_gradle_buildpack;
 use crate::framework::{default_app_process, detect_framework, Framework};
 use crate::gradle_command::GradleCommandError;
 use crate::layers::gradle_home::handle_gradle_home_layer;
-use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use buildpacks_jvm_shared::output::{
     print_buildpack_name, print_section, print_subsection, track_timing_subsection,
-    BuildpackOutputText, BuildpackOutputTextSection,
+    BuildpackOutputText, BuildpackOutputTextSection, CmdError,
 };
 use buildpacks_jvm_shared::{self as shared, output};
 #[cfg(test)]
@@ -20,10 +19,8 @@ use libcnb::generic::GenericPlatform;
 use libcnb::{buildpack_main, Buildpack, Env};
 #[cfg(test)]
 use libcnb_test as _;
-use libherokubuildpack::command::CommandExt;
 use serde::Deserialize;
-use std::io::{stderr, stdout};
-use std::process::{Command, ExitStatus};
+use std::process::Command;
 use std::time::Instant;
 
 mod config;
@@ -39,8 +36,7 @@ struct GradleBuildpack;
 enum GradleBuildpackError {
     GradleWrapperNotFound,
     DetectError(std::io::Error),
-    GradleBuildIoError(std::io::Error),
-    GradleBuildUnexpectedStatusError(ExitStatus),
+    GradleBuildFailedCommand(CmdError),
     GetTasksError(GradleCommandError<()>),
     GetDependencyReportError(GradleCommandError<()>),
     WriteGradlePropertiesError(std::io::Error),
@@ -132,16 +128,12 @@ impl Buildpack for GradleBuildpack {
             BuildpackOutputTextSection::command(format!("./gradlew {task_name} -x check")),
         ]));
 
-        let output = Command::new(&gradle_wrapper_executable_path)
-            .current_dir(&context.app_dir)
+        let mut cmd = Command::new(&gradle_wrapper_executable_path);
+        cmd.current_dir(&context.app_dir)
             .envs(&gradle_env)
-            .args([task_name, "-x", "check"])
-            .output_and_write_streams(stdout(), stderr())
-            .map_err(GradleBuildIoError)?;
-
-        if !output.status.success() {
-            Err(GradleBuildUnexpectedStatusError(output.status))?;
-        }
+            .args([task_name, "-x", "check"]);
+        let _ = output::run_command(cmd, false)
+            .map_err(GradleBuildpackError::GradleBuildFailedCommand)?;
 
         // Explicitly ignoring the result. If the daemon cannot be stopped, that is not a build
         // failure, nor can we recover from it in any way.
