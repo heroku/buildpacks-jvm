@@ -1,21 +1,19 @@
-use libherokubuildpack::command::CommandExt;
-use libherokubuildpack::write::line_mapped;
+use bullet_stream::global::print;
+use bullet_stream::style;
+use fun_run::CommandWithName;
 use std::process::{Command, Output};
 use std::time::{Duration, Instant};
 
 pub fn print_buildpack_name(buildpack_name: impl AsRef<str>) {
-    let buildpack_name = buildpack_name.as_ref();
-    print!("\n{ANSI_BUILDPACK_NAME_CODE}# {buildpack_name}{ANSI_RESET_CODE}\n\n");
+    print::h2(buildpack_name);
 }
 
 pub fn print_section(text: impl Into<BuildpackOutputText>) {
-    let text = text.into().to_ansi_string();
-    println!("{ANSI_RESET_CODE}- {text}");
+    print::bullet(text.into().to_ansi_string());
 }
 
 pub fn print_subsection(text: impl Into<BuildpackOutputText>) {
-    let text = text.into().to_ansi_string();
-    println!("{ANSI_RESET_CODE}  - {text}");
+    print::sub_bullet(text.into().to_ansi_string());
 }
 
 pub fn print_timing_done_subsection(duration: &Duration) {
@@ -24,42 +22,19 @@ pub fn print_timing_done_subsection(duration: &Duration) {
 
 pub fn print_warning(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>) {
     let title = title.as_ref();
-
-    let mut sections = vec![BuildpackOutputTextSection::regular(format!(
-        "WARNING: {title}\n\n"
-    ))];
-
-    let mut body = body.into();
-    sections.append(&mut body.sections);
-
-    let text = BuildpackOutputText {
-        default_code: Some(String::from(ANSI_YELLOW_CODE)),
-        line_prefix: Some(String::from("! ")),
-        sections,
-        ..BuildpackOutputText::default()
-    };
-
-    eprintln!("{}", text.to_ansi_string());
+    print::warning(format!(
+        "WARNING: {title}\n\n{}",
+        body.into().to_ansi_string()
+    ));
 }
 
 pub fn print_error(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>) {
     let title = title.as_ref();
 
-    let mut sections = vec![BuildpackOutputTextSection::regular(format!(
-        "ERROR: {title}\n\n"
-    ))];
-
-    let mut body = body.into();
-    sections.append(&mut body.sections);
-
-    let text = BuildpackOutputText {
-        default_code: Some(String::from(ANSI_RED_CODE)),
-        line_prefix: Some(String::from(ERROR_WARNING_LINE_PREFIX)),
-        sections,
-        ..BuildpackOutputText::default()
-    };
-
-    eprintln!("{}", text.to_ansi_string());
+    print::error(format!(
+        "ERROR: {title}\n\n{}",
+        body.into().to_ansi_string()
+    ));
 }
 
 pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(
@@ -68,45 +43,23 @@ pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(
     io_error_fn: F,
     exit_status_fn: F2,
 ) -> Result<Output, E> {
-    let child = if quiet {
-        command.output_and_write_streams(std::io::sink(), std::io::sink())
+    let title = format!("Running {}", style::value(command.name()));
+    if quiet {
+        let _timer = print::sub_start_timer(title);
+        command.named_output()
     } else {
-        const SPACE_ASCII: u8 = 0x20;
-        let prefix = vec![SPACE_ASCII; 6];
-
-        println!();
-
-        let output = command.output_and_write_streams(
-            line_mapped(std::io::stdout(), add_prefix_to_non_empty(prefix.clone())),
-            line_mapped(std::io::stderr(), add_prefix_to_non_empty(prefix)),
-        );
-
-        println!();
-
-        output
-    };
-
-    child.map_err(io_error_fn).and_then(|output| {
-        if output.status.success() {
-            Ok(output)
-        } else {
-            Err(exit_status_fn(output))
+        print::sub_stream_with(&title, |stdout, stderr| {
+            command.stream_output(stdout, stderr)
+        })
+    }
+    .map(Into::<Output>::into)
+    .map_err(|o| match o {
+        fun_run::CmdError::SystemError(_, error) => io_error_fn(error),
+        fun_run::CmdError::NonZeroExitNotStreamed(named_output)
+        | fun_run::CmdError::NonZeroExitAlreadyStreamed(named_output) => {
+            exit_status_fn(Into::<Output>::into(named_output))
         }
     })
-}
-
-fn add_prefix_to_non_empty<P: Into<Vec<u8>>>(prefix: P) -> impl Fn(Vec<u8>) -> Vec<u8> {
-    let prefix = prefix.into();
-
-    move |mut input| {
-        if input.is_empty() {
-            vec![]
-        } else {
-            let mut result = prefix.clone();
-            result.append(&mut input);
-            result
-        }
-    }
 }
 
 #[derive(Clone, Debug)]
@@ -297,94 +250,5 @@ fn format_duration(duration: &Duration) -> String {
 const VALUE_DELIMITER_CHAR: char = '`';
 const ANSI_RESET_CODE: &str = "\u{1b}[0m";
 const ANSI_VALUE_CODE: &str = "\u{1b}[0;33m";
-const ANSI_YELLOW_CODE: &str = "\u{1b}[0;33m";
-const ANSI_RED_CODE: &str = "\u{1b}[0;31m";
-const ANSI_BUILDPACK_NAME_CODE: &str = "\u{1b}[1;35m";
 const ANSI_URL_CODE: &str = "\u{1b}[0;34m";
 const ANSI_COMMAND_CODE: &str = "\u{1b}[1;36m";
-const ERROR_WARNING_LINE_PREFIX: &str = "! ";
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn test_prefixing() {
-        const DEFAULT_CODE: &str = "\x1B[0;33m";
-
-        let text = BuildpackOutputText {
-            default_code: Some(String::from(DEFAULT_CODE)),
-            sections: vec![
-                BuildpackOutputTextSection::regular("Hello\n"),
-                BuildpackOutputTextSection::value("World"),
-                BuildpackOutputTextSection::regular("\n"),
-                BuildpackOutputTextSection::regular("How\nare you?"),
-            ],
-            line_prefix: Some(String::from(ERROR_WARNING_LINE_PREFIX)),
-            ..Default::default()
-        };
-
-        assert_eq!(text.to_ansi_string(), "\u{1b}[0m\u{1b}[0;33m! Hello\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;33mWorld\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! How\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! are you?");
-    }
-
-    #[test]
-    fn test_prefixing_with_value() {
-        let text = BuildpackOutputText {
-            default_code: Some(String::from(ANSI_YELLOW_CODE)),
-            sections: vec![
-                BuildpackOutputTextSection::regular("Intro\n"),
-                BuildpackOutputTextSection::value("With\nNewline"),
-                BuildpackOutputTextSection::regular("\nOutro"),
-            ],
-            line_prefix: Some(String::from("! ")),
-            ..Default::default()
-        };
-
-        assert_eq!(
-            text.to_ansi_string(),
-            "\u{1b}[0m\u{1b}[0;33m! Intro\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;33mWith\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! \u{1b}[0;33mNewline\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! Outro"
-        );
-    }
-
-    #[test]
-    fn test_display_duration() {
-        let duration = Duration::ZERO;
-        assert_eq!(format_duration(&duration), "< 0.1s");
-
-        let duration = Duration::from_millis(99);
-        assert_eq!(format_duration(&duration), "< 0.1s");
-
-        let duration = Duration::from_millis(100);
-        assert_eq!(format_duration(&duration), "0.1s");
-
-        let duration = Duration::from_millis(210);
-        assert_eq!(format_duration(&duration), "0.2s");
-
-        let duration = Duration::from_millis(1100);
-        assert_eq!(format_duration(&duration), "1.1s");
-
-        let duration = Duration::from_millis(9100);
-        assert_eq!(format_duration(&duration), "9.1s");
-
-        let duration = Duration::from_millis(10100);
-        assert_eq!(format_duration(&duration), "10.1s");
-
-        let duration = Duration::from_millis(52100);
-        assert_eq!(format_duration(&duration), "52.1s");
-
-        let duration = Duration::from_millis(60 * 1000);
-        assert_eq!(format_duration(&duration), "1m 0s");
-
-        let duration = Duration::from_millis(60 * 1000 + 2000);
-        assert_eq!(format_duration(&duration), "1m 2s");
-
-        let duration = Duration::from_millis(60 * 60 * 1000 - 1);
-        assert_eq!(format_duration(&duration), "59m 59s");
-
-        let duration = Duration::from_millis(60 * 60 * 1000);
-        assert_eq!(format_duration(&duration), "1h 0m 0s");
-
-        let duration = Duration::from_millis(75 * 60 * 1000 - 1);
-        assert_eq!(format_duration(&duration), "1h 14m 59s");
-    }
-}

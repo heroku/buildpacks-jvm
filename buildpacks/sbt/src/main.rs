@@ -23,7 +23,6 @@ use libherokubuildpack::error::on_error as on_buildpack_error;
 use std::process::Command;
 
 use buildpacks_jvm_shared::output;
-use buildpacks_jvm_shared::output::{BuildpackOutputText, BuildpackOutputTextSection};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
@@ -105,12 +104,8 @@ impl Buildpack for SbtBuildpack {
 
         let tasks = sbt::tasks::from_config(&buildpack_configuration);
 
-        output::track_timing(|| {
+        {
             output::print_section("Running sbt build");
-            output::print_subsection(BuildpackOutputText::new(vec![
-                BuildpackOutputTextSection::regular("Running "),
-                BuildpackOutputTextSection::command(format!("sbt {}", shell_words::join(&tasks))),
-            ]));
 
             let mut command = Command::new("sbt");
             command.current_dir(&context.app_dir).args(tasks).envs(&env);
@@ -126,7 +121,7 @@ impl Buildpack for SbtBuildpack {
                     )
                 },
             )
-        })?;
+        }?;
 
         BuildResultBuilder::new().build()
     }

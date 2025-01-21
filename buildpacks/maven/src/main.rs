@@ -210,19 +210,9 @@ impl Buildpack for MavenBuildpack {
         let internal_maven_options = vec![String::from("-B")];
 
         output::print_section("Running Maven build");
-        output::print_subsection(BuildpackOutputText::new(vec![
-            BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::command(format!(
-                "{} {} {}",
-                mvn_executable.to_string_lossy(),
-                shell_words::join(&maven_options),
-                shell_words::join(&maven_goals)
-            )),
-        ]));
 
-        output::track_timing(|| {
+        {
             let mut command = Command::new(&mvn_executable);
-
             command
                 .current_dir(&context.app_dir)
                 .args(
@@ -238,8 +228,8 @@ impl Buildpack for MavenBuildpack {
                 false,
                 MavenBuildpackError::MavenBuildIoError,
                 |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
-            )
-        })?;
+            )?
+        };
 
         output::print_section(BuildpackOutputText::new(vec![
             BuildpackOutputTextSection::regular("Running "),
