@@ -1,5 +1,6 @@
 use bullet_stream::global::print;
 use bullet_stream::style;
+pub use fun_run::CmdError;
 use fun_run::CommandWithName;
 use std::process::{Command, Output};
 use std::time::Instant;
@@ -37,12 +38,7 @@ pub fn print_error(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>)
     ));
 }
 
-pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(
-    mut command: Command,
-    quiet: bool,
-    io_error_fn: F,
-    exit_status_fn: F2,
-) -> Result<Output, E> {
+pub fn run_command(mut command: Command, quiet: bool) -> Result<Output, CmdError> {
     let title = format!("Running {}", style::value(command.name()));
     if quiet {
         let _timer = print::sub_start_timer(title);
@@ -53,13 +49,6 @@ pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(
         })
     }
     .map(Into::<Output>::into)
-    .map_err(|o| match o {
-        fun_run::CmdError::SystemError(_, error) => io_error_fn(error),
-        fun_run::CmdError::NonZeroExitNotStreamed(named_output)
-        | fun_run::CmdError::NonZeroExitAlreadyStreamed(named_output) => {
-            exit_status_fn(Into::<Output>::into(named_output))
-        }
-    })
 }
 
 #[derive(Clone, Debug)]

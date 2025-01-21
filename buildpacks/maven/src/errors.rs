@@ -3,6 +3,7 @@ use buildpacks_jvm_shared::log::{
     log_build_tool_io_error, log_build_tool_unexpected_exit_code_error, log_please_try_again,
     log_please_try_again_error,
 };
+use buildpacks_jvm_shared::output::CmdError;
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
@@ -82,8 +83,13 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
             "},
             error
         ),
-        MavenBuildpackError::MavenBuildUnexpectedExitCode(exit_status) => log_build_tool_unexpected_exit_code_error("Maven", exit_status),
-        MavenBuildpackError::MavenBuildIoError(error) => log_build_tool_io_error("Maven", error),
+        MavenBuildpackError::MavenFailedCommand(error) => {
+            match error {
+                CmdError::SystemError(_, error) => log_build_tool_io_error("Maven", error),
+                CmdError::NonZeroExitNotStreamed(named_output) |
+                CmdError::NonZeroExitAlreadyStreamed(named_output) => log_build_tool_unexpected_exit_code_error("Maven",named_output.status().clone()),
+            }
+        }
         MavenBuildpackError::CannotSplitMavenCustomOpts(error) => log_error(
             "Invalid MAVEN_CUSTOM_OPTS",
             formatdoc! {"

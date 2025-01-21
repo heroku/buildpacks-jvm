@@ -19,7 +19,7 @@ use std::fs;
 use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
-use std::process::{Command, ExitStatus};
+use std::process::Command;
 use std::time::Instant;
 
 use buildpacks_jvm_shared::output;
@@ -56,8 +56,7 @@ enum MavenBuildpackError {
     CannotSplitMavenCustomGoals(shell_words::ParseError),
     DetermineModeError(ReadSystemPropertiesError),
     SettingsError(SettingsError),
-    MavenBuildUnexpectedExitCode(ExitStatus),
-    MavenBuildIoError(std::io::Error),
+    MavenFailedCommand(output::CmdError),
     CannotSetMavenWrapperExecutableBit(std::io::Error),
     DefaultAppProcessError(DefaultAppProcessError),
 }
@@ -226,12 +225,7 @@ impl Buildpack for MavenBuildpack {
                 )
                 .envs(&mvn_env);
 
-            output::run_command(
-                command,
-                false,
-                MavenBuildpackError::MavenBuildIoError,
-                |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
-            )?
+            output::run_command(command, false).map_err(MavenBuildpackError::MavenFailedCommand)?
         };
         output::track_timing_subsection(
             BuildpackOutputText::new(vec![
@@ -261,12 +255,7 @@ impl Buildpack for MavenBuildpack {
                     )
                     .envs(&mvn_env);
 
-                output::run_command(
-                    command,
-                    true,
-                    MavenBuildpackError::MavenBuildIoError,
-                    |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
-                )
+                output::run_command(command, true).map_err(MavenBuildpackError::MavenFailedCommand)
             },
         )?;
 

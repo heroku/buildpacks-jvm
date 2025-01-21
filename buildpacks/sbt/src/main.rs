@@ -20,7 +20,8 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
 use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
 use libherokubuildpack::error::on_error as on_buildpack_error;
-use std::process::Command;
+use sbt::output::parse_errors;
+use std::process::{Command, Output};
 use std::time::Instant;
 
 use buildpacks_jvm_shared::output;
@@ -112,18 +113,21 @@ impl Buildpack for SbtBuildpack {
             let mut command = Command::new("sbt");
             command.current_dir(&context.app_dir).args(tasks).envs(&env);
 
-            output::run_command(
-                command,
-                false,
-                SbtBuildpackError::SbtBuildIoError,
-                |output| {
-                    SbtBuildpackError::SbtBuildUnexpectedExitStatus(
-                        output.status,
-                        sbt::output::parse_errors(&output.stdout),
-                    )
-                },
-            )
-        }?;
+            output::run_command(command, false)
+        }
+        .map_err(|error| {
+            if let Some(missing_task) = match &error {
+                output::CmdError::SystemError(_, _) => None,
+                output::CmdError::NonZeroExitNotStreamed(named_output)
+                | output::CmdError::NonZeroExitAlreadyStreamed(named_output) => {
+                    parse_errors(&Into::<Output>::into(named_output.clone()).stdout)
+                }
+            } {
+                SbtBuildpackError::MissingTaskFailedCommand(missing_task, error)
+            } else {
+                SbtBuildpackError::FailedCommand(error)
+            }
+        })?;
 
         output::print_all_done(build_timer);
         BuildResultBuilder::new().build()

@@ -3,15 +3,13 @@ use crate::layers::sbt_extras::SbtExtrasLayerError;
 use crate::layers::sbt_global::SbtGlobalLayerError;
 use crate::sbt::output::SbtError;
 use crate::sbt::version::ReadSbtVersionError;
-use buildpacks_jvm_shared::log::{
-    log_build_tool_unexpected_exit_code_error, log_please_try_again_error,
-};
+use buildpacks_jvm_shared::log::log_please_try_again_error;
+use buildpacks_jvm_shared::output::CmdError;
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
 use semver::Version;
 use std::fmt::Debug;
-use std::process::ExitStatus;
 
 #[derive(Debug)]
 pub(crate) enum SbtBuildpackError {
@@ -21,8 +19,8 @@ pub(crate) enum SbtBuildpackError {
     UnknownSbtVersion,
     UnsupportedSbtVersion(Version),
     DetectPhaseIoError(std::io::Error),
-    SbtBuildIoError(std::io::Error),
-    SbtBuildUnexpectedExitStatus(ExitStatus, Option<SbtError>),
+    FailedCommand(CmdError),
+    MissingTaskFailedCommand(SbtError, CmdError),
     ReadSbtBuildpackConfigurationError(ReadSbtBuildpackConfigurationError),
     ReadSystemPropertiesError(ReadSystemPropertiesError),
 }
@@ -37,7 +35,6 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                             error,
                         );
         }
-
         SbtBuildpackError::SbtExtrasLayerError(error) => {
             match error {
                 SbtExtrasLayerError::CouldNotWriteScript(error) | SbtExtrasLayerError::CouldNotSetPermissions(error) | SbtExtrasLayerError::CouldNotCreateLaunchersDir(error) => log_please_try_again_error(
@@ -144,16 +141,14 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             }
         }
 
-        SbtBuildpackError::SbtBuildIoError(error) => log_please_try_again_error(
-            "Running sbt failed",
-            formatdoc! { "
-                An unexpected IO error occurred while running sbt.
-            "}, error,
-        ),
-
-        SbtBuildpackError::SbtBuildUnexpectedExitStatus(exit_status, None) => log_build_tool_unexpected_exit_code_error("sbt", exit_status),
-
-        SbtBuildpackError::SbtBuildUnexpectedExitStatus(_, Some(SbtError::MissingTask(task_name))) => log_error(
+        SbtBuildpackError::FailedCommand(error) => log_please_try_again_error(
+             "Running sbt failed",
+             formatdoc! { "
+                 An unexpected IO error occurred while running sbt.
+            "},
+            error,
+         ),
+        SbtBuildpackError::MissingTaskFailedCommand(SbtError::MissingTask(task_name), _error) => log_error(
             "Failed to run sbt!",
             formatdoc! {"
                 It looks like your build.sbt does not have a valid '{task_name}' task. Please reference our Dev Center article for
@@ -162,7 +157,6 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 https://devcenter.heroku.com/articles/scala-support#build-behavior
             "},
         ),
-
         SbtBuildpackError::DetectPhaseIoError(error) => log_please_try_again_error(
             "Unexpected I/O error",
             "An unexpected error occurred during the detect phase.",
