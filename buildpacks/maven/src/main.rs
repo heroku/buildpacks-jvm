@@ -144,24 +144,25 @@ impl Buildpack for MavenBuildpack {
                     log_default_maven_version_warning(&version);
                 }
 
-                output::print_subsection(BuildpackOutputText::new(vec![
-                    BuildpackOutputTextSection::regular("Selected Maven version "),
-                    BuildpackOutputTextSection::value(&version),
-                ]));
+                output::track_timing_subsection(
+                    BuildpackOutputText::new(vec![
+                        BuildpackOutputTextSection::regular("Selected Maven version "),
+                        BuildpackOutputTextSection::value(&version),
+                    ]),
+                    || {
+                        let tarball = context
+                            .buildpack_descriptor
+                            .metadata
+                            .tarballs
+                            .get(&version)
+                            .cloned()
+                            .ok_or_else(|| {
+                                MavenBuildpackError::UnsupportedMavenVersion(version.clone())
+                            })?;
 
-                output::track_timing(|| {
-                    let tarball = context
-                        .buildpack_descriptor
-                        .metadata
-                        .tarballs
-                        .get(&version)
-                        .cloned()
-                        .ok_or_else(|| {
-                            MavenBuildpackError::UnsupportedMavenVersion(version.clone())
-                        })?;
-
-                    handle_maven_layer(&context, &tarball, &mut mvn_env)
-                })?;
+                        handle_maven_layer(&context, &tarball, &mut mvn_env)
+                    },
+                )?;
 
                 PathBuf::from("mvn")
             }
@@ -230,42 +231,42 @@ impl Buildpack for MavenBuildpack {
                 |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
             )?
         };
+        output::track_timing_subsection(
+            BuildpackOutputText::new(vec![
+                BuildpackOutputTextSection::regular("Running "),
+                BuildpackOutputTextSection::value(format!(
+                    "{} dependency:list",
+                    mvn_executable.to_string_lossy()
+                )),
+                BuildpackOutputTextSection::regular(" quietly"),
+            ]),
+            || {
+                let mut command = Command::new(&mvn_executable);
 
-        output::print_section(BuildpackOutputText::new(vec![
-            BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::value(format!(
-                "{} dependency:list",
-                mvn_executable.to_string_lossy()
-            )),
-            BuildpackOutputTextSection::regular(" quietly"),
-        ]));
+                command
+                    .current_dir(&context.app_dir)
+                    .args(
+                        maven_options.iter().chain(&internal_maven_options).chain(
+                            [
+                                format!(
+                                    "-DoutputFile={}",
+                                    app_dependency_list_path(&context.app_dir).to_string_lossy()
+                                ),
+                                String::from("dependency:list"),
+                            ]
+                            .iter(),
+                        ),
+                    )
+                    .envs(&mvn_env);
 
-        output::track_timing(|| {
-            let mut command = Command::new(&mvn_executable);
-
-            command
-                .current_dir(&context.app_dir)
-                .args(
-                    maven_options.iter().chain(&internal_maven_options).chain(
-                        [
-                            format!(
-                                "-DoutputFile={}",
-                                app_dependency_list_path(&context.app_dir).to_string_lossy()
-                            ),
-                            String::from("dependency:list"),
-                        ]
-                        .iter(),
-                    ),
+                output::run_command(
+                    command,
+                    true,
+                    MavenBuildpackError::MavenBuildIoError,
+                    |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
                 )
-                .envs(&mvn_env);
-
-            output::run_command(
-                command,
-                true,
-                MavenBuildpackError::MavenBuildIoError,
-                |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
-            )
-        })?;
+            },
+        )?;
 
         let mut build_result_builder = BuildResultBuilder::new();
 

@@ -79,71 +79,73 @@ pub(crate) fn handle_openjdk_layer(
                 _ => {}
             }
 
-            output::track_timing(|| {
-                output::print_subsection("Downloading and unpacking OpenJDK distribution");
+            output::track_timing_subsection(
+                "Downloading and unpacking OpenJDK distribution",
+                || {
+                    let temp_dir =
+                        tempdir().map_err(OpenJdkBuildpackError::CannotCreateOpenJdkTempDir)?;
+                    let path = temp_dir.path().join("openjdk.tar.gz");
 
-                let temp_dir =
-                    tempdir().map_err(OpenJdkBuildpackError::CannotCreateOpenJdkTempDir)?;
-                let path = temp_dir.path().join("openjdk.tar.gz");
+                    libherokubuildpack::download::download_file(&artifact.url, &path)
+                        .map_err(OpenJdkBuildpackError::OpenJdkDownloadError)?;
 
-                libherokubuildpack::download::download_file(&artifact.url, &path)
-                    .map_err(OpenJdkBuildpackError::OpenJdkDownloadError)?;
+                    std::fs::File::open(&path)
+                        .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
+                        .and_then(|file| {
+                            digest::<Sha256>(file)
+                                .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
+                        })
+                        .and_then(|downloaded_file_digest| {
+                            if downloaded_file_digest.as_slice() == artifact.checksum.value {
+                                Ok(())
+                            } else {
+                                Err(OpenJdkBuildpackError::OpenJdkTarballChecksumError {
+                                    expected: artifact.checksum.value.clone(),
+                                    actual: downloaded_file_digest.to_vec(),
+                                })
+                            }
+                        })?;
 
-                std::fs::File::open(&path)
-                    .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
-                    .and_then(|file| {
-                        digest::<Sha256>(file)
-                            .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
-                    })
-                    .and_then(|downloaded_file_digest| {
-                        if downloaded_file_digest.as_slice() == artifact.checksum.value {
-                            Ok(())
-                        } else {
-                            Err(OpenJdkBuildpackError::OpenJdkTarballChecksumError {
-                                expected: artifact.checksum.value.clone(),
-                                actual: downloaded_file_digest.to_vec(),
-                            })
-                        }
-                    })?;
-
-                std::fs::File::open(&path)
-                    .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
-                    .and_then(|mut file| {
-                        libherokubuildpack::tar::decompress_tarball(&mut file, layer_ref.path())
-                            .map_err(OpenJdkBuildpackError::CannotDecompressOpenJdkTarball)
-                    })
-            })?;
+                    std::fs::File::open(&path)
+                        .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
+                        .and_then(|mut file| {
+                            libherokubuildpack::tar::decompress_tarball(&mut file, layer_ref.path())
+                                .map_err(OpenJdkBuildpackError::CannotDecompressOpenJdkTarball)
+                        })
+                },
+            )?;
 
             output::print_section("Applying JDK overlay");
             let app_jdk_overlay_dir_path = context.app_dir.join(JDK_OVERLAY_DIR_NAME);
 
             let mut jdk_overlay_applied = false;
             if app_jdk_overlay_dir_path.is_dir() {
-                output::print_subsection(BuildpackOutputText::new(vec![
-                    BuildpackOutputTextSection::regular("Copying files from "),
-                    BuildpackOutputTextSection::value(JDK_OVERLAY_DIR_NAME),
-                    BuildpackOutputTextSection::regular(" to OpenJDK directory"),
-                ]));
-
                 jdk_overlay_applied = true;
 
-                output::track_timing(|| {
-                    let jdk_overlay_contents =
-                        util::list_directory_contents(&app_jdk_overlay_dir_path)
-                            .map_err(OpenJdkBuildpackError::CannotListJdkOverlayContents)?;
+                output::track_timing_subsection(
+                    BuildpackOutputText::new(vec![
+                        BuildpackOutputTextSection::regular("Copying files from "),
+                        BuildpackOutputTextSection::value(JDK_OVERLAY_DIR_NAME),
+                        BuildpackOutputTextSection::regular(" to OpenJDK directory"),
+                    ]),
+                    || {
+                        let jdk_overlay_contents =
+                            util::list_directory_contents(&app_jdk_overlay_dir_path)
+                                .map_err(OpenJdkBuildpackError::CannotListJdkOverlayContents)?;
 
-                    fs_extra::copy_items(
-                        &jdk_overlay_contents,
-                        layer_ref.path(),
-                        &CopyOptions {
-                            overwrite: true,
-                            skip_exist: false,
-                            copy_inside: true,
-                            ..CopyOptions::default()
-                        },
-                    )
-                    .map_err(OpenJdkBuildpackError::CannotCopyJdkOverlayContents)
-                })?;
+                        fs_extra::copy_items(
+                            &jdk_overlay_contents,
+                            layer_ref.path(),
+                            &CopyOptions {
+                                overwrite: true,
+                                skip_exist: false,
+                                copy_inside: true,
+                                ..CopyOptions::default()
+                            },
+                        )
+                        .map_err(OpenJdkBuildpackError::CannotCopyJdkOverlayContents)
+                    },
+                )?;
             } else {
                 output::print_subsection(BuildpackOutputText::new(vec![
                     BuildpackOutputTextSection::regular("Skipping (directory "),

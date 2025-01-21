@@ -7,8 +7,8 @@ use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use buildpacks_jvm_shared as shared;
 use buildpacks_jvm_shared::output::{
-    print_buildpack_name, print_section, print_subsection, track_timing, BuildpackOutputText,
-    BuildpackOutputTextSection,
+    print_buildpack_name, print_section, print_subsection, track_timing_subsection,
+    BuildpackOutputText, BuildpackOutputTextSection,
 };
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
@@ -94,20 +94,18 @@ impl Buildpack for GradleBuildpack {
 
         print_section("Running Gradle build");
 
-        track_timing(|| {
-            print_subsection("Starting Gradle daemon");
+        track_timing_subsection("Starting Gradle daemon", || {
             gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
                 .map_err(GradleBuildpackError::StartGradleDaemonError)
         })?;
 
-        let project_tasks = track_timing(|| {
-            print_subsection("Querying tasks");
+        let project_tasks = track_timing_subsection("Querying tasks", || {
             gradle_command::tasks(&context.app_dir, &gradle_env)
                 .map_err(|command_error| command_error.map_parse_error(|_| ()))
                 .map_err(GradleBuildpackError::GetTasksError)
         })?;
 
-        let dependency_report = track_timing(|| {
+        let dependency_report = track_timing_subsection("Querying dependency report", || {
             print_subsection("Querying dependency report");
             gradle_command::dependency_report(&context.app_dir, &gradle_env)
                 .map_err(GradleBuildpackError::GetDependencyReportError)

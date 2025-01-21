@@ -217,16 +217,12 @@ impl From<Vec<BuildpackOutputTextSection>> for BuildpackOutputText {
     }
 }
 
-pub fn track_timing<F, E, T>(f: F) -> Result<E, T>
+pub fn track_timing_subsection<F, E>(title: impl Into<BuildpackOutputText>, f: F) -> E
 where
-    F: FnOnce() -> Result<E, T>,
+    F: FnOnce() -> E,
 {
-    let start_time = Instant::now();
-    let ret = f();
-    let end_time = Instant::now();
-
-    print_timing_done_subsection(&end_time.duration_since(start_time));
-    ret
+    let _timer = print::sub_start_timer(title.into().to_ansi_string());
+    f()
 }
 
 fn format_duration(duration: &Duration) -> String {
