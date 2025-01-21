@@ -227,37 +227,25 @@ impl Buildpack for MavenBuildpack {
 
             output::run_command(command, false).map_err(MavenBuildpackError::MavenFailedCommand)?
         };
-        output::track_timing_subsection(
-            BuildpackOutputText::new(vec![
-                BuildpackOutputTextSection::regular("Running "),
-                BuildpackOutputTextSection::value(format!(
-                    "{} dependency:list",
-                    mvn_executable.to_string_lossy()
-                )),
-                BuildpackOutputTextSection::regular(" quietly"),
-            ]),
-            || {
-                let mut command = Command::new(&mvn_executable);
 
-                command
-                    .current_dir(&context.app_dir)
-                    .args(
-                        maven_options.iter().chain(&internal_maven_options).chain(
-                            [
-                                format!(
-                                    "-DoutputFile={}",
-                                    app_dependency_list_path(&context.app_dir).to_string_lossy()
-                                ),
-                                String::from("dependency:list"),
-                            ]
-                            .iter(),
+        let mut command = Command::new(&mvn_executable);
+        command
+            .current_dir(&context.app_dir)
+            .args(
+                maven_options.iter().chain(&internal_maven_options).chain(
+                    [
+                        format!(
+                            "-DoutputFile={}",
+                            app_dependency_list_path(&context.app_dir).to_string_lossy()
                         ),
-                    )
-                    .envs(&mvn_env);
+                        String::from("dependency:list"),
+                    ]
+                    .iter(),
+                ),
+            )
+            .envs(&mvn_env);
 
-                output::run_command(command, true).map_err(MavenBuildpackError::MavenFailedCommand)
-            },
-        )?;
+        output::run_command(command, true).map_err(MavenBuildpackError::MavenFailedCommand)?;
 
         let mut build_result_builder = BuildResultBuilder::new();
 
