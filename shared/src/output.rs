@@ -41,8 +41,10 @@ pub fn print_error(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>)
 pub fn run_command(mut command: Command, quiet: bool) -> Result<Output, CmdError> {
     let title = format!("Running {}", style::value(command.name()));
     if quiet {
-        let _timer = print::sub_start_timer(title);
-        command.named_output()
+        let timer = print::sub_start_timer(title);
+        let output = command.named_output();
+        let _ = timer.done();
+        output
     } else {
         print::sub_stream_with(&title, |stdout, stderr| {
             command.stream_output(stdout, stderr)
@@ -210,8 +212,10 @@ pub fn track_timing_subsection<F, E>(title: impl Into<BuildpackOutputText>, f: F
 where
     F: FnOnce() -> E,
 {
-    let _timer = print::sub_start_timer(title.into().to_ansi_string());
-    f()
+    let timer = print::sub_start_timer(title.into().to_ansi_string());
+    let output = f();
+    let _ = timer.done();
+    output
 }
 
 const VALUE_DELIMITER_CHAR: char = '`';
