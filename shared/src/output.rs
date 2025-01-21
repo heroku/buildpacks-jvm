@@ -2,7 +2,7 @@ use bullet_stream::global::print;
 use bullet_stream::style;
 use fun_run::CommandWithName;
 use std::process::{Command, Output};
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 pub fn print_buildpack_name(buildpack_name: impl AsRef<str>) {
     print::h2(buildpack_name);
@@ -18,10 +18,6 @@ pub fn print_subsection(text: impl Into<BuildpackOutputText>) {
 
 pub fn print_all_done(timer: Instant) {
     print::all_done(&Some(timer));
-}
-
-pub fn print_timing_done_subsection(duration: &Duration) {
-    println!("{ANSI_RESET_CODE}  - Done ({})", format_duration(duration));
 }
 
 pub fn print_warning(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>) {
@@ -229,26 +225,53 @@ where
     f()
 }
 
-fn format_duration(duration: &Duration) -> String {
-    let hours = (duration.as_secs() / 3600) % 60;
-    let minutes = (duration.as_secs() / 60) % 60;
-    let seconds = duration.as_secs() % 60;
-    let milliseconds = duration.subsec_millis();
-    let tenths = milliseconds / 100;
-
-    if hours > 0 {
-        format!("{hours}h {minutes}m {seconds}s")
-    } else if minutes > 0 {
-        format!("{minutes}m {seconds}s")
-    } else if seconds > 0 || milliseconds >= 100 {
-        format!("{seconds}.{tenths}s")
-    } else {
-        String::from("< 0.1s")
-    }
-}
-
 const VALUE_DELIMITER_CHAR: char = '`';
 const ANSI_RESET_CODE: &str = "\u{1b}[0m";
 const ANSI_VALUE_CODE: &str = "\u{1b}[0;33m";
 const ANSI_URL_CODE: &str = "\u{1b}[0;34m";
 const ANSI_COMMAND_CODE: &str = "\u{1b}[1;36m";
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    const ANSI_YELLOW_CODE: &str = "\u{1b}[0;33m";
+    const ERROR_WARNING_LINE_PREFIX: &str = "! ";
+    #[test]
+    fn test_prefixing() {
+        const DEFAULT_CODE: &str = "\x1B[0;33m";
+
+        let text = BuildpackOutputText {
+            default_code: Some(String::from(DEFAULT_CODE)),
+            sections: vec![
+                BuildpackOutputTextSection::regular("Hello\n"),
+                BuildpackOutputTextSection::value("World"),
+                BuildpackOutputTextSection::regular("\n"),
+                BuildpackOutputTextSection::regular("How\nare you?"),
+            ],
+            line_prefix: Some(String::from(ERROR_WARNING_LINE_PREFIX)),
+            ..Default::default()
+        };
+
+        assert_eq!(text.to_ansi_string(), "\u{1b}[0m\u{1b}[0;33m! Hello\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;33mWorld\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! How\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! are you?");
+    }
+
+    #[test]
+    fn test_prefixing_with_value() {
+        let text = BuildpackOutputText {
+            default_code: Some(String::from(ANSI_YELLOW_CODE)),
+            sections: vec![
+                BuildpackOutputTextSection::regular("Intro\n"),
+                BuildpackOutputTextSection::value("With\nNewline"),
+                BuildpackOutputTextSection::regular("\nOutro"),
+            ],
+            line_prefix: Some(String::from("! ")),
+            ..Default::default()
+        };
+
+        assert_eq!(
+            text.to_ansi_string(),
+            "\u{1b}[0m\u{1b}[0;33m! Intro\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! `\u{1b}[0;33mWith\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! \u{1b}[0;33mNewline\u{1b}[0m`\u{1b}[0;33m\u{1b}[0m\n\u{1b}[0m\u{1b}[0;33m! Outro"
+        );
+    }
+}
