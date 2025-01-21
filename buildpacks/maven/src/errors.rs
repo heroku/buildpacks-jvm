@@ -87,7 +87,7 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
             match error {
                 CmdError::SystemError(_, error) => log_build_tool_io_error("Maven", error),
                 CmdError::NonZeroExitNotStreamed(named_output) |
-                CmdError::NonZeroExitAlreadyStreamed(named_output) => log_build_tool_unexpected_exit_code_error("Maven",named_output.status().clone()),
+                CmdError::NonZeroExitAlreadyStreamed(named_output) => log_build_tool_unexpected_exit_code_error("Maven",*named_output.status()),
             }
         }
         MavenBuildpackError::CannotSplitMavenCustomOpts(error) => log_error(
