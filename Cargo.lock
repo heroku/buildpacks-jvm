@@ -743,7 +743,6 @@ version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "45070d23cda8614758579eddae211a6267e86bcef8ab75a1cd239eac45a6778d"
 dependencies = [
- "crossbeam-utils",
  "flate2",
  "hex",
  "libcnb",
