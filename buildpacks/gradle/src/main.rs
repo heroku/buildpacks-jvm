@@ -103,7 +103,6 @@ impl Buildpack for GradleBuildpack {
         })?;
 
         let dependency_report = track_timing_subsection("Querying dependency report", || {
-            print_subsection("Querying dependency report");
             gradle_command::dependency_report(&context.app_dir, &gradle_env)
                 .map_err(GradleBuildpackError::GetDependencyReportError)
         })?;
