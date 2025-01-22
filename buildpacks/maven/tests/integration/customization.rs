@@ -7,7 +7,7 @@ use libcnb_test::{assert_contains, TestRunner};
 fn maven_custom_goals() {
     TestRunner::default().build(default_build_config("test-apps/simple-http-service").env("MAVEN_CUSTOM_GOALS", "site"), |context| {
         // Assert only the goals in MAVEN_CUSTOM_GOALS are executed
-        assert_contains!(context.pack_stderr, "./mvnw -DskipTests site");
+        assert_contains!(context.pack_stderr, "./mvnw -DskipTests -B site");
         assert_contains!(context.pack_stderr,"[INFO] --- maven-site-plugin:3.7.1:site (default-site) @ simple-http-service ---");
 
         // The dependency list is implemented by using the dependency:list goal. We need to
