@@ -14,7 +14,7 @@ fn mvnw_executable_bit() {
         |context| {
             // Assert the build completed successfully, even with a missing executable bit on
             // the Maven Wrapper executable.
-            assert_contains!(context.pack_stderr, "Successfully built image");
+            assert_contains!(context.pack_stdout, "Successfully built image");
         },
     );
 }
