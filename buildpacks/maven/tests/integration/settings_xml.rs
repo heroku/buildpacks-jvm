@@ -12,7 +12,7 @@ fn maven_settings_url_success() {
             .env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL),
         |context| {
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!(
                     "[BUILDPACK INTEGRATION TEST - SETTINGS TEST VALUE] {SETTINGS_XML_URL_VALUE}"
                 )
@@ -35,7 +35,7 @@ fn maven_settings_url_failure() {
                 );
 
                 // This error message comes from Maven itself. We don't expect Maven to to be executed at all.
-                assert_not_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
+                assert_not_contains!(context.pack_stderr, "[INFO] BUILD FAILURE");
             },
         );
 }
@@ -54,7 +54,7 @@ fn maven_settings_path() {
             .env("MAVEN_SETTINGS_PATH", settings_xml_filename),
         |context| {
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!(
                     "[BUILDPACK INTEGRATION TEST - SETTINGS TEST VALUE] {settings_xml_test_value}"
                 )
@@ -79,7 +79,7 @@ fn maven_settings_path_and_settings_url() {
         |context| {
             // Assert MAVEN_SETTINGS_PATH takes precedence
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!(
                     "[BUILDPACK INTEGRATION TEST - SETTINGS TEST VALUE] {settings_xml_test_value}"
                 )
@@ -101,7 +101,7 @@ fn maven_settings_xml_in_app_root() {
         }),
         |context| {
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!(
                     "[BUILDPACK INTEGRATION TEST - SETTINGS TEST VALUE] {settings_xml_test_value}"
                 )
@@ -128,7 +128,7 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_path() {
             .env("MAVEN_SETTINGS_PATH", zero_wing_filename),
         |context| {
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!(
                     "[BUILDPACK INTEGRATION TEST - SETTINGS TEST VALUE] {zero_wing_test_value}"
                 )
@@ -152,7 +152,7 @@ fn maven_settings_xml_in_app_root_and_explicit_settings_url() {
             .env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL),
         |context| {
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!(
                     "[BUILDPACK INTEGRATION TEST - SETTINGS TEST VALUE] {SETTINGS_XML_URL_VALUE}"
                 )

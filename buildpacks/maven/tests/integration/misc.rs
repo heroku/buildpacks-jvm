@@ -14,7 +14,7 @@ fn mvnw_executable_bit() {
         |context| {
             // Assert the build completed successfully, even with a missing executable bit on
             // the Maven Wrapper executable.
-            assert_contains!(context.pack_stdout, "Successfully built image");
+            assert_contains!(context.pack_stderr, "Successfully built image");
         },
     );
 }
@@ -104,10 +104,10 @@ fn no_internal_maven_options_logging() {
     TestRunner::default().build(
         default_build_config("test-apps/simple-http-service"),
         |context| {
-            assert_not_contains!(context.pack_stdout, "-Dmaven.repo.local=");
-            assert_not_contains!(context.pack_stdout, "-Duser.home=");
+            assert_not_contains!(context.pack_stderr, "-Dmaven.repo.local=");
+            assert_not_contains!(context.pack_stderr, "-Duser.home=");
             assert_not_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 "-DoutputFile=target/mvn-dependency-list.log"
             );
         },
@@ -118,7 +118,7 @@ fn no_internal_maven_options_logging() {
 #[ignore = "integration test"]
 fn descriptive_error_message_on_failed_build() {
     TestRunner::default().build(default_build_config("test-apps/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
-            assert_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
+            assert_contains!(context.pack_stderr, "[INFO] BUILD FAILURE");
 
             assert_contains!(
                 context.pack_stderr,

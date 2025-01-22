@@ -10,7 +10,7 @@ fn test_sbt_1_x_logging() {
         default_build_config("test-apps/sbt-1.8.2-coursier-scala-2.13.10"),
         |context| {
             assert_not_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "Executing in batch mode. For better performance use sbt's shell"
             );
         },
@@ -31,7 +31,7 @@ fn test_missing_stage_task_logging() {
         .to_owned();
 
     TestRunner::default().build(&build_config, |context| {
-        assert_contains!(&context.pack_stdout, "[error] Not a valid key: stage");
+        assert_contains!(&context.pack_stderr, "[error] Not a valid key: stage");
 
         assert_contains!(
             &context.pack_stderr,

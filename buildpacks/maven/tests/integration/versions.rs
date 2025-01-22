@@ -7,10 +7,10 @@ use std::path::Path;
 #[ignore = "integration test"]
 fn with_wrapper() {
     TestRunner::default().build( default_build_config("test-apps/simple-http-service"), |context| {
-            assert_not_contains!(context.pack_stdout, "  - Selected Maven version");
-            assert_contains!(context.pack_stdout, "- Skipping (Maven wrapper detected)");
-            assert_contains!(context.pack_stdout, "  - Running `./mvnw");
-            assert_contains!(context.pack_stdout, &format!("[BUILDPACK INTEGRATION TEST - MAVEN VERSION] {SIMPLE_HTTP_SERVICE_MAVEN_WRAPPER_VERSION}"));
+            assert_not_contains!(context.pack_stderr, "  - Selected Maven version");
+            assert_contains!(context.pack_stderr, "- Skipping (Maven wrapper detected)");
+            assert_contains!(context.pack_stderr, "  - Running `./mvnw");
+            assert_contains!(context.pack_stderr, &format!("[BUILDPACK INTEGRATION TEST - MAVEN VERSION] {SIMPLE_HTTP_SERVICE_MAVEN_WRAPPER_VERSION}"));
         });
 }
 
@@ -24,12 +24,12 @@ fn with_wrapper_and_system_properties() {
         }),
         |context| {
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!("  - Selected Maven version `{DEFAULT_MAVEN_VERSION}`")
             );
-            assert_not_contains!(context.pack_stdout, "$ ./mvnw");
+            assert_not_contains!(context.pack_stderr, "$ ./mvnw");
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!("[BUILDPACK INTEGRATION TEST - MAVEN VERSION] {DEFAULT_MAVEN_VERSION}")
             );
         },
@@ -58,13 +58,13 @@ fn without_wrapper_and_without_system_properties() {
             remove_maven_wrapper(&path);
         }),
         |context| {
-            assert_not_contains!(context.pack_stdout, "$ ./mvnw");
+            assert_not_contains!(context.pack_stderr, "$ ./mvnw");
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!("  - Selected Maven version `{DEFAULT_MAVEN_VERSION}`")
             );
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 &format!("[BUILDPACK INTEGRATION TEST - MAVEN VERSION] {DEFAULT_MAVEN_VERSION}")
             );
         },
@@ -95,9 +95,9 @@ fn without_wrapper_and_maven_3_9_4_system_properties() {
             set_maven_version_app_dir_preprocessor("3.9.4", &path);
         }),
         |context| {
-            assert_contains!(context.pack_stdout, "  - Selected Maven version `3.9.4`");
+            assert_contains!(context.pack_stderr, "  - Selected Maven version `3.9.4`");
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 "[BUILDPACK INTEGRATION TEST - MAVEN VERSION] 3.9.4"
             );
         },

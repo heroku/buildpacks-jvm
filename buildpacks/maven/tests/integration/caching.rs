@@ -7,12 +7,12 @@ fn cache_dependencies_between_builds() {
     TestRunner::default().build(
         default_build_config("test-apps/simple-http-service"),
         |context| {
-            assert_contains!(context.pack_stdout, "Downloading from central");
+            assert_contains!(context.pack_stderr, "Downloading from central");
 
             context.rebuild(
                 default_build_config("test-apps/simple-http-service"),
                 |context| {
-                    assert_not_contains!(context.pack_stdout, "Downloading from central");
+                    assert_not_contains!(context.pack_stderr, "Downloading from central");
                 },
             );
         },

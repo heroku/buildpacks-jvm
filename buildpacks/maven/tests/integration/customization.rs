@@ -7,8 +7,8 @@ use libcnb_test::{assert_contains, TestRunner};
 fn maven_custom_goals() {
     TestRunner::default().build(default_build_config("test-apps/simple-http-service").env("MAVEN_CUSTOM_GOALS", "site"), |context| {
         // Assert only the goals in MAVEN_CUSTOM_GOALS are executed
-        assert_contains!(context.pack_stdout, "./mvnw -DskipTests site");
-        assert_contains!(context.pack_stdout,"[INFO] --- maven-site-plugin:3.7.1:site (default-site) @ simple-http-service ---");
+        assert_contains!(context.pack_stderr, "./mvnw -DskipTests site");
+        assert_contains!(context.pack_stderr,"[INFO] --- maven-site-plugin:3.7.1:site (default-site) @ simple-http-service ---");
 
         // The dependency list is implemented by using the dependency:list goal. We need to
         // assert it won't be overwritten by the user's choice of goals.
@@ -46,13 +46,13 @@ fn maven_custom_opts() {
         default_build_config("test-apps/simple-http-service").env("MAVEN_CUSTOM_OPTS", "-X"),
         |context| {
             // Assert only the options in MAVEN_CUSTOM_GOALS are used
-            assert_contains!(context.pack_stdout, "./mvnw -X clean install");
-            assert_contains!(context.pack_stdout, "[DEBUG] -- end configuration --");
+            assert_contains!(context.pack_stderr, "./mvnw -X clean install");
+            assert_contains!(context.pack_stderr, "[DEBUG] -- end configuration --");
 
             // -DskipTests is part of the default Maven options. We expect it to be overridden by MAVEN_CUSTOM_OPTS and
             // therefore expect Maven to run tests.
             assert_contains!(
-                context.pack_stdout,
+                context.pack_stderr,
                 "[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0"
             );
         },

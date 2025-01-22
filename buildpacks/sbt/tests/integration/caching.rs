@@ -20,11 +20,11 @@ fn test_caching_sbt_1_8_2_coursier() {
                 "[info] [launcher] getting Scala 2.12.17 (for sbt)..."
             );
             assert_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "[info] Non-compiled module 'compiler-bridge_2.12' for Scala 2.12.17. Compiling..."
             );
             assert_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "[info] Non-compiled module 'compiler-bridge_2.13' for Scala 2.13.10. Compiling..."
             );
 
@@ -44,11 +44,11 @@ fn test_caching_sbt_1_8_2_coursier() {
                         "[info] [launcher] getting Scala 2.12.17 (for sbt)..."
                     );
                     assert_not_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "[info] Non-compiled module 'compiler-bridge_2.12' for Scala 2.12.17. Compiling..."
             );
                     assert_not_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "[info] Non-compiled module 'compiler-bridge_2.13' for Scala 2.13.10. Compiling..."
             );
                 },
@@ -82,16 +82,16 @@ fn test_caching_sbt_1_8_2_ivy() {
                 "[info] [launcher] getting Scala 2.12.17 (for sbt)..."
             );
             assert_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "[info] Non-compiled module 'compiler-bridge_2.12' for Scala 2.12.17. Compiling..."
             );
             assert_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "[info] Non-compiled module 'compiler-bridge_2.13' for Scala 2.13.10. Compiling..."
             );
 
             for dependency_download_line in dependency_download_lines {
-                assert_contains!(&context.pack_stdout, dependency_download_line);
+                assert_contains!(&context.pack_stderr, dependency_download_line);
             }
 
             context.rebuild(
@@ -110,16 +110,16 @@ fn test_caching_sbt_1_8_2_ivy() {
                         "[info] [launcher] getting Scala 2.12.17 (for sbt)..."
                     );
                     assert_not_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "[info] Non-compiled module 'compiler-bridge_2.12' for Scala 2.12.17. Compiling..."
             );
                     assert_not_contains!(
-                &context.pack_stdout,
+                &context.pack_stderr,
                 "[info] Non-compiled module 'compiler-bridge_2.13' for Scala 2.13.10. Compiling..."
             );
 
                     for dependency_download_line in dependency_download_lines {
-                        assert_not_contains!(&context.pack_stdout, dependency_download_line);
+                        assert_not_contains!(&context.pack_stderr, dependency_download_line);
                     }
                 },
             );
