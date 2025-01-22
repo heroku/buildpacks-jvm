@@ -4,7 +4,7 @@ use crate::layers::sbt_global::SbtGlobalLayerError;
 use crate::sbt::output::SbtError;
 use crate::sbt::version::ReadSbtVersionError;
 use buildpacks_jvm_shared::log::{log_build_tool_command_error, log_please_try_again_error};
-use buildpacks_jvm_shared::output::{print_error, CmdError};
+use buildpacks_jvm_shared::output::{print_error, print_section, print_subsection, CmdError};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
@@ -140,15 +140,18 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 }
             }
         }
-        SbtBuildpackError::MissingTaskFailedCommand(Some(SbtError::MissingTask(task_name)), _error) => log_error(
+        SbtBuildpackError::MissingTaskFailedCommand(Some(SbtError::MissingTask(task_name)), error) => {
+            print_section("Debug info:");
+            print_subsection(format!("{error}"));
+            log_error(
             "Failed to run sbt!",
             formatdoc! {"
                 It looks like your build.sbt does not have a valid '{task_name}' task. Please reference our Dev Center article for
                 information on how to create one:
 
                 https://devcenter.heroku.com/articles/scala-support#build-behavior
-            "},
-        ),
+            "});
+        },
         SbtBuildpackError::FailedCommand(error) |
         SbtBuildpackError::MissingTaskFailedCommand(_, error) => log_build_tool_command_error("Sbt", &error),
         SbtBuildpackError::DetectPhaseIoError(error) => log_please_try_again_error(
