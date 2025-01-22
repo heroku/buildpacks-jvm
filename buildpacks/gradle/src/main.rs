@@ -92,10 +92,9 @@ impl Buildpack for GradleBuildpack {
 
         print_section("Running Gradle build");
 
-        track_timing_subsection("Starting Gradle daemon", || {
-            gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
-                .map_err(GradleBuildpackError::StartGradleDaemonError)
-        })?;
+        print_subsection("Starting Gradle daemon");
+        let daemon_log = gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
+            .map_err(GradleBuildpackError::StartGradleDaemonError)?;
 
         let project_tasks = track_timing_subsection("Querying tasks", || {
             gradle_command::tasks(&context.app_dir, &gradle_env)
@@ -142,6 +141,7 @@ impl Buildpack for GradleBuildpack {
         let process = default_app_process(&dependency_report, &context.app_dir)
             .map_err(GradleBuildpackError::CannotDetermineDefaultAppProcess)?;
 
+        drop(daemon_log);
         output::print_all_done(build_timer);
         process
             .map_or(BuildResultBuilder::new(), |process| {
