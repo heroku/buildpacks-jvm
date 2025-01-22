@@ -97,12 +97,11 @@ jobs:
         # Runs only tests annotated with the `ignore` attribute (which in this repo, are the integration tests).
         run: cargo test --locked -- --ignored --test-threads 16
 
-  print-pack-getting-started-output:
-    runs-on: ${{ matrix.target == 'aarch64-unknown-linux-musl' && 'pub-hk-ubuntu-24.04-arm-medium' || 'ubuntu-24.04' }}
+  print-guide:
+    runs-on: 'pub-hk-ubuntu-24.04-arm-medium'
     strategy:
       matrix:
-        target: ["aarch64-unknown-linux-musl", "x86_64-unknown-linux-musl"]
-        guide: ["heroku/java-getting-started", "heroku/gradle-getting-started", "heroku/scala-getting-started"]
+        guide: ["java-getting-started", "gradle-getting-started", "scala-getting-started"]
       fail-fast: false
     steps:
       - name: Checkout
@@ -114,7 +113,7 @@ jobs:
       - name: Update Rust toolchain
         run: rustup update
       - name: Install Rust linux-musl target
-        run: rustup target add ${{ matrix.target }}
+        run: rustup target add aarch64-unknown-linux-musl
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.7.5
       - name: Install Pack CLI
@@ -126,31 +125,31 @@ jobs:
       - name: Clone getting started guide
         uses: actions/checkout@v4
         with:
-          repository: ${{ matrix.guide }}
+          repository: "heroku/${{ matrix.guide }}"
           path: tmp/guide
       - name: Install libcnb-cargo for `cargo libcnb package` command
         run: cargo install libcnb-cargo
       - name: Compile buildpack
-        run: cargo libcnb package --target ${{ matrix.target }}
+        run: cargo libcnb package --target aarch64-unknown-linux-musl
       - name: "PRINT: Getting started guide output"
         run: |
           set -euo pipefail
 
           PACK_CMD="pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --path tmp/guide --pull-policy never "
           case "${{ matrix.guide }}" in
-            "heroku/java-getting-started")
-              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm "
-              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_java "
-              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_maven "
+            "java-getting-started")
+              PACK_CMD+=" --buildpack packaged/aarch64-unknown-linux-musl/debug/heroku_jvm "
+              PACK_CMD+=" --buildpack packaged/aarch64-unknown-linux-musl/debug/heroku_java "
+              PACK_CMD+=" --buildpack packaged/aarch64-unknown-linux-musl/debug/heroku_maven "
               ;;
-            "heroku/gradle-getting-started")
-              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm "
-              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_gradle "
+            "gradle-getting-started")
+              PACK_CMD+=" --buildpack packaged/aarch64-unknown-linux-musl/debug/heroku_jvm "
+              PACK_CMD+=" --buildpack packaged/aarch64-unknown-linux-musl/debug/heroku_gradle "
               ;;
-            "heroku/scala-getting-started")
-              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_jvm "
-              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_sbt "
-              PACK_CMD+=" --buildpack packaged/${{ matrix.target }}/debug/heroku_scala "
+            "scala-getting-started")
+              PACK_CMD+=" --buildpack packaged/aarch64-unknown-linux-musl/debug/heroku_jvm "
+              PACK_CMD+=" --buildpack packaged/aarch64-unknown-linux-musl/debug/heroku_sbt "
+              PACK_CMD+=" --buildpack packaged/aarch64-unknown-linux-musl/debug/heroku_scala "
               ;;
             *)
               echo "Unknown guide: ${{ matrix.guide }}"
