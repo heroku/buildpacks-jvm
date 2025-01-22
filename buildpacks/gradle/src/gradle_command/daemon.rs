@@ -1,6 +1,6 @@
 use crate::gradle_command::GradleCommandError;
 use crate::GRADLE_TASK_NAME_HEROKU_START_DAEMON;
-use buildpacks_jvm_shared::output::{self, CmdError};
+use buildpacks_jvm_shared::output;
 use libcnb::Env;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -15,16 +15,16 @@ pub(crate) struct GradleDaemon {
 impl GradleDaemon {
     pub(crate) fn stop(self, gradle_env: &Env) -> Result<(), GradleCommandError<()>> {
         let file = self.file.reopen().map_err(GradleCommandError::Io)?;
-        let _ = Command::new(self.executable_path)
+        let mut command = Command::new(self.executable_path);
+        command
             .args(["-q", "--stop"])
             .envs(gradle_env)
             .stdout(Stdio::from(
                 file.try_clone().map_err(GradleCommandError::Io)?,
             ))
-            .stderr(Stdio::from(file))
-            .spawn()
-            .and_then(|mut child| child.wait())
-            .map_err(GradleCommandError::Io)?;
+            .stderr(Stdio::from(file));
+
+        output::run_command(command, true).map_err(GradleCommandError::FailedCommand)?;
 
         Ok(())
     }
@@ -55,17 +55,7 @@ pub(crate) fn start(
     ));
     command.stderr(Stdio::from(file));
 
-    let _ = output::run_command(command, true).map_err(|error| match error {
-        CmdError::SystemError(_, error) => GradleCommandError::Io(error),
-        CmdError::NonZeroExitNotStreamed(named_output)
-        | CmdError::NonZeroExitAlreadyStreamed(named_output) => {
-            GradleCommandError::UnexpectedExitStatus {
-                status: *named_output.status(),
-                stdout: named_output.stdout_lossy(),
-                stderr: named_output.stderr_lossy(),
-            }
-        }
-    })?;
+    let _ = output::run_command(command, true).map_err(GradleCommandError::FailedCommand)?;
 
     Ok(daemon)
 }

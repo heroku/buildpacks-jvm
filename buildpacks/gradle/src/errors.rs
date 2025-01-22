@@ -1,12 +1,7 @@
-use std::process::Output;
-
 use crate::GradleBuildpackError;
 use buildpacks_jvm_shared::{
-    log::{
-        log_build_tool_io_error, log_build_tool_unexpected_exit_code_error,
-        log_please_try_again_error,
-    },
-    output::{print_error, CmdError},
+    log::{log_build_tool_command_error, log_please_try_again_error},
+    output::print_error,
 };
 use indoc::indoc;
 
@@ -28,16 +23,9 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 "},
             );
         }
-        GradleBuildpackError::GradleBuildFailedCommand(error) => match error {
-            CmdError::SystemError(_, error) => log_build_tool_io_error("Gradle", error),
-            CmdError::NonZeroExitNotStreamed(named_output)
-            | CmdError::NonZeroExitAlreadyStreamed(named_output) => {
-                log_build_tool_unexpected_exit_code_error(
-                    "Gradle",
-                    Into::<Output>::into(named_output.clone()).status,
-                );
-            }
-        },
+        GradleBuildpackError::GradleBuildFailedCommand(error) => {
+            log_build_tool_command_error("Gradle", &error);
+        }
         GradleBuildpackError::GetTasksError(error) => log_please_try_again_error(
             "Failed to get Gradle tasks",
             "Failed to get Gradle tasks",

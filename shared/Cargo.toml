@@ -10,4 +10,4 @@ workspace = true
 indoc = "2"
 java-properties = "2"
 bullet_stream = "0.4.0"
-fun_run = { version = "0.2.0" }
+fun_run = { version = "0.4.0" }

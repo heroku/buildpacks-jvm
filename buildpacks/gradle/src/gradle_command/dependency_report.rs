@@ -1,4 +1,5 @@
 use crate::gradle_command::GradleCommandError;
+use buildpacks_jvm_shared::output::run_command;
 use libcnb::Env;
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -8,27 +9,19 @@ pub(crate) fn dependency_report(
     app_dir: &Path,
     env: &Env,
 ) -> Result<GradleDependencyReport, GradleCommandError<()>> {
-    let output = Command::new(app_dir.join("gradlew"))
+    let mut command = Command::new(app_dir.join("gradlew"));
+    command
         .current_dir(app_dir)
         .envs(env)
-        .args(["--quiet", "dependencies"])
-        .output()
-        .map_err(GradleCommandError::Io)?;
+        .args(["--quiet", "dependencies"]);
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let stderr = String::from_utf8_lossy(&output.stderr);
-
-    if output.status.success() {
-        parser::dependency_report(&stdout)
-            .map_err(|_| GradleCommandError::Parse(()))
-            .map(|(_, dependency_report)| dependency_report)
-    } else {
-        Err(GradleCommandError::UnexpectedExitStatus {
-            status: output.status,
-            stdout: stdout.into_owned(),
-            stderr: stderr.into_owned(),
+    run_command(command, true)
+        .map_err(GradleCommandError::FailedCommand)
+        .and_then(|output| {
+            parser::dependency_report(String::from_utf8_lossy(&output.stdout).as_ref())
+                .map_err(|_| GradleCommandError::Parse(()))
+                .map(|(_, dependency_report)| dependency_report)
         })
-    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
