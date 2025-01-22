@@ -39,7 +39,7 @@ pub fn print_error(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>)
 }
 
 pub fn run_command(mut command: Command, quiet: bool) -> Result<Output, CmdError> {
-    let title = format!("Running {}", style::value(command.name()));
+    let title = format!("Running {}", style::command(command.name()));
     if quiet {
         let timer = print::sub_start_timer(title);
         let output = command.named_output();
