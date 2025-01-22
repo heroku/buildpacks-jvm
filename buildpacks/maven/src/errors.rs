@@ -3,10 +3,9 @@ use buildpacks_jvm_shared::log::{
     log_build_tool_io_error, log_build_tool_unexpected_exit_code_error, log_please_try_again,
     log_please_try_again_error,
 };
-use buildpacks_jvm_shared::output::CmdError;
+use buildpacks_jvm_shared::output::{print_error, CmdError};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
-use libherokubuildpack::log::log_error;
 
 #[allow(clippy::too_many_lines)]
 pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
@@ -41,14 +40,14 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
             "While trying to determine a default process based on the used application framework, an unexpected error occurred.",
             error,
         ),
-        MavenBuildpackError::UnsupportedMavenVersion(version) => log_error(
+        MavenBuildpackError::UnsupportedMavenVersion(version) => print_error(
             "Unsupported Maven version",
             formatdoc! {"
                 You have defined an unsupported Maven version ({version}) in the system.properties file.
             ", version = version },
         ),
         MavenBuildpackError::SettingsError(SettingsError::InvalidMavenSettingsPath(path)) => {
-            log_error(
+            print_error(
                 "Cannot find custom settings.xml file",
                 formatdoc! {"
                     You have set MAVEN_SETTINGS_PATH to \"{path}\". We could not find that file in your app.
@@ -56,7 +55,7 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
                 ", path = path.to_string_lossy() },
             );
         },
-        MavenBuildpackError::SettingsError(SettingsError::DownloadError(url, error)) => log_error(
+        MavenBuildpackError::SettingsError(SettingsError::DownloadError(url, error)) => print_error(
             "Download of settings.xml failed",
             formatdoc! {"
                 You have set MAVEN_SETTINGS_URL to \"{url}\". We tried to download the file at this
@@ -90,7 +89,7 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
                 CmdError::NonZeroExitAlreadyStreamed(named_output) => log_build_tool_unexpected_exit_code_error("Maven",*named_output.status()),
             }
         }
-        MavenBuildpackError::CannotSplitMavenCustomOpts(error) => log_error(
+        MavenBuildpackError::CannotSplitMavenCustomOpts(error) => print_error(
             "Invalid MAVEN_CUSTOM_OPTS",
             formatdoc! {"
                 Could not split the value of the MAVEN_CUSTOM_OPTS environment variable into separate
@@ -99,7 +98,7 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
                 Details: {error}
             ", error = error },
         ),
-        MavenBuildpackError::CannotSplitMavenCustomGoals(error) => log_error(
+        MavenBuildpackError::CannotSplitMavenCustomGoals(error) => print_error(
             "Invalid MAVEN_CUSTOM_GOALS",
             formatdoc! {"
                 Could not split the value of the MAVEN_CUSTOM_GOALS environment variable into separate
@@ -110,7 +109,7 @@ pub(crate) fn on_error_maven_buildpack(error: MavenBuildpackError) {
         ),
         MavenBuildpackError::DetermineModeError(
             ReadSystemPropertiesError::ParseError(error),
-        ) => log_error(
+        ) => print_error(
             "Invalid system.properties file",
             formatdoc! {"
                 Could not parse your application's system.properties file. Please ensure that your

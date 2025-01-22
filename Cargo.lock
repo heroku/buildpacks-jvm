@@ -128,7 +128,6 @@ dependencies = [
  "fun_run",
  "indoc",
  "java-properties",
- "libherokubuildpack",
 ]
 
 [[package]]

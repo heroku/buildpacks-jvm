@@ -4,7 +4,7 @@ use crate::layers::sbt_global::SbtGlobalLayerError;
 use crate::sbt::output::SbtError;
 use crate::sbt::version::ReadSbtVersionError;
 use buildpacks_jvm_shared::log::log_please_try_again_error;
-use buildpacks_jvm_shared::output::CmdError;
+use buildpacks_jvm_shared::output::{print_error, CmdError};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
 use libherokubuildpack::log::log_error;
@@ -58,7 +58,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 error
             ),
 
-            ReadSbtVersionError::MissingVersionProperty => log_error(
+            ReadSbtVersionError::MissingVersionProperty => print_error(
                 "No sbt version defined",
                 formatdoc! { "
                 Your scala project must include project/build.properties and define a value for
