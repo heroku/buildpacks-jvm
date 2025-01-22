@@ -130,10 +130,10 @@ impl Buildpack for GradleBuildpack {
         // Explicitly ignoring the result. If the daemon cannot be stopped, that is not a build
         // failure, nor can we recover from it in any way.
 
-        output::track_timing_subsection("Stopping Gradle daemon", || {
-            gradle_daemon.stop(&gradle_env)
-        })
-        .map_err(GradleBuildpackError::StartGradleDaemonError)?;
+        print_section("Stopping Gradle daemon");
+        gradle_daemon
+            .stop(&gradle_env)
+            .map_err(GradleBuildpackError::StartGradleDaemonError)?;
 
         let process = default_app_process(&dependency_report, &context.app_dir)
             .map_err(GradleBuildpackError::CannotDetermineDefaultAppProcess)?;
