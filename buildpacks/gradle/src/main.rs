@@ -5,7 +5,7 @@ use crate::framework::{default_app_process, detect_framework, Framework};
 use crate::gradle_command::GradleCommandError;
 use crate::layers::gradle_home::handle_gradle_home_layer;
 use buildpacks_jvm_shared::output::{
-    print_buildpack_name, print_section, print_subsection, track_timing_subsection, CmdError,
+    print_buildpack_name, print_section, track_timing_subsection, CmdError,
 };
 use buildpacks_jvm_shared::{self as shared, output};
 #[cfg(test)]
@@ -89,13 +89,12 @@ impl Buildpack for GradleBuildpack {
         let mut gradle_env = Env::from_current();
         handle_gradle_home_layer(&context, &mut gradle_env)?;
 
-        print_section("Running Gradle build");
-
-        print_subsection("Starting Gradle daemon");
+        print_section("Gradle daemon (faster gradle commands)");
         let gradle_daemon =
             gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
                 .map_err(GradleBuildpackError::StartGradleDaemonError)?;
 
+        print_section("Build configuration");
         let project_tasks = track_timing_subsection("Querying tasks", || {
             gradle_command::tasks(&context.app_dir, &gradle_env)
                 .map_err(|command_error| command_error.map_parse_error(|_| ()))
@@ -120,7 +119,7 @@ impl Buildpack for GradleBuildpack {
             })
             .ok_or(GradleBuildpackError::BuildTaskUnknown)?;
 
-        print_section("Running Gradle build");
+        print_section("Gradle build");
         let mut cmd = Command::new(&gradle_wrapper_executable_path);
         cmd.current_dir(&context.app_dir)
             .envs(&gradle_env)
