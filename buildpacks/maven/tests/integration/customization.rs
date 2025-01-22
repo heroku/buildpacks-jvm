@@ -46,7 +46,7 @@ fn maven_custom_opts() {
         default_build_config("test-apps/simple-http-service").env("MAVEN_CUSTOM_OPTS", "-X"),
         |context| {
             // Assert only the options in MAVEN_CUSTOM_GOALS are used
-            assert_contains!(context.pack_stderr, "./mvnw -X clean install");
+            assert_contains!(context.pack_stderr, "./mvnw -X -B clean install");
             assert_contains!(context.pack_stderr, "[DEBUG] -- end configuration --");
 
             // -DskipTests is part of the default Maven options. We expect it to be overridden by MAVEN_CUSTOM_OPTS and
