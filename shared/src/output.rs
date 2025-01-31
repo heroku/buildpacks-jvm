@@ -62,17 +62,33 @@ pub fn print_error(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>)
     eprintln!("{}", text.to_ansi_string());
 }
 
+/// Print the command name being run and either run it quietly (true) or stream it (false)
+///
 pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(
     mut command: Command,
     quiet: bool,
     io_error_fn: F,
     exit_status_fn: F2,
 ) -> Result<Output, E> {
+    const SPACE_ASCII: u8 = 0x20;
+    let prefix = vec![SPACE_ASCII; 6];
+
     let child = if quiet {
         command.output_and_write_streams(std::io::sink(), std::io::sink())
     } else {
-        const SPACE_ASCII: u8 = 0x20;
-        let prefix = vec![SPACE_ASCII; 6];
+        print_subsection(BuildpackOutputText::new(vec![
+            BuildpackOutputTextSection::regular("Running "),
+            BuildpackOutputTextSection::command(format!(
+                "{} {}",
+                command.get_program().to_string_lossy(),
+                shell_words::join(
+                    command
+                        .get_args()
+                        .map(|arg| arg.to_string_lossy())
+                        .collect::<Vec<_>>()
+                )
+            )),
+        ]));
 
         track_timing(|| {
             println!();

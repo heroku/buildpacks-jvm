@@ -209,19 +209,7 @@ impl Buildpack for MavenBuildpack {
         // running since they might be confusing to the user.
         let internal_maven_options = vec![String::from("-B")];
 
-        output::print_section("Running Maven build");
-        output::print_subsection(BuildpackOutputText::new(vec![
-            BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::command(format!(
-                "{} {} {}",
-                mvn_executable.to_string_lossy(),
-                shell_words::join(&maven_options),
-                shell_words::join(&maven_goals)
-            )),
-        ]));
-
         let mut command = Command::new(&mvn_executable);
-
         command
             .current_dir(&context.app_dir)
             .args(

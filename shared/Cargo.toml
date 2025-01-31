@@ -10,3 +10,4 @@ workspace = true
 indoc = "2"
 java-properties = "2"
 libherokubuildpack = { version = "=0.26.0", default-features = false, features = ["command", "write"] }
+shell-words = "1"

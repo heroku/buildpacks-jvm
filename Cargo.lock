@@ -127,6 +127,7 @@ dependencies = [
  "indoc",
  "java-properties",
  "libherokubuildpack",
+ "shell-words",
 ]
 
 [[package]]
