@@ -1,15 +1,18 @@
 use crate::GradleBuildpackError;
-use buildpacks_jvm_shared::log::{
-    log_build_tool_io_error, log_build_tool_unexpected_exit_code_error, log_please_try_again_error,
+use buildpacks_jvm_shared::{
+    log::{
+        log_build_tool_io_error, log_build_tool_unexpected_exit_code_error,
+        log_please_try_again_error,
+    },
+    output::print_error,
 };
 use indoc::indoc;
-use libherokubuildpack::log::log_error;
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
     match error {
         GradleBuildpackError::GradleWrapperNotFound => {
-            log_error(
+            print_error(
                 "Missing Gradle Wrapper",
                 indoc! {"
                     This buildpack leverages Gradle Wrapper to install the correct Gradle version to build your application.
@@ -59,7 +62,7 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
             "The Gradle daemon for this build could not be started.",
             error,
         ),
-        GradleBuildpackError::BuildTaskUnknown => log_error(
+        GradleBuildpackError::BuildTaskUnknown => print_error(
             "Failed to determine build task",
             indoc! {"
                 It looks like your project does not contain a 'stage' task, which Heroku needs in order

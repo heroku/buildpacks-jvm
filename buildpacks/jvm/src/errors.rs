@@ -4,9 +4,9 @@ use crate::openjdk_artifact::{
 use crate::version_resolver::VersionResolveError;
 use crate::OpenJdkBuildpackError;
 use buildpacks_jvm_shared::log::{log_please_try_again, log_please_try_again_error};
+use buildpacks_jvm_shared::output::print_error;
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
-use libherokubuildpack::log::log_error;
 
 #[allow(clippy::too_many_lines)]
 pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
@@ -18,7 +18,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
         ),
         OpenJdkBuildpackError::ReadSystemPropertiesError(
             ReadSystemPropertiesError::ParseError(error),
-        ) => log_error(
+        ) => print_error(
             "Invalid system.properties file",
             formatdoc! {"
                 Could not parse your application's system.properties file. Please ensure that your
@@ -71,14 +71,14 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
         ),
         OpenJdkBuildpackError::UnsupportedOpenJdkVersion(artifact_requirement) => {
             match artifact_requirement.version {
-                HerokuOpenJdkVersionRequirement::Major(major_version) => log_error(
+                HerokuOpenJdkVersionRequirement::Major(major_version) => print_error(
                     "Unsupported OpenJDK version",
                     formatdoc! {"
                         The OpenJDK major version {major_version} you specified in your system.properties file is not supported.
                         Please specify a supported major version in your system.properties file.
                     ", major_version = major_version },
                 ),
-                HerokuOpenJdkVersionRequirement::Specific(version) => log_error(
+                HerokuOpenJdkVersionRequirement::Specific(version) => print_error(
                     "Unsupported OpenJDK version",
                     formatdoc! {"
                         The OpenJDK version {version} you specified in your system.properties file is not supported.
@@ -90,7 +90,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
                 )
             }
         },
-        OpenJdkBuildpackError::ParseInventoryError(error) => log_error(
+        OpenJdkBuildpackError::ParseInventoryError(error) => print_error(
             "Invalid Inventory File",
             formatdoc! {"
                 The inventory of OpenJDK distributions could not be parsed. This error should
@@ -111,7 +111,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
                 Actual: {actual}
             ", expected = hex::encode(expected), actual = hex::encode(actual) }
         ),
-        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::UnknownDistribution(distribution))) => log_error(
+        OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::UnknownDistribution(distribution))) => print_error(
             format!("Unsupported distribution: {distribution}"),
             formatdoc! {"
                     Please check your system.properties file to ensure the java.runtime.version
@@ -124,7 +124,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
                     Heroku
             "}),
         OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::OpenJdkArtifactRequirementParseError(OpenJdkArtifactRequirementParseError::OpenJdkVersionParseError(_))) => {
-            log_error(
+            print_error(
                 "Invalid OpenJDK version selector",
                 formatdoc! {"
             The OpenJDK version selector you specified in your system.properties file is invalid.
@@ -135,7 +135,7 @@ pub(crate) fn on_error_jvm_buildpack(error: OpenJdkBuildpackError) {
             );
         }
         OpenJdkBuildpackError::ResolveVersionError(VersionResolveError::ReadSystemPropertiesError(error)) => {
-            log_error(
+            print_error(
                 "Invalid system.properties file",
                 formatdoc! {"
             The contents of your system.properties file cannot be parsed. Please use a valid

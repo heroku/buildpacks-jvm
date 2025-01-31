@@ -6,9 +6,9 @@ use crate::sbt::version::ReadSbtVersionError;
 use buildpacks_jvm_shared::log::{
     log_build_tool_unexpected_exit_code_error, log_please_try_again_error,
 };
+use buildpacks_jvm_shared::output::print_error;
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use indoc::formatdoc;
-use libherokubuildpack::log::log_error;
 use semver::Version;
 use std::fmt::Debug;
 use std::process::ExitStatus;
@@ -61,7 +61,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 error
             ),
 
-            ReadSbtVersionError::MissingVersionProperty => log_error(
+            ReadSbtVersionError::MissingVersionProperty => print_error(
                 "No sbt version defined",
                 formatdoc! { "
                 Your scala project must include project/build.properties and define a value for
@@ -70,7 +70,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             ),
 
             ReadSbtVersionError::CouldNotParseVersion(version, error) => {
-                log_error(
+                print_error(
                     "Unexpected version parse error",
                     formatdoc! { "
                 Failed to read the `sbt.version` ({version}) declared in project/build.properties. Please
@@ -81,7 +81,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 );
             }
         },
-        SbtBuildpackError::UnsupportedSbtVersion(version) => log_error(
+        SbtBuildpackError::UnsupportedSbtVersion(version) => print_error(
             "Unsupported sbt version",
             formatdoc! { "
                 You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
@@ -89,7 +89,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             " },
         ),
 
-        SbtBuildpackError::UnknownSbtVersion => log_error(
+        SbtBuildpackError::UnknownSbtVersion => print_error(
             "Unknown sbt version",
             formatdoc! { "
                 The buildpack could not determine the sbt version of this project.
@@ -100,7 +100,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
         SbtBuildpackError::ReadSbtBuildpackConfigurationError(error) => match error {
 
             ReadSbtBuildpackConfigurationError::InvalidTaskList(error)
-            | ReadSbtBuildpackConfigurationError::InvalidPreTaskList(error) => log_error(
+            | ReadSbtBuildpackConfigurationError::InvalidPreTaskList(error) => print_error(
                 "Could not parse list",
                 formatdoc! {"
                 Could not parse a value into a list of words.
@@ -111,7 +111,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             ),
 
             ReadSbtBuildpackConfigurationError::InvalidSbtClean(error)
-            | ReadSbtBuildpackConfigurationError::InvalidAvailableAtLaunch(error) => log_error(
+            | ReadSbtBuildpackConfigurationError::InvalidAvailableAtLaunch(error) => print_error(
                 "Could not parse boolean",
                 formatdoc! {"
                 Could not parse a value into a 'true' or 'false' value.
@@ -131,7 +131,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 ),
 
                 ReadSystemPropertiesError::ParseError(error) => {
-                    log_error(
+                    print_error(
                         "Invalid system.properties file",
                         formatdoc! {"
                             Your system.properties file could not be parsed.
@@ -153,7 +153,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
 
         SbtBuildpackError::SbtBuildUnexpectedExitStatus(exit_status, None) => log_build_tool_unexpected_exit_code_error("sbt", exit_status),
 
-        SbtBuildpackError::SbtBuildUnexpectedExitStatus(_, Some(SbtError::MissingTask(task_name))) => log_error(
+        SbtBuildpackError::SbtBuildUnexpectedExitStatus(_, Some(SbtError::MissingTask(task_name))) => print_error(
             "Failed to run sbt!",
             formatdoc! {"
                 It looks like your build.sbt does not have a valid '{task_name}' task. Please reference our Dev Center article for
