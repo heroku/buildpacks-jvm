@@ -1,8 +1,8 @@
+use buildpacks_jvm_shared::output::print_warning;
 use indoc::formatdoc;
-use libherokubuildpack::log::log_warning;
 
 pub(crate) fn log_unused_maven_wrapper_warning(version: &str) {
-    log_warning(
+    print_warning(
         "Unused Maven wrapper",
         formatdoc! {"
             Your application contains Maven wrapper, but a Maven version was also specified in system.properties.
@@ -13,7 +13,7 @@ pub(crate) fn log_unused_maven_wrapper_warning(version: &str) {
 }
 
 pub(crate) fn log_default_maven_version_warning(version: &str) {
-    log_warning(
+    print_warning(
         "Using default version",
         formatdoc! {"
             Your application does not explicitly specify which Maven version should be used to build your application.
