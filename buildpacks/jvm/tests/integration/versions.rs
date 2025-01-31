@@ -16,21 +16,22 @@ fn openjdk_default() {
         ]),
         |context| {
             assert_contains!(
-                context.pack_stderr,
-                &formatdoc! {"
+                &trim_each_end(&context.pack_stderr),
+                &trim_each_end(&formatdoc! {"
                     ! WARNING: No OpenJDK version specified
-                    ! 
+                    !
                     ! Your application does not explicitly specify an OpenJDK version. The latest
                     ! long-term support (LTS) version will be installed. This currently is OpenJDK 21.
-                    ! 
+                    !
                     ! This default version will change when a new LTS version is released. Your
                     ! application might fail to build with the new version. We recommend explicitly
                     ! setting the required OpenJDK version for your application.
-                    ! 
+                    !
                     ! To set the OpenJDK version, add or edit the system.properties file in the root
                     ! directory of your application to contain:
-                    ! 
-                    ! java.runtime.version = 21"});
+                    !
+                    ! java.runtime.version = 21
+                "}));
 
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
@@ -38,6 +39,14 @@ fn openjdk_default() {
             );
         },
     );
+}
+
+fn trim_each_end(input: &str) -> String {
+    input
+        .lines()
+        .map(str::trim_end)
+        .collect::<Vec<&str>>()
+        .join("\n")
 }
 
 #[test]
