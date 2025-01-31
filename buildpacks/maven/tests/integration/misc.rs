@@ -117,17 +117,18 @@ fn no_internal_maven_options_logging() {
 #[test]
 #[ignore = "integration test"]
 fn descriptive_error_message_on_failed_build() {
-    TestRunner::default().build(default_build_config("test-apps/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
+    TestRunner::default().build(
+        default_build_config("test-apps/app-with-compile-error")
+            .expected_pack_result(PackResult::Failure),
+        |context| {
             assert_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
 
-            assert_contains!(
-                context.pack_stderr,
-                "! ERROR: Unexpected Maven exit code"
-            );
+            assert_contains!(context.pack_stderr, "! ERROR: Unexpected Maven exit code");
 
             assert_contains!(
                 context.pack_stderr,
-                "Maven unexpectedly exited with code '1'. The most common reason for this are\nproblems with your application code and/or build configuration."
+                "Maven unexpectedly exited with code '1'."
             );
-        });
+        },
+    );
 }

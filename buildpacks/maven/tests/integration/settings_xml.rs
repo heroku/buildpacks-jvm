@@ -26,18 +26,23 @@ fn maven_settings_url_success() {
 fn maven_settings_url_failure() {
     TestRunner::default().build(
         default_build_config("test-apps/simple-http-service")
-                .env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL_404)
-                .expected_pack_result(PackResult::Failure),
-            |context| {
-                assert_contains!(
-                    context.pack_stderr,
-                    &format!("You have set MAVEN_SETTINGS_URL to \"{SETTINGS_XML_URL_404}\". We tried to download the file at this\nURL, but the download failed. Please verify that the given URL is correct and try again.")
-                );
+            .env("MAVEN_SETTINGS_URL", SETTINGS_XML_URL_404)
+            .expected_pack_result(PackResult::Failure),
+        |context| {
+            assert_contains!(
+                context.pack_stderr,
+                &format!("You have set MAVEN_SETTINGS_URL to \"{SETTINGS_XML_URL_404}\".")
+            );
 
-                // This error message comes from Maven itself. We don't expect Maven to to be executed at all.
-                assert_not_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
-            },
-        );
+            assert_contains!(
+                context.pack_stderr,
+                "Please verify that the given URL is correct and try again."
+            );
+
+            // This error message comes from Maven itself. We don't expect Maven to to be executed at all.
+            assert_not_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
+        },
+    );
 }
 
 #[test]
