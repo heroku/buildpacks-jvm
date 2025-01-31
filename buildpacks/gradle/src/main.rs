@@ -7,8 +7,8 @@ use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use buildpacks_jvm_shared as shared;
 use buildpacks_jvm_shared::output::{
-    print_buildpack_name, print_section, print_subsection, track_timing, BuildpackOutputText,
-    BuildpackOutputTextSection,
+    print_buildpack_name, print_section, print_subsection, run_command, track_timing,
+    BuildpackOutputText, BuildpackOutputTextSection,
 };
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
@@ -20,9 +20,7 @@ use libcnb::generic::GenericPlatform;
 use libcnb::{buildpack_main, Buildpack, Env};
 #[cfg(test)]
 use libcnb_test as _;
-use libherokubuildpack::command::CommandExt;
 use serde::Deserialize;
-use std::io::{stderr, stdout};
 use std::process::{Command, ExitStatus};
 
 mod config;
@@ -132,16 +130,15 @@ impl Buildpack for GradleBuildpack {
             BuildpackOutputTextSection::command(format!("./gradlew {task_name} -x check")),
         ]));
 
-        let output = Command::new(&gradle_wrapper_executable_path)
+        let mut command = Command::new(&gradle_wrapper_executable_path);
+        command
             .current_dir(&context.app_dir)
             .envs(&gradle_env)
-            .args([task_name, "-x", "check"])
-            .output_and_write_streams(stdout(), stderr())
-            .map_err(GradleBuildIoError)?;
+            .args([task_name, "-x", "check"]);
 
-        if !output.status.success() {
-            Err(GradleBuildUnexpectedStatusError(output.status))?;
-        }
+        run_command(command, false, GradleBuildIoError, |output| {
+            GradleBuildUnexpectedStatusError(output.status)
+        })?;
 
         // Explicitly ignoring the result. If the daemon cannot be stopped, that is not a build
         // failure, nor can we recover from it in any way.
