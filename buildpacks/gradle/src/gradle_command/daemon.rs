@@ -33,11 +33,15 @@ pub(crate) fn stop(
     gradle_wrapper_executable_path: &Path,
     gradle_env: &Env,
 ) -> Result<(), GradleCommandError<()>> {
-    Command::new(gradle_wrapper_executable_path)
-        .args(["-q", "--stop"])
-        .envs(gradle_env)
-        .output()
-        .map_err(GradleCommandError::Io)?;
+    let mut command = Command::new(gradle_wrapper_executable_path);
+    command.args(["-q", "--stop"]).envs(gradle_env);
 
-    Ok(())
+    output::run_command(command, true, GradleCommandError::Io, |output| {
+        GradleCommandError::UnexpectedExitStatus {
+            status: output.status,
+            stdout: String::from_utf8_lossy(&output.stdout).into_owned(),
+            stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+        }
+    })
+    .map(|_| ())
 }
