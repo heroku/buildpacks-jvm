@@ -220,26 +220,24 @@ impl Buildpack for MavenBuildpack {
             )),
         ]));
 
-        output::track_timing(|| {
-            let mut command = Command::new(&mvn_executable);
+        let mut command = Command::new(&mvn_executable);
 
-            command
-                .current_dir(&context.app_dir)
-                .args(
-                    maven_options
-                        .iter()
-                        .chain(&internal_maven_options)
-                        .chain(&maven_goals),
-                )
-                .envs(&mvn_env);
-
-            output::run_command(
-                command,
-                false,
-                MavenBuildpackError::MavenBuildIoError,
-                |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
+        command
+            .current_dir(&context.app_dir)
+            .args(
+                maven_options
+                    .iter()
+                    .chain(&internal_maven_options)
+                    .chain(&maven_goals),
             )
-        })?;
+            .envs(&mvn_env);
+
+        output::run_command(
+            command,
+            false,
+            MavenBuildpackError::MavenBuildIoError,
+            |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
+        )?;
 
         output::print_section(BuildpackOutputText::new(vec![
             BuildpackOutputTextSection::regular("Running "),
@@ -250,32 +248,30 @@ impl Buildpack for MavenBuildpack {
             BuildpackOutputTextSection::regular(" quietly"),
         ]));
 
-        output::track_timing(|| {
-            let mut command = Command::new(&mvn_executable);
+        let mut command = Command::new(&mvn_executable);
 
-            command
-                .current_dir(&context.app_dir)
-                .args(
-                    maven_options.iter().chain(&internal_maven_options).chain(
-                        [
-                            format!(
-                                "-DoutputFile={}",
-                                app_dependency_list_path(&context.app_dir).to_string_lossy()
-                            ),
-                            String::from("dependency:list"),
-                        ]
-                        .iter(),
-                    ),
-                )
-                .envs(&mvn_env);
-
-            output::run_command(
-                command,
-                true,
-                MavenBuildpackError::MavenBuildIoError,
-                |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
+        command
+            .current_dir(&context.app_dir)
+            .args(
+                maven_options.iter().chain(&internal_maven_options).chain(
+                    [
+                        format!(
+                            "-DoutputFile={}",
+                            app_dependency_list_path(&context.app_dir).to_string_lossy()
+                        ),
+                        String::from("dependency:list"),
+                    ]
+                    .iter(),
+                ),
             )
-        })?;
+            .envs(&mvn_env);
+
+        output::run_command(
+            command,
+            true,
+            MavenBuildpackError::MavenBuildIoError,
+            |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
+        )?;
 
         let mut build_result_builder = BuildResultBuilder::new();
 

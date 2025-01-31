@@ -105,28 +105,26 @@ impl Buildpack for SbtBuildpack {
 
         let tasks = sbt::tasks::from_config(&buildpack_configuration);
 
-        output::track_timing(|| {
-            output::print_section("Running sbt build");
-            output::print_subsection(BuildpackOutputText::new(vec![
-                BuildpackOutputTextSection::regular("Running "),
-                BuildpackOutputTextSection::command(format!("sbt {}", shell_words::join(&tasks))),
-            ]));
+        output::print_section("Running sbt build");
+        output::print_subsection(BuildpackOutputText::new(vec![
+            BuildpackOutputTextSection::regular("Running "),
+            BuildpackOutputTextSection::command(format!("sbt {}", shell_words::join(&tasks))),
+        ]));
 
-            let mut command = Command::new("sbt");
-            command.current_dir(&context.app_dir).args(tasks).envs(&env);
+        let mut command = Command::new("sbt");
+        command.current_dir(&context.app_dir).args(tasks).envs(&env);
 
-            output::run_command(
-                command,
-                false,
-                SbtBuildpackError::SbtBuildIoError,
-                |output| {
-                    SbtBuildpackError::SbtBuildUnexpectedExitStatus(
-                        output.status,
-                        sbt::output::parse_errors(&output.stdout),
-                    )
-                },
-            )
-        })?;
+        output::run_command(
+            command,
+            false,
+            SbtBuildpackError::SbtBuildIoError,
+            |output| {
+                SbtBuildpackError::SbtBuildUnexpectedExitStatus(
+                    output.status,
+                    sbt::output::parse_errors(&output.stdout),
+                )
+            },
+        )?;
 
         BuildResultBuilder::new().build()
     }

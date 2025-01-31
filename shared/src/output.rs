@@ -74,16 +74,17 @@ pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(
         const SPACE_ASCII: u8 = 0x20;
         let prefix = vec![SPACE_ASCII; 6];
 
-        println!();
+        track_timing(|| {
+            println!();
 
-        let output = command.output_and_write_streams(
-            line_mapped(std::io::stdout(), add_prefix_to_non_empty(prefix.clone())),
-            line_mapped(std::io::stderr(), add_prefix_to_non_empty(prefix)),
-        );
+            let output = command.output_and_write_streams(
+                line_mapped(std::io::stdout(), add_prefix_to_non_empty(prefix.clone())),
+                line_mapped(std::io::stderr(), add_prefix_to_non_empty(prefix)),
+            );
 
-        println!();
-
-        output
+            println!();
+            output
+        })
     };
 
     child.map_err(io_error_fn).and_then(|output| {
