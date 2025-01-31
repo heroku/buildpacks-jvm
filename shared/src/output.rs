@@ -62,6 +62,13 @@ pub fn print_error(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>)
     eprintln!("{}", text.to_ansi_string());
 }
 
+pub fn print_all_done(started: Instant) {
+    println!(
+        "{ANSI_RESET_CODE}- Done (finished in {})",
+        format_duration(&started.elapsed())
+    );
+}
+
 /// Print the command name being run and either run it quietly (true) or stream it (false)
 ///
 pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(

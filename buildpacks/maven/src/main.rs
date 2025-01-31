@@ -20,6 +20,7 @@ use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
+use std::time::Instant;
 
 use buildpacks_jvm_shared::output;
 use buildpacks_jvm_shared::output::{BuildpackOutputText, BuildpackOutputTextSection};
@@ -102,6 +103,7 @@ impl Buildpack for MavenBuildpack {
 
     #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
+        let started = Instant::now();
         output::print_buildpack_name("Heroku Maven Buildpack");
 
         let mut current_or_platform_env = Env::from_current();
@@ -260,6 +262,7 @@ impl Buildpack for MavenBuildpack {
                 build_result_builder.launch(LaunchBuilder::new().process(process).build());
         }
 
+        output::print_all_done(started);
         build_result_builder.build()
     }
 
