@@ -1,4 +1,5 @@
-use crate::gradle_command::{run_gradle_command, GradleCommandError};
+use crate::gradle_command::GradleCommandError;
+use buildpacks_jvm_shared::output::run_command;
 use libcnb::Env;
 use std::path::Path;
 use std::process::Command;
@@ -7,20 +8,27 @@ pub(crate) fn tasks(
     current_dir: &Path,
     env: &Env,
 ) -> Result<Tasks, GradleCommandError<nom::error::Error<String>>> {
-    run_gradle_command(
-        Command::new(current_dir.join("gradlew"))
-            .current_dir(current_dir)
-            .envs(env)
-            .args(["--quiet", "tasks"]),
-        |stdout, _stderr| {
-            parser::parse(stdout)
-                .map(|groups| Tasks { groups })
-                .map_err(|error| nom::error::Error {
-                    input: error.input.to_string(),
-                    code: error.code,
-                })
-        },
-    )
+    let mut command = Command::new(current_dir.join("gradlew"));
+    command
+        .current_dir(current_dir)
+        .envs(env)
+        .args(["--quiet", "tasks"]);
+
+    let output = run_command(command, true, GradleCommandError::Io, |output| {
+        GradleCommandError::UnexpectedExitStatus {
+            status: output.status,
+            stdout: String::from_utf8_lossy(&output.stdout).into_owned(),
+            stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+        }
+    })?;
+
+    parser::parse(&String::from_utf8_lossy(&output.stdout))
+        .map(|groups| Tasks { groups })
+        .map_err(|error| nom::error::Error {
+            input: error.input.to_string(),
+            code: error.code,
+        })
+        .map_err(GradleCommandError::Parse)
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]

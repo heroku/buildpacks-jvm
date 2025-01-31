@@ -7,8 +7,6 @@ pub(crate) use daemon::stop as stop_daemon;
 pub(crate) use dependency_report::{dependency_report, GradleDependencyReport};
 pub(crate) use tasks::tasks;
 
-use std::process::Command;
-
 #[derive(Debug)]
 pub(crate) enum GradleCommandError<P> {
     Io(std::io::Error),
@@ -38,25 +36,5 @@ impl<P> GradleCommandError<P> {
                 stderr,
             },
         }
-    }
-}
-
-fn run_gradle_command<T, F, P>(command: &mut Command, parser: F) -> Result<T, GradleCommandError<P>>
-where
-    F: FnOnce(&str, &str) -> Result<T, P>,
-{
-    let output = command.output().map_err(GradleCommandError::Io)?;
-
-    let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
-    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
-
-    if output.status.success() {
-        parser(&stdout, &stderr).map_err(GradleCommandError::Parse)
-    } else {
-        Err(GradleCommandError::UnexpectedExitStatus {
-            status: output.status,
-            stdout,
-            stderr,
-        })
     }
 }
