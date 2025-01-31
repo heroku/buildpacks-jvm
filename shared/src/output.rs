@@ -72,22 +72,29 @@ pub fn run_command<E, F: FnOnce(std::io::Error) -> E, F2: FnOnce(Output) -> E>(
 ) -> Result<Output, E> {
     const SPACE_ASCII: u8 = 0x20;
     let prefix = vec![SPACE_ASCII; 6];
+    let name = format!(
+        "{} {}",
+        command.get_program().to_string_lossy(),
+        shell_words::join(
+            command
+                .get_args()
+                .map(|arg| arg.to_string_lossy())
+                .collect::<Vec<_>>()
+        )
+    );
 
     let child = if quiet {
-        command.output_and_write_streams(std::io::sink(), std::io::sink())
+        print_subsection(BuildpackOutputText::new(vec![
+            BuildpackOutputTextSection::regular("Running "),
+            BuildpackOutputTextSection::command(name),
+            BuildpackOutputTextSection::regular(" quietly"),
+        ]));
+
+        track_timing(|| command.output_and_write_streams(std::io::sink(), std::io::sink()))
     } else {
         print_subsection(BuildpackOutputText::new(vec![
             BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::command(format!(
-                "{} {}",
-                command.get_program().to_string_lossy(),
-                shell_words::join(
-                    command
-                        .get_args()
-                        .map(|arg| arg.to_string_lossy())
-                        .collect::<Vec<_>>()
-                )
-            )),
+            BuildpackOutputTextSection::command(name),
         ]));
 
         track_timing(|| {

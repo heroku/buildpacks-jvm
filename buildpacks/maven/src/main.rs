@@ -227,17 +227,7 @@ impl Buildpack for MavenBuildpack {
             |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
         )?;
 
-        output::print_section(BuildpackOutputText::new(vec![
-            BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::value(format!(
-                "{} dependency:list",
-                mvn_executable.to_string_lossy()
-            )),
-            BuildpackOutputTextSection::regular(" quietly"),
-        ]));
-
         let mut command = Command::new(&mvn_executable);
-
         command
             .current_dir(&context.app_dir)
             .args(
