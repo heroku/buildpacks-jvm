@@ -40,6 +40,7 @@ use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::{Inventory, ParseInventoryError};
 use sha2::Sha256;
 use std::env::consts;
+use std::time::Instant;
 use url as _; // Used by exec.d binary
 
 struct OpenJdkBuildpack;
@@ -92,6 +93,7 @@ impl Buildpack for OpenJdkBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
+        let started = Instant::now();
         output::print_buildpack_name("Heroku OpenJDK Buildpack");
 
         let resolved_version = resolve_version(&context.app_dir)
@@ -182,6 +184,7 @@ impl Buildpack for OpenJdkBuildpack {
         handle_openjdk_layer(&context, openjdk_artifact)?;
         handle_runtime_layer(&context)?;
 
+        output::print_all_done(started);
         BuildResultBuilder::new().build()
     }
 
