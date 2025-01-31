@@ -107,11 +107,6 @@ impl Buildpack for SbtBuildpack {
         let tasks = sbt::tasks::from_config(&buildpack_configuration);
 
         output::print_section("Running sbt build");
-        output::print_subsection(BuildpackOutputText::new(vec![
-            BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::command(format!("sbt {}", shell_words::join(&tasks))),
-        ]));
-
         let mut command = Command::new("sbt");
         command.current_dir(&context.app_dir).args(tasks).envs(&env);
 
