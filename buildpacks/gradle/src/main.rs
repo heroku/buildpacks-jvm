@@ -93,11 +93,9 @@ impl Buildpack for GradleBuildpack {
 
         print_section("Running Gradle build");
 
-        track_timing(|| {
-            print_subsection("Starting Gradle daemon");
-            gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
-                .map_err(GradleBuildpackError::StartGradleDaemonError)
-        })?;
+        print_subsection("Starting Gradle daemon");
+        gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
+            .map_err(GradleBuildpackError::StartGradleDaemonError)?;
 
         let project_tasks = track_timing(|| {
             print_subsection("Querying tasks");
