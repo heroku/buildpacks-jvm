@@ -122,7 +122,7 @@ fn descriptive_error_message_on_failed_build() {
 
             assert_contains!(
                 context.pack_stderr,
-                "[Error: Unexpected Maven exit code]"
+                "! ERROR: Unexpected Maven exit code"
             );
 
             assert_contains!(
