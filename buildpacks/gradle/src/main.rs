@@ -7,7 +7,6 @@ use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use buildpacks_jvm_shared::output::{
     print_buildpack_name, print_section, print_subsection, run_command, track_timing,
-    BuildpackOutputText, BuildpackOutputTextSection,
 };
 use buildpacks_jvm_shared::{self as shared, output};
 #[cfg(test)]
@@ -127,11 +126,6 @@ impl Buildpack for GradleBuildpack {
             .ok_or(GradleBuildpackError::BuildTaskUnknown)?;
 
         print_section("Running Gradle build");
-        print_subsection(BuildpackOutputText::new(vec![
-            BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::command(format!("./gradlew {task_name} -x check")),
-        ]));
-
         let mut command = Command::new(&gradle_wrapper_executable_path);
         command
             .current_dir(&context.app_dir)
