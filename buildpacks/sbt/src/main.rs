@@ -13,6 +13,7 @@ use crate::layers::dependency_resolver_home::{
 use crate::layers::sbt_boot::handle_sbt_boot;
 use crate::layers::sbt_extras::handle_sbt_extras;
 use crate::layers::sbt_global::handle_sbt_global;
+use buildpacks_jvm_shared::output;
 use buildpacks_jvm_shared::system_properties::read_system_properties;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -23,7 +24,6 @@ use libherokubuildpack::error::on_error as on_buildpack_error;
 use std::process::Command;
 use std::time::Instant;
 
-use buildpacks_jvm_shared::output::{self, BuildpackOutputText, BuildpackOutputTextSection};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
