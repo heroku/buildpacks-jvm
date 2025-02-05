@@ -22,6 +22,13 @@ pub fn print_timing_done_subsection(duration: &Duration) {
     println!("{ANSI_RESET_CODE}  - Done ({})", format_duration(duration));
 }
 
+pub fn print_buildpack_done(duration: &Duration) {
+    println!(
+        "{ANSI_RESET_CODE}- Done (finished in {})",
+        format_duration(duration)
+    );
+}
+
 pub fn print_warning(title: impl AsRef<str>, body: impl Into<BuildpackOutputText>) {
     let title = title.as_ref();
 
@@ -264,16 +271,33 @@ impl From<Vec<BuildpackOutputTextSection>> for BuildpackOutputText {
     }
 }
 
-pub fn track_timing<F, E, T>(f: F) -> Result<E, T>
+pub fn track_subsection_timing<F, E, T>(f: F) -> Result<E, T>
+where
+    F: FnOnce() -> Result<E, T>,
+{
+    let (result, duration) = track_timing(f);
+    print_timing_done_subsection(&duration);
+    result
+}
+
+pub fn track_buildpack_timing<F, E, T>(f: F) -> Result<E, T>
+where
+    F: FnOnce() -> Result<E, T>,
+{
+    let (result, duration) = track_timing(f);
+    print_buildpack_done(&duration);
+    result
+}
+
+pub fn track_timing<F, E, T>(f: F) -> (Result<E, T>, Duration)
 where
     F: FnOnce() -> Result<E, T>,
 {
     let start_time = Instant::now();
-    let ret = f();
+    let result = f();
     let end_time = Instant::now();
 
-    print_timing_done_subsection(&end_time.duration_since(start_time));
-    ret
+    (result, end_time.duration_since(start_time))
 }
 
 fn format_duration(duration: &Duration) -> String {

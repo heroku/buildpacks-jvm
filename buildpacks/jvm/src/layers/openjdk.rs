@@ -79,7 +79,7 @@ pub(crate) fn handle_openjdk_layer(
                 _ => {}
             }
 
-            output::track_timing(|| {
+            output::track_subsection_timing(|| {
                 output::print_subsection("Downloading and unpacking OpenJDK distribution");
 
                 let temp_dir =
@@ -127,7 +127,7 @@ pub(crate) fn handle_openjdk_layer(
 
                 jdk_overlay_applied = true;
 
-                output::track_timing(|| {
+                output::track_subsection_timing(|| {
                     let jdk_overlay_contents =
                         util::list_directory_contents(&app_jdk_overlay_dir_path)
                             .map_err(OpenJdkBuildpackError::CannotListJdkOverlayContents)?;

@@ -22,7 +22,9 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 
 use buildpacks_jvm_shared::output;
-use buildpacks_jvm_shared::output::{BuildpackOutputText, BuildpackOutputTextSection};
+use buildpacks_jvm_shared::output::{
+    track_buildpack_timing, BuildpackOutputText, BuildpackOutputTextSection,
+};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
@@ -102,191 +104,193 @@ impl Buildpack for MavenBuildpack {
 
     #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        output::print_buildpack_name("Heroku Maven Buildpack");
+        track_buildpack_timing(|| {
+            output::print_buildpack_name("Heroku Maven Buildpack");
 
-        let mut current_or_platform_env = Env::from_current();
-        for (key, value) in context.platform.env() {
-            current_or_platform_env.insert(key, value);
-        }
-
-        let mut mvn_env = Env::from_current();
-        handle_maven_repository_layer(&context, &mut mvn_env)?;
-
-        let maven_mode = determine_mode(
-            &context.app_dir,
-            &context.buildpack_descriptor.metadata.default_version,
-        )
-        .map_err(MavenBuildpackError::DetermineModeError)?;
-
-        output::print_section("Installing Maven");
-
-        let mvn_executable = match maven_mode {
-            Mode::UseWrapper => {
-                output::print_subsection("Skipping (Maven wrapper detected)");
-
-                let maven_wrapper_path = context.app_dir.join("mvnw");
-
-                fs::set_permissions(maven_wrapper_path, Permissions::from_mode(0o777))
-                    .map_err(MavenBuildpackError::CannotSetMavenWrapperExecutableBit)?;
-
-                PathBuf::from("./mvnw")
+            let mut current_or_platform_env = Env::from_current();
+            for (key, value) in context.platform.env() {
+                current_or_platform_env.insert(key, value);
             }
-            Mode::InstallVersion {
-                version,
-                warn_about_unused_maven_wrapper,
-                warn_about_default_version,
-            } => {
-                if warn_about_unused_maven_wrapper {
-                    log_unused_maven_wrapper_warning(&version);
+
+            let mut mvn_env = Env::from_current();
+            handle_maven_repository_layer(&context, &mut mvn_env)?;
+
+            let maven_mode = determine_mode(
+                &context.app_dir,
+                &context.buildpack_descriptor.metadata.default_version,
+            )
+            .map_err(MavenBuildpackError::DetermineModeError)?;
+
+            output::print_section("Installing Maven");
+
+            let mvn_executable = match maven_mode {
+                Mode::UseWrapper => {
+                    output::print_subsection("Skipping (Maven wrapper detected)");
+
+                    let maven_wrapper_path = context.app_dir.join("mvnw");
+
+                    fs::set_permissions(maven_wrapper_path, Permissions::from_mode(0o777))
+                        .map_err(MavenBuildpackError::CannotSetMavenWrapperExecutableBit)?;
+
+                    PathBuf::from("./mvnw")
                 }
+                Mode::InstallVersion {
+                    version,
+                    warn_about_unused_maven_wrapper,
+                    warn_about_default_version,
+                } => {
+                    if warn_about_unused_maven_wrapper {
+                        log_unused_maven_wrapper_warning(&version);
+                    }
 
-                if warn_about_default_version {
-                    log_default_maven_version_warning(&version);
+                    if warn_about_default_version {
+                        log_default_maven_version_warning(&version);
+                    }
+
+                    output::print_subsection(BuildpackOutputText::new(vec![
+                        BuildpackOutputTextSection::regular("Selected Maven version "),
+                        BuildpackOutputTextSection::value(&version),
+                    ]));
+
+                    output::track_subsection_timing(|| {
+                        let tarball = context
+                            .buildpack_descriptor
+                            .metadata
+                            .tarballs
+                            .get(&version)
+                            .cloned()
+                            .ok_or_else(|| {
+                                MavenBuildpackError::UnsupportedMavenVersion(version.clone())
+                            })?;
+
+                        handle_maven_layer(&context, &tarball, &mut mvn_env)
+                    })?;
+
+                    PathBuf::from("mvn")
                 }
+            };
 
-                output::print_subsection(BuildpackOutputText::new(vec![
-                    BuildpackOutputTextSection::regular("Selected Maven version "),
-                    BuildpackOutputTextSection::value(&version),
-                ]));
-
-                output::track_timing(|| {
-                    let tarball = context
-                        .buildpack_descriptor
-                        .metadata
-                        .tarballs
-                        .get(&version)
-                        .cloned()
-                        .ok_or_else(|| {
-                            MavenBuildpackError::UnsupportedMavenVersion(version.clone())
-                        })?;
-
-                    handle_maven_layer(&context, &tarball, &mut mvn_env)
-                })?;
-
-                PathBuf::from("mvn")
+            if let Some(java_home) = current_or_platform_env.get("JAVA_HOME") {
+                mvn_env.insert("JAVA_HOME", java_home);
             }
-        };
 
-        if let Some(java_home) = current_or_platform_env.get("JAVA_HOME") {
-            mvn_env.insert("JAVA_HOME", java_home);
-        }
+            let maven_goals = current_or_platform_env
+                .get("MAVEN_CUSTOM_GOALS")
+                .map_or_else(
+                    || Ok(default_maven_goals()),
+                    |maven_custom_goals_string| {
+                        shell_words::split(&maven_custom_goals_string.to_string_lossy())
+                            .map_err(MavenBuildpackError::CannotSplitMavenCustomGoals)
+                    },
+                )?;
 
-        let maven_goals = current_or_platform_env
-            .get("MAVEN_CUSTOM_GOALS")
-            .map_or_else(
-                || Ok(default_maven_goals()),
-                |maven_custom_goals_string| {
-                    shell_words::split(&maven_custom_goals_string.to_string_lossy())
-                        .map_err(MavenBuildpackError::CannotSplitMavenCustomGoals)
-                },
-            )?;
+            let mut maven_options = current_or_platform_env
+                .get("MAVEN_CUSTOM_OPTS")
+                .map_or_else(
+                    || Ok(default_maven_opts()),
+                    |maven_custom_opts_string| {
+                        // Since this is a single environment variable, when users want to add multiple
+                        // options, they will expect them to be split like a UNIX shell would. This means
+                        // we need to support proper escaping for options that contain spaces.
+                        shell_words::split(&maven_custom_opts_string.to_string_lossy())
+                            .map_err(MavenBuildpackError::CannotSplitMavenCustomOpts)
+                    },
+                )?;
 
-        let mut maven_options = current_or_platform_env
-            .get("MAVEN_CUSTOM_OPTS")
-            .map_or_else(
-                || Ok(default_maven_opts()),
-                |maven_custom_opts_string| {
-                    // Since this is a single environment variable, when users want to add multiple
-                    // options, they will expect them to be split like a UNIX shell would. This means
-                    // we need to support proper escaping for options that contain spaces.
-                    shell_words::split(&maven_custom_opts_string.to_string_lossy())
-                        .map_err(MavenBuildpackError::CannotSplitMavenCustomOpts)
-                },
-            )?;
+            let settings_xml_path =
+                resolve_settings_xml_path(&context.app_dir, &current_or_platform_env)
+                    .map_err(MavenBuildpackError::SettingsError)?;
 
-        let settings_xml_path =
-            resolve_settings_xml_path(&context.app_dir, &current_or_platform_env)
-                .map_err(MavenBuildpackError::SettingsError)?;
+            if let Some(settings_xml_path) = settings_xml_path {
+                maven_options.push(String::from("-s"));
+                maven_options.push(settings_xml_path.to_string_lossy().to_string());
+            }
 
-        if let Some(settings_xml_path) = settings_xml_path {
-            maven_options.push(String::from("-s"));
-            maven_options.push(settings_xml_path.to_string_lossy().to_string());
-        }
+            // We need to set some options that relate to buildpack implementation internals. Those
+            // options must not be overridden by the user via MAVEN_CUSTOM_OPTS for the buildpack to
+            // work correctly. We also don't want to show them when we log the Maven command we're
+            // running since they might be confusing to the user.
+            let internal_maven_options = vec![String::from("-B")];
 
-        // We need to set some options that relate to buildpack implementation internals. Those
-        // options must not be overridden by the user via MAVEN_CUSTOM_OPTS for the buildpack to
-        // work correctly. We also don't want to show them when we log the Maven command we're
-        // running since they might be confusing to the user.
-        let internal_maven_options = vec![String::from("-B")];
+            output::print_section("Running Maven build");
+            output::print_subsection(BuildpackOutputText::new(vec![
+                BuildpackOutputTextSection::regular("Running "),
+                BuildpackOutputTextSection::command(format!(
+                    "{} {} {}",
+                    mvn_executable.to_string_lossy(),
+                    shell_words::join(&maven_options),
+                    shell_words::join(&maven_goals)
+                )),
+            ]));
 
-        output::print_section("Running Maven build");
-        output::print_subsection(BuildpackOutputText::new(vec![
-            BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::command(format!(
-                "{} {} {}",
-                mvn_executable.to_string_lossy(),
-                shell_words::join(&maven_options),
-                shell_words::join(&maven_goals)
-            )),
-        ]));
+            output::track_subsection_timing(|| {
+                let mut command = Command::new(&mvn_executable);
 
-        output::track_timing(|| {
-            let mut command = Command::new(&mvn_executable);
+                command
+                    .current_dir(&context.app_dir)
+                    .args(
+                        maven_options
+                            .iter()
+                            .chain(&internal_maven_options)
+                            .chain(&maven_goals),
+                    )
+                    .envs(&mvn_env);
 
-            command
-                .current_dir(&context.app_dir)
-                .args(
-                    maven_options
-                        .iter()
-                        .chain(&internal_maven_options)
-                        .chain(&maven_goals),
+                output::run_command(
+                    command,
+                    false,
+                    MavenBuildpackError::MavenBuildIoError,
+                    |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
                 )
-                .envs(&mvn_env);
+            })?;
 
-            output::run_command(
-                command,
-                false,
-                MavenBuildpackError::MavenBuildIoError,
-                |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
-            )
-        })?;
+            output::print_section(BuildpackOutputText::new(vec![
+                BuildpackOutputTextSection::regular("Running "),
+                BuildpackOutputTextSection::value(format!(
+                    "{} dependency:list",
+                    mvn_executable.to_string_lossy()
+                )),
+                BuildpackOutputTextSection::regular(" quietly"),
+            ]));
 
-        output::print_section(BuildpackOutputText::new(vec![
-            BuildpackOutputTextSection::regular("Running "),
-            BuildpackOutputTextSection::value(format!(
-                "{} dependency:list",
-                mvn_executable.to_string_lossy()
-            )),
-            BuildpackOutputTextSection::regular(" quietly"),
-        ]));
+            output::track_subsection_timing(|| {
+                let mut command = Command::new(&mvn_executable);
 
-        output::track_timing(|| {
-            let mut command = Command::new(&mvn_executable);
+                command
+                    .current_dir(&context.app_dir)
+                    .args(
+                        maven_options.iter().chain(&internal_maven_options).chain(
+                            [
+                                format!(
+                                    "-DoutputFile={}",
+                                    app_dependency_list_path(&context.app_dir).to_string_lossy()
+                                ),
+                                String::from("dependency:list"),
+                            ]
+                            .iter(),
+                        ),
+                    )
+                    .envs(&mvn_env);
 
-            command
-                .current_dir(&context.app_dir)
-                .args(
-                    maven_options.iter().chain(&internal_maven_options).chain(
-                        [
-                            format!(
-                                "-DoutputFile={}",
-                                app_dependency_list_path(&context.app_dir).to_string_lossy()
-                            ),
-                            String::from("dependency:list"),
-                        ]
-                        .iter(),
-                    ),
+                output::run_command(
+                    command,
+                    true,
+                    MavenBuildpackError::MavenBuildIoError,
+                    |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
                 )
-                .envs(&mvn_env);
+            })?;
 
-            output::run_command(
-                command,
-                true,
-                MavenBuildpackError::MavenBuildIoError,
-                |output| MavenBuildpackError::MavenBuildUnexpectedExitCode(output.status),
-            )
-        })?;
+            let mut build_result_builder = BuildResultBuilder::new();
 
-        let mut build_result_builder = BuildResultBuilder::new();
+            if let Some(process) = framework::default_app_process(&context.app_dir)
+                .map_err(MavenBuildpackError::DefaultAppProcessError)?
+            {
+                build_result_builder =
+                    build_result_builder.launch(LaunchBuilder::new().process(process).build());
+            }
 
-        if let Some(process) = framework::default_app_process(&context.app_dir)
-            .map_err(MavenBuildpackError::DefaultAppProcessError)?
-        {
-            build_result_builder =
-                build_result_builder.launch(LaunchBuilder::new().process(process).build());
-        }
-
-        build_result_builder.build()
+            build_result_builder.build()
+        })
     }
 
     fn on_error(&self, error: Error<Self::Error>) {
