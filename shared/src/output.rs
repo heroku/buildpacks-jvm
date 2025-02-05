@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 
 pub fn print_buildpack_name(buildpack_name: impl AsRef<str>) {
     let buildpack_name = buildpack_name.as_ref();
-    print!("\n{ANSI_BUILDPACK_NAME_CODE}# {buildpack_name}{ANSI_RESET_CODE}\n\n");
+    print!("\n{ANSI_BUILDPACK_NAME_CODE}## {buildpack_name}{ANSI_RESET_CODE}\n\n");
 }
 
 pub fn print_section(text: impl Into<BuildpackOutputText>) {
