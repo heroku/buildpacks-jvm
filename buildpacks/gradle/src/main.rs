@@ -25,9 +25,7 @@ use libcnb::generic::GenericPlatform;
 use libcnb::{buildpack_main, Buildpack, Env};
 #[cfg(test)]
 use libcnb_test as _;
-use libherokubuildpack::command::CommandExt;
 use serde::Deserialize;
-use std::io::{stderr, stdout};
 use std::process::{Command, ExitStatus};
 
 mod config;
