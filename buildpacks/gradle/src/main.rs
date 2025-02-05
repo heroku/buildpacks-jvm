@@ -133,16 +133,15 @@ impl Buildpack for GradleBuildpack {
                 BuildpackOutputTextSection::command(format!("./gradlew {task_name} -x check")),
             ]));
 
-            let output = Command::new(&gradle_wrapper_executable_path)
+            let mut build_command = Command::new(&gradle_wrapper_executable_path);
+            build_command
                 .current_dir(&context.app_dir)
                 .envs(&gradle_env)
-                .args([task_name, "-x", "check"])
-                .output_and_write_streams(stdout(), stderr())
-                .map_err(GradleBuildIoError)?;
+                .args([task_name, "-x", "check"]);
 
-            if !output.status.success() {
-                Err(GradleBuildUnexpectedStatusError(output.status))?;
-            }
+            shared::output::run_command(build_command, false, GradleBuildIoError, |output| {
+                GradleBuildUnexpectedStatusError(output.status)
+            })?;
 
             // Explicitly ignoring the result. If the daemon cannot be stopped, that is not a build
             // failure, nor can we recover from it in any way.
