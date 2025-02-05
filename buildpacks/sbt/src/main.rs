@@ -28,7 +28,9 @@ use libherokubuildpack::error::on_error as on_buildpack_error;
 use std::process::Command;
 
 use buildpacks_jvm_shared::output;
-use buildpacks_jvm_shared::output::{BuildpackOutputText, BuildpackOutputTextSection};
+use buildpacks_jvm_shared::output::{
+    track_buildpack_timing, BuildpackOutputText, BuildpackOutputTextSection,
+};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 #[cfg(test)]
@@ -65,75 +67,80 @@ impl Buildpack for SbtBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        output::print_buildpack_name("Heroku sbt Buildpack");
+        track_buildpack_timing(|| {
+            output::print_buildpack_name("Heroku sbt Buildpack");
 
-        let buildpack_configuration = read_system_properties(&context.app_dir)
-            .map_err(SbtBuildpackError::ReadSystemPropertiesError)
-            .and_then(|system_properties| {
-                read_sbt_buildpack_configuration(&system_properties, context.platform.env())
-                    .map_err(SbtBuildpackError::ReadSbtBuildpackConfigurationError)
+            let buildpack_configuration = read_system_properties(&context.app_dir)
+                .map_err(SbtBuildpackError::ReadSystemPropertiesError)
+                .and_then(|system_properties| {
+                    read_sbt_buildpack_configuration(&system_properties, context.platform.env())
+                        .map_err(SbtBuildpackError::ReadSbtBuildpackConfigurationError)
+                })?;
+
+            let sbt_version = sbt::version::read_sbt_version(&context.app_dir)
+                .map_err(SbtBuildpackError::ReadSbtVersionError)
+                .and_then(|version| version.ok_or(SbtBuildpackError::UnknownSbtVersion))?;
+
+            if !sbt::version::is_supported_sbt_version(&sbt_version) {
+                Err(SbtBuildpackError::UnsupportedSbtVersion(
+                    sbt_version.clone(),
+                ))?;
+            }
+
+            let sbt_available_at_launch = buildpack_configuration
+                .sbt_available_at_launch
+                .unwrap_or_default();
+
+            let mut env = Env::from_current();
+
+            handle_dependency_resolver_home(
+                &context,
+                sbt_available_at_launch,
+                DependencyResolver::Ivy,
+                &mut env,
+            )?;
+
+            handle_dependency_resolver_home(
+                &context,
+                sbt_available_at_launch,
+                DependencyResolver::Coursier,
+                &mut env,
+            )?;
+
+            handle_sbt_extras(&context, sbt_available_at_launch, &mut env)?;
+            handle_sbt_boot(&context, sbt_version, sbt_available_at_launch, &mut env)?;
+            handle_sbt_global(&context, sbt_available_at_launch, &mut env)?;
+
+            let tasks = sbt::tasks::from_config(&buildpack_configuration);
+
+            output::track_subsection_timing(|| {
+                output::print_section("Running sbt build");
+                output::print_subsection(BuildpackOutputText::new(vec![
+                    BuildpackOutputTextSection::regular("Running "),
+                    BuildpackOutputTextSection::command(format!(
+                        "sbt {}",
+                        shell_words::join(&tasks)
+                    )),
+                ]));
+
+                let mut command = Command::new("sbt");
+                command.current_dir(&context.app_dir).args(tasks).envs(&env);
+
+                output::run_command(
+                    command,
+                    false,
+                    SbtBuildpackError::SbtBuildIoError,
+                    |output| {
+                        SbtBuildpackError::SbtBuildUnexpectedExitStatus(
+                            output.status,
+                            sbt::output::parse_errors(&output.stdout),
+                        )
+                    },
+                )
             })?;
 
-        let sbt_version = sbt::version::read_sbt_version(&context.app_dir)
-            .map_err(SbtBuildpackError::ReadSbtVersionError)
-            .and_then(|version| version.ok_or(SbtBuildpackError::UnknownSbtVersion))?;
-
-        if !sbt::version::is_supported_sbt_version(&sbt_version) {
-            Err(SbtBuildpackError::UnsupportedSbtVersion(
-                sbt_version.clone(),
-            ))?;
-        }
-
-        let sbt_available_at_launch = buildpack_configuration
-            .sbt_available_at_launch
-            .unwrap_or_default();
-
-        let mut env = Env::from_current();
-
-        handle_dependency_resolver_home(
-            &context,
-            sbt_available_at_launch,
-            DependencyResolver::Ivy,
-            &mut env,
-        )?;
-
-        handle_dependency_resolver_home(
-            &context,
-            sbt_available_at_launch,
-            DependencyResolver::Coursier,
-            &mut env,
-        )?;
-
-        handle_sbt_extras(&context, sbt_available_at_launch, &mut env)?;
-        handle_sbt_boot(&context, sbt_version, sbt_available_at_launch, &mut env)?;
-        handle_sbt_global(&context, sbt_available_at_launch, &mut env)?;
-
-        let tasks = sbt::tasks::from_config(&buildpack_configuration);
-
-        output::track_timing(|| {
-            output::print_section("Running sbt build");
-            output::print_subsection(BuildpackOutputText::new(vec![
-                BuildpackOutputTextSection::regular("Running "),
-                BuildpackOutputTextSection::command(format!("sbt {}", shell_words::join(&tasks))),
-            ]));
-
-            let mut command = Command::new("sbt");
-            command.current_dir(&context.app_dir).args(tasks).envs(&env);
-
-            output::run_command(
-                command,
-                false,
-                SbtBuildpackError::SbtBuildIoError,
-                |output| {
-                    SbtBuildpackError::SbtBuildUnexpectedExitStatus(
-                        output.status,
-                        sbt::output::parse_errors(&output.stdout),
-                    )
-                },
-            )
-        })?;
-
-        BuildResultBuilder::new().build()
+            BuildResultBuilder::new().build()
+        })
     }
 
     fn on_error(&self, error: Error<Self::Error>) {
