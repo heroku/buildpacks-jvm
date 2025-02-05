@@ -122,12 +122,12 @@ fn descriptive_error_message_on_failed_build() {
 
             assert_contains!(
                 context.pack_stderr,
-                "[Error: Unexpected Maven exit code]"
+                "! ERROR: Unexpected Maven exit code"
             );
 
             assert_contains!(
                 context.pack_stderr,
-                "Maven unexpectedly exited with code '1'. The most common reason for this are\nproblems with your application code and/or build configuration."
+                "! Maven unexpectedly exited with code '1'. The most common reason for this are\n! problems with your application code and/or build configuration."
             );
         });
 }

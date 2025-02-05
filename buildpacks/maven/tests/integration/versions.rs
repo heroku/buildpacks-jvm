@@ -44,8 +44,8 @@ fn with_wrapper_and_unknown_system_properties() {
                 UNKNOWN_MAVEN_VERSION, &path
             )).expected_pack_result(PackResult::Failure),
             |context| {
-                assert_contains!(context.pack_stderr, "[Error: Unsupported Maven version]");
-                assert_contains!(context.pack_stderr, &format!("You have defined an unsupported Maven version ({UNKNOWN_MAVEN_VERSION}) in the system.properties file."));
+                assert_contains!(context.pack_stderr, "! ERROR: Unsupported Maven version");
+                assert_contains!(context.pack_stderr, &format!("! You have defined an unsupported Maven version ({UNKNOWN_MAVEN_VERSION}) in the system.properties file."));
             },
         );
 }
@@ -80,8 +80,8 @@ fn without_wrapper_and_unknown_system_properties() {
                 set_maven_version_app_dir_preprocessor(UNKNOWN_MAVEN_VERSION, &path);
             }).expected_pack_result(PackResult::Failure),
             |context| {
-                assert_contains!(context.pack_stderr, "[Error: Unsupported Maven version]");
-                assert_contains!(context.pack_stderr, &format!("You have defined an unsupported Maven version ({UNKNOWN_MAVEN_VERSION}) in the system.properties file."));
+                assert_contains!(context.pack_stderr, "! ERROR: Unsupported Maven version");
+                assert_contains!(context.pack_stderr, &format!("! You have defined an unsupported Maven version ({UNKNOWN_MAVEN_VERSION}) in the system.properties file."));
             },
         );
 }
