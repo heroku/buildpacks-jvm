@@ -39,8 +39,7 @@ pub(crate) fn stop(
     Command::new(gradle_wrapper_executable_path)
         .args(["-q", "--stop"])
         .envs(gradle_env)
-        .spawn()
-        .and_then(|mut child| child.wait())
+        .output()
         .map_err(GradleCommandError::Io)?;
 
     Ok(())
