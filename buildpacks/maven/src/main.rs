@@ -244,7 +244,7 @@ impl Buildpack for MavenBuildpack {
                 )
             })?;
 
-            output::print_section(BuildpackOutputText::new(vec![
+            output::print_subsection(BuildpackOutputText::new(vec![
                 BuildpackOutputTextSection::regular("Running "),
                 BuildpackOutputTextSection::value(format!(
                     "{} dependency:list",
