@@ -142,8 +142,10 @@ impl Buildpack for GradleBuildpack {
                 .envs(&gradle_env)
                 .args([task_name, "-x", "check"]);
 
-            shared::output::run_command(build_command, false, GradleBuildIoError, |output| {
-                GradleBuildUnexpectedStatusError(output.status)
+            track_subsection_timing(|| {
+                shared::output::run_command(build_command, false, GradleBuildIoError, |output| {
+                    GradleBuildUnexpectedStatusError(output.status)
+                })
             })?;
 
             // Explicitly ignoring the result. If the daemon cannot be stopped, that is not a build
