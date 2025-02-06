@@ -2,7 +2,6 @@ mod daemon;
 mod dependency_report;
 mod tasks;
 
-pub(crate) use daemon::start as start_daemon;
 pub(crate) use daemon::stop as stop_daemon;
 pub(crate) use dependency_report::{dependency_report, GradleDependencyReport};
 pub(crate) use tasks::tasks;

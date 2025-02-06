@@ -5,11 +5,11 @@ use crate::framework::{default_app_process, detect_framework, Framework};
 use crate::gradle_command::GradleCommandError;
 use crate::layers::gradle_home::handle_gradle_home_layer;
 use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
-use buildpacks_jvm_shared as shared;
 use buildpacks_jvm_shared::output::{
     print_buildpack_name, print_section, print_subsection, track_buildpack_timing,
     track_subsection_timing, BuildpackOutputText, BuildpackOutputTextSection,
 };
+use buildpacks_jvm_shared::{self as shared, output};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -94,9 +94,35 @@ impl Buildpack for GradleBuildpack {
             print_section("Running Gradle build");
 
             track_subsection_timing(|| {
+                let mut command = Command::new(&gradle_wrapper_executable_path);
+                command
+                    .args([
+                        // Fixes an issue when running under Apple Rosetta emulation
+                        "-Djdk.lang.Process.launchMechanism=vfork",
+                        "--daemon",
+                        GRADLE_TASK_NAME_HEROKU_START_DAEMON,
+                    ])
+                    .envs(&gradle_env);
+
                 print_subsection("Starting Gradle daemon");
-                gradle_command::start_daemon(&gradle_wrapper_executable_path, &gradle_env)
-                    .map_err(GradleBuildpackError::StartGradleDaemonError)
+                output::print_subsection(BuildpackOutputText::new(vec![
+                    BuildpackOutputTextSection::regular("Running "),
+                    BuildpackOutputTextSection::value(format!(
+                        "{} {}",
+                        command.get_program().to_string_lossy(),
+                        shell_words::join(command.get_args().map(|arg| arg.to_string_lossy())),
+                    )),
+                    BuildpackOutputTextSection::regular(" quietly"),
+                ]));
+
+                output::run_command(command, false, GradleCommandError::Io, |output| {
+                    GradleCommandError::UnexpectedExitStatus {
+                        status: output.status,
+                        stdout: String::from_utf8_lossy(&output.stdout).into_owned(),
+                        stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+                    }
+                })
+                .map_err(GradleBuildpackError::StartGradleDaemonError)
             })?;
 
             let project_tasks = track_subsection_timing(|| {

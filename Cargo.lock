@@ -412,6 +412,7 @@ dependencies = [
  "libherokubuildpack",
  "nom",
  "serde",
+ "shell-words",
 ]
 
 [[package]]
