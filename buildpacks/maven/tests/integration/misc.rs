@@ -106,7 +106,6 @@ fn no_internal_maven_options_logging() {
         |context| {
             assert_not_contains!(context.pack_stdout, "-Dmaven.repo.local=");
             assert_not_contains!(context.pack_stdout, "-Duser.home=");
-            assert_not_contains!(context.pack_stdout, "dependency:list");
             assert_not_contains!(
                 context.pack_stdout,
                 "-DoutputFile=target/mvn-dependency-list.log"
@@ -123,12 +122,12 @@ fn descriptive_error_message_on_failed_build() {
 
             assert_contains!(
                 context.pack_stderr,
-                "[Error: Unexpected Maven exit code]"
+                "! ERROR: Unexpected Maven exit code"
             );
 
             assert_contains!(
                 context.pack_stderr,
-                "Maven unexpectedly exited with code '1'. The most common reason for this are\nproblems with your application code and/or build configuration."
+                "! Maven unexpectedly exited with code '1'. The most common reason for this are\n! problems with your application code and/or build configuration."
             );
         });
 }

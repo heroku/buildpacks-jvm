@@ -1,15 +1,12 @@
 use crate::GradleBuildpackError;
-use buildpacks_jvm_shared::log::{
-    log_build_tool_io_error, log_build_tool_unexpected_exit_code_error, log_please_try_again_error,
-};
+use buildpacks_jvm_shared as shared;
 use indoc::indoc;
-use libherokubuildpack::log::log_error;
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
     match error {
         GradleBuildpackError::GradleWrapperNotFound => {
-            log_error(
+            shared::output::print_error(
                 "Missing Gradle Wrapper",
                 indoc! {"
                     This buildpack leverages Gradle Wrapper to install the correct Gradle version to build your application.
@@ -23,43 +20,53 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
                 "},
             );
         }
-        GradleBuildpackError::GradleBuildIoError(error) => log_build_tool_io_error("Gradle", error),
-        GradleBuildpackError::GradleBuildUnexpectedStatusError(exit_status) => {
-            log_build_tool_unexpected_exit_code_error("Gradle", exit_status);
+        GradleBuildpackError::GradleBuildIoError(error) => {
+            shared::log::log_build_tool_io_error("Gradle", error);
         }
-        GradleBuildpackError::GetTasksError(error) => log_please_try_again_error(
+        GradleBuildpackError::GradleBuildUnexpectedStatusError(exit_status) => {
+            shared::log::log_build_tool_unexpected_exit_code_error("Gradle", exit_status);
+        }
+        GradleBuildpackError::GetTasksError(error) => shared::log::log_please_try_again_error(
             "Failed to get Gradle tasks",
             "Failed to get Gradle tasks",
             error,
         ),
-        GradleBuildpackError::GetDependencyReportError(error) => log_please_try_again_error(
-            "Failed to get Gradle dependency report",
-            "Failed to get Gradle dependency report",
-            error,
-        ),
-        GradleBuildpackError::WriteGradlePropertiesError(error) => log_please_try_again_error(
-            "Failed to write Gradle configuration",
-            "Failed to write Gradle configuration",
-            error,
-        ),
-        GradleBuildpackError::WriteGradleInitScriptError(error) => log_please_try_again_error(
-            "Failed to write Gradle init script",
-            "Failed to write Gradle init script",
-            error,
-        ),
+        GradleBuildpackError::GetDependencyReportError(error) => {
+            shared::log::log_please_try_again_error(
+                "Failed to get Gradle dependency report",
+                "Failed to get Gradle dependency report",
+                error,
+            );
+        }
+        GradleBuildpackError::WriteGradlePropertiesError(error) => {
+            shared::log::log_please_try_again_error(
+                "Failed to write Gradle configuration",
+                "Failed to write Gradle configuration",
+                error,
+            );
+        }
+        GradleBuildpackError::WriteGradleInitScriptError(error) => {
+            shared::log::log_please_try_again_error(
+                "Failed to write Gradle init script",
+                "Failed to write Gradle init script",
+                error,
+            );
+        }
         GradleBuildpackError::CannotSetGradleWrapperExecutableBit(error) => {
-            log_please_try_again_error(
+            shared::log::log_please_try_again_error(
                 "Failed to set executable bit for Gradle wrapper",
                 "Failed to set executable bit for Gradle wrapper",
                 error,
             );
         }
-        GradleBuildpackError::StartGradleDaemonError(error) => log_please_try_again_error(
-            "Failed to start Gradle daemon",
-            "The Gradle daemon for this build could not be started.",
-            error,
-        ),
-        GradleBuildpackError::BuildTaskUnknown => log_error(
+        GradleBuildpackError::StartGradleDaemonError(error) => {
+            shared::log::log_please_try_again_error(
+                "Failed to start Gradle daemon",
+                "The Gradle daemon for this build could not be started.",
+                error,
+            );
+        }
+        GradleBuildpackError::BuildTaskUnknown => shared::output::print_error(
             "Failed to determine build task",
             indoc! {"
                 It looks like your project does not contain a 'stage' task, which Heroku needs in order
@@ -69,14 +76,14 @@ pub(crate) fn on_error_gradle_buildpack(error: GradleBuildpackError) {
             "},
         ),
         GradleBuildpackError::DetectError(error) => {
-            log_please_try_again_error(
+            shared::log::log_please_try_again_error(
                 "Failed to determine if a file exists during detect",
                 "Failed to determine if a file exists during detect",
                 error,
             );
         }
         GradleBuildpackError::CannotDetermineDefaultAppProcess(error) => {
-            log_please_try_again_error(
+            shared::log::log_please_try_again_error(
                 "Failed to determine default app process",
                 "Failed to determine default app process",
                 error,
