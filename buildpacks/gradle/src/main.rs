@@ -112,7 +112,6 @@ impl Buildpack for GradleBuildpack {
                         command.get_program().to_string_lossy(),
                         shell_words::join(command.get_args().map(|arg| arg.to_string_lossy())),
                     )),
-                    BuildpackOutputTextSection::regular(" quietly"),
                 ]));
 
                 output::run_command(command, false, GradleCommandError::Io, |output| {
