@@ -125,7 +125,6 @@ impl Buildpack for GradleBuildpack {
                 })
                 .ok_or(GradleBuildpackError::BuildTaskUnknown)?;
 
-            print_section("Running Gradle build");
             print_subsection(BuildpackOutputText::new(vec![
                 BuildpackOutputTextSection::regular("Running "),
                 BuildpackOutputTextSection::command(format!("./gradlew {task_name} -x check")),
