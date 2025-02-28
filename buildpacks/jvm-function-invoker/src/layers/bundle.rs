@@ -57,7 +57,7 @@ pub(crate) fn handle_bundle(
         Some(2) => Err(BundleLayerError::MultipleFunctionsFound)?,
         Some(code) => Err(BundleLayerError::DetectionFailed(code))?,
         None => Err(BundleLayerError::UnexpectedDetectionTermination)?,
-    };
+    }
 
     Ok(())
 }
