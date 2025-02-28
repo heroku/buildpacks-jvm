@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Enabled `libcnb`'s `trace` feature. ([#779](https://github.com/heroku/buildpacks-jvm/pull/779))
+
 ### Fixed
 
 - JDK overlays are now properly sourced from the `.jdk-overlay` directory instead of `.jdk_overlay`. ([#763](https://github.com/heroku/buildpacks-jvm/pull/763))
