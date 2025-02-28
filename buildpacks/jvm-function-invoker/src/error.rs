@@ -112,5 +112,5 @@ pub(crate) fn handle_buildpack_error(error: JvmFunctionInvokerBuildpackError) {
                 "},
             ),
         },
-    };
+    }
 }

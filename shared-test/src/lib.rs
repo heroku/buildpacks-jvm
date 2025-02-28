@@ -49,7 +49,6 @@ where
                 None | Some(None) => return result,
                 Some(Some(backoff_duration)) => {
                     std::thread::sleep(backoff_duration);
-                    continue;
                 }
             },
         }
