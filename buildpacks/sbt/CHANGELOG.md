@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.1.1] - 2025-03-19
+
+- No changes.
+
 ## [6.1.0] - 2025-02-28
 
 ### Changed
@@ -115,7 +119,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.1.0...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v6.1.1...HEAD
+[6.1.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.1.0...v6.1.1
 [6.1.0]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.4...v6.1.0
 [6.0.4]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.3...v6.0.4
 [6.0.3]: https://github.com/heroku/buildpacks-jvm/compare/v6.0.2...v6.0.3
