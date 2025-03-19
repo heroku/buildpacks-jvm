@@ -685,3 +685,19 @@ arch = "arm64"
 url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/arm64/23.0.1.tar.gz"
 checksum = "sha256:537e291277769425c49457407910a823d81794bbafb5df0b08b09d6550b68516"
 metadata.distribution = "zulu"
+
+[[artifacts]]
+version = "24.0.0"
+os = "linux"
+arch = "amd64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/amd64/24.0.0.tar.gz"
+checksum = "sha256:fddf16c468df918914d029b60fdce051608f70c30ecadc6ed2d79ced68178e91"
+metadata.distribution = "zulu"
+
+[[artifacts]]
+version = "24.0.0"
+os = "linux"
+arch = "arm64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/arm64/24.0.0.tar.gz"
+checksum = "sha256:6bfb24eebd8cf67827d222076ae29955f467f9af615c73a44a09531ad149239d"
+metadata.distribution = "zulu"

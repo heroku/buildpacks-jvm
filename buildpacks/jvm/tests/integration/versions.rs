@@ -112,11 +112,11 @@ fn openjdk_21() {
 
 #[test]
 #[ignore = "integration test"]
-fn openjdk_23() {
-    TestRunner::default().build(default_build_config("test-apps/java-23-app"), |context| {
+fn openjdk_24() {
+    TestRunner::default().build(default_build_config("test-apps/java-24-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"23.0.1\""
+            "openjdk version \"24\""
         );
     });
 }
