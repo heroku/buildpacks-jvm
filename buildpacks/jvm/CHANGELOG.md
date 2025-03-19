@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for new OpenJDK version `24.0.0`. ([#788](https://github.com/heroku/buildpacks-jvm/pull/788))
+
 ## [6.1.0] - 2025-02-28
 
 ### Changed
