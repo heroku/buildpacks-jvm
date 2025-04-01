@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.1.2] - 2025-04-01
+
+### Changed
+
+- Updated CODEOWNERS metadata ([#793](https://github.com/heroku/buildpacks-jvm/pull/793))
+
 ## [6.1.1] - 2025-03-19
 
 ### Added
