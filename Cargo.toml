@@ -8,7 +8,7 @@ members = [
     "buildpacks/maven",
     "buildpacks/sbt",
     "shared",
-    "shared-test"
+    "shared-test",
 ]
 
 [workspace.package]
