@@ -8,8 +8,14 @@ workspace = true
 
 [dependencies]
 indoc = "2"
-libcnb = { version = "=0.27.0", features = ["trace"] }
-libherokubuildpack = { version = "=0.28.1", default-features = false, features = ["digest", "download", "error", "log", "toml"] }
+libcnb = { version = "=0.28.1", features = ["trace"] }
+libherokubuildpack = { version = "=0.28.1", default-features = false, features = [
+    "digest",
+    "download",
+    "error",
+    "log",
+    "toml",
+] }
 serde = "1"
 thiserror = "2"
 toml = "0.8"
