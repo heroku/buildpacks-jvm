@@ -23,7 +23,7 @@ libherokubuildpack = { version = "=0.28.1", default-features = false, features =
 serde = { version = "1", features = ["derive"] }
 tempfile = "3"
 url = "2"
-nom = "7"
+nom = "8"
 thiserror = "2"
 sha2 = "0.10"
 hex = "0.4"

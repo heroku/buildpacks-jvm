@@ -15,7 +15,7 @@ libherokubuildpack = { version = "=0.28.1", default-features = false, features =
     "error",
     "log",
 ] }
-nom = "7"
+nom = "8"
 serde = { version = "1", features = ["derive"] }
 
 [dev-dependencies]
