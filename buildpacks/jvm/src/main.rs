@@ -147,7 +147,7 @@ impl Buildpack for OpenJdkBuildpack {
                         BuildpackOutputTextSection::value("8"),
                     ]));
                 }
-            };
+            }
 
             let openjdk_inventory = include_str!("../openjdk_inventory.toml")
                 .parse::<Inventory<OpenJdkVersion, Sha256, OpenJdkArtifactMetadata>>()
