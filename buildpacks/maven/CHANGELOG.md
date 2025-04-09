@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Buildpack output changed to a new format. ([#745](https://github.com/heroku/buildpacks-jvm/pull/745))
+
 ## [6.1.2] - 2025-04-03
 
 ### Changed

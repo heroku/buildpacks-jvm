@@ -7,9 +7,9 @@ use std::path::Path;
 #[ignore = "integration test"]
 fn with_wrapper() {
     TestRunner::default().build( default_build_config("test-apps/simple-http-service"), |context| {
-            assert_not_contains!(context.pack_stdout, "Selected Maven version:");
-            assert_contains!(context.pack_stdout, "Maven wrapper detected, skipping installation.");
-            assert_contains!(context.pack_stdout, "$ ./mvnw");
+            assert_not_contains!(context.pack_stdout, "  - Selected Maven version");
+            assert_contains!(context.pack_stdout, "- Skipping (Maven wrapper detected)");
+            assert_contains!(context.pack_stdout, "  - Running `./mvnw");
             assert_contains!(context.pack_stdout, &format!("[BUILDPACK INTEGRATION TEST - MAVEN VERSION] {SIMPLE_HTTP_SERVICE_MAVEN_WRAPPER_VERSION}"));
         });
 }
@@ -25,7 +25,7 @@ fn with_wrapper_and_system_properties() {
         |context| {
             assert_contains!(
                 context.pack_stdout,
-                &format!("Selected Maven version: {DEFAULT_MAVEN_VERSION}")
+                &format!("  - Selected Maven version `{DEFAULT_MAVEN_VERSION}`")
             );
             assert_not_contains!(context.pack_stdout, "$ ./mvnw");
             assert_contains!(
@@ -44,8 +44,8 @@ fn with_wrapper_and_unknown_system_properties() {
                 UNKNOWN_MAVEN_VERSION, &path
             )).expected_pack_result(PackResult::Failure),
             |context| {
-                assert_contains!(context.pack_stderr, "[Error: Unsupported Maven version]");
-                assert_contains!(context.pack_stderr, &format!("You have defined an unsupported Maven version ({UNKNOWN_MAVEN_VERSION}) in the system.properties file."));
+                assert_contains!(context.pack_stderr, "! ERROR: Unsupported Maven version");
+                assert_contains!(context.pack_stderr, &format!("! You have defined an unsupported Maven version ({UNKNOWN_MAVEN_VERSION}) in the system.properties file."));
             },
         );
 }
@@ -61,7 +61,7 @@ fn without_wrapper_and_without_system_properties() {
             assert_not_contains!(context.pack_stdout, "$ ./mvnw");
             assert_contains!(
                 context.pack_stdout,
-                &format!("Selected Maven version: {DEFAULT_MAVEN_VERSION}")
+                &format!("  - Selected Maven version `{DEFAULT_MAVEN_VERSION}`")
             );
             assert_contains!(
                 context.pack_stdout,
@@ -80,8 +80,8 @@ fn without_wrapper_and_unknown_system_properties() {
                 set_maven_version_app_dir_preprocessor(UNKNOWN_MAVEN_VERSION, &path);
             }).expected_pack_result(PackResult::Failure),
             |context| {
-                assert_contains!(context.pack_stderr, "[Error: Unsupported Maven version]");
-                assert_contains!(context.pack_stderr, &format!("You have defined an unsupported Maven version ({UNKNOWN_MAVEN_VERSION}) in the system.properties file."));
+                assert_contains!(context.pack_stderr, "! ERROR: Unsupported Maven version");
+                assert_contains!(context.pack_stderr, &format!("! You have defined an unsupported Maven version ({UNKNOWN_MAVEN_VERSION}) in the system.properties file."));
             },
         );
 }
@@ -95,7 +95,7 @@ fn without_wrapper_and_maven_3_9_4_system_properties() {
             set_maven_version_app_dir_preprocessor("3.9.4", &path);
         }),
         |context| {
-            assert_contains!(context.pack_stdout, "Selected Maven version: 3.9.4");
+            assert_contains!(context.pack_stdout, "  - Selected Maven version `3.9.4`");
             assert_contains!(
                 context.pack_stdout,
                 "[BUILDPACK INTEGRATION TEST - MAVEN VERSION] 3.9.4"

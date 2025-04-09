@@ -31,10 +31,10 @@ fn maven_settings_url_failure() {
             |context| {
                 assert_contains!(
                     context.pack_stderr,
-                    &format!("You have set MAVEN_SETTINGS_URL to \"{SETTINGS_XML_URL_404}\". We tried to download the file at this\nURL, but the download failed. Please verify that the given URL is correct and try again.")
+                    &format!("! You have set MAVEN_SETTINGS_URL to \"{SETTINGS_XML_URL_404}\". We tried to download the file at this\n! URL, but the download failed. Please verify that the given URL is correct and try again.")
                 );
 
-                // This error message comes from Maven itself. We don't expect Maven to to be executed at all.
+                // This error message comes from Maven itself. We don't expect Maven to be executed at all.
                 assert_not_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
             },
         );

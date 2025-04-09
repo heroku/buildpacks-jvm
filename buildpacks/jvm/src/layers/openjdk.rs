@@ -5,12 +5,14 @@ use crate::{
     util, OpenJdkBuildpack, OpenJdkBuildpackError, JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER,
     JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
+use buildpacks_jvm_shared::output;
+use buildpacks_jvm_shared::output::{BuildpackOutputText, BuildpackOutputTextSection};
 use fs_extra::dir::CopyOptions;
 use libcnb::additional_buildpack_binary_path;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::{
-    CachedLayerDefinition, InvalidMetadataAction, LayerState, RestoredLayerAction,
+    CachedLayerDefinition, EmptyLayerCause, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libherokubuildpack::inventory::artifact::Artifact;
@@ -25,6 +27,8 @@ pub(crate) fn handle_openjdk_layer(
     context: &BuildContext<OpenJdkBuildpack>,
     artifact: &Artifact<OpenJdkVersion, Sha256, OpenJdkArtifactMetadata>,
 ) -> libcnb::Result<(), OpenJdkBuildpackError> {
+    output::print_section("OpenJDK Installation");
+
     let layer_ref = context.cached_layer(
         layer_name!("openjdk"),
         CachedLayerDefinition {
@@ -36,55 +40,119 @@ pub(crate) fn handle_openjdk_layer(
                     || metadata.jdk_overlay_applied
                 {
                     // Since the JDK overlay will modify the OpenJDK distribution and the cached version
-                    // might already have an (potentially different) overlay applied, we re-crate the layer
+                    // might already have a (potentially different) overlay applied, we re-crate the layer
                     // in that case.
-                    RestoredLayerAction::DeleteLayer
-                } else if artifact.url == metadata.source_tarball_url {
-                    RestoredLayerAction::KeepLayer
+                    (
+                        RestoredLayerAction::DeleteLayer,
+                        OpenJdkLayerCause::OverlayUsed,
+                    )
+                } else if artifact.url != metadata.source_tarball_url {
+                    (
+                        RestoredLayerAction::DeleteLayer,
+                        OpenJdkLayerCause::VersionChanged,
+                    )
                 } else {
-                    RestoredLayerAction::DeleteLayer
+                    (
+                        RestoredLayerAction::KeepLayer,
+                        OpenJdkLayerCause::RestoredLayerValid,
+                    )
                 }
             },
         },
     )?;
 
     match layer_ref.state {
-        LayerState::Restored { .. } => {}
-        LayerState::Empty { .. } => {
-            libherokubuildpack::log::log_header(format!("Installing OpenJDK {}", artifact.version));
+        LayerState::Restored { .. } => {
+            output::print_subsection("Using cached OpenJDK installation from previous build");
+        }
+        LayerState::Empty { ref cause } => {
+            match cause {
+                EmptyLayerCause::InvalidMetadataAction { .. } => {
+                    output::print_subsection("Clearing OpenJDK cache (invalid metadata)");
+                }
+                EmptyLayerCause::RestoredLayerAction {
+                    cause: OpenJdkLayerCause::OverlayUsed,
+                } => output::print_subsection("Clearing OpenJDK cache (JDK overlay used)"),
+                EmptyLayerCause::RestoredLayerAction {
+                    cause: OpenJdkLayerCause::VersionChanged,
+                } => output::print_subsection("Clearing OpenJDK cache (version changed)"),
+                _ => {}
+            }
 
-            let temp_dir = tempdir().map_err(OpenJdkBuildpackError::CannotCreateOpenJdkTempDir)?;
-            let path = temp_dir.path().join("openjdk.tar.gz");
+            output::track_subsection_timing(|| {
+                output::print_subsection("Downloading and unpacking OpenJDK distribution");
 
-            libherokubuildpack::download::download_file(&artifact.url, &path)
-                .map_err(OpenJdkBuildpackError::OpenJdkDownloadError)?;
+                let temp_dir =
+                    tempdir().map_err(OpenJdkBuildpackError::CannotCreateOpenJdkTempDir)?;
+                let path = temp_dir.path().join("openjdk.tar.gz");
 
-            std::fs::File::open(&path)
-                .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
-                .and_then(|file| {
-                    digest::<Sha256>(file).map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
-                })
-                .and_then(|downloaded_file_digest| {
-                    if downloaded_file_digest.as_slice() == artifact.checksum.value {
-                        Ok(())
-                    } else {
-                        Err(OpenJdkBuildpackError::OpenJdkTarballChecksumError {
-                            expected: artifact.checksum.value.clone(),
-                            actual: downloaded_file_digest.to_vec(),
-                        })
-                    }
-                })?;
+                libherokubuildpack::download::download_file(&artifact.url, &path)
+                    .map_err(OpenJdkBuildpackError::OpenJdkDownloadError)?;
 
-            std::fs::File::open(&path)
-                .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
-                .and_then(|mut file| {
-                    libherokubuildpack::tar::decompress_tarball(&mut file, layer_ref.path())
-                        .map_err(OpenJdkBuildpackError::CannotDecompressOpenJdkTarball)
-                })?;
+                std::fs::File::open(&path)
+                    .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
+                    .and_then(|file| {
+                        digest::<Sha256>(file)
+                            .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
+                    })
+                    .and_then(|downloaded_file_digest| {
+                        if downloaded_file_digest.as_slice() == artifact.checksum.value {
+                            Ok(())
+                        } else {
+                            Err(OpenJdkBuildpackError::OpenJdkTarballChecksumError {
+                                expected: artifact.checksum.value.clone(),
+                                actual: downloaded_file_digest.to_vec(),
+                            })
+                        }
+                    })?;
 
+                std::fs::File::open(&path)
+                    .map_err(OpenJdkBuildpackError::CannotReadOpenJdkTarball)
+                    .and_then(|mut file| {
+                        libherokubuildpack::tar::decompress_tarball(&mut file, layer_ref.path())
+                            .map_err(OpenJdkBuildpackError::CannotDecompressOpenJdkTarball)
+                    })
+            })?;
+
+            output::print_section("Applying JDK overlay");
             let app_jdk_overlay_dir_path = context.app_dir.join(JDK_OVERLAY_DIR_NAME);
 
-            let ubuntu_java_cacerts_file_path = PathBuf::from("/etc/ssl/certs/java/cacerts");
+            let mut jdk_overlay_applied = false;
+            if app_jdk_overlay_dir_path.is_dir() {
+                output::print_subsection(BuildpackOutputText::new(vec![
+                    BuildpackOutputTextSection::regular("Copying files from "),
+                    BuildpackOutputTextSection::value(JDK_OVERLAY_DIR_NAME),
+                    BuildpackOutputTextSection::regular(" to OpenJDK directory"),
+                ]));
+
+                jdk_overlay_applied = true;
+
+                output::track_subsection_timing(|| {
+                    let jdk_overlay_contents =
+                        util::list_directory_contents(&app_jdk_overlay_dir_path)
+                            .map_err(OpenJdkBuildpackError::CannotListJdkOverlayContents)?;
+
+                    fs_extra::copy_items(
+                        &jdk_overlay_contents,
+                        layer_ref.path(),
+                        &CopyOptions {
+                            overwrite: true,
+                            skip_exist: false,
+                            copy_inside: true,
+                            ..CopyOptions::default()
+                        },
+                    )
+                    .map_err(OpenJdkBuildpackError::CannotCopyJdkOverlayContents)
+                })?;
+            } else {
+                output::print_subsection(BuildpackOutputText::new(vec![
+                    BuildpackOutputTextSection::regular("Skipping (directory "),
+                    BuildpackOutputTextSection::value(JDK_OVERLAY_DIR_NAME),
+                    BuildpackOutputTextSection::regular(" not present)"),
+                ]));
+            }
+
+            output::print_section("Linking base image certificates as OpenJDK keystore");
 
             // Depending on OpenJDK version, the path for the cacerts file can differ.
             let relative_jdk_cacerts_path = ["jre/lib/security/cacerts", "lib/security/cacerts"]
@@ -92,12 +160,21 @@ pub(crate) fn handle_openjdk_layer(
                 .find(|path| layer_ref.path().join(path).is_file())
                 .ok_or(OpenJdkBuildpackError::MissingJdkCertificatesFile)?;
 
-            let symlink_ubuntu_java_cacerts_file = ubuntu_java_cacerts_file_path.is_file()
-                && !app_jdk_overlay_dir_path
-                    .join(relative_jdk_cacerts_path)
-                    .exists();
+            let overlay_has_cacerts = app_jdk_overlay_dir_path
+                .join(relative_jdk_cacerts_path)
+                .exists();
 
-            if symlink_ubuntu_java_cacerts_file {
+            let ubuntu_java_cacerts_file_path = PathBuf::from("/etc/ssl/certs/java/cacerts");
+
+            if overlay_has_cacerts {
+                output::print_subsection(BuildpackOutputText::new(vec![
+                    BuildpackOutputTextSection::regular("Skipping (overlay at "),
+                    BuildpackOutputTextSection::value(JDK_OVERLAY_DIR_NAME),
+                    BuildpackOutputTextSection::regular(" contains "),
+                    BuildpackOutputTextSection::value(*relative_jdk_cacerts_path),
+                    BuildpackOutputTextSection::regular("file)"),
+                ]));
+            } else if ubuntu_java_cacerts_file_path.is_file() {
                 let absolute_jdk_cacerts_path = layer_ref.path().join(relative_jdk_cacerts_path);
 
                 std::fs::rename(
@@ -113,26 +190,16 @@ pub(crate) fn handle_openjdk_layer(
                     absolute_jdk_cacerts_path,
                 )
                 .map_err(OpenJdkBuildpackError::CannotSymlinkUbuntuCertificates)?;
-            }
 
-            let mut jdk_overlay_applied = false;
-            if app_jdk_overlay_dir_path.is_dir() {
-                jdk_overlay_applied = true;
-
-                let jdk_overlay_contents = util::list_directory_contents(&app_jdk_overlay_dir_path)
-                    .map_err(OpenJdkBuildpackError::CannotListJdkOverlayContents)?;
-
-                fs_extra::copy_items(
-                    &jdk_overlay_contents,
-                    layer_ref.path(),
-                    &CopyOptions {
-                        overwrite: true,
-                        skip_exist: false,
-                        copy_inside: true,
-                        ..CopyOptions::default()
-                    },
-                )
-                .map_err(OpenJdkBuildpackError::CannotCopyJdkOverlayContents)?;
+                output::print_subsection("Done");
+            } else {
+                output::print_subsection(BuildpackOutputText::new(vec![
+                    BuildpackOutputTextSection::regular("Skipping ("),
+                    BuildpackOutputTextSection::value(
+                        ubuntu_java_cacerts_file_path.to_string_lossy(),
+                    ),
+                    BuildpackOutputTextSection::regular(" does not exist)"),
+                ]));
             }
 
             layer_ref.write_metadata(OpenJdkLayerMetadata {
@@ -176,4 +243,10 @@ pub(crate) fn handle_openjdk_layer(
 pub(crate) struct OpenJdkLayerMetadata {
     jdk_overlay_applied: bool,
     source_tarball_url: String,
+}
+
+pub(crate) enum OpenJdkLayerCause {
+    OverlayUsed,
+    VersionChanged,
+    RestoredLayerValid,
 }
