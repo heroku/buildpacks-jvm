@@ -833,6 +833,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
+name = "leiningen"
+version = "0.0.0"
+dependencies = [
+ "buildpacks-jvm-shared",
+ "buildpacks-jvm-shared-test",
+ "indoc",
+ "java-properties",
+ "libcnb",
+ "libcnb-test",
+ "libherokubuildpack",
+ "semver",
+ "serde",
+ "shell-words",
+ "tempfile",
+ "thiserror",
+ "ureq",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.171"
 source = "registry+https://github.com/rust-lang/crates.io-index"
