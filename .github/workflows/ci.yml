@@ -143,9 +143,9 @@ jobs:
       - name: Install Rust linux-musl target
         run: rustup target add ${{ matrix.target }}
       - name: Rust Cache
-        uses: Swatinem/rust-cache@v2.7.8
+        uses: Swatinem/rust-cache@9d47c6ad4b02e050fd481d890b2ea34778fd09d6 # v2.7.8
       - name: Install Pack CLI
-        uses: buildpacks/github-actions/setup-pack@v5.8.11
+        uses: buildpacks/github-actions/setup-pack@c502bcff683efa6f6d56a325df3fbe1722e21881 # v5.8.11
       - name: Pull builder and run images
         run: |
           docker pull "heroku/builder:24"
