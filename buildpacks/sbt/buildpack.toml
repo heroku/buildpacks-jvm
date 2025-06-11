@@ -2,7 +2,7 @@ api = "0.10"
 
 [buildpack]
 id = "heroku/sbt"
-version = "6.2.1"
+version = "7.0.0"
 name = "Heroku sbt"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Heroku's sbt buildpack. A component of the 'heroku/scala' buildpack."
