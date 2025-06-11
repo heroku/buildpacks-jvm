@@ -18,7 +18,7 @@ pub(crate) fn handle_gradle_home_layer(
         layer_name!("home"),
         CachedLayerDefinition {
             build: true,
-            launch: true,
+            launch: false,
             invalid_metadata_action: &|_| InvalidMetadataAction::DeleteLayer,
             restored_layer_action: &|_: &GenericMetadata, _| RestoredLayerAction::KeepLayer,
         },
@@ -48,7 +48,7 @@ pub(crate) fn handle_gradle_home_layer(
             .map_err(GradleBuildpackError::WriteGradlePropertiesError)?;
 
             // We're adding this empty task to all projects to ensure we have a task we can run when
-            // we start the Gradle daemon that doesn't side-effect or output anything to the console.
+            // we start the Gradle daemon that doesn't side effect or output anything to the console.
             // https://docs.gradle.org/8.3/userguide/init_scripts.html
             fs::write(
                 layer_ref.path().join("init.gradle.kts"),

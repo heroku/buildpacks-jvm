@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Gradle home layer (referenced by `GRADLE_USER_HOME`) is no longer available in the run image. It was unintentionally included in earlier versions of the buildpack. Applications should not rely on Gradle during runtime. ([#811](https://github.com/heroku/buildpacks-jvm/pull/811))
+
 ## [6.2.1] - 2025-04-28
 
 - No changes.
