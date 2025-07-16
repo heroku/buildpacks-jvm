@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.1] - 2025-07-16
+
+- No changes.
+
 ## [7.0.0] - 2025-06-11
 
 - No changes.
@@ -139,7 +143,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.0...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.1...HEAD
+[7.0.1]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/heroku/buildpacks-jvm/compare/v6.2.1...v7.0.0
 [6.2.1]: https://github.com/heroku/buildpacks-jvm/compare/v6.2.0...v6.2.1
 [6.2.0]: https://github.com/heroku/buildpacks-jvm/compare/v6.1.2...v6.2.0
