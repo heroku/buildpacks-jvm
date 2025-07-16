@@ -11,5 +11,6 @@ buildpack.toml @Malax
 CHANGELOG.md @Malax
 Cargo.toml @Malax
 Cargo.lock @Malax
+inventory.json @Malax
 pom.xml @Malax
 /.github/workflows/ @Malax
