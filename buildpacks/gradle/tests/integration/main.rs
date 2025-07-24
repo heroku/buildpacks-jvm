@@ -12,6 +12,7 @@ use libcnb::data::buildpack_id;
 use libcnb_test::{BuildConfig, BuildpackReference};
 use std::path::Path;
 
+mod environment;
 mod smoke;
 
 fn default_build_config(fixture_path: impl AsRef<Path>) -> BuildConfig {

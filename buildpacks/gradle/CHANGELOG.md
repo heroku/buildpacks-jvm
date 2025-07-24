@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Platform environment variables are now exposed to Gradle build processes. This allows build-time configuration through environment variables set at the platform level. ([#821](https://github.com/heroku/buildpacks-jvm/pull/821))
+
 ## [7.0.1] - 2025-07-16
 
 - No changes.

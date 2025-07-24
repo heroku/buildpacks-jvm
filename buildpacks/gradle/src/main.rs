@@ -22,7 +22,7 @@ use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::LaunchBuilder;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
-use libcnb::{buildpack_main, Buildpack, Env};
+use libcnb::{buildpack_main, Buildpack, Env, Platform};
 #[cfg(test)]
 use libcnb_test as _;
 use serde::Deserialize;
@@ -94,6 +94,10 @@ impl Buildpack for GradleBuildpack {
                 .map_err(GradleBuildpackError::CannotSetGradleWrapperExecutableBit)?;
 
             let mut gradle_env = Env::from_current();
+            for (key, value) in context.platform.env() {
+                gradle_env.insert(key, value);
+            }
+
             handle_gradle_home_layer(&context, &mut gradle_env)?;
 
             print_section("Running Gradle build");
