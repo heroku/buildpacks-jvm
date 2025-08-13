@@ -8,15 +8,15 @@ pub(crate) fn from_config(build_config: &SbtBuildpackConfiguration) -> Vec<Strin
     }
 
     if let Some(sbt_pre_tasks) = &build_config.sbt_pre_tasks {
-        sbt_pre_tasks
-            .iter()
-            .for_each(|task| tasks.push(task.to_string()));
+        for task in sbt_pre_tasks {
+            tasks.push(task.to_string());
+        }
     }
 
     if let Some(sbt_tasks) = &build_config.sbt_tasks {
-        sbt_tasks
-            .iter()
-            .for_each(|task| tasks.push(task.to_string()));
+        for task in sbt_tasks {
+            tasks.push(task.to_string());
+        }
     } else {
         let default_tasks = vec![String::from("compile"), String::from("stage")];
         for default_task in &default_tasks {
