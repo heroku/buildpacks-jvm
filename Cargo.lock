@@ -133,7 +133,7 @@ dependencies = [
  "sha2",
  "tempfile",
  "thiserror",
- "toml 0.9.4",
+ "toml 0.9.5",
  "url",
 ]
 
@@ -150,7 +150,7 @@ dependencies = [
  "serde",
  "tempfile",
  "thiserror",
- "toml 0.9.4",
+ "toml 0.9.5",
  "ureq 2.12.1",
 ]
 
@@ -898,7 +898,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
- "toml 0.9.4",
+ "toml 0.9.5",
  "tracing",
  "tracing-opentelemetry",
  "tracing-subscriber",
@@ -912,7 +912,7 @@ checksum = "9ac5c3a0e7fdcf4d24023b79d5bf0bb57b8f4597859022451d9c1a20fc9ed608"
 dependencies = [
  "serde",
  "thiserror",
- "toml 0.9.4",
+ "toml 0.9.5",
 ]
 
 [[package]]
@@ -925,7 +925,7 @@ dependencies = [
  "libcnb-proc-macros",
  "serde",
  "thiserror",
- "toml 0.9.4",
+ "toml 0.9.5",
  "uriparse",
 ]
 
@@ -989,7 +989,7 @@ dependencies = [
  "tar",
  "termcolor",
  "thiserror",
- "toml 0.9.4",
+ "toml 0.9.5",
  "ureq 3.0.12",
 ]
 
@@ -1640,18 +1640,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.12"
+version = "2.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "567b8a2dae586314f7be2a752ec7474332959c6460e02bde30d702a66d488708"
+checksum = "0b0949c3a6c842cbde3f1686d6eea5a010516deb7085f79db747562d4102f41e"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.12"
+version = "2.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f7cf42b4507d8ea322120659672cf1b9dbb93f8f2d4ecfd6e51350ff5b17a1d"
+checksum = "cc5b44b4ab9c2fdd0e0512e6bece8388e214c0749f5862b114cc5b7a25daf227"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1713,9 +1713,9 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.9.4"
+version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41ae868b5a0f67631c14589f7e250c1ea2c574ee5ba21c6c8dd4b1485705a5a1"
+checksum = "75129e1dc5000bfbaa9fee9d1b21f974f9fbad9daec557a521ee6e080825f6e8"
 dependencies = [
  "indexmap",
  "serde",
@@ -1760,9 +1760,9 @@ dependencies = [
 
 [[package]]
 name = "toml_parser"
-version = "1.0.1"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97200572db069e74c512a14117b296ba0a80a30123fbbb5aa1f4a348f639ca30"
+checksum = "b551886f449aa90d4fe2bdaa9f4a2577ad2dde302c61ecf262d80b116db95c10"
 dependencies = [
  "winnow",
 ]
