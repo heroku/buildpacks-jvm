@@ -1,5 +1,6 @@
-use crate::{GradleBuildpack, GradleBuildpackError, GRADLE_TASK_NAME_HEROKU_START_DAEMON};
+use crate::{GRADLE_TASK_NAME_HEROKU_START_DAEMON, GradleBuildpack, GradleBuildpackError};
 use indoc::{formatdoc, indoc};
+use libcnb::Env;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::generic::GenericMetadata;
@@ -7,7 +8,6 @@ use libcnb::layer::{
     CachedLayerDefinition, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Env;
 use std::fs;
 
 pub(crate) fn handle_gradle_home_layer(

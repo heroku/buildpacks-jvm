@@ -1,10 +1,10 @@
 use crate::{MavenBuildpack, MavenBuildpackError};
+use libcnb::Env;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::generic::GenericMetadata;
 use libcnb::layer::{CachedLayerDefinition, InvalidMetadataAction, RestoredLayerAction};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Env;
 
 pub(crate) fn handle_maven_repository_layer(
     context: &BuildContext<MavenBuildpack>,

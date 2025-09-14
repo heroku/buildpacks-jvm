@@ -4,7 +4,7 @@
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 use crate::common::project_toml_salesforce_type_is_function;
-use crate::error::{handle_buildpack_error, JvmFunctionInvokerBuildpackError};
+use crate::error::{JvmFunctionInvokerBuildpackError, handle_buildpack_error};
 use crate::layers::bundle::handle_bundle;
 use crate::layers::opt::handle_opt;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};

@@ -1,12 +1,12 @@
-use crate::error::JvmFunctionInvokerBuildpackError;
 use crate::JvmFunctionInvokerBuildpack;
+use crate::error::JvmFunctionInvokerBuildpackError;
+use libcnb::Env;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::{CachedLayerDefinition, InvalidMetadataAction, RestoredLayerAction};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Env;
 use libherokubuildpack::digest::sha256;
-use libherokubuildpack::download::{download_file, DownloadError};
+use libherokubuildpack::download::{DownloadError, download_file};
 use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;

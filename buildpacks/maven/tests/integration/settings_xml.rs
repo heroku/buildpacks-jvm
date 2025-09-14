@@ -1,6 +1,6 @@
 use crate::default_build_config;
 use indoc::formatdoc;
-use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
+use libcnb_test::{PackResult, TestRunner, assert_contains, assert_not_contains};
 use std::fs;
 use std::path::PathBuf;
 

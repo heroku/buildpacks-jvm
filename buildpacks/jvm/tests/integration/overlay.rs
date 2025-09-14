@@ -1,5 +1,5 @@
 use crate::default_build_config;
-use libcnb_test::{assert_contains, TestRunner};
+use libcnb_test::{TestRunner, assert_contains};
 use std::path::PathBuf;
 
 #[test]

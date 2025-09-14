@@ -1,4 +1,4 @@
-use libcnb_test::{assert_contains, BuildConfig, ContainerConfig, TestContext, TestRunner};
+use libcnb_test::{BuildConfig, ContainerConfig, TestContext, TestRunner, assert_contains};
 use std::time::Duration;
 
 /// Extremely opinionated helper for testing containers that expose a HTTP interface.

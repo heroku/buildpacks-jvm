@@ -11,8 +11,8 @@ pub(crate) enum SbtError {
 
 #[cfg(test)]
 mod test {
-    use super::parse_errors;
     use super::SbtError;
+    use super::parse_errors;
     use indoc::formatdoc;
 
     #[test]

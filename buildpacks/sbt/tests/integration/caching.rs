@@ -2,7 +2,7 @@
 //! builds.
 
 use crate::default_build_config;
-use libcnb_test::{assert_contains, assert_not_contains, TestRunner};
+use libcnb_test::{TestRunner, assert_contains, assert_not_contains};
 
 #[test]
 #[ignore = "integration test"]
@@ -66,7 +66,7 @@ fn test_caching_sbt_1_8_2_ivy() {
         "[info] downloading https://repo1.maven.org/maven2/com/twitter/finagle-http_2.13/22.12.0/finagle-http_2.13-22.12.0.jar ...",
         "[info] downloading https://repo1.maven.org/maven2/com/twitter/finagle-base-http_2.13/22.12.0/finagle-base-http_2.13-22.12.0.jar ...",
         "[info] downloading https://repo1.maven.org/maven2/com/twitter/finagle-netty4-http_2.13/22.12.0/finagle-netty4-http_2.13-22.12.0.jar ...",
-        "[info] downloading https://repo1.maven.org/maven2/com/twitter/finagle-http2_2.13/22.12.0/finagle-http2_2.13-22.12.0.jar ..."
+        "[info] downloading https://repo1.maven.org/maven2/com/twitter/finagle-http2_2.13/22.12.0/finagle-http2_2.13-22.12.0.jar ...",
     ];
 
     TestRunner::default().build(

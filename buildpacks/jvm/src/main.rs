@@ -21,25 +21,25 @@ use crate::openjdk_artifact::{
 };
 use crate::openjdk_version::OpenJdkVersion;
 use crate::version_resolver::{
-    resolve_version, OpenJdkArtifactRequirementSource, VersionResolveError,
+    OpenJdkArtifactRequirementSource, VersionResolveError, resolve_version,
 };
 use buildpacks_jvm_shared::output;
 use buildpacks_jvm_shared::output::{
-    track_buildpack_timing, BuildpackOutputText, BuildpackOutputTextSection,
+    BuildpackOutputText, BuildpackOutputTextSection, track_buildpack_timing,
 };
-use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
+use buildpacks_jvm_shared::system_properties::{ReadSystemPropertiesError, read_system_properties};
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
 pub(crate) use constants::{
     JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
 };
 use indoc::formatdoc;
+use libcnb::Buildpack;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::buildpack_main;
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
-use libcnb::Buildpack;
 #[cfg(test)]
 use libcnb_test as _;
 use libherokubuildpack::download::DownloadError;

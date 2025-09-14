@@ -11,9 +11,9 @@ mod sbt;
 
 use crate::configuration::read_sbt_buildpack_configuration;
 use crate::detect::is_sbt_project_directory;
-use crate::errors::{log_user_errors, SbtBuildpackError};
+use crate::errors::{SbtBuildpackError, log_user_errors};
 use crate::layers::dependency_resolver_home::{
-    handle_dependency_resolver_home, DependencyResolver,
+    DependencyResolver, handle_dependency_resolver_home,
 };
 use crate::layers::sbt_boot::handle_sbt_boot;
 use crate::layers::sbt_extras::handle_sbt_extras;
@@ -23,13 +23,13 @@ use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::{GenericMetadata, GenericPlatform};
-use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
+use libcnb::{Buildpack, Env, Error, Platform, buildpack_main};
 use libherokubuildpack::error::on_error as on_buildpack_error;
 use std::process::Command;
 
 use buildpacks_jvm_shared::output;
 use buildpacks_jvm_shared::output::{
-    track_buildpack_timing, BuildpackOutputText, BuildpackOutputTextSection,
+    BuildpackOutputText, BuildpackOutputTextSection, track_buildpack_timing,
 };
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;

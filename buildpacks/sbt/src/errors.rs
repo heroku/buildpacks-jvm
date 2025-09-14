@@ -27,38 +27,43 @@ pub(crate) enum SbtBuildpackError {
 pub(crate) fn log_user_errors(error: SbtBuildpackError) {
     match error {
         SbtBuildpackError::SbtGlobalLayerError(SbtGlobalLayerError::CouldNotWritePlugin(error)) => {
-                    shared::log::log_please_try_again_error(
-                            "Unexpected I/O error",
-                            "An unexpected error occurred while attempting write the Heroku plugin for sbt.",
-                            error,
-                        );
+            shared::log::log_please_try_again_error(
+                "Unexpected I/O error",
+                "An unexpected error occurred while attempting write the Heroku plugin for sbt.",
+                error,
+            );
         }
 
-        SbtBuildpackError::SbtExtrasLayerError(error) => {
-            match error {
-                SbtExtrasLayerError::CouldNotWriteScript(error) | SbtExtrasLayerError::CouldNotSetPermissions(error) | SbtExtrasLayerError::CouldNotCreateLaunchersDir(error) => shared::log::log_please_try_again_error(
+        SbtBuildpackError::SbtExtrasLayerError(error) => match error {
+            SbtExtrasLayerError::CouldNotWriteScript(error)
+            | SbtExtrasLayerError::CouldNotSetPermissions(error)
+            | SbtExtrasLayerError::CouldNotCreateLaunchersDir(error) => {
+                shared::log::log_please_try_again_error(
                     "Unexpected I/O error",
                     "An unexpected I/O error occurred while setting up sbt-extras.",
                     error,
-                ),
+                );
             }
-        }
+        },
 
         SbtBuildpackError::ReadSbtVersionError(error) => match error {
-            ReadSbtVersionError::CouldNotReadBuildProperties(error) => shared::log::log_please_try_again_error(
-                "Unexpected I/O error",
-                "Could not read your application's system.properties file due to an unexpected I/O error.",
-                error
-            ),
+            ReadSbtVersionError::CouldNotReadBuildProperties(error) => {
+                shared::log::log_please_try_again_error(
+                    "Unexpected I/O error",
+                    "Could not read your application's system.properties file due to an unexpected I/O error.",
+                    error,
+                );
+            }
 
-            ReadSbtVersionError::CouldNotParseBuildProperties(error) => shared::log::log_please_try_again_error(
-                "Unexpected I/O error",
-                "Could not read your application's project/build.properties file due to an unexpected I/O error.",
-                error
-            ),
+            ReadSbtVersionError::CouldNotParseBuildProperties(error) => {
+                shared::log::log_please_try_again_error(
+                    "Unexpected I/O error",
+                    "Could not read your application's project/build.properties file due to an unexpected I/O error.",
+                    error,
+                );
+            }
 
-            ReadSbtVersionError::MissingVersionProperty => shared::output::print_error
-(
+            ReadSbtVersionError::MissingVersionProperty => shared::output::print_error(
                 "No sbt version defined",
                 formatdoc! { "
                 Your scala project must include project/build.properties and define a value for
@@ -67,8 +72,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             ),
 
             ReadSbtVersionError::CouldNotParseVersion(version, error) => {
-                shared::output::print_error
-(
+                shared::output::print_error(
                     "Unexpected version parse error",
                     formatdoc! { "
                 Failed to read the `sbt.version` ({version}) declared in project/build.properties. Please
@@ -79,8 +83,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
                 );
             }
         },
-        SbtBuildpackError::UnsupportedSbtVersion(version) => shared::output::print_error
-(
+        SbtBuildpackError::UnsupportedSbtVersion(version) => shared::output::print_error(
             "Unsupported sbt version",
             formatdoc! { "
                 You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
@@ -88,8 +91,7 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             " },
         ),
 
-        SbtBuildpackError::UnknownSbtVersion => shared::output::print_error
-(
+        SbtBuildpackError::UnknownSbtVersion => shared::output::print_error(
             "Unknown sbt version",
             formatdoc! { "
                 The buildpack could not determine the sbt version of this project.
@@ -98,65 +100,71 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
         ),
 
         SbtBuildpackError::ReadSbtBuildpackConfigurationError(error) => match error {
-
             ReadSbtBuildpackConfigurationError::InvalidTaskList(error)
-            | ReadSbtBuildpackConfigurationError::InvalidPreTaskList(error) => shared::output::print_error
-(
-                "Could not parse list",
-                formatdoc! {"
+            | ReadSbtBuildpackConfigurationError::InvalidPreTaskList(error) => {
+                shared::output::print_error(
+                    "Could not parse list",
+                    formatdoc! {"
                 Could not parse a value into a list of words.
                 Please check for quoting and escaping mistakes and try again.
 
                 Details: {error}
             " },
-            ),
+                );
+            }
 
             ReadSbtBuildpackConfigurationError::InvalidSbtClean(error)
-            | ReadSbtBuildpackConfigurationError::InvalidAvailableAtLaunch(error) => shared::output::print_error
-(
-                "Could not parse boolean",
-                formatdoc! {"
+            | ReadSbtBuildpackConfigurationError::InvalidAvailableAtLaunch(error) => {
+                shared::output::print_error(
+                    "Could not parse boolean",
+                    formatdoc! {"
                 Could not parse a value into a 'true' or 'false' value.
                 Please check for mistakes and try again.
 
                 Details: {error}
             " },
-            ),
+                );
+            }
         },
 
-        SbtBuildpackError::ReadSystemPropertiesError(error) => {
-            match error {
-                shared::system_properties::ReadSystemPropertiesError::IoError(error) => shared::log::log_please_try_again_error(
+        SbtBuildpackError::ReadSystemPropertiesError(error) => match error {
+            shared::system_properties::ReadSystemPropertiesError::IoError(error) => {
+                shared::log::log_please_try_again_error(
                     "Failed to read system.properties",
                     "An unexpected error occurred while reading the system.properties file.",
                     error,
-                ),
+                );
+            }
 
-                shared::system_properties::ReadSystemPropertiesError::ParseError(error) => {
-                    shared::output::print_error
-(
-                        "Invalid system.properties file",
-                        formatdoc! {"
+            shared::system_properties::ReadSystemPropertiesError::ParseError(error) => {
+                shared::output::print_error(
+                    "Invalid system.properties file",
+                    formatdoc! {"
                             Your system.properties file could not be parsed.
                             Please ensure it is properly formatted and try again.
 
                             Details: {error}
-                        "}
-                    );
-                }
+                        "},
+                );
             }
-        }
+        },
 
         SbtBuildpackError::SbtBuildIoError(error) => shared::log::log_please_try_again_error(
             "Running sbt failed",
             formatdoc! { "
                 An unexpected IO error occurred while running sbt.
-            "}, error,
+            "},
+            error,
         ),
 
-        SbtBuildpackError::SbtBuildUnexpectedExitStatus(exit_status, None) => shared::log::log_build_tool_unexpected_exit_code_error("sbt", exit_status),
+        SbtBuildpackError::SbtBuildUnexpectedExitStatus(exit_status, None) => {
+            shared::log::log_build_tool_unexpected_exit_code_error("sbt", exit_status);
+        }
 
-        SbtBuildpackError::SbtBuildUnexpectedExitStatus(_, Some(SbtError::MissingTask(task_name))) => shared::output::print_error(
+        SbtBuildpackError::SbtBuildUnexpectedExitStatus(
+            _,
+            Some(SbtError::MissingTask(task_name)),
+        ) => shared::output::print_error(
             "Failed to run sbt!",
             formatdoc! {"
                 It looks like your build.sbt does not have a valid '{task_name}' task. Please reference our Dev Center article for

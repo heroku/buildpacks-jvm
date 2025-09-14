@@ -74,8 +74,8 @@ mod tests {
     }
 
     #[test]
-    fn is_sbt_project_directory_passes_when_build_properties_file_is_found_in_the_sbt_project_directory(
-    ) {
+    fn is_sbt_project_directory_passes_when_build_properties_file_is_found_in_the_sbt_project_directory()
+     {
         let app_dir = tempdir().unwrap();
         let sbt_project_path = app_dir.path().join("project");
         create_dir(&sbt_project_path).unwrap();

@@ -1,5 +1,5 @@
 use crate::default_build_config;
-use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
+use libcnb_test::{PackResult, TestRunner, assert_contains, assert_not_contains};
 
 /// Tests that no confusing or non-actionable warnings caused by the buildpack are shown in the
 /// sbt 1.x log during build.

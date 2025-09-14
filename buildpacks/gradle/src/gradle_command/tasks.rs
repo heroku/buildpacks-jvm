@@ -1,4 +1,4 @@
-use crate::gradle_command::{run_gradle_command, GradleCommandError};
+use crate::gradle_command::{GradleCommandError, run_gradle_command};
 use libcnb::Env;
 use std::path::Path;
 use std::process::Command;
@@ -60,7 +60,7 @@ mod parser {
     use nom::bytes::complete::{is_not, tag};
     use nom::character::complete::{char, line_ending, not_line_ending};
     use nom::combinator::{map, recognize, verify};
-    use nom::multi::{count, many0, many1, many_till};
+    use nom::multi::{count, many_till, many0, many1};
     use nom::sequence::{terminated, tuple};
     use nom::{Finish, IResult};
 
@@ -111,6 +111,7 @@ mod parser {
         use super::{Task, TaskGroup};
         use indoc::indoc;
 
+        #[allow(clippy::too_many_lines)]
         #[test]
         fn test() {
             let input = indoc! {"
@@ -187,13 +188,201 @@ mod parser {
             assert_eq!(
                 result,
                 vec![
-                    TaskGroup { heading: String::from("Application tasks"), tasks: vec![Task { name: String::from("bootRun"), description: String::from("Runs this project as a Spring Boot application.") }] },
-                    TaskGroup { heading: String::from("Build tasks"), tasks: vec![Task { name: String::from("assemble"), description: String::from("Assembles the outputs of this project.") }, Task { name: String::from("bootBuildImage"), description: String::from("Builds an OCI image of the application using the output of the bootJar task") }, Task { name: String::from("bootJar"), description: String::from("Assembles an executable jar archive containing the main classes and their dependencies.") }, Task { name: String::from("build"), description: String::from("Assembles and tests this project.") }, Task { name: String::from("buildDependents"), description: String::from("Assembles and tests this project and all projects that depend on it.") }, Task { name: String::from("buildNeeded"), description: String::from("Assembles and tests this project and all projects it depends on.") }, Task { name: String::from("classes"), description: String::from("Assembles main classes.") }, Task { name: String::from("clean"), description: String::from("Deletes the build directory.") }, Task { name: String::from("jar"), description: String::from("Assembles a jar archive containing the main classes.") }, Task { name: String::from("resolveMainClassName"), description: String::from("Resolves the name of the application's main class.") }, Task { name: String::from("testClasses"), description: String::from("Assembles test classes.") }] },
-                    TaskGroup { heading: String::from("Build Setup tasks"), tasks: vec![Task { name: String::from("init"), description: String::from("Initializes a new Gradle build.") }, Task { name: String::from("wrapper"), description: String::from("Generates Gradle wrapper files.") }] },
-                    TaskGroup { heading: String::from("Documentation tasks"), tasks: vec![Task { name: String::from("javadoc"), description: String::from("Generates Javadoc API documentation for the main source code.") }] },
-                    TaskGroup { heading: String::from("Help tasks"), tasks: vec![Task { name: String::from("buildEnvironment"), description: String::from("Displays all buildscript dependencies declared in root project 'demo'.") }, Task { name: String::from("dependencies"), description: String::from("Displays all dependencies declared in root project 'demo'.") }, Task { name: String::from("dependencyInsight"), description: String::from("Displays the insight into a specific dependency in root project 'demo'.") }, Task { name: String::from("dependencyManagement"), description: String::from("Displays the dependency management declared in root project 'demo'.") }, Task { name: String::from("help"), description: String::from("Displays a help message.") }, Task { name: String::from("javaToolchains"), description: String::from("Displays the detected java toolchains.") }, Task { name: String::from("kotlinDslAccessorsReport"), description: String::from("Prints the Kotlin code for accessing the currently available project extensions and conventions.") }, Task { name: String::from("outgoingVariants"), description: String::from("Displays the outgoing variants of root project 'demo'.") }, Task { name: String::from("projects"), description: String::from("Displays the sub-projects of root project 'demo'.") }, Task { name: String::from("properties"), description: String::from("Displays the properties of root project 'demo'.") }, Task { name: String::from("resolvableConfigurations"), description: String::from("Displays the configurations that can be resolved in root project 'demo'.") }, Task { name: String::from("tasks"), description: String::from("Displays the tasks runnable from root project 'demo'.") }] },
-                    TaskGroup { heading: String::from("Verification tasks"), tasks: vec![Task { name: String::from("check"), description: String::from("Runs all checks.") }, Task { name: String::from("test"), description: String::from("Runs the test suite.") }] },
-                    TaskGroup { heading: String::from("Weird tasks"), tasks: vec![Task { name: String::from("bärchen"), description: String::from("Contains an umlaut.") }, Task { name: String::from("1337"), description: String::from("Only consists of numbers.") },  Task { name: String::from("one-two"), description: String::from("Contains a dash.") }] }
+                    TaskGroup {
+                        heading: String::from("Application tasks"),
+                        tasks: vec![Task {
+                            name: String::from("bootRun"),
+                            description: String::from(
+                                "Runs this project as a Spring Boot application."
+                            )
+                        }]
+                    },
+                    TaskGroup {
+                        heading: String::from("Build tasks"),
+                        tasks: vec![
+                            Task {
+                                name: String::from("assemble"),
+                                description: String::from("Assembles the outputs of this project.")
+                            },
+                            Task {
+                                name: String::from("bootBuildImage"),
+                                description: String::from(
+                                    "Builds an OCI image of the application using the output of the bootJar task"
+                                )
+                            },
+                            Task {
+                                name: String::from("bootJar"),
+                                description: String::from(
+                                    "Assembles an executable jar archive containing the main classes and their dependencies."
+                                )
+                            },
+                            Task {
+                                name: String::from("build"),
+                                description: String::from("Assembles and tests this project.")
+                            },
+                            Task {
+                                name: String::from("buildDependents"),
+                                description: String::from(
+                                    "Assembles and tests this project and all projects that depend on it."
+                                )
+                            },
+                            Task {
+                                name: String::from("buildNeeded"),
+                                description: String::from(
+                                    "Assembles and tests this project and all projects it depends on."
+                                )
+                            },
+                            Task {
+                                name: String::from("classes"),
+                                description: String::from("Assembles main classes.")
+                            },
+                            Task {
+                                name: String::from("clean"),
+                                description: String::from("Deletes the build directory.")
+                            },
+                            Task {
+                                name: String::from("jar"),
+                                description: String::from(
+                                    "Assembles a jar archive containing the main classes."
+                                )
+                            },
+                            Task {
+                                name: String::from("resolveMainClassName"),
+                                description: String::from(
+                                    "Resolves the name of the application's main class."
+                                )
+                            },
+                            Task {
+                                name: String::from("testClasses"),
+                                description: String::from("Assembles test classes.")
+                            }
+                        ]
+                    },
+                    TaskGroup {
+                        heading: String::from("Build Setup tasks"),
+                        tasks: vec![
+                            Task {
+                                name: String::from("init"),
+                                description: String::from("Initializes a new Gradle build.")
+                            },
+                            Task {
+                                name: String::from("wrapper"),
+                                description: String::from("Generates Gradle wrapper files.")
+                            }
+                        ]
+                    },
+                    TaskGroup {
+                        heading: String::from("Documentation tasks"),
+                        tasks: vec![Task {
+                            name: String::from("javadoc"),
+                            description: String::from(
+                                "Generates Javadoc API documentation for the main source code."
+                            )
+                        }]
+                    },
+                    TaskGroup {
+                        heading: String::from("Help tasks"),
+                        tasks: vec![
+                            Task {
+                                name: String::from("buildEnvironment"),
+                                description: String::from(
+                                    "Displays all buildscript dependencies declared in root project 'demo'."
+                                )
+                            },
+                            Task {
+                                name: String::from("dependencies"),
+                                description: String::from(
+                                    "Displays all dependencies declared in root project 'demo'."
+                                )
+                            },
+                            Task {
+                                name: String::from("dependencyInsight"),
+                                description: String::from(
+                                    "Displays the insight into a specific dependency in root project 'demo'."
+                                )
+                            },
+                            Task {
+                                name: String::from("dependencyManagement"),
+                                description: String::from(
+                                    "Displays the dependency management declared in root project 'demo'."
+                                )
+                            },
+                            Task {
+                                name: String::from("help"),
+                                description: String::from("Displays a help message.")
+                            },
+                            Task {
+                                name: String::from("javaToolchains"),
+                                description: String::from("Displays the detected java toolchains.")
+                            },
+                            Task {
+                                name: String::from("kotlinDslAccessorsReport"),
+                                description: String::from(
+                                    "Prints the Kotlin code for accessing the currently available project extensions and conventions."
+                                )
+                            },
+                            Task {
+                                name: String::from("outgoingVariants"),
+                                description: String::from(
+                                    "Displays the outgoing variants of root project 'demo'."
+                                )
+                            },
+                            Task {
+                                name: String::from("projects"),
+                                description: String::from(
+                                    "Displays the sub-projects of root project 'demo'."
+                                )
+                            },
+                            Task {
+                                name: String::from("properties"),
+                                description: String::from(
+                                    "Displays the properties of root project 'demo'."
+                                )
+                            },
+                            Task {
+                                name: String::from("resolvableConfigurations"),
+                                description: String::from(
+                                    "Displays the configurations that can be resolved in root project 'demo'."
+                                )
+                            },
+                            Task {
+                                name: String::from("tasks"),
+                                description: String::from(
+                                    "Displays the tasks runnable from root project 'demo'."
+                                )
+                            }
+                        ]
+                    },
+                    TaskGroup {
+                        heading: String::from("Verification tasks"),
+                        tasks: vec![
+                            Task {
+                                name: String::from("check"),
+                                description: String::from("Runs all checks.")
+                            },
+                            Task {
+                                name: String::from("test"),
+                                description: String::from("Runs the test suite.")
+                            }
+                        ]
+                    },
+                    TaskGroup {
+                        heading: String::from("Weird tasks"),
+                        tasks: vec![
+                            Task {
+                                name: String::from("bärchen"),
+                                description: String::from("Contains an umlaut.")
+                            },
+                            Task {
+                                name: String::from("1337"),
+                                description: String::from("Only consists of numbers.")
+                            },
+                            Task {
+                                name: String::from("one-two"),
+                                description: String::from("Contains a dash.")
+                            }
+                        ]
+                    }
                 ]
             );
         }

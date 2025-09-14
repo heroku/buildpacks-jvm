@@ -1,4 +1,4 @@
-use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
+use buildpacks_jvm_shared::system_properties::{ReadSystemPropertiesError, read_system_properties};
 use std::path::Path;
 
 #[derive(Debug)]

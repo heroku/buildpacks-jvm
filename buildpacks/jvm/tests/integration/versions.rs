@@ -1,7 +1,7 @@
 use crate::default_build_config;
 use indoc::formatdoc;
 use libcnb::data::buildpack_id;
-use libcnb_test::{assert_contains, assert_not_contains, BuildpackReference, TestRunner};
+use libcnb_test::{BuildpackReference, TestRunner, assert_contains, assert_not_contains};
 
 #[test]
 #[ignore = "integration test"]

@@ -149,13 +149,13 @@ pub(crate) enum OpenJdkParseError {
 
 mod parse {
     use super::{Jep322VnumSuffix, OpenJdkParseError, OpenJdkVersion};
+    use nom::IResult;
     use nom::branch::alt;
     use nom::bytes::complete::{tag, take_while1};
     use nom::character::complete::{alphanumeric1, char, digit1};
     use nom::combinator::{eof, map, map_res, opt, success};
     use nom::multi::separated_list1;
     use nom::sequence::{preceded, terminated, tuple};
-    use nom::IResult;
 
     pub(super) fn vstr(input: &str) -> IResult<&str, OpenJdkVersion> {
         terminated(alt((legacy_vstr, jep_322_vstr)), eof)(input)

@@ -1,5 +1,5 @@
-use crate::gradle_command::GradleCommandError;
 use crate::GRADLE_TASK_NAME_HEROKU_START_DAEMON;
+use crate::gradle_command::GradleCommandError;
 use buildpacks_jvm_shared as shared;
 use libcnb::Env;
 use std::path::Path;

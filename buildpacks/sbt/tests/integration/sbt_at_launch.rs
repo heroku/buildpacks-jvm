@@ -1,9 +1,9 @@
 use crate::default_build_config;
 use buildpacks_jvm_shared_test::{
-    http_request_backoff, UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE,
-    UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
+    UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE, UREQ_RESPONSE_RESULT_EXPECT_MESSAGE,
+    http_request_backoff,
 };
-use libcnb_test::{assert_contains, assert_not_contains, ContainerConfig, TestRunner};
+use libcnb_test::{ContainerConfig, TestRunner, assert_contains, assert_not_contains};
 
 /// Users can request to have sbt and all caches to be available at launch. One use-case for this
 /// is not using native-packager and wanting to rely on `sbt run` to run the application in prod.
