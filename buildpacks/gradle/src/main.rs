@@ -3,17 +3,17 @@
 // to be able selectively opt out of coverage for functions/lines/modules.
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
+use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use crate::config::GradleBuildpackConfig;
 use crate::detect::is_gradle_project_directory;
 use crate::errors::on_error_gradle_buildpack;
-use crate::framework::{default_app_process, detect_framework, Framework};
+use crate::framework::{Framework, default_app_process, detect_framework};
 use crate::gradle_command::GradleCommandError;
 use crate::layers::gradle_home::handle_gradle_home_layer;
-use crate::GradleBuildpackError::{GradleBuildIoError, GradleBuildUnexpectedStatusError};
 use buildpacks_jvm_shared as shared;
 use buildpacks_jvm_shared::output::{
-    print_buildpack_name, print_section, print_subsection, track_buildpack_timing,
-    track_subsection_timing, BuildpackOutputText, BuildpackOutputTextSection,
+    BuildpackOutputText, BuildpackOutputTextSection, print_buildpack_name, print_section,
+    print_subsection, track_buildpack_timing, track_subsection_timing,
 };
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;
@@ -22,7 +22,7 @@ use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::LaunchBuilder;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
-use libcnb::{buildpack_main, Buildpack, Env, Platform};
+use libcnb::{Buildpack, Env, Platform, buildpack_main};
 #[cfg(test)]
 use libcnb_test as _;
 use serde::Deserialize;

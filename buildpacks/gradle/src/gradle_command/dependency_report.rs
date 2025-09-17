@@ -103,13 +103,13 @@ pub(crate) enum Suffix {
 
 mod parser {
     use super::{Dependency, GradleDependencyReport, Suffix};
+    use nom::IResult;
     use nom::branch::alt;
     use nom::bytes::complete::tag;
     use nom::character::complete::{alphanumeric1, char, line_ending, newline, not_line_ending};
     use nom::combinator::{map, opt, recognize};
-    use nom::multi::{count, many0, many1, many_till};
+    use nom::multi::{count, many_till, many0, many1};
     use nom::sequence::{delimited, preceded, terminated, tuple};
-    use nom::IResult;
 
     pub(crate) fn dependency_report(report: &str) -> IResult<&str, GradleDependencyReport> {
         let configuration_name_and_dependencies = tuple((

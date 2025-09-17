@@ -7,8 +7,8 @@ use crate::errors::on_error_maven_buildpack;
 use crate::framework::DefaultAppProcessError;
 use crate::layer::maven::handle_maven_layer;
 use crate::layer::maven_repo::handle_maven_repository_layer;
-use crate::mode::{determine_mode, Mode};
-use crate::settings::{resolve_settings_xml_path, SettingsError};
+use crate::mode::{Mode, determine_mode};
+use crate::settings::{SettingsError, resolve_settings_xml_path};
 use crate::warnings::{log_default_maven_version_warning, log_unused_maven_wrapper_warning};
 use buildpacks_jvm_shared::system_properties::ReadSystemPropertiesError;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -16,7 +16,7 @@ use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{LaunchBuilder, ProcessBuilder};
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericPlatform;
-use libcnb::{buildpack_main, Buildpack, Env, Error, Platform};
+use libcnb::{Buildpack, Env, Error, Platform, buildpack_main};
 use libherokubuildpack::download::DownloadError;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -28,7 +28,7 @@ use std::process::{Command, ExitStatus};
 
 use buildpacks_jvm_shared::output;
 use buildpacks_jvm_shared::output::{
-    track_buildpack_timing, BuildpackOutputText, BuildpackOutputTextSection,
+    BuildpackOutputText, BuildpackOutputTextSection, track_buildpack_timing,
 };
 #[cfg(test)]
 use buildpacks_jvm_shared_test as _;

@@ -1,5 +1,6 @@
-use crate::errors::SbtBuildpackError;
 use crate::SbtBuildpack;
+use crate::errors::SbtBuildpackError;
+use libcnb::Env;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::generic::GenericMetadata;
@@ -7,7 +8,6 @@ use libcnb::layer::{
     CachedLayerDefinition, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Env;
 use std::fs;
 use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;

@@ -1,12 +1,12 @@
 use crate::util::extract_tarball;
 use crate::{MavenBuildpack, MavenBuildpackError, Tarball};
+use libcnb::Env;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::{
     CachedLayerDefinition, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Env;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 

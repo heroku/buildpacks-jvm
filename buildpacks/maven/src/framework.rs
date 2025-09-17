@@ -1,4 +1,4 @@
-use crate::{app_dependency_list_path, ProcessBuilder};
+use crate::{ProcessBuilder, app_dependency_list_path};
 use buildpacks_jvm_shared::fs::list_directory_contents;
 use libcnb::data::launch::Process;
 use libcnb::data::process_type;

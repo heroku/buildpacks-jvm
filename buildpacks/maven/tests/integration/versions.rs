@@ -1,5 +1,5 @@
 use crate::default_build_config;
-use libcnb_test::{assert_contains, assert_not_contains, PackResult, TestRunner};
+use libcnb_test::{PackResult, TestRunner, assert_contains, assert_not_contains};
 use std::fs::File;
 use std::path::Path;
 

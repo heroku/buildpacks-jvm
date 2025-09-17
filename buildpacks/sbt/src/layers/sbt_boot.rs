@@ -1,10 +1,10 @@
-use crate::errors::SbtBuildpackError;
 use crate::SbtBuildpack;
+use crate::errors::SbtBuildpackError;
+use libcnb::Env;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::{CachedLayerDefinition, InvalidMetadataAction, RestoredLayerAction};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Env;
 use semver::Version;
 use serde::{Deserialize, Serialize};
 

@@ -83,10 +83,11 @@ fn jvm_env_vars_for_env(
     // Spring uses a dedicated environment variable when connecting to Redis. If that environment
     // variable is not already set, we copy the value from the Heroku REDIS_URL into
     // SPRING_REDIS_URL for convenience.
-    if !input.contains_key("DISABLE_SPRING_REDIS_URL") && !input.contains_key("SPRING_REDIS_URL") {
-        if let Some(redis_url) = input.get("REDIS_URL") {
-            result.insert(String::from("SPRING_REDIS_URL"), redis_url.clone());
-        }
+    if !input.contains_key("DISABLE_SPRING_REDIS_URL")
+        && !input.contains_key("SPRING_REDIS_URL")
+        && let Some(redis_url) = input.get("REDIS_URL")
+    {
+        result.insert(String::from("SPRING_REDIS_URL"), redis_url.clone());
     }
 
     Ok(result)
@@ -173,7 +174,9 @@ mod tests {
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -203,7 +206,9 @@ mod tests {
 
         assert_eq!(
             result.get("HEROKU_POSTGRESQL_RED_JDBC_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432/fire-pokemon?user=red&password=charmander&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432/fire-pokemon?user=red&password=charmander&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -217,7 +222,9 @@ mod tests {
 
         assert_eq!(
             result.get("HEROKU_POSTGRESQL_BLUE_JDBC_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432/water-pokemon?user=blue&password=squirtle&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432/water-pokemon?user=blue&password=squirtle&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -310,7 +317,9 @@ mod tests {
 
             assert_eq!(
                 result.get("JDBC_DATABASE_URL"),
-                Some(&String::from("jdbc:postgresql://db.example.com:5432/regular-database?user=AzureDiamond&password=hunter2&sslmode=require"))
+                Some(&String::from(
+                    "jdbc:postgresql://db.example.com:5432/regular-database?user=AzureDiamond&password=hunter2&sslmode=require"
+                ))
             );
 
             assert_eq!(
@@ -341,7 +350,9 @@ mod tests {
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
-            Some(&String::from("jdbc:postgresql://pooled.example.com:5432/testdb?user=pooluser&password=poolpass&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://pooled.example.com:5432/testdb?user=pooluser&password=poolpass&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -356,7 +367,9 @@ mod tests {
 
         assert_eq!(
             result.get("DATABASE_CONNECTION_POOL_JDBC_URL"),
-            Some(&String::from("jdbc:postgresql://pooled.example.com:5432/testdb?user=pooluser&password=poolpass&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://pooled.example.com:5432/testdb?user=pooluser&password=poolpass&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -391,7 +404,9 @@ mod tests {
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -406,7 +421,9 @@ mod tests {
 
         assert_eq!(
             result.get("SPRING_DATASOURCE_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -436,7 +453,9 @@ mod tests {
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -469,7 +488,9 @@ mod tests {
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432/testdb?user=AzureDiamond&password=hunter2&sslmode=require"
+            ))
         );
 
         assert_eq!(
@@ -507,7 +528,9 @@ mod tests {
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432/testdb?foo=bar&e=mc^2&user=AzureDiamond&password=hunter2&sslmode=require#fragment"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432/testdb?foo=bar&e=mc^2&user=AzureDiamond&password=hunter2&sslmode=require#fragment"
+            ))
         );
 
         assert_eq!(
@@ -530,7 +553,9 @@ mod tests {
 
         assert_eq!(
             result.get("JDBC_DATABASE_URL"),
-            Some(&String::from("jdbc:postgresql://db.example.com:5432?user=AzureDiamond&password=hunter2&sslmode=require"))
+            Some(&String::from(
+                "jdbc:postgresql://db.example.com:5432?user=AzureDiamond&password=hunter2&sslmode=require"
+            ))
         );
 
         assert_eq!(

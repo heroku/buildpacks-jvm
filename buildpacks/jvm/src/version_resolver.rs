@@ -4,7 +4,7 @@ use crate::openjdk_artifact::{
     OpenJdkArtifactRequirementParseError, OpenJdkDistribution,
 };
 use crate::salesforce_functions::is_salesforce_function_app;
-use buildpacks_jvm_shared::system_properties::{read_system_properties, ReadSystemPropertiesError};
+use buildpacks_jvm_shared::system_properties::{ReadSystemPropertiesError, read_system_properties};
 use std::path::Path;
 
 pub(crate) fn resolve_version(app_dir: &Path) -> Result<ResolveResult, VersionResolveError> {

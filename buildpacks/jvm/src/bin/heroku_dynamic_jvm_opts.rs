@@ -1,10 +1,10 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
+use libcnb::Env;
 use libcnb::data::exec_d::ExecDProgramOutputKey;
 use libcnb::data::exec_d_program_output_key;
 use libcnb::exec_d::write_exec_d_program_output;
-use libcnb::Env;
 use std::collections::HashMap;
 
 fn main() {

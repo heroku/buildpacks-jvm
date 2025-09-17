@@ -2,8 +2,8 @@ use crate::openjdk_artifact::OpenJdkArtifactMetadata;
 use crate::openjdk_version::OpenJdkVersion;
 use crate::util::digest;
 use crate::{
-    util, OpenJdkBuildpack, OpenJdkBuildpackError, JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER,
-    JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
+    JAVA_TOOL_OPTIONS_ENV_VAR_DELIMITER, JAVA_TOOL_OPTIONS_ENV_VAR_NAME, JDK_OVERLAY_DIR_NAME,
+    OpenJdkBuildpack, OpenJdkBuildpackError, util,
 };
 use buildpacks_jvm_shared::output;
 use buildpacks_jvm_shared::output::{BuildpackOutputText, BuildpackOutputTextSection};

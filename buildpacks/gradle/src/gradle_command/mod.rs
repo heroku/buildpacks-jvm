@@ -4,7 +4,7 @@ mod tasks;
 
 pub(crate) use daemon::start as start_daemon;
 pub(crate) use daemon::stop as stop_daemon;
-pub(crate) use dependency_report::{dependency_report, GradleDependencyReport};
+pub(crate) use dependency_report::{GradleDependencyReport, dependency_report};
 pub(crate) use tasks::tasks;
 
 use std::process::Command;
