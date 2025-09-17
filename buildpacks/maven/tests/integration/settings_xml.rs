@@ -30,7 +30,7 @@ fn maven_settings_url_failure() {
                 .expected_pack_result(PackResult::Failure),
             |context| {
                 assert_contains!(
-                    context.pack_stderr,
+                    context.pack_stdout,
                     &format!("! You have set MAVEN_SETTINGS_URL to \"{SETTINGS_XML_URL_404}\". We tried to download the file at this\n! URL, but the download failed. Please verify that the given URL is correct and try again.")
                 );
 

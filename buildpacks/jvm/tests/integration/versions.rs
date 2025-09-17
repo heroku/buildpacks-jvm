@@ -16,7 +16,7 @@ fn openjdk_default() {
         ]),
         |context| {
             assert_contains!(
-                context.pack_stderr,
+                context.pack_stdout,
                 &formatdoc! {"
                     ! WARNING: No OpenJDK version specified
                     ! 
@@ -52,7 +52,7 @@ fn openjdk_functions_default() {
             BuildpackReference::WorkspaceBuildpack(buildpack_id!("heroku/maven")),
         ]),
         |context| {
-            assert_not_contains!(context.pack_stderr, "No OpenJDK version specified");
+            assert_not_contains!(context.pack_stdout, "No OpenJDK version specified");
 
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
