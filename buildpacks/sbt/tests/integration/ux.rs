@@ -34,7 +34,7 @@ fn test_missing_stage_task_logging() {
         assert_contains!(&context.pack_stdout, "[error] Not a valid key: stage");
 
         assert_contains!(
-            &context.pack_stderr,
+            &context.pack_stdout,
             "It looks like your build.sbt does not have a valid 'stage' task."
         );
     });

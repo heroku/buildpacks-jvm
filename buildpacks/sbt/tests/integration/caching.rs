@@ -10,13 +10,13 @@ fn test_caching_sbt_1_8_2_coursier() {
     TestRunner::default().build(
         default_build_config("test-apps/sbt-1.8.2-coursier-scala-2.13.10"),
         |context| {
-            assert_contains!(&context.pack_stderr, "Downloading sbt launcher for 1.8.2:");
+            assert_contains!(&context.pack_stdout, "Downloading sbt launcher for 1.8.2:");
             assert_contains!(
-                &context.pack_stderr,
+                &context.pack_stdout,
                 "[info] [launcher] getting org.scala-sbt sbt 1.8.2  (this may take some time)..."
             );
             assert_contains!(
-                &context.pack_stderr,
+                &context.pack_stdout,
                 "[info] [launcher] getting Scala 2.12.17 (for sbt)..."
             );
             assert_contains!(
@@ -32,15 +32,15 @@ fn test_caching_sbt_1_8_2_coursier() {
                 default_build_config("test-apps/sbt-1.8.2-coursier-scala-2.13.10"),
                 |context| {
                     assert_not_contains!(
-                        &context.pack_stderr,
+                        &context.pack_stdout,
                         "Downloading sbt launcher for 1.8.2:"
                     );
                     assert_not_contains!(
-                &context.pack_stderr,
+                &context.pack_stdout,
                 "[info] [launcher] getting org.scala-sbt sbt 1.8.2  (this may take some time)..."
             );
                     assert_not_contains!(
-                        &context.pack_stderr,
+                        &context.pack_stdout,
                         "[info] [launcher] getting Scala 2.12.17 (for sbt)..."
                     );
                     assert_not_contains!(
@@ -72,13 +72,13 @@ fn test_caching_sbt_1_8_2_ivy() {
     TestRunner::default().build(
         default_build_config("test-apps/sbt-1.8.2-ivy-scala-2.13.10"),
         |context| {
-            assert_contains!(&context.pack_stderr, "Downloading sbt launcher for 1.8.2:");
+            assert_contains!(&context.pack_stdout, "Downloading sbt launcher for 1.8.2:");
             assert_contains!(
-                &context.pack_stderr,
+                &context.pack_stdout,
                 "[info] [launcher] getting org.scala-sbt sbt 1.8.2  (this may take some time)..."
             );
             assert_contains!(
-                &context.pack_stderr,
+                &context.pack_stdout,
                 "[info] [launcher] getting Scala 2.12.17 (for sbt)..."
             );
             assert_contains!(
@@ -98,15 +98,15 @@ fn test_caching_sbt_1_8_2_ivy() {
                 default_build_config("test-apps/sbt-1.8.2-ivy-scala-2.13.10"),
                 |context| {
                     assert_not_contains!(
-                        &context.pack_stderr,
+                        &context.pack_stdout,
                         "Downloading sbt launcher for 1.8.2:"
                     );
                     assert_not_contains!(
-                &context.pack_stderr,
+                &context.pack_stdout,
                 "[info] [launcher] getting org.scala-sbt sbt 1.8.2  (this may take some time)..."
             );
                     assert_not_contains!(
-                        &context.pack_stderr,
+                        &context.pack_stdout,
                         "[info] [launcher] getting Scala 2.12.17 (for sbt)..."
                     );
                     assert_not_contains!(
