@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for OpenJDK 25. ([#840](https://github.com/heroku/buildpacks-jvm/pull/840))
 
+### Changed
+
+- Default OpenJDK major version changed from 21 to 25. This only applies if no version is specified in system.properties. ([#844](https://github.com/heroku/buildpacks-jvm/pull/844))
+
 ## [7.0.2] - 2025-07-24
 
 - No changes.

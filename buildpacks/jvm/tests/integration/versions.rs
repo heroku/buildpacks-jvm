@@ -21,7 +21,7 @@ fn openjdk_default() {
                     ! WARNING: No OpenJDK version specified
                     ! 
                     ! Your application does not explicitly specify an OpenJDK version. The latest
-                    ! long-term support (LTS) version will be installed. This currently is OpenJDK 21.
+                    ! long-term support (LTS) version will be installed. This currently is OpenJDK 25.
                     ! 
                     ! This default version will change when a new LTS version is released. Your
                     ! application might fail to build with the new version. We recommend explicitly
@@ -30,11 +30,11 @@ fn openjdk_default() {
                     ! To set the OpenJDK version, add or edit the system.properties file in the root
                     ! directory of your application to contain:
                     ! 
-                    ! java.runtime.version = 21"});
+                    ! java.runtime.version = 25"});
 
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"21.0.8\""
+                "openjdk version \"25\""
             );
         },
     );
