@@ -30,7 +30,6 @@ panic_in_result_fn = "warn"
 unwrap_used = "warn"
 enum_variant_names = "allow"
 missing_errors_doc = "allow"
-module_name_repetitions = "allow"
 
 [workspace.dependencies]
 buildpacks-jvm-shared = { path = "shared" }
