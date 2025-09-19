@@ -2,7 +2,7 @@ api = "0.10"
 
 [buildpack]
 id = "heroku/maven"
-version = "7.0.3"
+version = "7.0.4"
 name = "Heroku Maven"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Heroku's Maven buildpack. A component of the 'heroku/java' buildpack."
