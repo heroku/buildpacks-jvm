@@ -654,10 +654,7 @@ mod tests {
                 String::from("INFERENCE_URL"),
                 String::from("https://api.test.com/v1"),
             ),
-            (
-                String::from("INFERENCE_MODEL_ID"),
-                String::from("gpt-4"),
-            ),
+            (String::from("INFERENCE_MODEL_ID"), String::from("gpt-4")),
         ]))
         .unwrap();
 
@@ -686,10 +683,7 @@ mod tests {
                 String::from("INFERENCE_URL"),
                 String::from("https://api.test.com/v1"),
             ),
-            (
-                String::from("INFERENCE_MODEL_ID"),
-                String::from("gpt-4"),
-            ),
+            (String::from("INFERENCE_MODEL_ID"), String::from("gpt-4")),
             (
                 String::from("DISABLE_SPRING_AI_CONFIG"),
                 String::from("true"),
@@ -721,12 +715,10 @@ mod tests {
 
     #[test]
     fn spring_ai_mapping_partial() {
-        let result = jvm_env_vars_for_env(&HashMap::from([
-            (
-                String::from("INFERENCE_KEY"),
-                String::from("sk-test-api-key"),
-            ),
-        ]))
+        let result = jvm_env_vars_for_env(&HashMap::from([(
+            String::from("INFERENCE_KEY"),
+            String::from("sk-test-api-key"),
+        )]))
         .unwrap();
 
         assert_eq!(
