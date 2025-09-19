@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for automatic Spring AI configuration mapping from Heroku Managed Inference and Agents (MIA) environment variables. ([#000](https://github.com/heroku/buildpacks-jvm/pull/000))
+* Support for automatic Spring AI configuration mapping from Heroku Managed Inference and Agents (MIA) environment variables. ([#847](https://github.com/heroku/buildpacks-jvm/pull/847))
 
 ## [7.0.3] - 2025-09-17
 
