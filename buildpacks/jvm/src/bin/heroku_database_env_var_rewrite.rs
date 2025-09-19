@@ -90,6 +90,24 @@ fn jvm_env_vars_for_env(
         result.insert(String::from("SPRING_REDIS_URL"), redis_url.clone());
     }
 
+    // Automatically configures Spring AI environment variables by mapping from Heroku Managed
+    // Inference and Agents (MIA) environment variables to their Spring AI equivalents.
+    // Only sets environment variables if they are not already defined or explicitly disabled.
+    let spring_ai_mappings = [
+        ("INFERENCE_KEY", "SPRING_AI_OPENAI_APIKEY"),
+        ("INFERENCE_URL", "SPRING_AI_OPENAI_BASEURL"),
+        ("INFERENCE_MODEL_ID", "SPRING_AI_OPENAI_CHAT_OPTIONS_MODEL"),
+    ];
+
+    for (source_env_var, target_env_var) in spring_ai_mappings {
+        if !input.contains_key("DISABLE_SPRING_AI_CONFIG")
+            && !input.contains_key(target_env_var)
+            && let Some(source_value) = input.get(source_env_var)
+        {
+            result.insert(String::from(target_env_var), source_value.clone());
+        }
+    }
+
     Ok(result)
 }
 
@@ -623,5 +641,99 @@ mod tests {
         .unwrap();
 
         assert_eq!(result.get("SPRING_REDIS_URL"), None);
+    }
+
+    #[test]
+    fn spring_ai_mapping() {
+        let result = jvm_env_vars_for_env(&HashMap::from([
+            (
+                String::from("INFERENCE_KEY"),
+                String::from("sk-test-api-key"),
+            ),
+            (
+                String::from("INFERENCE_URL"),
+                String::from("https://api.test.com/v1"),
+            ),
+            (
+                String::from("INFERENCE_MODEL_ID"),
+                String::from("gpt-4"),
+            ),
+        ]))
+        .unwrap();
+
+        assert_eq!(
+            result.get("SPRING_AI_OPENAI_APIKEY"),
+            Some(&String::from("sk-test-api-key"))
+        );
+        assert_eq!(
+            result.get("SPRING_AI_OPENAI_BASEURL"),
+            Some(&String::from("https://api.test.com/v1"))
+        );
+        assert_eq!(
+            result.get("SPRING_AI_OPENAI_CHAT_OPTIONS_MODEL"),
+            Some(&String::from("gpt-4"))
+        );
+    }
+
+    #[test]
+    fn spring_ai_mapping_disabled() {
+        let result = jvm_env_vars_for_env(&HashMap::from([
+            (
+                String::from("INFERENCE_KEY"),
+                String::from("sk-test-api-key"),
+            ),
+            (
+                String::from("INFERENCE_URL"),
+                String::from("https://api.test.com/v1"),
+            ),
+            (
+                String::from("INFERENCE_MODEL_ID"),
+                String::from("gpt-4"),
+            ),
+            (
+                String::from("DISABLE_SPRING_AI_CONFIG"),
+                String::from("true"),
+            ),
+        ]))
+        .unwrap();
+
+        assert_eq!(result.get("SPRING_AI_OPENAI_APIKEY"), None);
+        assert_eq!(result.get("SPRING_AI_OPENAI_BASEURL"), None);
+        assert_eq!(result.get("SPRING_AI_OPENAI_CHAT_OPTIONS_MODEL"), None);
+    }
+
+    #[test]
+    fn spring_ai_mapping_already_set() {
+        let result = jvm_env_vars_for_env(&HashMap::from([
+            (
+                String::from("INFERENCE_KEY"),
+                String::from("sk-test-api-key"),
+            ),
+            (
+                String::from("SPRING_AI_OPENAI_APIKEY"),
+                String::from("sk-existing-api-key"),
+            ),
+        ]))
+        .unwrap();
+
+        assert_eq!(result.get("SPRING_AI_OPENAI_APIKEY"), None);
+    }
+
+    #[test]
+    fn spring_ai_mapping_partial() {
+        let result = jvm_env_vars_for_env(&HashMap::from([
+            (
+                String::from("INFERENCE_KEY"),
+                String::from("sk-test-api-key"),
+            ),
+        ]))
+        .unwrap();
+
+        assert_eq!(
+            result.get("SPRING_AI_OPENAI_APIKEY"),
+            Some(&String::from("sk-test-api-key"))
+        );
+        assert_eq!(result.get("SPRING_AI_OPENAI_BASEURL"), None);
+        assert_eq!(result.get("SPRING_AI_OPENAI_CHAT_OPTIONS_MODEL"), None);
     }
 }
