@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Support for automatic Spring AI configuration mapping from Heroku Managed Inference and Agents (MIA) environment variables. ([#847](https://github.com/heroku/buildpacks-jvm/pull/847))
 
+### Changed
+
+* Renamed `heroku_database_env_var_rewrite` binary to `heroku_rewrite_env_vars` to better reflect its broader purpose of rewriting various types of environment variables (Database, Redis, Spring AI). ([#847](https://github.com/heroku/buildpacks-jvm/pull/847))
+
 ## [7.0.3] - 2025-09-17
 
 ### Added
