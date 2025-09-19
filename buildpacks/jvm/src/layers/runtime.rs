@@ -16,7 +16,7 @@ pub(crate) fn handle_runtime_layer(
     )?;
 
     layer_ref.write_exec_d_programs([(
-        "heroku_database_env_var_rewrite",
-        additional_buildpack_binary_path!("heroku_database_env_var_rewrite"),
+        "heroku_rewrite_env_vars",
+        additional_buildpack_binary_path!("heroku_rewrite_env_vars"),
     )])
 }
