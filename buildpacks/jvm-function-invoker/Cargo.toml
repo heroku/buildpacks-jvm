@@ -8,8 +8,8 @@ workspace = true
 
 [dependencies]
 indoc = "2"
-libcnb = { version = "=0.29.1", features = ["trace"] }
-libherokubuildpack = { version = "=0.29.1", default-features = false, features = [
+libcnb = { version = "=0.29.2", features = ["trace"] }
+libherokubuildpack = { version = "=0.29.2", default-features = false, features = [
     "digest",
     "download",
     "error",
@@ -23,6 +23,6 @@ toml = "0.9"
 [dev-dependencies]
 base64 = "0.22"
 buildpacks-jvm-shared-test.workspace = true
-libcnb-test = "=0.29.1"
+libcnb-test = "=0.29.2"
 tempfile = "3"
 ureq = { version = "2", default-features = false, features = ["tls"] }

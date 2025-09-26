@@ -1097,4 +1097,3 @@ checksum = "sha256:dd85e2e49fff58b15621a29c6a62ce113ba5d9b62512ca933724bf2dd2ca0
 
 [artifacts.metadata]
 distribution = "zulu"
-
