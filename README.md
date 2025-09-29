@@ -64,7 +64,7 @@ the required OpenJDK version:
 java.runtime.version=21
 ```
 
-Supported major versions are `8`, `11`, `17`, `21` and `22`. The buildpack will always install the latest release
+Supported major versions are `8`, `11`, `17`, `21` and `25`. The buildpack will always install the latest release
 of the requested major version.
 
 ## Included Buildpacks
