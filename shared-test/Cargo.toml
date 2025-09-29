@@ -8,5 +8,5 @@ workspace = true
 
 [dependencies]
 exponential-backoff = "2"
-libcnb-test = "=0.29.2"
+libcnb-test = "=0.29.3"
 ureq = { version = "2", default-features = false, features = ["tls"] }
