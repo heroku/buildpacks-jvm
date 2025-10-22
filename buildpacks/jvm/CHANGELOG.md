@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for new OpenJDK versions: `1.8.0_472`, `11.0.29`, `17.0.17`, `21.0.9`, `25.0.1`. ([#859](https://github.com/heroku/buildpacks-jvm/pull/859))
+
+### Changed
+
+- Default version for **OpenJDK 8** is now `1.8.0_472`. ([#859](https://github.com/heroku/buildpacks-jvm/pull/859))
+- Default version for **OpenJDK 11** is now `11.0.29`. ([#859](https://github.com/heroku/buildpacks-jvm/pull/859))
+- Default version for **OpenJDK 17** is now `17.0.17`. ([#859](https://github.com/heroku/buildpacks-jvm/pull/859))
+- Default version for **OpenJDK 21** is now `21.0.9`. ([#859](https://github.com/heroku/buildpacks-jvm/pull/859))
+- Default version for **OpenJDK 25** is now `25.0.1`. ([#859](https://github.com/heroku/buildpacks-jvm/pull/859))
+
 ## [7.0.5] - 2025-09-29
 
 - No changes.

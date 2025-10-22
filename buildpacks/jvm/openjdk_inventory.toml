@@ -1097,3 +1097,104 @@ checksum = "sha256:dd85e2e49fff58b15621a29c6a62ce113ba5d9b62512ca933724bf2dd2ca0
 
 [artifacts.metadata]
 distribution = "zulu"
+
+[[artifacts]]
+version = "1.8.0_472"
+os = "linux"
+arch = "amd64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/amd64/1.8.0_472.tar.gz"
+checksum = "sha256:3e4ccdf1c079b0104ef83f165ccf876191eb3e9b11aa95a2b66ef40d1e4a42d2"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "1.8.0_472"
+os = "linux"
+arch = "arm64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/arm64/1.8.0_472.tar.gz"
+checksum = "sha256:5d005c5c51f7540dd1d8adfe8718e1c65c3017bac5d45836963113af38083134"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "11.0.29"
+os = "linux"
+arch = "amd64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/amd64/11.0.29.tar.gz"
+checksum = "sha256:bd7aa161f781fe157bd1b37cc1d57bb40e76b00411f0bf3e074f52b4df018159"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "11.0.29"
+os = "linux"
+arch = "arm64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/arm64/11.0.29.tar.gz"
+checksum = "sha256:a35465940ec5e6a9c13b39fb842091ba59096023145b667579a101bef8e51197"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "17.0.17"
+os = "linux"
+arch = "amd64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/amd64/17.0.17.tar.gz"
+checksum = "sha256:98e26133c2c9639b6b26e61050ad776e52c4710d6db6031109ae5ffac589c778"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "17.0.17"
+os = "linux"
+arch = "arm64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/arm64/17.0.17.tar.gz"
+checksum = "sha256:1547d7bf953624908f80330e589f72ffb9d77775c717135794fcaf1dc971389e"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "21.0.9"
+os = "linux"
+arch = "amd64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/amd64/21.0.9.tar.gz"
+checksum = "sha256:f233409a6338b8653beb7736fd2a9b754893b32f303c1014d357f86a53a4d4af"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "21.0.9"
+os = "linux"
+arch = "arm64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/arm64/21.0.9.tar.gz"
+checksum = "sha256:d823911d41e24f3ef4b5b45b395d4ac15120c6d9593221e6f499800cee68f5eb"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "25.0.1"
+os = "linux"
+arch = "amd64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/amd64/25.0.1.tar.gz"
+checksum = "sha256:bbbb100a270b0b060d328c89f69668f7e0cda3213e556121d97190c6f709b252"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "25.0.1"
+os = "linux"
+arch = "arm64"
+url = "https://heroku-buildpacks-jvm.s3.us-east-1.amazonaws.com/openjdk/zulu/arm64/25.0.1.tar.gz"
+checksum = "sha256:76d6a946303b84363ae7fc426a26dc79c31b78e0db51da250abd4a7ec555fc98"
+
+[artifacts.metadata]
+distribution = "zulu"
+
