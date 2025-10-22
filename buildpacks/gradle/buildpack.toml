@@ -2,7 +2,7 @@ api = "0.10"
 
 [buildpack]
 id = "heroku/gradle"
-version = "7.0.5"
+version = "7.0.6"
 name = "Heroku Gradle"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Heroku's Gradle buildpack. A component of the 'heroku/java' buildpack."
