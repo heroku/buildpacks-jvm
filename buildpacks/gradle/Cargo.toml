@@ -20,4 +20,4 @@ serde = { version = "1", features = ["derive"] }
 
 [dev-dependencies]
 buildpacks-jvm-shared-test.workspace = true
-libcnb-test = "=0.29.3"
+libcnb-test = "=0.30.0"

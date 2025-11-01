@@ -27,12 +27,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "allocator-api2"
-version = "0.2.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
-
-[[package]]
 name = "anyhow"
 version = "1.0.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -252,6 +246,20 @@ dependencies = [
  "camino",
  "cargo-platform",
  "cargo-util-schemas",
+ "semver",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "cargo_metadata"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "981a6f317983eec002839b90fae7411a85621410ae591a9cab2ecf5cb5744873"
+dependencies = [
+ "camino",
+ "cargo-platform",
  "semver",
  "serde",
  "serde_json",
@@ -655,8 +663,6 @@ version = "0.15.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
 dependencies = [
- "allocator-api2",
- "equivalent",
  "foldhash",
 ]
 
@@ -994,9 +1000,9 @@ version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "da2cedd4eb90b9fa978f566f4885f9d643a638c5c038b96cf383a335e7126819"
 dependencies = [
- "libcnb-common",
- "libcnb-data",
- "libcnb-proc-macros",
+ "libcnb-common 0.29.3",
+ "libcnb-data 0.29.3",
+ "libcnb-proc-macros 0.29.3",
  "opentelemetry",
  "opentelemetry-proto",
  "opentelemetry_sdk",
@@ -1021,13 +1027,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "libcnb-common"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd51b02bfa3fc0cbbb455d39fef7da84dd66205dbb149f9814947b13233743a5"
+dependencies = [
+ "serde",
+ "thiserror",
+ "toml 0.9.7",
+]
+
+[[package]]
 name = "libcnb-data"
 version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a66cd818daff47c969f4839e4f296935302ee3c5c3fc86860d013535041f054"
 dependencies = [
  "fancy-regex",
- "libcnb-proc-macros",
+ "libcnb-proc-macros 0.29.3",
+ "serde",
+ "thiserror",
+ "toml 0.9.7",
+ "uriparse",
+]
+
+[[package]]
+name = "libcnb-data"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "260001e9aa74f3e5af6101a0017f95c31fdb081eec2f09c043c05a93496db95e"
+dependencies = [
+ "fancy-regex",
+ "libcnb-proc-macros 0.30.0",
  "serde",
  "thiserror",
  "toml 0.9.7",
@@ -1036,15 +1067,15 @@ dependencies = [
 
 [[package]]
 name = "libcnb-package"
-version = "0.29.3"
+version = "0.30.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a5d9ccc947fdb4d2a9aae59f9aede04c483df5e7e5b80e76e24068a8b114dee"
+checksum = "8211eb82799077651f7f514fa30905ac7d5b8241d108003a4c4ef44fe35512c0"
 dependencies = [
- "cargo_metadata",
+ "cargo_metadata 0.23.0",
  "ignore",
  "indoc",
- "libcnb-common",
- "libcnb-data",
+ "libcnb-common 0.30.0",
+ "libcnb-data 0.30.0",
  "petgraph",
  "thiserror",
  "uriparse",
@@ -1057,7 +1088,19 @@ version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "119e1138b7eab1bf89a275da1fc69870bfc3bbaa4f36494f1fc529d6b16872d2"
 dependencies = [
- "cargo_metadata",
+ "cargo_metadata 0.22.0",
+ "fancy-regex",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "libcnb-proc-macros"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d332cbce9893e6447eb75519cd78fa8f9353c7d7969cb84112a1610ea0610bfb"
+dependencies = [
+ "cargo_metadata 0.23.0",
  "fancy-regex",
  "quote",
  "syn",
@@ -1065,14 +1108,14 @@ dependencies = [
 
 [[package]]
 name = "libcnb-test"
-version = "0.29.3"
+version = "0.30.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35d81e8530366fc2b869be84525dbc799d82314965d3b4dd2fbca72b43e25750"
+checksum = "5c6101ea3b62ece2f1a6f5024744d3d8b87acfd045192f846bfbb114152ed261"
 dependencies = [
  "fastrand",
  "fs_extra",
- "libcnb-common",
- "libcnb-data",
+ "libcnb-common 0.30.0",
+ "libcnb-data 0.30.0",
  "libcnb-package",
  "regex",
  "tempfile",
@@ -1286,9 +1329,9 @@ checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 
 [[package]]
 name = "petgraph"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54acf3a685220b533e437e264e4d932cfbdc4cc7ec0cd232ed73c08d03b8a7ca"
+checksum = "8701b58ea97060d5e5b155d383a69952a60943f0e6dfe30b04c287beb0b27455"
 dependencies = [
  "fixedbitset",
  "hashbrown 0.15.5",
