@@ -10,7 +10,7 @@ for JVM applications. These buildpacks build Java, Scala and other JVM language 
 into application images with minimal configuration.
 
 > [!IMPORTANT]
-> This is a collection of [Cloud Native Buildpacks][cnb], and is a component of the [Heroku Cloud Native Buildpacks][heroku-buildpacks] project, which is in preview. If you are instead looking for the Heroku Classic Buildpacks for JVM applications (for use on the Heroku platform), you may find them here: [heroku/jvm](https://github.com/heroku/heroku-buildpack-jvm-common), [heroku/java](https://github.com/heroku/heroku-buildpack-java), [heroku/gradle](https://github.com/heroku/heroku-buildpack-gradle), [heroku/scala](https://github.com/heroku/heroku-buildpack-scala), [heroku/clojure](https://github.com/heroku/heroku-buildpack-clojure).
+> This is a collection of [Cloud Native Buildpacks][cnb], and is a component of the [Heroku Cloud Native Buildpacks][heroku-buildpacks] project. If you are instead looking for the Heroku Classic Buildpacks for JVM applications, you may find them here: [heroku/jvm](https://github.com/heroku/heroku-buildpack-jvm-common), [heroku/java](https://github.com/heroku/heroku-buildpack-java), [heroku/gradle](https://github.com/heroku/heroku-buildpack-gradle), [heroku/scala](https://github.com/heroku/heroku-buildpack-scala), [heroku/clojure](https://github.com/heroku/heroku-buildpack-clojure).
 
 ## Usage
 
