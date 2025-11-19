@@ -9,20 +9,20 @@ pub(crate) fn from_config(build_config: &SbtBuildpackConfiguration) -> Vec<Strin
 
     if let Some(sbt_pre_tasks) = &build_config.sbt_pre_tasks {
         for task in sbt_pre_tasks {
-            tasks.push(task.to_string());
+            tasks.push(task.clone());
         }
     }
 
     if let Some(sbt_tasks) = &build_config.sbt_tasks {
         for task in sbt_tasks {
-            tasks.push(task.to_string());
+            tasks.push(task.clone());
         }
     } else {
         let default_tasks = vec![String::from("compile"), String::from("stage")];
         for default_task in &default_tasks {
             tasks.push(match &build_config.sbt_project {
                 Some(project) => format!("{project}/{default_task}"),
-                None => default_task.to_string(),
+                None => default_task.clone(),
             });
         }
     }
