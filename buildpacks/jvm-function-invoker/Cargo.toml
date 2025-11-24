@@ -8,7 +8,7 @@ workspace = true
 
 [dependencies]
 indoc = "2"
-libcnb = { version = "=0.29.3", features = ["trace"] }
+libcnb = { version = "=0.30.0", features = ["trace"] }
 libherokubuildpack = { version = "=0.29.3", default-features = false, features = [
     "digest",
     "download",
