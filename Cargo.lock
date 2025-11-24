@@ -131,7 +131,7 @@ dependencies = [
  "fs_extra",
  "hex",
  "indoc",
- "libcnb",
+ "libcnb 0.30.0",
  "libcnb-test",
  "libherokubuildpack",
  "nom",
@@ -150,7 +150,7 @@ dependencies = [
  "base64",
  "buildpacks-jvm-shared-test",
  "indoc",
- "libcnb",
+ "libcnb 0.30.0",
  "libcnb-test",
  "libherokubuildpack",
  "serde",
@@ -169,7 +169,7 @@ dependencies = [
  "flate2",
  "indoc",
  "java-properties",
- "libcnb",
+ "libcnb 0.30.0",
  "libcnb-test",
  "libherokubuildpack",
  "regex",
@@ -259,6 +259,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "cargo_metadata"
+version = "0.23.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ef987d17b0a113becdd19d3d0022d04d7ef41f9efe4f3fb63ac44ba61df3ade9"
+dependencies = [
+ "camino",
+ "cargo-platform",
+ "semver",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "cc"
 version = "1.2.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -279,6 +293,18 @@ name = "cfg_aliases"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
+
+[[package]]
+name = "const-hex"
+version = "1.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3bb320cac8a0750d7f25280aa97b09c26edfe161164238ecbbb31092b079e735"
+dependencies = [
+ "cfg-if",
+ "cpufeatures",
+ "proptest",
+ "serde_core",
+]
 
 [[package]]
 name = "core-foundation"
@@ -642,7 +668,7 @@ dependencies = [
  "buildpacks-jvm-shared",
  "buildpacks-jvm-shared-test",
  "indoc",
- "libcnb",
+ "libcnb 0.30.0",
  "libcnb-test",
  "libherokubuildpack",
  "nom",
@@ -994,9 +1020,23 @@ version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "da2cedd4eb90b9fa978f566f4885f9d643a638c5c038b96cf383a335e7126819"
 dependencies = [
- "libcnb-common",
- "libcnb-data",
- "libcnb-proc-macros",
+ "libcnb-common 0.29.3",
+ "libcnb-data 0.29.3",
+ "libcnb-proc-macros 0.29.3",
+ "serde",
+ "thiserror",
+ "toml 0.9.7",
+]
+
+[[package]]
+name = "libcnb"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3605cb6b885637add90bcf9f0297a1ed1f144acc413b4b4ab2676f38c746220"
+dependencies = [
+ "libcnb-common 0.30.0",
+ "libcnb-data 0.30.0",
+ "libcnb-proc-macros 0.30.0",
  "opentelemetry",
  "opentelemetry-proto",
  "opentelemetry_sdk",
@@ -1021,13 +1061,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "libcnb-common"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd51b02bfa3fc0cbbb455d39fef7da84dd66205dbb149f9814947b13233743a5"
+dependencies = [
+ "serde",
+ "thiserror",
+ "toml 0.9.7",
+]
+
+[[package]]
 name = "libcnb-data"
 version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a66cd818daff47c969f4839e4f296935302ee3c5c3fc86860d013535041f054"
 dependencies = [
  "fancy-regex",
- "libcnb-proc-macros",
+ "libcnb-proc-macros 0.29.3",
+ "serde",
+ "thiserror",
+ "toml 0.9.7",
+ "uriparse",
+]
+
+[[package]]
+name = "libcnb-data"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "260001e9aa74f3e5af6101a0017f95c31fdb081eec2f09c043c05a93496db95e"
+dependencies = [
+ "fancy-regex",
+ "libcnb-proc-macros 0.30.0",
  "serde",
  "thiserror",
  "toml 0.9.7",
@@ -1040,11 +1105,11 @@ version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a5d9ccc947fdb4d2a9aae59f9aede04c483df5e7e5b80e76e24068a8b114dee"
 dependencies = [
- "cargo_metadata",
+ "cargo_metadata 0.22.0",
  "ignore",
  "indoc",
- "libcnb-common",
- "libcnb-data",
+ "libcnb-common 0.29.3",
+ "libcnb-data 0.29.3",
  "petgraph",
  "thiserror",
  "uriparse",
@@ -1057,7 +1122,19 @@ version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "119e1138b7eab1bf89a275da1fc69870bfc3bbaa4f36494f1fc529d6b16872d2"
 dependencies = [
- "cargo_metadata",
+ "cargo_metadata 0.22.0",
+ "fancy-regex",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "libcnb-proc-macros"
+version = "0.30.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d332cbce9893e6447eb75519cd78fa8f9353c7d7969cb84112a1610ea0610bfb"
+dependencies = [
+ "cargo_metadata 0.23.1",
  "fancy-regex",
  "quote",
  "syn",
@@ -1071,8 +1148,8 @@ checksum = "35d81e8530366fc2b869be84525dbc799d82314965d3b4dd2fbca72b43e25750"
 dependencies = [
  "fastrand",
  "fs_extra",
- "libcnb-common",
- "libcnb-data",
+ "libcnb-common 0.29.3",
+ "libcnb-data 0.29.3",
  "libcnb-package",
  "regex",
  "tempfile",
@@ -1088,7 +1165,7 @@ dependencies = [
  "crossbeam-utils",
  "flate2",
  "hex",
- "libcnb",
+ "libcnb 0.29.3",
  "reqwest",
  "serde",
  "sha2",
@@ -1227,38 +1304,39 @@ checksum = "d05e27ee213611ffe7d6348b942e8f942b37114c00cc03cec254295a4a17852e"
 
 [[package]]
 name = "opentelemetry"
-version = "0.30.0"
+version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aaf416e4cb72756655126f7dd7bb0af49c674f4c1b9903e80c009e0c37e552e6"
+checksum = "b84bcd6ae87133e903af7ef497404dda70c60d0ea14895fc8a5e6722754fc2a0"
 dependencies = [
  "futures-core",
  "futures-sink",
  "js-sys",
  "pin-project-lite",
  "thiserror",
- "tracing",
 ]
 
 [[package]]
 name = "opentelemetry-proto"
-version = "0.30.0"
+version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e046fd7660710fe5a05e8748e70d9058dc15c94ba914e7c4faa7c728f0e8ddc"
+checksum = "a7175df06de5eaee9909d4805a3d07e28bb752c34cab57fa9cff549da596b30f"
 dependencies = [
  "base64",
- "hex",
+ "const-hex",
  "opentelemetry",
  "opentelemetry_sdk",
  "prost",
  "serde",
+ "serde_json",
  "tonic",
+ "tonic-prost",
 ]
 
 [[package]]
 name = "opentelemetry_sdk"
-version = "0.30.0"
+version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11f644aa9e5e31d11896e024305d7e3c98a88884d9f8919dbf37a9991bc47a4b"
+checksum = "e14ae4f5991976fd48df6d843de219ca6d31b01daaab2dad5af2badeded372bd"
 dependencies = [
  "futures-channel",
  "futures-executor",
@@ -1361,10 +1439,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "prost"
-version = "0.13.5"
+name = "proptest"
+version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2796faa41db3ec313a31f7624d9286acf277b52de526150b7e69f3debf891ee5"
+checksum = "bee689443a2bd0a16ab0348b52ee43e3b2d1b1f931c8aa5c9f8de4c86fbe8c40"
+dependencies = [
+ "bitflags",
+ "num-traits",
+ "rand",
+ "rand_chacha",
+ "rand_xorshift",
+ "regex-syntax",
+ "unarray",
+]
+
+[[package]]
+name = "prost"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7231bd9b3d3d33c86b58adbac74b5ec0ad9f496b19d22801d773636feaa95f3d"
 dependencies = [
  "bytes",
  "prost-derive",
@@ -1372,9 +1465,9 @@ dependencies = [
 
 [[package]]
 name = "prost-derive"
-version = "0.13.5"
+version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a56d757972c98b346a9b766e3f02746cde6dd1cd1d1d563472929fdd74bec4d"
+checksum = "9120690fafc389a67ba3803df527d0ec9cbbc9cc45e4cc20b332996dfb672425"
 dependencies = [
  "anyhow",
  "itertools",
@@ -1480,6 +1573,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99d9a13982dcf210057a8a78572b2217b667c3beacbf3a0d8b454f6f82837d38"
 dependencies = [
  "getrandom 0.3.3",
+]
+
+[[package]]
+name = "rand_xorshift"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "513962919efc330f829edb2535844d1b912b0fbe2ca165d613e4e8788bb05a5a"
+dependencies = [
+ "rand_core",
 ]
 
 [[package]]
@@ -1676,7 +1778,7 @@ dependencies = [
  "buildpacks-jvm-shared-test",
  "indoc",
  "java-properties",
- "libcnb",
+ "libcnb 0.30.0",
  "libcnb-test",
  "libherokubuildpack",
  "semver",
@@ -2126,9 +2228,9 @@ checksum = "d163a63c116ce562a22cda521fcc4d79152e7aba014456fb5eb442f6d6a10109"
 
 [[package]]
 name = "tonic"
-version = "0.13.1"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e581ba15a835f4d9ea06c55ab1bd4dce26fc53752c69a04aac00703bfb49ba9"
+checksum = "eb7613188ce9f7df5bfe185db26c5814347d110db17920415cf2fbcad85e7203"
 dependencies = [
  "async-trait",
  "base64",
@@ -2138,11 +2240,22 @@ dependencies = [
  "http-body-util",
  "percent-encoding",
  "pin-project",
- "prost",
+ "sync_wrapper",
  "tokio-stream",
  "tower-layer",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "tonic-prost"
+version = "0.14.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "66bd50ad6ce1252d87ef024b3d64fe4c3cf54a86fb9ef4c631fdd0ded7aeaa67"
+dependencies = [
+ "bytes",
+ "prost",
+ "tonic",
 ]
 
 [[package]]
@@ -2235,15 +2348,16 @@ dependencies = [
 
 [[package]]
 name = "tracing-opentelemetry"
-version = "0.31.0"
+version = "0.32.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddcf5959f39507d0d04d6413119c04f33b623f4f951ebcbdddddfad2d0623a9c"
+checksum = "1e6e5658463dd88089aba75c7791e1d3120633b1bfde22478b28f625a9bb1b8e"
 dependencies = [
  "js-sys",
- "once_cell",
  "opentelemetry",
  "opentelemetry_sdk",
+ "rustversion",
  "smallvec",
+ "thiserror",
  "tracing",
  "tracing-core",
  "tracing-log",
@@ -2282,6 +2396,12 @@ name = "typenum"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
+
+[[package]]
+name = "unarray"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eaea85b334db583fe3274d12b4cd1880032beab409c0d774be044d4480ab9a94"
 
 [[package]]
 name = "unicode-ident"
