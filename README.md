@@ -104,7 +104,7 @@ Issues and pull requests are welcome. See our [contributing guidelines](./CONTRI
 
 [cnb]: https://buildpacks.io
 
-[cnb-banner]: https://cloud.githubusercontent.com/assets/871315/20325947/f3544014-ab43-11e6-9c51-8240ce161939.png
+[cnb-banner]: https://raw.githubusercontent.com/heroku/buildpacks/refs/heads/main/assets/images/buildpack-banner-java.png
 
 [classic-buildpack]: https://github.com/heroku/heroku-buildpack-jvm
 
