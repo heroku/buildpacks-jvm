@@ -2,7 +2,7 @@ api = "0.10"
 
 [buildpack]
 id = "heroku/jvm-function-invoker"
-version = "7.0.6"
+version = "7.0.7"
 name = "Salesforce JVM Function Invoker"
 homepage = "https://github.com/heroku/buildpacks-jvm"
 description = "Salesforce's JVM function invoker buildpack. A component of the 'heroku/java-function' buildpack."
