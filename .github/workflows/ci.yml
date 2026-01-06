@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: true
       - name: Update Rust toolchain
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: true
       - name: Update Rust toolchain
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: true
       - name: Install nightly Rust toolchain
@@ -90,7 +90,7 @@ jobs:
       INTEGRATION_TEST_BUILDER: heroku/${{ matrix.builder }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: true
       # The dpkg man-db trigger is excessively slow on GHA runners, see e.g.:
@@ -135,7 +135,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: true
       # The dpkg man-db trigger is excessively slow on GHA runners, see e.g.:
@@ -159,7 +159,7 @@ jobs:
           docker pull "heroku/builder:24"
           docker pull "heroku/heroku:24"
       - name: Clone getting started guide
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.guide }}
           path: tmp/guide
