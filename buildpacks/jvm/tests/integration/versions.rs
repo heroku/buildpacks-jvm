@@ -34,7 +34,7 @@ fn openjdk_default() {
 
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"25.0.1\""
+                "openjdk version \"25.0.2\""
             );
         },
     );
@@ -56,7 +56,7 @@ fn openjdk_functions_default() {
 
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"1.8.0_472\""
+                "openjdk version \"1.8.0_482\""
             );
         },
     );
@@ -68,7 +68,7 @@ fn openjdk_8() {
     TestRunner::default().build(default_build_config("test-apps/java-8-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"1.8.0_472\""
+            "openjdk version \"1.8.0_482\""
         );
     });
 }
@@ -79,7 +79,7 @@ fn openjdk_11() {
     TestRunner::default().build(default_build_config("test-apps/java-11-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"11.0.29\""
+            "openjdk version \"11.0.30\""
         );
     });
 }
@@ -90,7 +90,7 @@ fn openjdk_17() {
     TestRunner::default().build(default_build_config("test-apps/java-17-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"17.0.17\""
+            "openjdk version \"17.0.18\""
         );
     });
 }
@@ -101,7 +101,7 @@ fn openjdk_21() {
     TestRunner::default().build(default_build_config("test-apps/java-21-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"21.0.9\""
+            "openjdk version \"21.0.10\""
         );
     });
 }
@@ -112,7 +112,7 @@ fn openjdk_25() {
     TestRunner::default().build(default_build_config("test-apps/java-25-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"25.0.1\""
+            "openjdk version \"25.0.2\""
         );
     });
 }
