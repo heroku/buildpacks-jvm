@@ -18,7 +18,7 @@ libherokubuildpack = { version = "=0.30.2", default-features = false, features =
 ] }
 serde = "1"
 thiserror = "2"
-toml = "0.9"
+toml = "1.0"
 
 [dev-dependencies]
 base64 = "0.22"
