@@ -17,7 +17,7 @@ fn maven_custom_goals() {
             indoc! {"
 
                 The following files have been resolved:
-                   io.undertow:undertow-core:jar:2.3.20.Final:compile
+                   io.undertow:undertow-core:jar:2.3.21.Final:compile
                    org.jboss.logging:jboss-logging:jar:3.4.3.Final:compile
                    org.jboss.xnio:xnio-api:jar:3.8.16.Final:compile
                    org.wildfly.common:wildfly-common:jar:1.5.4.Final:compile
