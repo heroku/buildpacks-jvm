@@ -7,7 +7,7 @@ pub(crate) fn project_toml_salesforce_type_is_function(project_toml_path: &Path)
         .ok()
         .and_then(|table| {
             toml_select_value(vec!["com", "salesforce", "type"], &table)
-                .and_then(toml::Value::as_str)
+                .and_then(|value| value.as_str())
                 .map(|value| value == "function")
         })
         .unwrap_or(false)
