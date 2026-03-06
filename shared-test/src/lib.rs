@@ -23,7 +23,7 @@ pub fn start_container_assert_basic_http_response(
         |context| {
             let url = format!("http://{}", context.address_for_port(PORT));
 
-            let response_body = http_request_backoff(|| ureq::get(&url).call())
+            let response_body = http_request_backoff(|| ureq::get(&url).call().map_err(Box::new))
                 .expect(UREQ_RESPONSE_RESULT_EXPECT_MESSAGE)
                 .into_string()
                 .expect(UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE);

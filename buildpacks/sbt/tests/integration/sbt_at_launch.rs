@@ -25,7 +25,7 @@ fn test_the_thing() {
             |context| {
                 let addr = context.address_for_port(PORT);
 
-                let response = http_request_backoff(|| ureq::get(&format!("http://{addr}")).call())
+                let response = http_request_backoff(|| ureq::get(&format!("http://{addr}")).call().map_err(Box::new))
                     .expect(UREQ_RESPONSE_RESULT_EXPECT_MESSAGE)
                     .into_string()
                     .expect(UREQ_RESPONSE_AS_STRING_EXPECT_MESSAGE);
