@@ -1298,3 +1298,23 @@ checksum = "sha256:ba7a012695d31f2b4dc1167b3e87e61c9fe13326f99f10f82b44cfcc3b558
 [artifacts.metadata]
 distribution = "zulu"
 
+[[artifacts]]
+version = "26"
+os = "linux"
+arch = "amd64"
+url = "https://heroku-buildpacks-jvm.s3.dualstack.us-east-1.amazonaws.com/openjdk/zulu/amd64/26.tar.gz"
+checksum = "sha256:24de19d36bbe3462acf9dc93735dc97c9832af72cf9e85e656a389b57bf97b4e"
+
+[artifacts.metadata]
+distribution = "zulu"
+
+[[artifacts]]
+version = "26"
+os = "linux"
+arch = "arm64"
+url = "https://heroku-buildpacks-jvm.s3.dualstack.us-east-1.amazonaws.com/openjdk/zulu/arm64/26.tar.gz"
+checksum = "sha256:3fb403009b88384d3ddd7928fd3a2571eeae22cfb0f1b7de6d2bb8a737f962fe"
+
+[artifacts.metadata]
+distribution = "zulu"
+
