@@ -116,3 +116,14 @@ fn openjdk_25() {
         );
     });
 }
+
+#[test]
+#[ignore = "integration test"]
+fn openjdk_26() {
+    TestRunner::default().build(default_build_config("test-apps/java-26-app"), |context| {
+        assert_contains!(
+            context.run_shell_command("java -version").stderr,
+            "openjdk version \"26\""
+        );
+    });
+}
