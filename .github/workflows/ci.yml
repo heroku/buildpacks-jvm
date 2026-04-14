@@ -78,12 +78,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        builder: [ "builder:24", "builder:22" ]
+        builder: [ "builder:26", "builder:24", "builder:22" ]
         arch: [ "amd64", "arm64" ]
         buildpack-directory: [ "buildpacks/gradle", "buildpacks/jvm", "buildpacks/jvm-function-invoker", "buildpacks/maven", "buildpacks/sbt" ]
         exclude:
           - builder: "builder:22"
             arch: "arm64"
+          - buildpack-directory: "buildpacks/jvm-function-invoker"
+            builder: "builder:26"
           - buildpack-directory: "buildpacks/jvm-function-invoker"
             builder: "builder:24"
     env:
