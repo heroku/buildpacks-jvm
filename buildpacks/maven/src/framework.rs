@@ -49,12 +49,11 @@ pub(crate) fn default_app_process<P: AsRef<Path>>(
                 #[allow(clippy::case_sensitive_file_extension_comparisons)]
                 path.file_name()
                     .map(|file_name| file_name.to_string_lossy().to_string())
-                    .filter(|file_name| {
+                    .is_some_and(|file_name| {
                         file_name.ends_with(".jar")
                             && !file_name.ends_with("-sources.jar")
                             && !file_name.ends_with("-javadoc.jar")
                     })
-                    .is_some()
             })
         })
         .map_err(DefaultAppProcessError::IoError)?;
