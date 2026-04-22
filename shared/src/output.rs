@@ -399,16 +399,16 @@ mod test {
         let duration = Duration::from_millis(52100);
         assert_eq!(format_duration(&duration), "52.1s");
 
-        let duration = Duration::from_millis(60 * 1000);
+        let duration = Duration::from_secs(60);
         assert_eq!(format_duration(&duration), "1m 0s");
 
-        let duration = Duration::from_millis(60 * 1000 + 2000);
+        let duration = Duration::from_secs(62);
         assert_eq!(format_duration(&duration), "1m 2s");
 
         let duration = Duration::from_millis(60 * 60 * 1000 - 1);
         assert_eq!(format_duration(&duration), "59m 59s");
 
-        let duration = Duration::from_millis(60 * 60 * 1000);
+        let duration = Duration::from_secs(3600);
         assert_eq!(format_duration(&duration), "1h 0m 0s");
 
         let duration = Duration::from_millis(75 * 60 * 1000 - 1);
