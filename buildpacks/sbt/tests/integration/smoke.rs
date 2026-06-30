@@ -37,6 +37,15 @@ fn smoke_test_sbt_1_8_2_ivy_scala_2_13_10() {
 
 #[test]
 #[ignore = "integration test"]
+fn smoke_test_sbt_2_0_1_minimal_with_native_packager() {
+    smoke_test(
+        &default_build_config("test-apps/sbt-2.0.1-minimal-with-native-packager"),
+        "Hello from Scala!",
+    );
+}
+
+#[test]
+#[ignore = "integration test"]
 fn smoke_test_getting_started_guide() {
     smoke_test(
         &default_build_config("test-apps/heroku-scala-getting-started"),
