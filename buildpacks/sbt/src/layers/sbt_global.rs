@@ -5,10 +5,12 @@ use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::UncachedLayerDefinition;
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
+use semver::Version;
 use std::fs;
 
 pub(crate) fn handle_sbt_global(
     context: &BuildContext<SbtBuildpack>,
+    sbt_version: &Version,
     available_at_launch: bool,
     env: &mut Env,
 ) -> libcnb::Result<(), SbtBuildpackError> {
@@ -20,24 +22,33 @@ pub(crate) fn handle_sbt_global(
         },
     )?;
 
-    let plugin_path = layer_ref
-        .path()
-        .join("plugins")
-        .join("HerokuBuildpackPlugin.scala");
+    // The 1.x and 2.x plugins have identical contents today but are kept as separate files to allow
+    // them to diverge independently in the future.
+    #[allow(clippy::match_same_arms)]
+    let plugin_contents: Option<&[u8]> = match sbt_version.major {
+        1 => Some(include_bytes!("../../sbt-plugins/buildpack-plugin-1.x.scala")),
+        2 => Some(include_bytes!("../../sbt-plugins/buildpack-plugin-2.x.scala")),
+        _ => None,
+    };
 
-    if let Some(plugin_path_parent) = plugin_path.parent() {
-        fs::create_dir_all(plugin_path_parent).map_err(|error| {
+    if let Some(plugin_contents) = plugin_contents {
+        let plugin_path = layer_ref
+            .path()
+            .join("plugins")
+            .join("HerokuBuildpackPlugin.scala");
+
+        if let Some(plugin_path_parent) = plugin_path.parent() {
+            fs::create_dir_all(plugin_path_parent).map_err(|error| {
+                SbtBuildpackError::SbtGlobalLayerError(SbtGlobalLayerError::CouldNotWritePlugin(
+                    error,
+                ))
+            })?;
+        }
+
+        fs::write(plugin_path, plugin_contents).map_err(|error| {
             SbtBuildpackError::SbtGlobalLayerError(SbtGlobalLayerError::CouldNotWritePlugin(error))
         })?;
     }
-
-    fs::write(
-        plugin_path,
-        include_bytes!("../../sbt-plugins/buildpack-plugin-1.x.scala"),
-    )
-    .map_err(|error| {
-        SbtBuildpackError::SbtGlobalLayerError(SbtGlobalLayerError::CouldNotWritePlugin(error))
-    })?;
 
     let env_scope = if available_at_launch {
         Scope::All
