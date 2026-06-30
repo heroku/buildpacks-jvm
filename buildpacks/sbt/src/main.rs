@@ -108,7 +108,12 @@ impl Buildpack for SbtBuildpack {
             )?;
 
             handle_sbt_extras(&context, sbt_available_at_launch, &mut env)?;
-            handle_sbt_boot(&context, sbt_version.clone(), sbt_available_at_launch, &mut env)?;
+            handle_sbt_boot(
+                &context,
+                sbt_version.clone(),
+                sbt_available_at_launch,
+                &mut env,
+            )?;
             handle_sbt_global(&context, &sbt_version, sbt_available_at_launch, &mut env)?;
 
             let tasks = sbt::tasks::from_config(&buildpack_configuration);

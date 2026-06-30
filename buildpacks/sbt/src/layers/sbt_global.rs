@@ -26,8 +26,12 @@ pub(crate) fn handle_sbt_global(
     // them to diverge independently in the future.
     #[allow(clippy::match_same_arms)]
     let plugin_contents: Option<&[u8]> = match sbt_version.major {
-        1 => Some(include_bytes!("../../sbt-plugins/buildpack-plugin-1.x.scala")),
-        2 => Some(include_bytes!("../../sbt-plugins/buildpack-plugin-2.x.scala")),
+        1 => Some(include_bytes!(
+            "../../sbt-plugins/buildpack-plugin-1.x.scala"
+        )),
+        2 => Some(include_bytes!(
+            "../../sbt-plugins/buildpack-plugin-2.x.scala"
+        )),
         _ => None,
     };
 
