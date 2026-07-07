@@ -32,7 +32,7 @@ pub(crate) fn handle_maven_repository_layer(
                 Scope::Build,
                 ModificationBehavior::Append,
                 "MAVEN_OPTS",
-                format!("-Dmaven.repo.local={}", &layer_ref.path().to_string_lossy()),
+                format!("-Dmaven.repo.local={}", layer_ref.path().to_string_lossy()),
             ),
     )?;
 
