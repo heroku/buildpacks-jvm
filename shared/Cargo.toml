@@ -9,4 +9,4 @@ workspace = true
 [dependencies]
 indoc = "2"
 java-properties = "2"
-libherokubuildpack = { workspace = true, features = ["log", "command"] }
+libherokubuildpack = { workspace = true, features = ["command"] }

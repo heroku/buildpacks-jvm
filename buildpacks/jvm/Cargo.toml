@@ -12,7 +12,6 @@ fs_extra = "1"
 indoc = "2"
 libcnb.workspace = true
 libherokubuildpack = { workspace = true, features = [
-    "digest",
     "download",
     "error",
     "inventory",

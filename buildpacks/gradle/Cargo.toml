@@ -11,7 +11,6 @@ buildpacks-jvm-shared.workspace = true
 indoc = "2"
 libcnb.workspace = true
 libherokubuildpack = { workspace = true, features = [
-    "command",
     "error",
     "log",
 ] }

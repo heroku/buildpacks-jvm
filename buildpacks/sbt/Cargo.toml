@@ -12,7 +12,6 @@ indoc = "2"
 java-properties = "2"
 libcnb.workspace = true
 libherokubuildpack = { workspace = true, features = [
-    "command",
     "error",
     "log",
 ] }
