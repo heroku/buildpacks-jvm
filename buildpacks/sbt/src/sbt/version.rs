@@ -62,3 +62,31 @@ pub(crate) fn is_supported_sbt_version(version: &semver::Version) -> bool {
         })
         .any(|version_req| version_req.matches(version))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn is_supported_sbt_version_1x() {
+        assert!(is_supported_sbt_version(&semver::Version::new(1, 0, 0)));
+        assert!(is_supported_sbt_version(&semver::Version::new(1, 9, 8)));
+    }
+
+    #[test]
+    fn is_supported_sbt_version_2x() {
+        assert!(is_supported_sbt_version(&semver::Version::new(2, 0, 1)));
+        assert!(is_supported_sbt_version(&semver::Version::new(2, 1, 0)));
+    }
+
+    #[test]
+    fn is_supported_sbt_version_excludes_2_0_0() {
+        assert!(!is_supported_sbt_version(&semver::Version::new(2, 0, 0)));
+    }
+
+    #[test]
+    fn is_supported_sbt_version_rejects_unsupported_majors() {
+        assert!(!is_supported_sbt_version(&semver::Version::new(0, 13, 18)));
+        assert!(!is_supported_sbt_version(&semver::Version::new(3, 0, 0)));
+    }
+}
