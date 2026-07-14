@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.12] - 2026-07-14
+
 ### Added
 
 - Support for sbt `2.x`. sbt `2.0.0` is rejected due to an upstream bug that prevents global plugins from being executed; use sbt `2.0.1` or later instead. ([#940](https://github.com/heroku/buildpacks-jvm/pull/940))
@@ -191,7 +193,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.11...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.12...HEAD
+[7.0.12]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.11...v7.0.12
 [7.0.11]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.10...v7.0.11
 [7.0.10]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.9...v7.0.10
 [7.0.9]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.8...v7.0.9
