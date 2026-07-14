@@ -24,7 +24,7 @@ pub(crate) fn handle_sbt_global(
 
     // The 1.x and 2.x plugins have identical contents today but are kept as separate files to allow
     // them to diverge independently in the future.
-    #[allow(clippy::match_same_arms)]
+    #[expect(clippy::match_same_arms)]
     let plugin_contents: Option<&[u8]> = match sbt_version.major {
         1 => Some(include_bytes!(
             "../../sbt-plugins/buildpack-plugin-1.x.scala"
