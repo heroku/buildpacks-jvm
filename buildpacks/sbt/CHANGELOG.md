@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for sbt `2.x`. sbt `2.0.0` is rejected due to an upstream bug that prevents global plugins from being executed; use sbt `2.0.1` or later instead. ([#940](https://github.com/heroku/buildpacks-jvm/pull/940))
+
 ### Changed
 
 - Updated libcnb to 0.31.0, which includes OpenTelemetry crate upgrades. ([#951](https://github.com/heroku/buildpacks-jvm/pull/951))

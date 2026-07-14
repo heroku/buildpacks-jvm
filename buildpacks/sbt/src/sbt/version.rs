@@ -50,13 +50,43 @@ pub(crate) enum ReadSbtVersionError {
 
 /// Checks if the given sbt version is a version that is supported by this buildpack.
 ///
-/// sbt versions outside the `1.x` series aren't supported by the upstream project anymore and
-/// this buildpack dropped support for those versions as well.
+/// sbt versions outside the `1.x` and `2.x` series aren't supported by the upstream project anymore
+/// and this buildpack dropped support for those versions as well. sbt `2.0.0` is excluded because
+/// of a bug that prevents global plugins from being executed, which are required by this
+/// buildpack. The bug was fixed in `2.0.1`. See: <https://github.com/sbt/sbt/pull/9391>
 pub(crate) fn is_supported_sbt_version(version: &semver::Version) -> bool {
-    [">=1, <2"]
+    [">=1, <2", ">2.0.0, <3"]
         .into_iter()
         .map(|version_req_string| {
             semver::VersionReq::parse(version_req_string).expect("valid semver version requirement")
         })
         .any(|version_req| version_req.matches(version))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn is_supported_sbt_version_1x() {
+        assert!(is_supported_sbt_version(&semver::Version::new(1, 0, 0)));
+        assert!(is_supported_sbt_version(&semver::Version::new(1, 9, 8)));
+    }
+
+    #[test]
+    fn is_supported_sbt_version_2x() {
+        assert!(is_supported_sbt_version(&semver::Version::new(2, 0, 1)));
+        assert!(is_supported_sbt_version(&semver::Version::new(2, 1, 0)));
+    }
+
+    #[test]
+    fn is_supported_sbt_version_excludes_2_0_0() {
+        assert!(!is_supported_sbt_version(&semver::Version::new(2, 0, 0)));
+    }
+
+    #[test]
+    fn is_supported_sbt_version_rejects_unsupported_majors() {
+        assert!(!is_supported_sbt_version(&semver::Version::new(0, 13, 18)));
+        assert!(!is_supported_sbt_version(&semver::Version::new(3, 0, 0)));
+    }
 }

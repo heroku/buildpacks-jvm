@@ -87,7 +87,9 @@ pub(crate) fn log_user_errors(error: SbtBuildpackError) {
             "Unsupported sbt version",
             formatdoc! { "
                 You have defined an unsupported `sbt.version` ({version}) in the project/build.properties
-                file. You must use a version of sbt between 0.11.0 and 1.x.
+                file. You must use a version of sbt in the 1.x or 2.x series. Note that sbt 2.0.0 is
+                not supported due to an upstream bug that prevents global plugins from being executed;
+                use sbt 2.0.1 or later instead.
             " },
         ),
 
