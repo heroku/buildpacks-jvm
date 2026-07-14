@@ -11,10 +11,7 @@ fn value_at_path<'a>(table: &'a toml::value::Value, path: &[&str]) -> Option<&'a
 
     for path_segment in path {
         if let toml::Value::Table(table) = value {
-            match table.get(*path_segment) {
-                Some(next_value) => value = next_value,
-                None => return None,
-            }
+            value = table.get(*path_segment)?;
         }
     }
 

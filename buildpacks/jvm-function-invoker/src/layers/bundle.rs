@@ -81,7 +81,7 @@ fn log_function_metadata(bundle_dir: impl AsRef<Path>) -> Result<(), BundleLayer
 
     log_header(format!(
         "Detected Function: {}",
-        &bundle_toml_contents.function.class
+        bundle_toml_contents.function.class
     ));
 
     log_info(format!(

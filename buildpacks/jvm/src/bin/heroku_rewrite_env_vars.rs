@@ -286,18 +286,14 @@ mod tests {
         for database_url_var_name in ["JAWSDB_URL", "JAWSDB_MARIA_URL", "CLEARDB_DATABASE_URL"] {
             let result = jvm_env_vars_for_env(&HashMap::from([(
                 String::from(database_url_var_name),
-                format!(
-                    "mysql://foo:bar@ec2-0-0-0-0:5432/{}?reconnect=true",
-                    &database_url_var_name
-                ),
+                format!("mysql://foo:bar@ec2-0-0-0-0:5432/{database_url_var_name}?reconnect=true"),
             )]))
             .unwrap();
 
             assert_eq!(
                 result.get("JDBC_DATABASE_URL"),
                 Some(&format!(
-                    "jdbc:mysql://ec2-0-0-0-0:5432/{}?reconnect=true&user=foo&password=bar",
-                    &database_url_var_name
+                    "jdbc:mysql://ec2-0-0-0-0:5432/{database_url_var_name}?reconnect=true&user=foo&password=bar"
                 ))
             );
 
@@ -320,8 +316,7 @@ mod tests {
                 (
                     String::from(database_url_var_name),
                     format!(
-                        "mysql://foo:bar@ec2-0-0-0-0:5432/{}?reconnect=true",
-                        &database_url_var_name
+                        "mysql://foo:bar@ec2-0-0-0-0:5432/{database_url_var_name}?reconnect=true"
                     ),
                 ),
                 (

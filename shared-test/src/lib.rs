@@ -38,7 +38,7 @@ where
     F: Fn() -> Result<T, E>,
 {
     let backoff =
-        exponential_backoff::Backoff::new(32, Duration::from_secs(1), Duration::from_secs(5 * 60));
+        exponential_backoff::Backoff::new(32, Duration::from_secs(1), Duration::from_mins(5));
 
     let mut backoff_durations = backoff.into_iter();
 
