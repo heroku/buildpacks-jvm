@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.12] - 2026-07-14
+
+### Changed
+
+- Updated `heroku/jvm` to `7.0.12`.
+- Updated `heroku/sbt` to `7.0.12`.
+
 ## [7.0.11] - 2026-04-22
 
 ### Changed
@@ -279,7 +286,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.11...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.12...HEAD
+[7.0.12]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.11...v7.0.12
 [7.0.11]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.10...v7.0.11
 [7.0.10]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.9...v7.0.10
 [7.0.9]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.8...v7.0.9
