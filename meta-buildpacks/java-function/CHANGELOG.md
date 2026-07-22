@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.13] - 2026-07-22
+
+### Changed
+
+- Updated `heroku/jvm-function-invoker` to `7.0.13`.
+- Updated `heroku/jvm` to `7.0.13`.
+- Updated `heroku/maven` to `7.0.13`.
+
 ## [7.0.12] - 2026-07-14
 
 ### Changed
@@ -635,7 +643,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.12...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.13...HEAD
+[7.0.13]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.12...v7.0.13
 [7.0.12]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.11...v7.0.12
 [7.0.11]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.10...v7.0.11
 [7.0.10]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.9...v7.0.10
