@@ -20,7 +20,7 @@ serde = "1"
 thiserror = "2"
 
 [dev-dependencies]
-base64 = "0.22"
+base64 = "0.23"
 buildpacks-jvm-shared-test.workspace = true
 libcnb-test.workspace = true
 tempfile = "3"
