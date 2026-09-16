@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for OpenJDK 27. ([#973](https://github.com/heroku/buildpacks-jvm/pull/973))
+
 ## [7.0.14] - 2026-08-19
 
 ### Added
