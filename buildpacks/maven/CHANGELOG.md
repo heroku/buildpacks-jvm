@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated libcnb to 0.32.0, which includes OpenTelemetry crate upgrades. ([#981](https://github.com/heroku/buildpacks-jvm/pull/981))
+- Switched to the faster `zlib-rs` backend for decompressing Maven downloads. ([#980](https://github.com/heroku/buildpacks-jvm/pull/980))
 
 ## [7.0.15] - 2026-09-16
 

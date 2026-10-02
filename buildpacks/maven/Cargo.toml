@@ -8,7 +8,10 @@ workspace = true
 
 [dependencies]
 buildpacks-jvm-shared.workspace = true
-flate2 = { version = "1", default-features = false, features = ["zlib"] }
+# We use the `zlib-rs` backend, since it's the fastest:
+# https://github.com/rust-lang/flate2-rs#backends
+# https://trifectatech.org/blog/zlib-rs-is-faster-than-c/
+flate2 = { version = "1", default-features = false, features = ["zlib-rs", "runtime_detection"] }
 indoc = "2"
 libcnb.workspace = true
 libherokubuildpack = { workspace = true, features = [
