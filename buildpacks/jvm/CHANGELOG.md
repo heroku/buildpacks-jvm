@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated libcnb to 0.32.0, which improves tarball decompression performance by switching to the `zlib-rs` backend, and includes OpenTelemetry crate upgrades. ([#981](https://github.com/heroku/buildpacks-jvm/pull/981))
+
 ## [7.0.15] - 2026-09-16
 
 ### Added
