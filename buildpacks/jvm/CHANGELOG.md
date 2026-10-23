@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for new OpenJDK versions: `1.8.0_512`, `11.0.33`, `17.0.21`, `21.0.13`, `25.0.5`, `27.0.1`. ([#982](https://github.com/heroku/buildpacks-jvm/pull/982))
+
 ### Changed
 
 - Updated libcnb to 0.32.0, which improves tarball decompression performance by switching to the `zlib-rs` backend, and includes OpenTelemetry crate upgrades. ([#981](https://github.com/heroku/buildpacks-jvm/pull/981))
