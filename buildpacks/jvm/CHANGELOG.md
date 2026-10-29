@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.17] - 2026-10-29
+
 ### Added
 
 - Support for new OpenJDK versions: `17.0.21.0.3`, `21.0.13.0.3`, `25.0.5.0.3`, `27.0.1.0.3`. ([#985](https://github.com/heroku/buildpacks-jvm/pull/985))
@@ -604,7 +606,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.16...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.17...HEAD
+[7.0.17]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.16...v7.0.17
 [7.0.16]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.15...v7.0.16
 [7.0.15]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.14...v7.0.15
 [7.0.14]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.13...v7.0.14
