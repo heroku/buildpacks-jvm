@@ -34,7 +34,7 @@ fn openjdk_default() {
 
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"25.0.5\""
+                "openjdk version \"25.0.5.0.3\""
             );
         },
     );
@@ -90,7 +90,7 @@ fn openjdk_17() {
     TestRunner::default().build(default_build_config("test-apps/java-17-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"17.0.21\""
+            "openjdk version \"17.0.21.0.3\""
         );
     });
 }
@@ -101,7 +101,7 @@ fn openjdk_21() {
     TestRunner::default().build(default_build_config("test-apps/java-21-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"21.0.13\""
+            "openjdk version \"21.0.13.0.3\""
         );
     });
 }
@@ -112,7 +112,7 @@ fn openjdk_25() {
     TestRunner::default().build(default_build_config("test-apps/java-25-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"25.0.5\""
+            "openjdk version \"25.0.5.0.3\""
         );
     });
 }
@@ -123,7 +123,7 @@ fn openjdk_27() {
     TestRunner::default().build(default_build_config("test-apps/java-27-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"27.0.1\""
+            "openjdk version \"27.0.1.0.3\""
         );
     });
 }
