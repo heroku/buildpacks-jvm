@@ -28,24 +28,23 @@ fn mvn_dependency_list() {
             indoc! {"
 
                 The following files have been resolved:
-                   io.undertow:undertow-core:jar:2.3.21.Final:compile
-                   org.jboss.logging:jboss-logging:jar:3.4.3.Final:compile
+                   io.undertow:undertow-core:jar:2.4.0.Final:compile
+                   org.jboss.logging:jboss-logging:jar:3.6.2.Final:compile
                    org.jboss.xnio:xnio-api:jar:3.8.16.Final:compile
                    org.wildfly.common:wildfly-common:jar:1.5.4.Final:compile
                    org.wildfly.client:wildfly-client-config:jar:1.0.1.Final:compile
                    org.jboss.xnio:xnio-nio:jar:3.8.16.Final:runtime
-                   org.jboss.threads:jboss-threads:jar:3.7.0.Final:compile
-                   io.smallrye.common:smallrye-common-annotation:jar:2.6.0:compile
-                   io.smallrye.common:smallrye-common-constraint:jar:2.6.0:compile
-                   io.smallrye.common:smallrye-common-cpu:jar:2.6.0:compile
-                   io.smallrye.common:smallrye-common-function:jar:2.6.0:compile
-                   com.google.guava:guava:jar:32.0.0-jre:compile
-                   com.google.guava:failureaccess:jar:1.0.1:compile
+                   org.jboss.threads:jboss-threads:jar:3.9.2:compile
+                   io.smallrye.common:smallrye-common-annotation:jar:2.14.0:compile
+                   io.smallrye.common:smallrye-common-constraint:jar:2.14.0:compile
+                   io.smallrye.common:smallrye-common-cpu:jar:2.14.0:compile
+                   io.smallrye.common:smallrye-common-function:jar:2.14.0:compile
+                   com.google.guava:guava:jar:33.7.1-jre:compile
+                   com.google.guava:failureaccess:jar:1.0.3:compile
                    com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile
-                   com.google.code.findbugs:jsr305:jar:3.0.2:compile
-                   org.checkerframework:checker-qual:jar:3.33.0:compile
-                   com.google.errorprone:error_prone_annotations:jar:2.18.0:compile
-                   com.google.j2objc:j2objc-annotations:jar:2.8:compile
+                   org.jspecify:jspecify:jar:1.0.1:compile
+                   com.google.errorprone:error_prone_annotations:jar:2.50.0:compile
+                   com.google.j2objc:j2objc-annotations:jar:3.1:compile
                    junit:junit:jar:4.13.1:test
                    org.hamcrest:hamcrest-core:jar:1.3:test
 
@@ -73,22 +72,21 @@ fn no_unexpected_files_in_app_dir() {
                 /workspace/system.properties
                 /workspace/target/classes/com/heroku/App$1.class
                 /workspace/target/classes/com/heroku/App.class
-                /workspace/target/dependency/checker-qual-3.33.0.jar
-                /workspace/target/dependency/error_prone_annotations-2.18.0.jar
-                /workspace/target/dependency/failureaccess-1.0.1.jar
-                /workspace/target/dependency/guava-32.0.0-jre.jar
+                /workspace/target/dependency/error_prone_annotations-2.50.0.jar
+                /workspace/target/dependency/failureaccess-1.0.3.jar
+                /workspace/target/dependency/guava-33.7.1-jre.jar
                 /workspace/target/dependency/hamcrest-core-1.3.jar
-                /workspace/target/dependency/j2objc-annotations-2.8.jar
-                /workspace/target/dependency/jboss-logging-3.4.3.Final.jar
-                /workspace/target/dependency/jboss-threads-3.7.0.Final.jar
-                /workspace/target/dependency/jsr305-3.0.2.jar
+                /workspace/target/dependency/j2objc-annotations-3.1.jar
+                /workspace/target/dependency/jboss-logging-3.6.2.Final.jar
+                /workspace/target/dependency/jboss-threads-3.9.2.jar
+                /workspace/target/dependency/jspecify-1.0.1.jar
                 /workspace/target/dependency/junit-4.13.1.jar
                 /workspace/target/dependency/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar
-                /workspace/target/dependency/smallrye-common-annotation-2.6.0.jar
-                /workspace/target/dependency/smallrye-common-constraint-2.6.0.jar
-                /workspace/target/dependency/smallrye-common-cpu-2.6.0.jar
-                /workspace/target/dependency/smallrye-common-function-2.6.0.jar
-                /workspace/target/dependency/undertow-core-2.3.21.Final.jar
+                /workspace/target/dependency/smallrye-common-annotation-2.14.0.jar
+                /workspace/target/dependency/smallrye-common-constraint-2.14.0.jar
+                /workspace/target/dependency/smallrye-common-cpu-2.14.0.jar
+                /workspace/target/dependency/smallrye-common-function-2.14.0.jar
+                /workspace/target/dependency/undertow-core-2.4.0.Final.jar
                 /workspace/target/dependency/wildfly-client-config-1.0.1.Final.jar
                 /workspace/target/dependency/wildfly-common-1.5.4.Final.jar
                 /workspace/target/dependency/xnio-api-3.8.16.Final.jar
