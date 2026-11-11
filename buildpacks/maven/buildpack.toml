@@ -21,9 +21,13 @@ os = "linux"
 arch = "arm64"
 
 [metadata]
-default-version = "3.9.4"
+default-version = "3.10.0"
 
 [metadata.tarballs]
+[metadata.tarballs."3.10.0"]
+url = "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.10.0/apache-maven-3.10.0-bin.tar.gz"
+sha256 = "a46cc51bc74fa23fd267c7a0b9132b146dcf526da60d31aa5174e565632e9e0e"
+
 [metadata.tarballs."3.9.4"]
 url = "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.4/apache-maven-3.9.4-bin.tar.gz"
 sha256 = "ff66b70c830a38d331d44f6c25a37b582471def9a161c93902bac7bea3098319"

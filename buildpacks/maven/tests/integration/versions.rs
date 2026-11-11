@@ -121,6 +121,6 @@ fn set_maven_version_app_dir_preprocessor(version: &str, path: &Path) {
     java_properties::write(File::create(&system_properties_path).unwrap(), &properties).unwrap();
 }
 
-const DEFAULT_MAVEN_VERSION: &str = "3.9.4";
+const DEFAULT_MAVEN_VERSION: &str = "3.10.0";
 const UNKNOWN_MAVEN_VERSION: &str = "1.0.0-unknown-version";
 const SIMPLE_HTTP_SERVICE_MAVEN_WRAPPER_VERSION: &str = "3.6.3";
