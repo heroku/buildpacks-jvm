@@ -124,7 +124,7 @@ fn no_internal_maven_options_logging() {
 #[ignore = "integration test"]
 fn descriptive_error_message_on_failed_build() {
     TestRunner::default().build(default_build_config("test-apps/app-with-compile-error").expected_pack_result(PackResult::Failure), |context| {
-            assert_contains!(context.pack_stdout, "[INFO] BUILD FAILURE");
+            assert_contains!(context.pack_stdout, "[ERROR] BUILD FAILURE");
 
             assert_contains!(
                 context.pack_stdout,
