@@ -16,8 +16,8 @@ Users can specify the Maven version for their application by adding (or extendin
 [Java properties file](https://en.wikipedia.org/wiki/.properties) called `system.properties` in the root directory of
 the application.
 
-The `maven.version` key determines the Maven version that is installed. Currently, the only supported version is 
-`3.9.4`. The default is `3.9.4`.
+The `maven.version` key determines the Maven version that is installed. Supported versions are `3.9.4` and
+`3.10.0`. The default is `3.10.0`.
 
 ### Step 2: Resolve settings.xml
 A Maven `settings.xml` file defines values that configure Maven execution in various ways. Most commonly, it is used to
