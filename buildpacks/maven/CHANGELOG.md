@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.18] - 2026-11-12
+
 ### Changed
 
 - Default version for Maven is now `3.10.0`. ([#992](https://github.com/heroku/buildpacks-jvm/pull/992))
@@ -322,7 +324,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.17...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.18...HEAD
+[7.0.18]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.17...v7.0.18
 [7.0.17]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.16...v7.0.17
 [7.0.16]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.15...v7.0.16
 [7.0.15]: https://github.com/heroku/buildpacks-jvm/compare/v7.0.14...v7.0.15
