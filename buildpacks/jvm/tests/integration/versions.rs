@@ -3,6 +3,13 @@ use indoc::formatdoc;
 use libcnb::data::buildpack_id;
 use libcnb_test::{BuildpackReference, TestRunner, assert_contains, assert_not_contains};
 
+const LATEST_ZULU_OPENJDK_8_VERSION: &str = "1.8.0_514";
+const LATEST_ZULU_OPENJDK_11_VERSION: &str = "11.0.33.1";
+const LATEST_ZULU_OPENJDK_17_VERSION: &str = "17.0.21.1";
+const LATEST_ZULU_OPENJDK_21_VERSION: &str = "21.0.13.1";
+const LATEST_ZULU_OPENJDK_25_VERSION: &str = "25.0.5.1";
+const LATEST_ZULU_OPENJDK_27_VERSION: &str = "27.0.1.1";
+
 #[test]
 #[ignore = "integration test"]
 fn openjdk_default() {
@@ -34,7 +41,7 @@ fn openjdk_default() {
 
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"25.0.5.1\""
+                &format!("openjdk version \"{LATEST_ZULU_OPENJDK_25_VERSION}\"")
             );
         },
     );
@@ -56,7 +63,7 @@ fn openjdk_functions_default() {
 
             assert_contains!(
                 context.run_shell_command("java -version").stderr,
-                "openjdk version \"1.8.0_514\""
+                &format!("openjdk version \"{LATEST_ZULU_OPENJDK_8_VERSION}\"")
             );
         },
     );
@@ -68,7 +75,7 @@ fn openjdk_8() {
     TestRunner::default().build(default_build_config("test-apps/java-8-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"1.8.0_514\""
+            &format!("openjdk version \"{LATEST_ZULU_OPENJDK_8_VERSION}\"")
         );
     });
 }
@@ -79,7 +86,7 @@ fn openjdk_11() {
     TestRunner::default().build(default_build_config("test-apps/java-11-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"11.0.33.1\""
+            &format!("openjdk version \"{LATEST_ZULU_OPENJDK_11_VERSION}\"")
         );
     });
 }
@@ -90,7 +97,7 @@ fn openjdk_17() {
     TestRunner::default().build(default_build_config("test-apps/java-17-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"17.0.21.1\""
+            &format!("openjdk version \"{LATEST_ZULU_OPENJDK_17_VERSION}\"")
         );
     });
 }
@@ -101,7 +108,7 @@ fn openjdk_21() {
     TestRunner::default().build(default_build_config("test-apps/java-21-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"21.0.13.1\""
+            &format!("openjdk version \"{LATEST_ZULU_OPENJDK_21_VERSION}\"")
         );
     });
 }
@@ -112,7 +119,7 @@ fn openjdk_25() {
     TestRunner::default().build(default_build_config("test-apps/java-25-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"25.0.5.1\""
+            &format!("openjdk version \"{LATEST_ZULU_OPENJDK_25_VERSION}\"")
         );
     });
 }
@@ -123,7 +130,7 @@ fn openjdk_27() {
     TestRunner::default().build(default_build_config("test-apps/java-27-app"), |context| {
         assert_contains!(
             context.run_shell_command("java -version").stderr,
-            "openjdk version \"27.0.1.1\""
+            &format!("openjdk version \"{LATEST_ZULU_OPENJDK_27_VERSION}\"")
         );
     });
 }
